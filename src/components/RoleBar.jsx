@@ -80,6 +80,13 @@ export default function RoleBar() {
         </button>
 
         <button
+          className={`role-pill-btn ${currentScreen === 'account' ? 'active' : ''}`}
+          onClick={() => setCurrentScreen('account')}
+        >
+          🔐 حساب ولي الأمر (تجريبي)
+        </button>
+
+        <button
           className={`role-pill-btn ${currentScreen === 'pricing' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('pricing')}
         >

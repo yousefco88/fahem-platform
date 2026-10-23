@@ -6,6 +6,7 @@ export default function OnboardingFlow() {
     parentName, setParentName,
     childName, setChildName,
     grade, setGrade,
+    addChild,
     country, setCountry,
     setCountryText,
     setLiveClassTimeText,
@@ -85,8 +86,10 @@ export default function OnboardingFlow() {
     setCountry(formCountry);
     setCountryText(currentTz.label);
     setLiveClassTimeText(currentTz.liveTime);
+    const newChild = addChild(formChild, formGrade);
+    if (!newChild) return;
 
-    triggerToast(`تم تسجيل وتحديث ملف ${formChild} بنجاح ومواءمة المواعيد مع بلد إقامتكم ✓`);
+    triggerToast(`تم إنشاء ملف ${formChild} وحفظ المنطقة الزمنية. هذا نموذج محلي ولا يتضمن حساب دخول بعد.`);
     setCurrentScreen('parent');
   };
 

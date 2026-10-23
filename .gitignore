@@ -35,3 +35,9 @@ lerna-debug.log*
 # Temporary files
 .tempmediaStorage/
 scratch/
+
+# Local development database (may contain account data)
+/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

@@ -7,6 +7,7 @@ export default function ParentDashboard() {
     childrenList,
     switchChild,
     addChild,
+    learningRecords,
     curriculumData,
     openLesson,
     countryText,
@@ -148,14 +149,14 @@ export default function ParentDashboard() {
           </button>
         </nav>
 
-        {/* WhatsApp Notification Simulator */}
+        {/* WhatsApp integration placeholder */}
         <button
           style={{
             background: '#25D366', color: 'white', padding: '11px', borderRadius: 'var(--radius-md)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             fontWeight: 700, fontSize: '12.5px', boxShadow: '0 4px 10px rgba(37,211,102,0.25)'
           }}
-          onClick={() => triggerToast(`📲 تم إرسال تذكير حصة اليوم وتقرير ${activeChild.name} إلى رقم واتساب الخاص بك بنجاح!`)}
+          onClick={() => triggerToast('إرسال واتساب غير متاح حتى ربط المنصة بمزود رسائل.')}
         >
           <span>💬</span>
           <span>إرسال الرابط عبر واتساب</span>
@@ -215,7 +216,7 @@ export default function ParentDashboard() {
                   تغطية المنهج المصري المتكامل لأبنائنا بالخارج:
                 </strong>
                 <span style={{ color: '#15803d', fontSize: '12.5px' }}>
-                  جميع المواد الرسمية المعتمدة لاختبارات السفارات (اللغة العربية، الرياضيات، Connect الإنجليزية، اكتشف Discover، والتربية الدينية) مغطاة بحصص حية وتسجيلات دائمة.
+                  تعرض المنصة مواد ودروسًا تجريبية؛ تتم مراجعة مطابقتها للمنهج قبل اعتماد المحتوى.
                 </span>
               </div>
             </div>
@@ -224,7 +225,7 @@ export default function ParentDashboard() {
               style={{ padding: '7px 14px', fontSize: '12px' }}
               onClick={() => openLesson('arabic', 'baa', 'video')}
             >
-              عرض آخر تسجيل متاح
+              عرض درس تجريبي
             </button>
           </div>
 
@@ -245,19 +246,19 @@ export default function ParentDashboard() {
                 width: '8px', height: '8px', borderRadius: '50%',
                 background: '#ef4444', display: 'inline-block'
               }}></span>
-              <span>الحصة الحية القادمة اليوم</span>
+              <span>نموذج عرض لحصة مباشرة</span>
             </div>
 
             <h1 style={{ fontSize: '26px', marginBottom: '8px', fontWeight: 800 }}>
               اللغة العربية: أصوات حرف الباء الممدودة وتكوين الكلمات
             </h1>
             <p style={{ color: '#cbd5e1', maxWidth: '650px', fontSize: '14.5px', marginBottom: '22px' }}>
-              حصة تفاعلية مباشرة مع الأستاذة <strong>سارة أحمد</strong> في مجموعة صغيرة (4 طلاب). يتعلم فيها {activeChild.name} نطق الحرف، التمييز السمعي، والمشاركة الصوتية.
+              معاينة تجريبية لفصل تفاعلي. البث متعدد المستخدمين وجدولة الحصص غير متصلين بخادم بعد.
             </p>
 
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <button className="btn-accent" onClick={() => setShowLiveModal(true)}>
-                <span>دخول الفصل الحي الآن (السبورة التفاعلية)</span>
+              <button className="btn-accent" onClick={() => { triggerToast('ستفتح معاينة الفصل. الكاميرا اختيارية ولا يوجد بث مع طلاب آخرين.'); setShowLiveModal(true); }}>
+                <span>فتح معاينة الفصل التفاعلية</span>
                 <span>🔴</span>
               </button>
               <button
@@ -266,7 +267,7 @@ export default function ParentDashboard() {
                   border: '1px solid rgba(255, 255, 255, 0.25)', padding: '12px 20px',
                   borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '14px'
                 }}
-                onClick={() => triggerToast(`📲 تم إرسال تذكير حصة ${activeChild.name} عبر واتساب برقم ولي الأمر`)}
+                onClick={() => triggerToast('إرسال تذكيرات واتساب غير متاح قبل ربط خدمة الرسائل.')}
               >
                 💬 إرسال تذكير واتساب
               </button>
@@ -311,8 +312,8 @@ export default function ParentDashboard() {
               display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
             }}>
               <div>
-                <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>المواد الدراسية المعتمدة</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>12 مادة</h3>
+                <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>مواد ومسارات تجريبية</span>
+                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>12 مسارًا</h3>
                 <small style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
@@ -360,9 +361,9 @@ export default function ParentDashboard() {
                 <button
                   className="tag-badge info"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => triggerToast('المنهج مشمول ومعتمد لامتحانات السفارات')}
+                  onClick={() => triggerToast('المحتوى الحالي تجريبي وقيد المراجعة الأكاديمية.')}
                 >
-                  مربوط بالمنهج الوزاري الرسمي 🇪🇬
+                  محتوى تجريبي قيد المراجعة 📚
                 </button>
               </div>
             </div>
@@ -395,6 +396,32 @@ export default function ParentDashboard() {
           </section>
 
           {/* 4. Two Columns: Multi-Subject Mastery Matrix & Recorded Archive */}
+          <section style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', gap: '10px', flexWrap: 'wrap' }}>
+              <div>
+                <h3 style={{ fontSize: '18px', color: 'var(--navy)', margin: 0 }}>سجل تعلّم {activeChild.name}</h3>
+                <span style={{ fontSize: '12px', color: 'var(--muted)' }}>نشاط محفوظ في هذا المتصفح</span>
+              </div>
+              <span className="tag-badge info">{Object.keys(learningRecords).length} درسًا له نشاط</span>
+            </div>
+            {Object.entries(learningRecords).length ? (
+              <div style={{ display: 'grid', gap: '9px' }}>
+                {Object.entries(learningRecords)
+                  .sort((a, b) => new Date(b[1].lastOpenedAt || b[1].completedAt || 0) - new Date(a[1].lastOpenedAt || a[1].completedAt || 0))
+                  .map(([lessonId, record]) => {
+                    const lesson = curriculumData[record.subject]?.lessons?.find(item => item.id === lessonId);
+                    return <div key={lessonId} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '10px 12px', border: '1px solid var(--line)', borderRadius: '10px', flexWrap: 'wrap' }}>
+                      <div><strong>{lesson?.title || lessonId}</strong><div style={{ fontSize: '12px', color: 'var(--muted)' }}>{curriculumData[record.subject]?.title || record.subject || 'درس'}</div></div>
+                      <div style={{ textAlign: 'left', fontSize: '12px', color: 'var(--muted)' }}>
+                        <div>{record.completed ? 'مكتمل ✓' : record.videoProgress ? `الفيديو ${record.videoProgress}%` : 'قيد التعلم'} · فتح {record.openedCount || 0} مرة</div>
+                        {record.attempts?.length > 0 && <div>آخر اختبار: {record.lastAttemptCorrect ? 'إجابة صحيحة' : 'يحتاج مراجعة'} ({record.attempts.length} محاولة)</div>}
+                      </div>
+                    </div>;
+                  })}
+              </div>
+            ) : <p style={{ color: 'var(--muted)', fontSize: '13px' }}>لم يبدأ هذا الطفل أي درس بعد.</p>}
+          </section>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
             
             {/* Left: Mastery Matrix across all official subjects */}

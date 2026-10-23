@@ -20,8 +20,8 @@ export default function LiveClassroomSuite({ onClose }) {
   };
 
   // Student Controls State
-  const [micOn, setMicOn] = useState(true);
-  const [cameraOn, setCameraOn] = useState(true);
+  const [micOn, setMicOn] = useState(false);
+  const [cameraOn, setCameraOn] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState(null);
   const [cameraDeviceLabel, setCameraDeviceLabel] = useState('كاميرا الويب HD');
@@ -49,7 +49,7 @@ export default function LiveClassroomSuite({ onClose }) {
   const [reactions, setReactions] = useState([]);
 
   // Session timer
-  const [elapsedSeconds, setElapsedSeconds] = useState(14 * 60 + 20); // 14:20 elapsed
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => {
       setElapsedSeconds(prev => prev + 1);
@@ -327,7 +327,7 @@ export default function LiveClassroomSuite({ onClose }) {
     link.href = canvas.toDataURL('image/png');
     link.click();
     soundManager.playSuccess();
-    triggerToast('📥 تم تحميل صورة السبورة بجودة عالية وحفظها!');
+    triggerToast('تم تنزيل صورة السبورة إلى جهازك.');
   };
 
   // Reactions trigger
@@ -377,11 +377,12 @@ export default function LiveClassroomSuite({ onClose }) {
   };
 
   const handleAnswerPopQuiz = (isCorrect) => {
+    if (quizAnswered !== null) return;
     setQuizAnswered(isCorrect);
     if (isCorrect) {
       soundManager.playSuccess();
       launchConfetti();
-      triggerToast('🎉 أحسنت يا بطل! إجابة صحيحة 100% وحصلت على شارة التميز ⭐');
+      triggerToast('أحسنت! إجابة صحيحة في السؤال التجريبي.');
     } else {
       soundManager.playRetry();
       triggerToast('↺ فكر مجدداً بهدوء يا بطل');
@@ -390,8 +391,8 @@ export default function LiveClassroomSuite({ onClose }) {
 
   // Test microphone sound check
   const handleTestMic = () => {
-    soundManager.speak(`صوتك واضح وممتاز يا ${activeChild.name}! معلمتك وزملاؤك يسمعونك بنقاء.`);
-    triggerToast('🎤 تم فحص الميكروفون — الإشارة واضحة ونقية 100%');
+    soundManager.speak(`يمكنك سماع صوت تجريبي يا ${activeChild.name}.`);
+    triggerToast('هذا اختبار صوت محلي فقط؛ لا يوجد اتصال صوتي بمعلمة أو طلاب.');
   };
 
   return (
@@ -455,7 +456,7 @@ export default function LiveClassroomSuite({ onClose }) {
               borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '12.5px', cursor: 'pointer'
             }}
             onClick={() => {
-              triggerToast('✓ تم أرشفة الحصة وإرسال كشف الأداء لواتساب ولي الأمر');
+              triggerToast('انتهت الجلسة التجريبية. الأرشفة والإرسال غير متصلين بخادم أو واتساب بعد.');
               onClose();
             }}
           >
@@ -716,7 +717,7 @@ export default function LiveClassroomSuite({ onClose }) {
                 <div className="audio-bar"></div>
                 <div className="audio-bar"></div>
               </div>
-              <span>تشرح الآن</span>
+                <span>واجهة تجريبية</span>
             </div>
 
             {/* Teacher Direct Voice Prompt for Ahmed */}

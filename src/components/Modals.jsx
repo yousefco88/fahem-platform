@@ -1,6 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import LiveClassroomSuite from './LiveClassroomSuite';
+import { loadAttachment } from '../utils/attachmentStore';
+
+function useLocalAttachmentUrl(metadata, storageKey) {
+  const [url, setUrl] = useState(metadata?.dataUrl || '');
+  useEffect(() => {
+    let objectUrl;
+    let cancelled = false;
+    setUrl(metadata?.dataUrl || '');
+    if (metadata?.storage === 'indexeddb') {
+      loadAttachment(storageKey).then(blob => {
+        if (!blob || cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setUrl(objectUrl);
+      }).catch(() => setUrl(''));
+    }
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [metadata, storageKey]);
+  return url;
+}
 
 export default function Modals() {
   const {
@@ -11,11 +33,21 @@ export default function Modals() {
     showScheduleModal, setShowScheduleModal,
     activeChild,
     activeLesson,
+    activeSubject,
+    lessonFiles,
+    lessonVideos,
+    learningRecords,
+    recordVideoProgress,
     completeLessonMastery,
+    recordQuizAttempt,
     soundManager,
     setCurrentScreen,
     triggerToast
   } = useApp();
+  const videoKey = `${activeSubject}:${activeLesson?.id}`;
+  const pdfKey = `${activeSubject}:${activeLesson?.id}`;
+  const videoUrl = useLocalAttachmentUrl(lessonVideos[videoKey], `video:${videoKey}`);
+  const pdfUrl = useLocalAttachmentUrl(lessonFiles[pdfKey], `pdf:${pdfKey}`);
 
   // Whiteboard Canvas State
   const canvasRef = useRef(null);
@@ -131,7 +163,7 @@ export default function Modals() {
   const handleFinishTeacherFeedback = (e) => {
     e.preventDefault();
     setShowPostClassFeedback(false);
-    triggerToast('✓ تم إرسال تقرير الحصة والملاحظة التشجيعية إلى ولي الأمر وأرشفة التسجيل بنجاح!');
+    triggerToast('تم إنهاء الحصة التجريبية. إرسال التقرير وأرشفة التسجيل غير متصلين بخادم بعد.');
   };
 
   // Parent Gate handler
@@ -149,6 +181,7 @@ export default function Modals() {
 
   // Quiz evaluation
   const handleEvalQuiz = (isCorrect) => {
+    if (quizAnswered !== null) return;
     if (isCorrect) {
       setQuizAnswered('correct');
       soundManager.playSuccess();
@@ -158,6 +191,7 @@ export default function Modals() {
       soundManager.playRetry();
       soundManager.speak('محاولة جيدة! استمع للشرح وجرب مرة ثانية.');
     }
+    recordQuizAttempt(activeLesson.id, isCorrect);
   };
 
   // Syllable Builder Tap/Drag handler
@@ -286,16 +320,30 @@ export default function Modals() {
               {/* Tab 1: Video */}
               {studioActiveTab === 'video' && (
                 <div>
-                  <div style={{
+                  {lessonVideos[`${activeSubject}:${activeLesson.id}`] ? (
+                    <div style={{ background: '#0f172a', borderRadius: '20px', padding: '10px', maxWidth: '850px', margin: '0 auto 20px' }}>
+                      <video
+                        controls
+                        playsInline
+                        preload="metadata"
+                        src={videoUrl}
+                        style={{ width: '100%', maxHeight: '440px', borderRadius: '14px' }}
+                        onLoadedMetadata={event => {
+                          const savedPercent = learningRecords[activeLesson.id]?.videoProgress || 0;
+                          if (savedPercent > 0 && event.currentTarget.duration) event.currentTarget.currentTime = event.currentTarget.duration * savedPercent / 100;
+                        }}
+                        onTimeUpdate={event => recordVideoProgress(activeLesson.id, event.currentTarget.currentTime, event.currentTarget.duration, activeSubject)}
+                      />
+                      <div style={{ color: '#e2e8f0', fontSize: '12px', padding: '8px' }}>{lessonVideos[`${activeSubject}:${activeLesson.id}`].name} · مقطع محفوظ محليًا</div>
+                    </div>
+                  ) : <div style={{
                     background: '#000', borderRadius: '20px', aspectRatio: '16 / 9',
                     maxHeight: '440px', margin: '0 auto 20px', display: 'flex',
                     flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white'
                   }}>
-                    <button className="btn-accent" onClick={() => triggerToast(`جاري تشغيل تسجيل: ${activeLesson.title}...`)}>
-                      ▶ تشغيل تسجيل الحصة ({activeLesson.duration} دقيقة)
-                    </button>
+                    <span style={{ fontSize: '14px', fontWeight: 700 }}>لا يوجد فيديو مرفق بهذا الدرس على هذا المتصفح.</span>
                     <span style={{ fontSize: '13px', marginTop: '12px', opacity: 0.8 }}>الهدف: {activeLesson.objective}</span>
-                  </div>
+                  </div>}
 
                   <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
                     <strong>محطات الحصة المسجلة للقفز السريع:</strong>
@@ -457,11 +505,14 @@ export default function Modals() {
               {studioActiveTab === 'pdf' && (
                 <div style={{ textAlign: 'center', padding: '40px' }}>
                   <div style={{ fontSize: '56px', marginBottom: '12px' }}>📄</div>
-                  <h3 style={{ fontSize: '20px', marginBottom: '6px' }}>{activeLesson.pdfTitle}</h3>
-                  <p style={{ color: 'var(--muted)', marginBottom: '20px' }}>ملف تفاعلي جاهز للطباعة والحل المنزلي مع ولي الأمر</p>
-                  <button className="btn-accent" onClick={() => triggerToast(`تم تحميل ملف PDF: ${activeLesson.pdfTitle}`)}>
-                    تحميل وطباعة ورقة العمل
-                  </button>
+                  <h3 style={{ fontSize: '20px', marginBottom: '6px' }}>{lessonFiles[`${activeSubject}:${activeLesson.id}`]?.name || activeLesson.pdfTitle || 'ورقة العمل'}</h3>
+                  {lessonFiles[`${activeSubject}:${activeLesson.id}`] && pdfUrl ? (
+                    <a className="btn-accent" href={pdfUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', textDecoration: 'none', marginTop: '16px' }}>
+                      فتح ملف PDF المرتبط
+                    </a>
+                  ) : (
+                    <p style={{ color: 'var(--muted)', marginBottom: '20px' }}>لا يوجد ملف PDF مرفق بهذا الدرس على هذا المتصفح.</p>
+                  )}
                 </div>
               )}
 

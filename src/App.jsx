@@ -10,6 +10,7 @@ import AdminDashboard from './components/AdminDashboard';
 import EmbassyExamSimulator from './components/EmbassyExamSimulator';
 import PublicLandingPage from './components/PublicLandingPage';
 import Modals from './components/Modals';
+import ParentAccount from './components/ParentAccount';
 
 function MainAppContent() {
   const { currentScreen, toastMessage } = useApp();
@@ -29,6 +30,7 @@ function MainAppContent() {
         {currentScreen === 'exam' && <EmbassyExamSimulator />}
         {currentScreen === 'onboarding' && <OnboardingFlow />}
         {currentScreen === 'pricing' && <PricingPlans />}
+        {currentScreen === 'account' && <ParentAccount />}
       </div>
 
       {/* Global Interactive Modals */}

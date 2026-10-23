@@ -17,7 +17,7 @@ export default function PricingPlans() {
           استثمر في فهم طفلك للمنهج المصري وهوية لغته
         </h1>
         <p style={{ color: 'var(--muted)', fontSize: '16px', maxWidth: '650px', margin: '0 auto' }}>
-          تعليم حي تفاعلي بمجموعات صغيرة (4 طلاب فقط) يضمن المشاركة والنطق الصحيح، مع حفظ كامل للتسجيلات وإعادة اختبارات الإتقان حتى النجاح الكامل.
+          هذه تصورات أولية وليست عروضًا متاحة للبيع. لم تُحدد الأسعار أو الحصص أو الخدمات بعد، ولا توجد بوابة دفع مرتبطة.
         </p>
       </div>
 
@@ -29,7 +29,7 @@ export default function PricingPlans() {
             جرب الفصل الحي وتفاعل طفلك مع المعلمة بدون أي التزام مالي.
           </p>
           <div style={{ fontSize: '38px', fontWeight: 900, color: 'var(--navy)', marginBottom: '4px' }}>
-            مجاناً <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--muted)' }}>/ حصة واحدة</span>
+            قيد الدراسة <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--muted)' }}>/ تجربة أولية</span>
           </div>
           <ul style={{ listStyle: 'none', margin: '28px 0', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
             <li style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -47,7 +47,7 @@ export default function PricingPlans() {
           </ul>
           <button
             style={{ background: '#f1f5f9', color: 'var(--navy)', border: 'none', width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
-            onClick={() => triggerToast('تم تسجيل حجز حصتك التجريبية المجانية بنجاح!')}
+            onClick={() => triggerToast('الحجز غير متاح بعد؛ لا يُرسل هذا النموذج طلبًا فعليًا.')}
           >
             احجز حصة تجريبية الآن
           </button>
@@ -64,14 +64,14 @@ export default function PricingPlans() {
             background: 'var(--blue)', color: 'white', padding: '5px 18px', borderRadius: 'var(--radius-full)',
             fontSize: '12px', fontWeight: 800
           }}>
-            الأكثر اختياراً للأسر بالخارج ⭐
+            تصور أولي — غير متاح للاشتراك
           </div>
           <h3 style={{ fontSize: '22px', marginBottom: '8px', color: 'var(--navy)' }}>باقة التأسيس الحي</h3>
           <p style={{ fontSize: '13.5px', color: 'var(--muted)', marginBottom: '24px', minHeight: '42px' }}>
             الخيار الأمثل لتغطية المنهج المصري أسبوعياً وضمان الإتقان المستمر.
           </p>
           <div style={{ fontSize: '38px', fontWeight: 900, color: 'var(--navy)', marginBottom: '4px' }}>
-            290 <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--muted)' }}>ريال / شهرياً</span>
+            — <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--muted)' }}>السعر لم يُحدد</span>
           </div>
           <span style={{ fontSize: '12px', color: 'var(--muted)' }}>(أو ما يعادله بالدرهم أو الدولار)</span>
           <ul style={{ listStyle: 'none', margin: '28px 0', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
@@ -94,7 +94,7 @@ export default function PricingPlans() {
           <button
             className="btn-accent"
             style={{ width: '100%', justifyContent: 'center', padding: '15px' }}
-            onClick={() => triggerToast('تم اختيار باقة التأسيس الحي — جاري نقلك لبوابة الدفع')}
+            onClick={() => triggerToast('الاشتراك والدفع غير متاحين في النموذج التجريبي.')}
           >
             اشترك الآن في باقة التأسيس
           </button>
@@ -107,7 +107,7 @@ export default function PricingPlans() {
             متابعة مكثفة ومعلم خاص لطفلك للمراجعة والتحضير للامتحانات.
           </p>
           <div style={{ fontSize: '38px', fontWeight: 900, color: 'var(--navy)', marginBottom: '4px' }}>
-            480 <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--muted)' }}>ريال / شهرياً</span>
+            — <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--muted)' }}>السعر لم يُحدد</span>
           </div>
           <ul style={{ listStyle: 'none', margin: '28px 0', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
             <li style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -125,7 +125,7 @@ export default function PricingPlans() {
           </ul>
           <button
             style={{ background: '#f1f5f9', color: 'var(--navy)', border: 'none', width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
-            onClick={() => triggerToast('تم تسجيل طلب باقة التفوق — سيتواصل معك المستشار التعليمي')}
+            onClick={() => triggerToast('طلبات الاستشارة غير متصلة بفريق أو نظام حجز بعد.')}
           >
             طلب استشارة وتنسيق المواعيد
           </button>

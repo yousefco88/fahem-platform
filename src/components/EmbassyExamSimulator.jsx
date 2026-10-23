@@ -192,8 +192,8 @@ export default function EmbassyExamSimulator() {
     setTimeLeft(25 * 60);
     setIsTimerRunning(true);
     soundManager.playSuccess();
-    soundManager.speak(`بالتوفيق يا بطل! بدأ نموذج امتحان السفارة الرسمي. اقرأ كل سؤال بعناية.`);
-    triggerToast('🇪🇬 بدأ نموذج الامتحان الوزاري المعتمد — بالتوفيق!');
+    soundManager.speak(`بالتوفيق يا بطل! بدأ الاختبار التدريبي. اقرأ كل سؤال بعناية.`);
+    triggerToast('بدأ الاختبار التدريبي من فاهم — بالتوفيق!');
   };
 
   const handleSelectOption = (qIdx, optIdx) => {
@@ -209,8 +209,8 @@ export default function EmbassyExamSimulator() {
     setExamState('result');
     launchConfetti();
     soundManager.playSuccess();
-    soundManager.speak(`ألف مبروك يا ${activeChild.name}! أتممت امتحان السفارة بدرجة امتياز!`);
-    triggerToast('🎉 تم تصدير كشف الدرجات الرسمي بنجاح!');
+    soundManager.speak(`أحسنت يا ${activeChild.name}! أتممت الاختبار التدريبي.`);
+    triggerToast(`انتهى الاختبار التدريبي: أجبت عن ${Object.keys(selectedAnswers).length} من ${examQuestions.length} أسئلة. التقرير غير رسمي.`);
   };
 
   // Calculate scores
@@ -224,13 +224,14 @@ export default function EmbassyExamSimulator() {
   });
 
   const percentage = Math.round((correctCount / totalQuestions) * 100);
+  const attemptedCount = Object.keys(selectedAnswers).length;
 
   // Egyptian Color Band Assessment (Edu 2.0 system)
   const getAssessmentColorBand = (score) => {
-    if (score >= 85) return { title: 'فاق التوقعات دائماً (ممتاز)', color: '#2563eb', bg: '#eff6ff', tag: 'اللون الأزرق الوزاري 🟦' };
-    if (score >= 65) return { title: 'لبى التوقعات (جيد جداً)', color: '#16a34a', bg: '#f0fdf4', tag: 'اللون الأخضر الوزاري 🟩' };
-    if (score >= 50) return { title: 'يقترب من التوقعات (مقبول)', color: '#ca8a04', bg: '#fefce8', tag: 'اللون الأصفر الوزاري 🟨' };
-    return { title: 'بحاجة إلى دعم ومراجعة', color: '#dc2626', bg: '#fef2f2', tag: 'اللون الأحمر الوزاري 🟥' };
+    if (score >= 85) return { title: 'أداء متميز', color: '#2563eb', bg: '#eff6ff', tag: 'متميز' };
+    if (score >= 65) return { title: 'أداء جيد', color: '#16a34a', bg: '#f0fdf4', tag: 'جيد' };
+    if (score >= 50) return { title: 'يحتاج إلى مراجعة بسيطة', color: '#ca8a04', bg: '#fefce8', tag: 'مراجعة' };
+    return { title: 'يحتاج إلى دعم ومراجعة', color: '#dc2626', bg: '#fef2f2', tag: 'دعم' };
   };
 
   const currentBand = getAssessmentColorBand(percentage);
@@ -253,10 +254,10 @@ export default function EmbassyExamSimulator() {
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.2)', padding: '5px 14px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 700, marginBottom: '12px' }}>
                 <span>🇪🇬 جمهورية مصر العربية</span>
                 <span>•</span>
-                <span>وزارة التربية والتعليم والتعليم الفني</span>
+                <span>تدريب على نمط المنهج المصري</span>
               </div>
               <h1 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '8px' }}>
-                محاكي اختبارات «أبنائنا في الخارج» الرسمي
+                اختبار تدريبي لأبناء المصريين بالخارج
               </h1>
               <p style={{ fontSize: '15px', color: '#ffe4e6', maxWidth: '650px', lineHeight: 1.6 }}>
                 النموذج الإلكتروني المتطابق مع المنصة الوزارية لتقييمات الصف الأول الابتدائي بالسفارات والقنصليات المصرية. يشمل جميع المواد الأساسية واللغات والهوية وفق نظام التقييم بالألوان Edu 2.0.
@@ -296,9 +297,9 @@ export default function EmbassyExamSimulator() {
 
             <div style={{ background: 'white', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>🖨️</div>
-              <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>كشف درجات رسمي فوري PDF</h4>
+              <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>تقرير نتيجة الاختبار التدريبي</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
-                تقرير معتمد ومختوم بألوان التقييم الوزارية لحفظه بملف أنشطة الطالب الموجه للسفارة.
+                ملخص تدريبي لنتيجة الطالب، ولا يمثل شهادة أو مستندًا رسميًا.
               </p>
             </div>
           </div>
@@ -323,7 +324,7 @@ export default function EmbassyExamSimulator() {
                 }}
                 onClick={handleStartExam}
               >
-                <span>ابدأ الامتحان التجريبي المعتمد الآن</span>
+                <span>ابدأ الاختبار التدريبي</span>
                 <span>✍️</span>
               </button>
             </div>
@@ -521,15 +522,15 @@ export default function EmbassyExamSimulator() {
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '26px' }}>🦅</span>
                 <span style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.5px', color: '#1e293b' }}>
-                  جمهورية مصر العربية — وزارة التربية والتعليم والتعليم الفني
+                  منصة فاهم — تقرير تدريبي
                 </span>
                 <span style={{ fontSize: '26px' }}>🇪🇬</span>
               </div>
               <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--navy)' }}>
-                كشف تقييم الأداء المعتمد لامتحانات «أبنائنا في الخارج»
+                تقرير نتيجة الاختبار التدريبي
               </h2>
               <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
-                العام الدراسي 2026 / 2027 • الفصل الدراسي الأول • كود المنظومة: FAHEM-EXAM-1045
+                نتيجة تدريب محلية • لا تمثل تقييمًا وزاريًا أو شهادة رسمية
               </span>
             </div>
 
@@ -539,62 +540,44 @@ export default function EmbassyExamSimulator() {
               gap: '18px', marginBottom: '26px'
             }}>
               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
-                <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>اسم الطالب الرباعي:</span>
-                <strong style={{ fontSize: '17px', color: 'var(--navy)' }}>{activeChild.name} أحمد الشافعي</strong>
+                <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>اسم الطالب:</span>
+                <strong style={{ fontSize: '17px', color: 'var(--navy)' }}>{activeChild.name}</strong>
                 <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>المرحلة: {activeChild.grade} (المنهج المصري)</div>
               </div>
 
               <div style={{ background: currentBand.bg, padding: '16px', borderRadius: '12px', border: `2px solid ${currentBand.color}` }}>
-                <span style={{ fontSize: '12px', color: currentBand.color, fontWeight: 700, display: 'block' }}>مستوى الأداء الوزاري (Edu 2.0):</span>
+                <span style={{ fontSize: '12px', color: currentBand.color, fontWeight: 700, display: 'block' }}>نتيجة التدريب:</span>
                 <strong style={{ fontSize: '18px', color: currentBand.color }}>{currentBand.title}</strong>
                 <div style={{ fontSize: '12px', fontWeight: 700, marginTop: '4px', color: currentBand.color }}>
-                  {currentBand.tag} • النسبة المئوية: {percentage}%
+                  {currentBand.tag} • {correctCount} من {totalQuestions} إجابات صحيحة
                 </div>
               </div>
 
               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
-                <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>حالة النتيجة والاعتماد:</span>
-                <strong style={{ fontSize: '17px', color: '#16a34a' }}>✓ اجتاز بنجاح وتفوق</strong>
-                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>جاهز للتضمين بملف الأنشطة الرسمي</div>
+                <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>حالة المحاولة:</span>
+                <strong style={{ fontSize: '17px', color: '#16a34a' }}>✓ أجاب عن {attemptedCount} من {totalQuestions}</strong>
+                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>ملخص تعليمي غير رسمي</div>
               </div>
             </div>
 
             {/* Detailed Subject Scores Breakdown */}
             <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '12px' }}>
-              تفصيل درجات المواد في الامتحان المجمع:
+              ملخص الأداء التدريبي:
             </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '26px' }}>
-              <div style={{ padding: '12px', border: '1px solid #bfdbfe', background: '#eff6ff', borderRadius: '10px' }}>
-                <span style={{ fontSize: '12px', color: '#1d4ed8', fontWeight: 700 }}>📖 اللغة العربية</span>
-                <div style={{ fontSize: '16px', fontWeight: 900, color: '#1e3a8a' }}>100% (متقن)</div>
-              </div>
-              <div style={{ padding: '12px', border: '1px solid #bbf7d0', background: '#f0fdf4', borderRadius: '10px' }}>
-                <span style={{ fontSize: '12px', color: '#15803d', fontWeight: 700 }}>🔢 الرياضيات</span>
-                <div style={{ fontSize: '16px', fontWeight: 900, color: '#14532d' }}>100% (متقن)</div>
-              </div>
-              <div style={{ padding: '12px', border: '1px solid #ddd6fe', background: '#f5f3ff', borderRadius: '10px' }}>
-                <span style={{ fontSize: '12px', color: '#6d28d9', fontWeight: 700 }}>🔤 Connect & Plus</span>
-                <div style={{ fontSize: '16px', fontWeight: 900, color: '#4c1d95' }}>100% (متقن)</div>
-              </div>
-              <div style={{ padding: '12px', border: '1px solid #bae6fd', background: '#f0f9ff', borderRadius: '10px' }}>
-                <span style={{ fontSize: '12px', color: '#0369a1', fontWeight: 700 }}>🔬 اكتشف والعلوم</span>
-                <div style={{ fontSize: '16px', fontWeight: 900, color: '#0c4a6e' }}>100% (متقن)</div>
-              </div>
-              <div style={{ padding: '12px', border: '1px solid #fed7aa', background: '#fff7ed', borderRadius: '10px' }}>
-                <span style={{ fontSize: '12px', color: '#c2410c', fontWeight: 700 }}>🕌 الدين والقيم</span>
-                <div style={{ fontSize: '16px', fontWeight: 900, color: '#7c2d12' }}>100% (متقن)</div>
-              </div>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '14px', marginBottom: '24px' }}>
+              <strong style={{ color: '#1e3a8a' }}>نتيجة المحاولة الحالية: {correctCount} من {totalQuestions} ({percentage}%)</strong>
+              <p style={{ color: '#475569', fontSize: '13px', margin: '6px 0 0' }}>يعرض التقرير نتيجة الاختبار الذي أجراه الطالب فقط.</p>
             </div>
 
             {/* Official Stamp & Signatures */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '2px dashed #cbd5e1', flexWrap: 'wrap', gap: '20px' }}>
               <div>
-                <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>ختم اعتماد أكاديمية فاهم:</span>
+                <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>نوع التقرير:</span>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px', border: '2px solid #2563eb',
                   color: '#2563eb', padding: '6px 14px', borderRadius: '8px', fontWeight: 900, fontSize: '12px', marginTop: '6px'
                 }}>
-                  <span>★</span> معتمد رسمياً لأبنائنا بالخارج <span>★</span>
+                  <span>★</span> نتيجة اختبار تدريبي من فاهم <span>★</span>
                 </div>
               </div>
 
@@ -607,10 +590,10 @@ export default function EmbassyExamSimulator() {
                   }}
                   onClick={() => {
                     window.print();
-                    triggerToast('📄 تم إرسال كشف الدرجات للطباعة');
+              triggerToast('تم فتح نافذة طباعة تقرير التدريب.');
                   }}
                 >
-                  <span>🖨️ طباعة كشف الدرجات (PDF)</span>
+                  <span>🖨️ طباعة تقرير التدريب</span>
                 </button>
 
                 <button

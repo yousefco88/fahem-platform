@@ -1,31 +1,51 @@
 import React, { useState } from 'react';
+import { saveAttachment } from '../utils/attachmentStore';
 import { useApp } from '../context/AppContext';
 
 export default function AdminDashboard() {
   const {
     curriculumData,
     setCurriculumData,
+    curriculumDrafts,
+    setCurriculumDrafts,
+    lessonFiles,
+    setLessonFiles,
+    lessonVideos,
+    setLessonVideos,
+    seedSampleStudents,
+    sampleStudents,
     setShowLiveModal,
     triggerToast
   } = useApp();
 
   const [activeAdminTab, setActiveAdminTab] = useState('cms');
   const [selectedSubjectId, setSelectedSubjectId] = useState('arabic');
-  const [selectedLessonIndex, setSelectedLessonIndex] = useState(0);
+  const [selectedLessonId, setSelectedLessonId] = useState(() => curriculumData.arabic.lessons?.find(lesson => lesson.id === 'baa')?.id || curriculumData.arabic.lessons?.[0]?.id || '');
 
   // Editable lesson state
   const currentSubject = curriculumData[selectedSubjectId] || curriculumData.arabic;
+  const selectedLessonIndex = currentSubject.lessons?.findIndex(lesson => lesson.id === selectedLessonId) ?? -1;
   const currentLesson = currentSubject.lessons?.[selectedLessonIndex] || currentSubject.lessons?.[0];
 
   const [editTitle, setEditTitle] = useState(currentLesson?.title || '');
   const [editObjective, setEditObjective] = useState(currentLesson?.objective || '');
   const [editDuration, setEditDuration] = useState(currentLesson?.duration || '');
   const [editQuestion, setEditQuestion] = useState(currentLesson?.question || '');
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+
+  React.useEffect(() => {
+    setEditTitle(currentLesson?.title || '');
+    setEditObjective(currentLesson?.objective || '');
+    setEditDuration(currentLesson?.duration || '');
+    setEditQuestion(currentLesson?.question || '');
+  }, [currentLesson?.id]);
 
   // Keep editor synced when subject/lesson changes
   const handleSelectLesson = (subjId, index) => {
     setSelectedSubjectId(subjId);
-    setSelectedLessonIndex(index);
+    const selectedLesson = curriculumData[subjId]?.lessons?.[index];
+    setSelectedLessonId(selectedLesson?.id || '');
     const lesson = curriculumData[subjId]?.lessons?.[index];
     if (lesson) {
       setEditTitle(lesson.title);
@@ -36,26 +56,158 @@ export default function AdminDashboard() {
   };
 
   // Save lesson modifications
+  const buildEditedLesson = (lesson = currentLesson) => ({
+    ...lesson,
+    title: editTitle.trim(),
+    objective: editObjective.trim(),
+    duration: editDuration.trim(),
+    question: editQuestion.trim()
+  });
+
+  const updateLessonCollection = (collection, lessonId, updatedLesson) => ({
+    ...collection,
+    [selectedSubjectId]: {
+      ...collection[selectedSubjectId],
+      lessons: collection[selectedSubjectId].lessons.map(lesson => lesson.id === lessonId ? updatedLesson : lesson)
+    }
+  });
+
   const handleSaveLesson = (e) => {
     e.preventDefault();
-    if (!currentLesson) return;
+    if (!currentLesson || !editTitle.trim() || !editObjective.trim() || !editDuration.trim()) return;
+    const updatedLesson = buildEditedLesson();
+    if (curriculumDrafts[selectedSubjectId]?.[currentLesson.id]) {
+      setCurriculumDrafts(prev => updateLessonCollection(prev, currentLesson.id, updatedLesson));
+      triggerToast(`تم تحديث مسودة «${editTitle}» وحفظها على هذا المتصفح.`);
+      return;
+    }
+    setCurriculumData(prev => updateLessonCollection(prev, currentLesson.id, updatedLesson));
+    triggerToast(`تم حفظ «${editTitle}» محليًا. لم يُنشر إلى خادم مشترك.`);
+  };
 
-    const updatedData = { ...curriculumData };
-    const updatedLessons = [...updatedData[selectedSubjectId].lessons];
-    updatedLessons[selectedLessonIndex] = {
-      ...updatedLessons[selectedLessonIndex],
-      title: editTitle,
-      objective: editObjective,
-      duration: editDuration,
-      question: editQuestion
-    };
-    updatedData[selectedSubjectId] = {
-      ...updatedData[selectedSubjectId],
-      lessons: updatedLessons
-    };
+  const handleSaveDraft = () => {
+    if (!currentLesson || !editTitle.trim() || !editObjective.trim() || !editDuration.trim()) {
+      triggerToast('أدخل عنوان الدرس والهدف والمدة قبل حفظ المسودة.');
+      return;
+    }
+    if (currentLesson.id.startsWith('draft_')) {
+      setCurriculumDrafts(prev => ({
+        ...prev,
+        [selectedSubjectId]: { ...(prev[selectedSubjectId] || {}), [currentLesson.id]: buildEditedLesson() }
+      }));
+    } else {
+      setCurriculumDrafts(prev => updateLessonCollection(prev, currentLesson.id, buildEditedLesson()));
+    }
+    triggerToast(`حُفظت مسودة «${editTitle}» على هذا المتصفح فقط.`);
+  };
 
-    setCurriculumData(updatedData);
-    triggerToast(`✓ تم حفظ وتحديث درس "${editTitle}" ونشره فوراً للطلاب والمعلمين!`);
+  const handlePublishDraft = () => {
+    const draft = curriculumDrafts[selectedSubjectId]?.[currentLesson?.id];
+    if (!draft) {
+      triggerToast('لا توجد مسودة لهذا الدرس.');
+      return;
+    }
+    if (currentLesson.id.startsWith('draft_')) {
+      setCurriculumData(prev => ({
+        ...prev,
+        [selectedSubjectId]: { ...prev[selectedSubjectId], lessons: [...prev[selectedSubjectId].lessons, draft] }
+      }));
+    } else {
+      setCurriculumData(prev => updateLessonCollection(prev, currentLesson.id, draft));
+    }
+    setCurriculumDrafts(prev => {
+      const subjectDrafts = { ...(prev[selectedSubjectId] || {}) };
+      delete subjectDrafts[currentLesson.id];
+      return { ...prev, [selectedSubjectId]: subjectDrafts };
+    });
+    triggerToast('نُقلت المسودة إلى مكتبة المحتوى المحلية. النشر للطلاب يتطلب خادمًا مشتركًا.');
+  };
+
+  const handleCreateLesson = () => {
+    const lessonId = `draft_${Date.now()}`;
+    const newLesson = {
+      id: lessonId,
+      title: 'درس جديد',
+      objective: 'اكتب الهدف التعليمي لهذا الدرس.',
+      duration: '10:00',
+      question: '',
+      pdfTitle: 'لا يوجد ملف مرفق',
+      videoChapters: [],
+      options: [],
+      quizType: 'choice'
+    };
+    setCurriculumDrafts(prev => ({
+      ...prev,
+      [selectedSubjectId]: { ...(prev[selectedSubjectId] || {}), [lessonId]: newLesson }
+    }));
+    setSelectedLessonId(lessonId);
+    setEditTitle(newLesson.title);
+    setEditObjective(newLesson.objective);
+    setEditDuration(newLesson.duration);
+    setEditQuestion(newLesson.question);
+    triggerToast('أُنشئت مسودة درس جديدة. عدّل بياناتها ثم انقلها إلى المكتبة المحلية.');
+  };
+
+  const handlePdfSelected = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !currentLesson) return;
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      triggerToast('اختر ملف PDF فقط.');
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      triggerToast('حجم الملف أكبر من 15 ميغابايت؛ اختر ملفًا أصغر.');
+      return;
+    }
+    setUploadingFile(true);
+    const savePdf = async () => {
+      const fileId = `${selectedSubjectId}:${currentLesson.id}`;
+      try {
+        const metadata = await saveAttachment(`pdf:${fileId}`, file);
+        setLessonFiles(prev => ({ ...prev, [fileId]: { ...metadata, storage: 'indexeddb' } }));
+        const updatePdfTitle = lesson => ({ ...lesson, pdfTitle: file.name });
+        if (curriculumDrafts[selectedSubjectId]?.[currentLesson.id]) {
+          setCurriculumDrafts(prev => updateLessonCollection(prev, currentLesson.id, updatePdfTitle(currentLesson)));
+        } else {
+          setCurriculumData(prev => updateLessonCollection(prev, currentLesson.id, updatePdfTitle(currentLesson)));
+        }
+        triggerToast(`أُرفق ${file.name} بهذا المتصفح وهذا الدرس.`);
+      } catch (error) {
+        triggerToast(error.message || 'تعذر حفظ ملف PDF.');
+      } finally {
+        setUploadingFile(false);
+      }
+    };
+    savePdf();
+  };
+
+  const handleVideoSelected = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !currentLesson) return;
+    if (!file.type.startsWith('video/')) {
+      triggerToast('اختر ملف فيديو بصيغة مدعومة.');
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      triggerToast('حجم الفيديو أكبر من 50 ميغابايت؛ اختر مقطعًا أصغر.');
+      return;
+    }
+    setUploadingVideo(true);
+    const saveVideo = async () => {
+      const videoId = `${selectedSubjectId}:${currentLesson.id}`;
+      try {
+        const metadata = await saveAttachment(`video:${videoId}`, file);
+        setLessonVideos(prev => ({ ...prev, [videoId]: { ...metadata, storage: 'indexeddb' } }));
+        triggerToast(`أُضيف مقطع ${file.name} إلى هذا الدرس على هذا المتصفح.`);
+      } catch (error) {
+        triggerToast(error.message || 'تعذر حفظ الفيديو.');
+      } finally {
+        setUploadingVideo(false);
+      }
+    };
+    saveVideo();
   };
 
   // Staff & RBAC Mock Data
@@ -63,16 +215,16 @@ export default function AdminDashboard() {
     { id: 1, name: 'د. إبراهيم فؤاد', role: 'المدير العام (Super Admin)', email: 'director@fahem.academy', status: 'نشط', canEditCMS: true, canAudit: true, canBilling: true },
     { id: 2, name: 'أ. منى عادل', role: 'مشرفة المناهج ولغات', email: 'mona.curriculum@fahem.academy', status: 'نشط', canEditCMS: true, canAudit: true, canBilling: false },
     { id: 3, name: 'م. طارق حسن', role: 'مسؤول العمليات والدعم', email: 'support@fahem.academy', status: 'نشط', canEditCMS: false, canAudit: true, canBilling: false },
-    { id: 4, name: 'أ. سارة أحمد', role: 'معلمة أولى معتمدة', email: 'sara.teacher@fahem.academy', status: 'نشط', canEditCMS: false, canAudit: false, canBilling: false }
+    { id: 4, name: 'أ. سارة أحمد', role: 'نموذج معلمة تجريبي', email: 'teacher@example.invalid', status: 'تجريبي', canEditCMS: false, canAudit: false, canBilling: false }
   ]);
 
   // Audit Log items
   const auditLogs = [
-    { time: 'منذ 5 دقائق', user: 'د. إبراهيم فؤاد (Super Admin)', action: 'تعديل ونشر هدف تعليمي في مادة Connect Plus', ip: '156.202.44.12', badge: 'تعديل محتوى' },
-    { time: 'منذ 18 دقيقة', user: 'أ. سارة أحمد (معلمة)', action: 'جدولة حصة ميكرو-جروب (المجموعة أ) - الرياضيات', ip: '41.34.12.98', badge: 'جدولة حصة' },
-    { time: 'منذ 45 دقيقة', user: 'م. طارق حسن (الدعم)', action: 'إعادة إرسال رابط حصة عبر واتساب لولي أمر بالرياض', ip: '156.198.5.60', badge: 'دعم فني' },
-    { time: 'منذ ساعتين', user: 'نظام المنصة الآلي', action: 'تفعيل اشتراك باقة التأسيس الحي لأسرة الطالب عمر الشافعي (جدة)', ip: 'سيرفر الدفع', badge: 'مالية واشتراك' },
-    { time: 'منذ 3 ساعات', user: 'أ. منى عادل (مشرفة)', action: 'دخول في وضع الرقابة الخفية (Ghost Mode) لحصة اكتشف لمراجعة الأداء', ip: '197.55.22.10', badge: 'رقابة وجودة' }
+    { time: 'مثال', user: 'حساب تجريبي', action: 'مثال توضيحي: تعديل محتوى', ip: 'غير متاح', badge: 'مثال' },
+    { time: 'مثال', user: 'حساب تجريبي', action: 'مثال توضيحي: جدولة حصة', ip: 'غير متاح', badge: 'مثال' },
+    { time: 'مثال', user: 'حساب تجريبي', action: 'مثال توضيحي: إرسال إشعار', ip: 'غير متاح', badge: 'مثال' },
+    { time: 'مثال', user: 'نظام تجريبي', action: 'لا توجد مدفوعات حقيقية؛ هذا صف تجريبي', ip: 'غير متاح', badge: 'مثال' },
+    { time: 'مثال', user: 'حساب تجريبي', action: 'لا يوجد نظام تدقيق أو مراقبة متصل', ip: 'غير متاح', badge: 'مثال' }
   ];
 
   return (
@@ -94,13 +246,13 @@ export default function AdminDashboard() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h1 style={{ fontSize: '22px', fontWeight: 800 }}>لوحة التحكم والرقابة العليا (Super Admin)</h1>
+              <h1 style={{ fontSize: '22px', fontWeight: 800 }}>لوحة إدارة تجريبية محلية</h1>
               <span style={{ background: '#0284c7', color: 'white', fontSize: '11px', padding: '3px 10px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>
-                كامل الصلاحيات
+                ليست صلاحيات فعلية
               </span>
             </div>
             <p style={{ color: '#94a3b8', fontSize: '13.5px', marginTop: '4px' }}>
-              إدارة المناهج والصفحات (CMS) • الصلاحيات والأدوار (RBAC) • سجل التدقيق التاريخي • والرقابة التربوية
+              إدارة محتوى محلي • نماذج واجهة للصلاحيات والتدقيق • لا يوجد مستخدمون أو خادم متصل
             </p>
           </div>
         </div>
@@ -111,7 +263,7 @@ export default function AdminDashboard() {
               background: '#38bdf8', color: '#0f172a', padding: '10px 18px',
               borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: 'pointer'
             }}
-            onClick={() => triggerToast('✓ تم عمل نسخة احتياطية فورية لقاعدة بيانات المناهج')}
+            onClick={() => triggerToast('ميزة النسخ الاحتياطي غير متصلة بقاعدة بيانات بعد.')}
           >
             💾 حفظ نسخة احتياطية
           </button>
@@ -122,7 +274,7 @@ export default function AdminDashboard() {
             }}
             onClick={() => setShowLiveModal(true)}
           >
-            👁️ دخول وضع الرقابة الخفية (Ghost Mode)
+            👁️ معاينة الفصل التجريبي
           </button>
         </div>
       </section>
@@ -133,15 +285,15 @@ export default function AdminDashboard() {
         gap: '16px', marginBottom: '26px'
       }}>
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>الطلاب المسجلون بالخارج</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>420 طالباً</h3>
-          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>✓ 65% في السعودية والخليج</small>
+          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>سجلات أسر تجريبية</span>
+          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{sampleStudents.length}</h3>
+          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>بيانات محلية مصطنعة</small>
         </div>
 
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>طاقم المعلمين المعتمدين</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>28 معلماً</h3>
-          <small style={{ color: 'var(--blue)', fontWeight: 700, fontSize: '11.5px' }}>👥 100% مدربون على Edu 2.0</small>
+          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>نماذج حسابات المعلمين</span>
+          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>نماذج للطاقم</h3>
+          <small style={{ color: 'var(--blue)', fontWeight: 700, fontSize: '11.5px' }}>حسابات توضيحية داخل الواجهة</small>
         </div>
 
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
@@ -152,10 +304,17 @@ export default function AdminDashboard() {
 
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>مؤشر الإتقان ورضا الأسر</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--green)' }}>99.2%</h3>
-          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>⭐ 4.9/5 في تقييمات السفارة</small>
+          <h3 style={{ fontSize: '20px', color: 'var(--green)' }}>غير متاح</h3>
+          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>لا توجد نتائج فعلية بعد</small>
         </div>
       </div>
+
+      <section style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <span style={{ color: '#1e3a8a', fontSize: '13px' }}>هذه لوحة تطوير محلية؛ بيانات الطلاب والطاقم والاشتراكات ليست سجلات تشغيلية.</span>
+        <button className="btn-secondary" disabled={sampleStudents.length > 0} onClick={seedSampleStudents}>
+          {sampleStudents.length ? 'تم تحميل البيانات التجريبية' : 'تحميل بيانات أسر تجريبية'}
+        </button>
+      </section>
 
       {/* Admin Tabs */}
       <div style={{
@@ -192,9 +351,9 @@ export default function AdminDashboard() {
               <span>قائمة المواد والدروس</span>
               <button
                 style={{ background: 'none', color: 'var(--blue)', fontSize: '12px', fontWeight: 800, border: 'none', cursor: 'pointer' }}
-                onClick={() => triggerToast('إضافة مادة جديدة تتطلب اعتماد المشرف العام')}
+                onClick={handleCreateLesson}
               >
-                + مادة جديدة
+                + درس جديد
               </button>
             </h3>
 
@@ -229,18 +388,27 @@ export default function AdminDashboard() {
 
             <h4 style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '8px' }}>دروس مادة {currentSubject.title}:</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {currentSubject.lessons?.map((les, idx) => (
+              {[
+                ...(currentSubject.lessons || []).map(lesson => ({ ...lesson, status: 'published' })),
+                ...Object.values(curriculumDrafts[selectedSubjectId] || {}).map(lesson => ({ ...lesson, status: 'draft' }))
+              ].map((les, idx) => (
                 <button
                   key={les.id}
                   style={{
                     textAlign: 'right', padding: '8px 10px', borderRadius: '8px',
-                    border: selectedLessonIndex === idx ? '1.5px solid #2563eb' : '1px solid var(--line)',
-                    background: selectedLessonIndex === idx ? '#eff6ff' : '#fafafa',
-                    fontSize: '12px', fontWeight: selectedLessonIndex === idx ? 700 : 500, cursor: 'pointer'
+                    border: selectedLessonId === les.id ? '1.5px solid #2563eb' : '1px solid var(--line)',
+                    background: selectedLessonId === les.id ? '#eff6ff' : '#fafafa',
+                    fontSize: '12px', fontWeight: selectedLessonId === les.id ? 700 : 500, cursor: 'pointer'
                   }}
-                  onClick={() => handleSelectLesson(selectedSubjectId, idx)}
+                  onClick={() => {
+                    setSelectedLessonId(les.id);
+                    setEditTitle(les.title || '');
+                    setEditObjective(les.objective || '');
+                    setEditDuration(les.duration || '');
+                    setEditQuestion(les.question || '');
+                  }}
                 >
-                  {les.letter ? `[${les.letter}] ` : ''}{les.title}
+                  {les.status === 'draft' ? '📝 ' : ''}{les.letter ? `[${les.letter}] ` : ''}{les.title}
                 </button>
               ))}
             </div>
@@ -258,16 +426,16 @@ export default function AdminDashboard() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   style={{ background: '#f1f5f9', color: '#475569', padding: '8px 14px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
-                  onClick={() => triggerToast('تم حفظ مسودة غير منشورة للدرس')}
+                  onClick={handleSaveDraft}
                 >
-                  حفظ كمسودة 📝
+                  حفظ كمسودة محلية 📝
                 </button>
                 <button
                   className="btn-accent"
                   style={{ padding: '8px 16px', fontSize: '13px' }}
-                  onClick={handleSaveLesson}
+                  onClick={curriculumDrafts[selectedSubjectId]?.[currentLesson?.id] ? handlePublishDraft : handleSaveLesson}
                 >
-                  نشر التعديل فوراً 🚀
+                  {curriculumDrafts[selectedSubjectId]?.[currentLesson?.id] ? 'إضافة إلى المكتبة المحلية' : 'حفظ التعديل محليًا'}
                 </button>
               </div>
             </div>
@@ -338,20 +506,36 @@ export default function AdminDashboard() {
                 </div>
               )}
 
+              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '14px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <div>
+                  <strong style={{ color: '#1e40af', fontSize: '13px', display: 'block' }}>فيديو الدرس المحفوظ محليًا</strong>
+                  <span style={{ fontSize: '12.5px', color: '#1d4ed8' }}>{lessonVideos[`${selectedSubjectId}:${currentLesson?.id}`]?.name || 'لا يوجد فيديو مرفق'}</span>
+                </div>
+                <input id="lesson-video-file" type="file" accept="video/*" onChange={handleVideoSelected} style={{ display: 'none' }} />
+                <label htmlFor="lesson-video-file" style={{ background: '#1d4ed8', color: 'white', padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                  {uploadingVideo ? 'جاري القراءة…' : 'اختيار فيديو قصير'}
+                </label>
+              </div>
+
               {/* PDF Worksheet info */}
+              {(() => {
+                const attachedFile = lessonFiles[`${selectedSubjectId}:${currentLesson?.id}`];
+                return (
               <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '12px', padding: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <strong style={{ color: '#166534', fontSize: '13px', display: 'block' }}>ملف ورقة العمل المرتبطة:</strong>
-                  <span style={{ fontSize: '12.5px', color: '#15803d' }}>{currentLesson?.pdfTitle || 'ورقة تدريب معتمدة'}</span>
+                  <strong style={{ color: '#166534', fontSize: '13px', display: 'block' }}>ملف ورقة العمل المرتبط بهذا المتصفح:</strong>
+                  <span style={{ fontSize: '12.5px', color: '#15803d' }}>{attachedFile?.name || currentLesson?.pdfTitle || 'لا يوجد ملف PDF'}</span>
                 </div>
-                <button
-                  type="button"
-                  style={{ background: '#166534', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => triggerToast('تم فتح نافذة استبدال ملف الـ PDF')}
-                >
-                  رفع نسخة محدثة (PDF) 📤
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input id="lesson-pdf-file" type="file" accept="application/pdf,.pdf" onChange={handlePdfSelected} style={{ display: 'none' }} />
+                  <label htmlFor="lesson-pdf-file" style={{ background: '#166534', color: 'white', padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                    {uploadingFile ? 'جاري القراءة…' : 'اختيار PDF'}
+                  </label>
+                  {attachedFile && <a href={attachedFile.dataUrl} target="_blank" rel="noreferrer" style={{ color: '#166534', fontSize: '12px' }}>معاينة</a>}
+                </div>
               </div>
+                );
+              })()}
             </form>
           </div>
         </div>
@@ -423,13 +607,13 @@ export default function AdminDashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>سجل التدقيق التاريخي والرقابة التربوية (Audit Trail)</h3>
-              <p style={{ fontSize: '13px', color: 'var(--muted)' }}>توثيق زمني غير قابل للحذف لجميع العمليات وحركات التعديل بالمنصة</p>
+              <p style={{ fontSize: '13px', color: 'var(--muted)' }}>أمثلة واجهة توضيحية فقط؛ لا يوجد سجل تدقيق فعلي في النسخة المحلية.</p>
             </div>
             <button
               style={{ background: '#0284c7', color: 'white', padding: '8px 16px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: '12.5px', cursor: 'pointer' }}
-              onClick={() => triggerToast('تم تصدير سجل التدقيق إلى ملف Excel معتمد')}
+              onClick={() => triggerToast('تصدير سجل التدقيق غير متاح؛ السجل المعروض تجريبي وغير محفوظ.')}
             >
-              تصدير السجل الرسمي 📊
+              تصدير السجل (غير متاح) 📊
             </button>
           </div>
 
@@ -493,16 +677,16 @@ export default function AdminDashboard() {
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ padding: '14px', background: '#ecfdf5', borderRadius: '10px', border: '1px solid #86efac' }}>
-                <span style={{ fontSize: '12px', color: '#166534', fontWeight: 600 }}>إجمالي الإيراد الشهري المحقق:</span>
-                <h4 style={{ fontSize: '24px', color: '#166534', margin: '4px 0 0' }}>124,500 ر.س / شهرياً</h4>
+                <span style={{ fontSize: '12px', color: '#166534', fontWeight: 600 }}>الإيرادات:</span>
+                <h4 style={{ fontSize: '20px', color: '#166534', margin: '4px 0 0' }}>غير متاحة — الدفع غير مفعّل</h4>
               </div>
               <div style={{ padding: '14px', background: '#eff6ff', borderRadius: '10px', border: '1px solid #bfdbfe' }}>
-                <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: 600 }}>الباقة الأكثر طلباً:</span>
-                <h4 style={{ fontSize: '18px', color: '#1e40af', margin: '4px 0 0' }}>باقة التأسيس الحي (290 ر.س/شهر) — 74% من المشتركين</h4>
+                <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: 600 }}>خطط الاشتراك:</span>
+                <h4 style={{ fontSize: '18px', color: '#1e40af', margin: '4px 0 0' }}>قيد الدراسة — لا توجد اشتراكات فعلية</h4>
               </div>
               <div style={{ padding: '14px', background: '#fefce8', borderRadius: '10px', border: '1px solid #fde047' }}>
-                <span style={{ fontSize: '12px', color: '#854d0e', fontWeight: 600 }}>نسبة تجديد الاشتراكات التلقائي:</span>
-                <h4 style={{ fontSize: '18px', color: '#854d0e', margin: '4px 0 0' }}>94.2% (معدل استبقاء ممتاز لأسر المغتربين)</h4>
+                <span style={{ fontSize: '12px', color: '#854d0e', fontWeight: 600 }}>معدل التجديد:</span>
+                <h4 style={{ fontSize: '18px', color: '#854d0e', margin: '4px 0 0' }}>غير متاح — لا توجد بيانات تشغيلية</h4>
               </div>
             </div>
           </div>

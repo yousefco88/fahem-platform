@@ -96,7 +96,7 @@ export default function TeacherStudio() {
           <button
             className="tag-badge"
             style={{ background: '#ffedd5', color: '#9a3412', border: '1px solid #fed7aa' }}
-            onClick={() => triggerToast('تم إرسال تلميحات مراجعة إضافية للأسر')}
+            onClick={() => triggerToast('الإرسال للأسر غير متصل بخدمة إشعارات بعد.')}
           >
             إرسال رسائل تشجيع لأولياء الأمور
           </button>
@@ -108,7 +108,7 @@ export default function TeacherStudio() {
               <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '4px' }}>👦 أحمد محمد (اللغة العربية)</h4>
               <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '12px' }}>المهارة: تمييز المد الطويل (بَا) عن الحركة القصيرة (بَـ).</p>
             </div>
-            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => triggerToast('تم تخصيص سؤال تدفئة تفاعلي لأحمد في بداية الحصة')}>
+            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => triggerToast('تخصيص الأسئلة للحصص غير محفوظ بعد.')}>
               تخصيص سؤال في الحصة القادمة
             </button>
           </div>
@@ -118,7 +118,7 @@ export default function TeacherStudio() {
               <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '4px' }}>👧 مريم خالد (Connect 1)</h4>
               <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '12px' }}>المهارة: تمييز صوت حرف B في كلمات (Bus, Bag, Book).</p>
             </div>
-            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => triggerToast('تم إشعار ولي الأمر لتشجيع مريم على إعادة الاختبار')}>
+            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => triggerToast('إشعار ولي الأمر غير متصل بخدمة التنبيهات بعد.')}>
               تذكير بمراجعة التسجيل
             </button>
           </div>
@@ -128,7 +128,7 @@ export default function TeacherStudio() {
               <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '4px' }}>👦 يوسف حسام (اكتشف Discover)</h4>
               <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '12px' }}>المهارة: التمييز بين الكائنات الحية وغير الحية.</p>
             </div>
-            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => triggerToast('تم إرسال ورقة تدريب PDF إضافية')}>
+            <button className="btn-secondary" style={{ width: '100%' }} onClick={() => triggerToast('لا توجد ورقة PDF مرفقة للإرسال بعد.') }>
               إرسال ورقة تدريب PDF
             </button>
           </div>
@@ -163,7 +163,7 @@ export default function TeacherStudio() {
                 <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>حصة Connect 1: Unit 1 Phonics & Classroom Greetings</h5>
                 <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>المجموعة (ج) · غداً 5:00 م بتوقيت مصر</span>
               </div>
-              <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => triggerToast('تم تجهيز رابط الحصة')}>
+              <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }} onClick={() => triggerToast('رابط الحصة تجريبي؛ لم يتم إنشاء غرفة بث بعد.')}>
                 تجهيز الحصة
               </button>
             </div>
