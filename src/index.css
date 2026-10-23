@@ -114,7 +114,7 @@ input, select, textarea {
   position: sticky;
   top: 0;
   z-index: 100;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
 }
 
@@ -139,7 +139,21 @@ input, select, textarea {
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 0 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  direction: rtl;
+}
+
+.role-pills-label {
+  color: #94a3b8;
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 0 4px;
 }
 
 .role-pill-btn {
@@ -152,6 +166,9 @@ input, select, textarea {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
+  min-height: 34px;
+  border: 1px solid transparent;
 }
 
 .role-pill-btn:hover {
@@ -176,6 +193,11 @@ input, select, textarea {
 .role-pill-btn.live {
   background: #dc2626;
   color: white;
+}
+
+.role-pill-btn:focus-visible {
+  outline: 3px solid rgba(250, 204, 21, 0.9);
+  outline-offset: 2px;
 }
 
 /* Layouts */
@@ -317,6 +339,40 @@ input, select, textarea {
 
 @media (max-width: 1024px) {
   .sidebar-panel { display: none; }
+}
+
+@media (max-width: 760px) {
+  .role-bar {
+    display: block;
+    padding: 10px 12px 8px;
+  }
+
+  .role-bar-left {
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .role-bar-sub {
+    display: none;
+  }
+
+  .role-pills {
+    width: 100%;
+    gap: 6px;
+    margin: 0;
+    padding-bottom: 7px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .role-pill-btn {
+    padding: 7px 11px;
+    font-size: 11px;
+    min-height: 36px;
+  }
+
+  .role-pills-label {
+    display: none;
+  }
 }
 
 /* Audio wave visualizer bars */

@@ -12,8 +12,8 @@ export default function RoleBar() {
         <span className="role-bar-sub">نظام التعليم الحي والمتقن لأبنائنا بالخارج</span>
       </div>
 
-      <div className="role-pills">
-        <span style={{ fontSize: '11px', opacity: 0.8, marginLeft: '4px' }}>الواجهة الحالية:</span>
+      <nav className="role-pills" aria-label="أقسام منصة فاهم">
+        <span className="role-pills-label">الواجهة الحالية</span>
         
         <button
           className={`role-pill-btn ${currentScreen === 'landing' ? 'active' : ''}`}
@@ -23,6 +23,7 @@ export default function RoleBar() {
             fontWeight: 800
           }}
           onClick={() => setCurrentScreen('landing')}
+          aria-current={currentScreen === 'landing' ? 'page' : undefined}
         >
           🌐 صفحة الهبوط العامة
         </button>
@@ -30,6 +31,7 @@ export default function RoleBar() {
         <button
           className={`role-pill-btn ${currentScreen === 'parent' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('parent')}
+          aria-current={currentScreen === 'parent' ? 'page' : undefined}
         >
           👨‍👩‍👦 لوحة ولي الأمر
         </button>
@@ -37,6 +39,7 @@ export default function RoleBar() {
         <button
           className={`role-pill-btn child ${currentScreen === 'child' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('child')}
+          aria-current={currentScreen === 'child' ? 'page' : undefined}
         >
           🚀 مساحة الطفل
         </button>
@@ -44,6 +47,7 @@ export default function RoleBar() {
         <button
           className={`role-pill-btn teacher ${currentScreen === 'teacher' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('teacher')}
+          aria-current={currentScreen === 'teacher' ? 'page' : undefined}
         >
           👩‍🏫 مساحة المعلم (أ/ سارة)
         </button>
@@ -56,6 +60,7 @@ export default function RoleBar() {
             border: currentScreen === 'admin' ? '1.5px solid #38bdf8' : '1px solid rgba(255,255,255,0.2)'
           }}
           onClick={() => setCurrentScreen('admin')}
+          aria-current={currentScreen === 'admin' ? 'page' : undefined}
         >
           ⚙️ الإدارة العامة (Admin)
         </button>
@@ -68,6 +73,7 @@ export default function RoleBar() {
             border: currentScreen === 'exam' ? '1.5px solid #fb7185' : '1px solid rgba(255,255,255,0.2)'
           }}
           onClick={() => setCurrentScreen('exam')}
+          aria-current={currentScreen === 'exam' ? 'page' : undefined}
         >
           🇪🇬 محاكي امتحانات السفارة
         </button>
@@ -75,6 +81,7 @@ export default function RoleBar() {
         <button
           className={`role-pill-btn ${currentScreen === 'onboarding' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('onboarding')}
+          aria-current={currentScreen === 'onboarding' ? 'page' : undefined}
         >
           📝 تسجيل الأسر والمنطقة
         </button>
@@ -82,6 +89,7 @@ export default function RoleBar() {
         <button
           className={`role-pill-btn ${currentScreen === 'account' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('account')}
+          aria-current={currentScreen === 'account' ? 'page' : undefined}
         >
           🔐 حساب ولي الأمر (تجريبي)
         </button>
@@ -89,6 +97,7 @@ export default function RoleBar() {
         <button
           className={`role-pill-btn ${currentScreen === 'pricing' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('pricing')}
+          aria-current={currentScreen === 'pricing' ? 'page' : undefined}
         >
           💳 الباقات والاشتراك
         </button>
@@ -99,7 +108,7 @@ export default function RoleBar() {
         >
           🔴 الفصل الحي المباشر
         </button>
-      </div>
+      </nav>
     </header>
   );
 }
