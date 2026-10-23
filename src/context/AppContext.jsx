@@ -3,7 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
 import { launchConfetti } from '../utils/confetti';
 import { CURRICULUM_DATA } from '../data/curriculumData';
+import { DEFAULT_WEEKLY_SCHEDULE } from '../data/scheduleData';
+import { normalizeCurriculum } from '../utils/todayPlan';
 import { supabase } from '../lib/supabase';
+import { useAuth } from './AuthContext';
 import { useUIActions } from './UIContext';
 import { SCREEN_PATHS, PATH_TO_SCREEN } from '../routes';
 
@@ -117,13 +120,65 @@ export function AppProvider({ children }) {
     try {
       const saved = localStorage.getItem('fahem_curriculum');
       const parsed = saved ? JSON.parse(saved) : {};
-      return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-        ? { ...CURRICULUM_DATA, ...parsed }
-        : CURRICULUM_DATA;
+      return normalizeCurriculum(
+        parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+          ? { ...CURRICULUM_DATA, ...parsed }
+          : CURRICULUM_DATA
+      );
     } catch {
-      return CURRICULUM_DATA;
+      return normalizeCurriculum(CURRICULUM_DATA);
     }
   });
+
+  // الجدول الأسبوعي — محلي أولاً (fahem_schedule) مع fallback للجدول الافتراضي
+  const [scheduleData, setScheduleData] = useState(() => {
+    try {
+      const saved = localStorage.getItem('fahem_schedule');
+      const parsed = saved ? JSON.parse(saved) : null;
+      return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_WEEKLY_SCHEDULE;
+    } catch {
+      return DEFAULT_WEEKLY_SCHEDULE;
+    }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('fahem_schedule', JSON.stringify(scheduleData)); } catch { /* تجاهل امتلاء التخزين */ }
+  }, [scheduleData]);
+
+  // المرحلة ب: قراءة الجدول من Supabase إن وُجدت صفوف (وإلا يبقى المحلي)
+  useEffect(() => {
+    if (!supabase) return;
+    let cancelled = false;
+    supabase
+      .from('schedule_slots')
+      .select('id, day, time, subject_id, lesson_ref, slot_type')
+      .order('day', { ascending: true })
+      .order('time', { ascending: true })
+      .then(({ data, error }) => {
+        if (cancelled || error || !Array.isArray(data) || data.length === 0) return;
+        setScheduleData(data.map(r => ({
+          id: r.id, day: r.day, time: r.time,
+          subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson'
+        })));
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  // حفظ الجدول إلى Supabase (يتطلب جلسة staff بحكم سياسات RLS)
+  const saveScheduleToCloud = async (slots) => {
+    if (!supabase) return { ok: false, reason: 'Supabase غير مهيأ على هذا الجهاز' };
+    const rows = slots.map(s => ({
+      id: s.id, day: s.day, time: s.time,
+      subject_id: s.subjectId, lesson_ref: s.lessonRef || 'next', slot_type: s.type || 'lesson'
+    }));
+    const { error: delError } = await supabase.from('schedule_slots').delete().gte('day', 0);
+    if (delError) return { ok: false, reason: delError.message };
+    if (rows.length) {
+      const { error: insError } = await supabase.from('schedule_slots').insert(rows);
+      if (insError) return { ok: false, reason: insError.message };
+    }
+    return { ok: true };
+  };
   const [curriculumDrafts, setCurriculumDrafts] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('fahem_curriculum_drafts') || '{}');
@@ -158,12 +213,125 @@ export function AppProvider({ children }) {
   }, [activeSubject, curriculumData, selectedLessonId]);
   const activeChild = childrenList.find(c => c.id === selectedChildId) || childrenList[0];
 
+  // ========== المزامنة السحابية (المرحلة 3) ==========
+  const { user } = useAuth();
+
+  // المنهج من قاعدة البيانات (المواد + الدروس المنشورة بترتيبها) — fallback للمحلي عند الفشل
+  const [curriculumSource, setCurriculumSource] = useState('local');
+  useEffect(() => {
+    if (!supabase) return;
+    let cancelled = false;
+    (async () => {
+      const [subsRes, lesRes] = await Promise.all([
+        supabase.from('curriculum_subjects').select('key, title, icon, color, badge, grade, sort_order').eq('published', true).order('sort_order'),
+        supabase.from('curriculum_lessons').select('id, subject_key, sort_order, content').eq('published', true).order('sort_order')
+      ]);
+      if (cancelled || subsRes.error || lesRes.error || !subsRes.data?.length || !lesRes.data?.length) return;
+      const db = {};
+      subsRes.data.forEach(s => {
+        db[s.key] = { id: s.key, title: s.title, icon: s.icon, badge: s.badge, color: s.color, grade: s.grade, lessons: [] };
+      });
+      lesRes.data.forEach(l => {
+        if (db[l.subject_key]) db[l.subject_key].lessons.push({ ...(l.content || {}), id: l.id });
+      });
+      // نُبقي المفاتيح غير المادية (مثل expatExamCalendar) من النسخة المحلية
+      setCurriculumData(prev => normalizeCurriculum({ ...prev, ...db }));
+      setCurriculumSource('db');
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // ربط أطفال الحساب محلياً بسجلات children السحابية (uuid) وتحميل تقدمهم المحفوظ
+  const [childCloudIds, setChildCloudIds] = useState({}); // localChildId -> uuid
+  useEffect(() => {
+    if (!supabase || !user?.id) { setChildCloudIds({}); return; }
+    let cancelled = false;
+    (async () => {
+      // parent_profiles row لازم لوجود children (fk)
+      await supabase.from('parent_profiles').upsert(
+        { id: user.id, full_name: parentName || user.email || 'ولي أمر' },
+        { onConflict: 'id' }
+      );
+      const { data: cloudChildren, error } = await supabase
+        .from('children')
+        .upsert(
+          childrenList.map(c => ({ parent_id: user.id, name: c.name, grade: c.grade, avatar: c.avatar || null })),
+          { onConflict: 'parent_id,name' }
+        )
+        .select('id, name');
+      if (cancelled || error || !cloudChildren) {
+        if (error) console.warn('تعذر مزامنة ملفات الأطفال:', error.message);
+        return;
+      }
+      const map = {};
+      childrenList.forEach(c => {
+        const remote = cloudChildren.find(r => r.name === c.name);
+        if (remote) map[c.id] = remote.id;
+      });
+      setChildCloudIds(map);
+
+      // تحميل التقدم المحفوظ سحابياً ودمجه (السحابة لا تمسح تقدماً محلياً)
+      const uuids = Object.values(map);
+      if (!uuids.length) return;
+      const { data: records } = await supabase
+        .from('learning_records')
+        .select('child_id, lesson_id, status, score')
+        .in('child_id', uuids);
+      if (cancelled || !records?.length) return;
+      const uuidToLocal = Object.fromEntries(Object.entries(map).map(([l, u]) => [u, l]));
+      setLearningRecords(prev => {
+        const next = { ...prev };
+        records.forEach(r => {
+          const localId = uuidToLocal[r.child_id];
+          if (!localId) return;
+          const rec = next[localId]?.[r.lesson_id] || {};
+          next[localId] = {
+            ...(next[localId] || {}),
+            [r.lesson_id]: { ...rec, completed: rec.completed || r.status === 'completed' }
+          };
+        });
+        return next;
+      });
+      setChildrenList(prev => prev.map(c => {
+        const uuid = map[c.id];
+        if (!uuid) return c;
+        const completedIds = records.filter(r => r.child_id === uuid && r.status === 'completed').map(r => r.lesson_id);
+        const merged = Array.from(new Set([...(c.masteredLessons || []), ...completedIds]));
+        return { ...c, masteredLessons: merged, baaMastered: c.baaMastered || merged.includes('baa') };
+      }));
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
   const persistLearningRecord = (childId, lessonId, status = 'started', score = null) => {
-    if (!supabase || !childId || !lessonId) return;
-    supabase.from('learning_records').upsert({ child_id: childId, lesson_id: lessonId, status, score, updated_at: new Date().toISOString() }, { onConflict: 'child_id,lesson_id' }).then(({ error }) => {
+    const cloudChildId = childCloudIds[childId];
+    if (!supabase || !cloudChildId || !lessonId) return; // بدون تسجيل دخول: التقدم محلي فقط
+    supabase.from('learning_records').upsert({ child_id: cloudChildId, lesson_id: lessonId, status, score, updated_at: new Date().toISOString() }, { onConflict: 'child_id,lesson_id' }).then(({ error }) => {
       if (error) console.warn('تعذر مزامنة سجل التعلم:', error.message);
     });
   };
+
+  // حفظ محاولة محاكي الامتحان (يتطلب تسجيل دخول ولي الأمر)
+  const saveExamAttempt = async (attempt) => {
+    if (!supabase || !user?.id) return { saved: false, reason: 'no-session' };
+    const { error } = await supabase.from('exam_attempts').insert({
+      parent_id: user.id,
+      child_key: attempt.childKey || null,
+      child_name: attempt.childName || null,
+      total_questions: attempt.totalQuestions,
+      attempted_count: attempt.attemptedCount,
+      correct_count: attempt.correctCount,
+      percentage: attempt.percentage,
+      band: attempt.band || null,
+      answers: attempt.answers || null
+    });
+    if (error) {
+      console.warn('تعذر حفظ محاولة الامتحان:', error.message);
+      return { saved: false, reason: error.message };
+    }
+    return { saved: true };
+  };
+  // ========== نهاية المزامنة السحابية ==========
 
   // Subject and Lesson Selection
   // Compute Active Lesson
@@ -430,6 +598,9 @@ export function AppProvider({ children }) {
     childrenList,
     activeChild,
     learningRecords: learningRecords[activeChild?.id] || {},
+    scheduleData, setScheduleData, saveScheduleToCloud,
+    curriculumSource,
+    saveExamAttempt,
     studentsSeeded,
     sampleStudents,
     switchChild,

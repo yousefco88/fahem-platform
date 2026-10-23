@@ -1,5 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { getTodayPlan, getContinueLesson, getNextLesson, isLessonDone } from '../utils/todayPlan';
+import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 
 export default function ChildUniverse() {
   const {
@@ -12,11 +14,19 @@ export default function ChildUniverse() {
     setShowLiveModal,
     soundManager,
     triggerToast,
-    setCurrentScreen
+    setCurrentScreen,
+    learningRecords,
+    scheduleData
   } = useApp();
 
   const currentSubjectObj = curriculumData[activeSubject] || curriculumData.arabic;
-  const lessons = currentSubjectObj.lessons || [];
+  const lessons = [...(currentSubjectObj.lessons || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  const masteredLessons = activeChild.masteredLessons || [];
+  const todayPlan = getTodayPlan({ schedule: scheduleData, curriculum: curriculumData, learningRecords, masteredLessons });
+  const continueLesson = getContinueLesson(curriculumData, learningRecords, masteredLessons);
+  const currentLessonId = getNextLesson(currentSubjectObj, learningRecords, masteredLessons)?.id || null;
+  const todayName = DAY_NAMES[new Date().getDay()];
 
   const handleMascotSpeak = () => {
     soundManager.speak(`أهلاً يا ${activeChild.name}! أنت بطل متميز. اخترنا لك مادة ${currentSubjectObj.title}. اضغط على أي محطة لنلعب ونفهم سوا!`);
@@ -207,7 +217,99 @@ export default function ChildUniverse() {
           </div>
         </section>
 
-        {/* Adventure Journey Track with All 5 Core Subjects */}
+        {/* ===== يومك النهارده 📅 — خطة اليوم من الجدول الأسبوعي ===== */}
+        <section style={{
+          background: 'white', border: '3px solid #fde68a', borderRadius: '32px',
+          padding: '28px 32px', marginBottom: '34px', boxShadow: '0 15px 30px rgba(245, 158, 11, 0.07)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '18px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span>📅 يومك النهارده</span>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#92400e', background: '#fef3c7', padding: '4px 12px', borderRadius: '20px' }}>
+                {todayName}
+              </span>
+            </h2>
+            {continueLesson && (
+              <button
+                style={{
+                  background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white',
+                  padding: '10px 20px', borderRadius: 'var(--radius-full)', fontWeight: 800, fontSize: '13px',
+                  display: 'inline-flex', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer',
+                  boxShadow: '0 8px 18px rgba(5, 150, 105, 0.25)'
+                }}
+                onClick={() => {
+                  setActiveSubject(continueLesson.subjectId);
+                  openLesson(continueLesson.subjectId, continueLesson.lesson.id, 'video');
+                }}
+              >
+                <span>⏯️ أكمل من حيث توقفت: {continueLesson.lesson.title}</span>
+                {continueLesson.progress > 0 && <span style={{ background: 'rgba(255,255,255,0.25)', padding: '2px 8px', borderRadius: '10px', fontSize: '11px' }}>{Math.round(continueLesson.progress)}%</span>}
+              </button>
+            )}
+          </div>
+
+          {todayPlan.length === 0 ? (
+            <div style={{
+              background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '20px',
+              padding: '28px', textAlign: 'center', color: '#64748b', fontWeight: 700, fontSize: '15px'
+            }}>
+              🌴 لا توجد حصص مجدولة اليوم — يوم راحة! يمكنك اللعب في خريطة المغامرة بالأسفل.
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              {todayPlan.map(slot => {
+                const slotType = SLOT_TYPES[slot.type] || SLOT_TYPES.lesson;
+                return (
+                  <div
+                    key={slot.id}
+                    style={{
+                      border: slot.done ? '2px solid #86efac' : '2px solid #e0e7ff',
+                      background: slot.done ? '#f0fdf4' : '#fafaff',
+                      borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 800, fontSize: '13px', color: '#4338ca', background: '#e0e7ff', padding: '3px 12px', borderRadius: '14px' }}>
+                        🕓 {slot.time}
+                      </span>
+                      <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#92400e' }}>
+                        {slotType.icon} {slotType.label}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '26px' }}>{slot.subject?.icon || '📚'}</span>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--navy)' }}>{slot.subject?.title || slot.subjectId}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                          {slot.lesson
+                            ? <>الدرس {slot.lesson.order}: {slot.lesson.title}</>
+                            : slot.subject
+                              ? '🎉 كل دروس المادة مُتقنة'
+                              : 'المادة غير متاحة في المنهج بعد'}
+                        </div>
+                      </div>
+                    </div>
+                    {slot.lesson && (
+                      <button
+                        style={{
+                          background: slot.done ? '#dcfce7' : 'var(--blue)', color: slot.done ? '#166534' : 'white',
+                          padding: '9px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px',
+                          border: 'none', cursor: 'pointer', width: '100%'
+                        }}
+                        onClick={() => {
+                          setActiveSubject(slot.subjectId);
+                          openLesson(slot.subjectId, slot.lesson.id, slot.done ? 'video' : 'video');
+                        }}
+                      >
+                        {slot.done ? '✓ مُنجز — شاهد مرة أخرى' : 'ابدأ الدرس ▶'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
         <div style={{
           background: 'white', border: '3px solid #e0e7ff', borderRadius: '36px',
           padding: '32px', boxShadow: '0 15px 30px rgba(99, 102, 241, 0.05)', marginBottom: '40px'
@@ -274,18 +376,29 @@ export default function ChildUniverse() {
           {/* Dynamic Node Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
             {lessons.map((lesson) => {
-              const isMastered = activeChild.masteredLessons?.includes(lesson.id) || (lesson.id === 'baa' && activeChild.baaMastered);
+              const isMastered = isLessonDone(lesson.id, learningRecords, masteredLessons) || (lesson.id === 'baa' && activeChild.baaMastered);
+              const isCurrent = !isMastered && lesson.id === currentLessonId;
 
               return (
                 <div
                   key={lesson.id}
                   style={{
-                    border: isMastered ? '2px solid #86efac' : '2px solid var(--yellow)',
+                    border: isMastered ? '2px solid #86efac' : isCurrent ? '3px solid #4f46e5' : '2px solid var(--yellow)',
                     borderRadius: '24px', padding: '24px 18px', textAlign: 'center',
-                    background: isMastered ? 'linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%)' : '#fffbeb',
-                    boxShadow: isMastered ? 'none' : '0 0 0 4px #fef08a', position: 'relative'
+                    background: isMastered ? 'linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%)' : isCurrent ? '#eef2ff' : '#fffbeb',
+                    boxShadow: isMastered ? 'none' : isCurrent ? '0 0 0 5px #c7d2fe' : '0 0 0 4px #fef08a',
+                    position: 'relative',
+                    opacity: !isMastered && !isCurrent ? 0.78 : 1
                   }}
                 >
+                  {/* رقم المحطة في التسلسل */}
+                  <span style={{
+                    position: 'absolute', top: '14px', right: '14px',
+                    background: isCurrent ? '#4f46e5' : '#e2e8f0', color: isCurrent ? 'white' : '#475569',
+                    borderRadius: '12px', padding: '2px 10px', fontSize: '11px', fontWeight: 800
+                  }}>
+                    محطة {lesson.order}
+                  </span>
                   {/* Sound Read Button */}
                   <button
                     style={{
@@ -301,7 +414,7 @@ export default function ChildUniverse() {
                   </button>
 
                   <span className={`tag-badge ${isMastered ? 'mastered' : 'review'}`} style={{ marginBottom: '10px' }}>
-                    {isMastered ? '✓ متقن 100%' : '↺ راجع لتتقن'}
+                    {isMastered ? '✓ متقن' : isCurrent ? '🎯 درسك الحالي' : '🔜 قادم في الرحلة'}
                   </span>
 
                   <div style={{

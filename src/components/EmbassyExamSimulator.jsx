@@ -7,7 +7,8 @@ export default function EmbassyExamSimulator() {
     activeChild,
     soundManager,
     triggerToast,
-    setCurrentScreen
+    setCurrentScreen,
+    saveExamAttempt
   } = useApp();
 
   // Exam States: 'lobby' | 'testing' | 'result'
@@ -211,6 +212,26 @@ export default function EmbassyExamSimulator() {
     soundManager.playSuccess();
     soundManager.speak(`أحسنت يا ${activeChild.name}! أتممت الاختبار التدريبي.`);
     triggerToast(`انتهى الاختبار التدريبي: أجبت عن ${Object.keys(selectedAnswers).length} من ${examQuestions.length} أسئلة. التقرير غير رسمي.`);
+
+    // حفظ المحاولة سحابياً (إن كان ولي الأمر مسجلاً دخوله)
+    let correct = 0;
+    examQuestions.forEach((q, idx) => {
+      const chosen = selectedAnswers[idx];
+      if (chosen !== undefined && q.options[chosen]?.correct) correct++;
+    });
+    const pct = Math.round((correct / examQuestions.length) * 100);
+    saveExamAttempt({
+      childKey: activeChild?.id,
+      childName: activeChild?.name,
+      totalQuestions: examQuestions.length,
+      attemptedCount: Object.keys(selectedAnswers).length,
+      correctCount: correct,
+      percentage: pct,
+      band: pct >= 85 ? 'متميز' : pct >= 65 ? 'جيد' : pct >= 50 ? 'مراجعة' : 'دعم',
+      answers: selectedAnswers
+    }).then(res => {
+      if (res.saved) triggerToast('💾 حُفظت نتيجة المحاولة في حساب ولي الأمر');
+    });
   };
 
   // Calculate scores

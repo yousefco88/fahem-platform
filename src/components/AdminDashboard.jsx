@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { saveAttachment } from '../utils/attachmentStore';
 import { useApp } from '../context/AppContext';
+import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
+import BookingsPanel from './admin/BookingsPanel';
 
 export default function AdminDashboard() {
   const {
@@ -15,10 +17,31 @@ export default function AdminDashboard() {
     seedSampleStudents,
     sampleStudents,
     setShowLiveModal,
-    triggerToast
+    triggerToast,
+    scheduleData,
+    setScheduleData,
+    saveScheduleToCloud
   } = useApp();
 
   const [activeAdminTab, setActiveAdminTab] = useState('cms');
+  const [syncingSchedule, setSyncingSchedule] = useState(false);
+
+  // ===== محرر الجدول الأسبوعي =====
+  const updateSlot = (id, field, value) =>
+    setScheduleData(prev => prev.map(s => s.id === id ? { ...s, [field]: field === 'day' ? Number(value) : value } : s));
+  const removeSlot = (id) => setScheduleData(prev => prev.filter(s => s.id !== id));
+  const addSlot = () => setScheduleData(prev => ([...prev, {
+    id: `slot_${Date.now()}`, day: 0, time: '16:00',
+    subjectId: Object.keys(curriculumData)[0] || 'arabic', lessonRef: 'next', type: 'lesson'
+  }]));
+  const syncSchedule = async () => {
+    setSyncingSchedule(true);
+    const res = await saveScheduleToCloud(scheduleData);
+    setSyncingSchedule(false);
+    triggerToast(res.ok
+      ? 'تم حفظ الجدول على Supabase ✓'
+      : `الحفظ المحلي سارٍ، لكن تعذر الحفظ السحابي: ${res.reason}`);
+  };
   const [selectedSubjectId, setSelectedSubjectId] = useState('arabic');
   const [selectedLessonId, setSelectedLessonId] = useState(() => curriculumData.arabic.lessons?.find(lesson => lesson.id === 'baa')?.id || curriculumData.arabic.lessons?.[0]?.id || '');
 
@@ -323,6 +346,8 @@ export default function AdminDashboard() {
       }}>
         {[
           { id: 'cms', label: '📖 محرر المناهج والصفحات (CMS)', icon: '📖' },
+          { id: 'bookings', label: '📋 حجوزات الحصص التجريبية', icon: '📋' },
+          { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
           { id: 'rbac', label: '👥 المستخدمين والصلاحيات (RBAC)', icon: '👥' },
           { id: 'audit', label: '🛡️ سجل التدقيق والرقابة (Audit Trail)', icon: '🛡️' },
           { id: 'subscriptions', label: '💳 الاشتراكات وتوزيع المغتربين', icon: '💳' }
@@ -538,6 +563,92 @@ export default function AdminDashboard() {
               })()}
             </form>
           </div>
+        </div>
+      )}
+
+      {/* TAB: TRIAL BOOKINGS (real data) */}
+      {activeAdminTab === 'bookings' && (
+        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+          <BookingsPanel />
+        </div>
+      )}
+
+      {/* TAB: WEEKLY SCHEDULE */}
+      {activeAdminTab === 'schedule' && (
+        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px' }}>
+            <div>
+              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>🗓️ الجدول الأسبوعي لمساحة الطفل</h3>
+              <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px' }}>
+                خيار «تلقائي» يعرض للطفل أول درس غير مُتقن في المادة حسب الترتيب. يُحفظ محلياً فوراً، وزر الحفظ السحابي يرفعه إلى Supabase.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                style={{ background: '#eef2ff', color: '#4338ca', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: '1px solid #c7d2fe', cursor: 'pointer' }}
+                onClick={addSlot}
+              >+ إضافة خانة</button>
+              <button
+                style={{ background: 'var(--blue)', color: 'white', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: syncingSchedule ? 'wait' : 'pointer', opacity: syncingSchedule ? 0.6 : 1 }}
+                disabled={syncingSchedule}
+                onClick={syncSchedule}
+              >{syncingSchedule ? '... جارٍ الحفظ' : '☁️ حفظ على Supabase'}</button>
+            </div>
+          </div>
+
+          {scheduleData.length === 0 ? (
+            <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
+              لا توجد خانات بعد — أضف أول خانة لبناء الجدول.
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto', marginTop: '14px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', color: '#475569' }}>
+                    {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', ''].map(h => (
+                      <th key={h} style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid var(--line)' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...scheduleData].sort((a, b) => a.day - b.day || String(a.time).localeCompare(String(b.time))).map(slot => {
+                    const subjLessons = curriculumData[slot.subjectId]?.lessons || [];
+                    return (
+                      <tr key={slot.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '8px' }}>
+                          <select value={slot.day} onChange={e => updateSlot(slot.id, 'day', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                            {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
+                          </select>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <input type="time" value={slot.time} onChange={e => updateSlot(slot.id, 'time', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }} />
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <select value={slot.subjectId} onChange={e => { updateSlot(slot.id, 'subjectId', e.target.value); updateSlot(slot.id, 'lessonRef', 'next'); }} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '170px' }}>
+                            {Object.entries(curriculumData).map(([id, s]) => <option key={id} value={id}>{s.icon} {s.title}</option>)}
+                          </select>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <select value={slot.lessonRef || 'next'} onChange={e => updateSlot(slot.id, 'lessonRef', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '200px' }}>
+                            <option value="next">تلقائي (أول درس غير مُتقن)</option>
+                            {subjLessons.map(l => <option key={l.id} value={l.id}>{l.order}. {l.title}</option>)}
+                          </select>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <select value={slot.type || 'lesson'} onChange={e => updateSlot(slot.id, 'type', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                            {Object.entries(SLOT_TYPES).map(([id, t]) => <option key={id} value={id}>{t.icon} {t.label}</option>)}
+                          </select>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <button onClick={() => removeSlot(slot.id)} title="حذف الخانة" style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', fontWeight: 800 }}>🗑</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import ExamAttemptsCard from './parent/ExamAttemptsCard';
 
 export default function ParentDashboard() {
   const {
@@ -334,6 +335,8 @@ export default function ParentDashboard() {
           </section>
 
           {/* 3. Official Expat Exam Calendar Section */}
+          <ExamAttemptsCard />
+
           <section style={{
             background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)',
             padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '30px'

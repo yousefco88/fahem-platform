@@ -70,10 +70,10 @@ export default function BookingSection() {
             <div style={{ textAlign: 'center', padding: '20px 10px' }}>
               <div style={{ fontSize: '54px', marginBottom: '12px' }}>🎉</div>
               <h3 style={{ fontSize: '22px', color: '#166534', marginBottom: '8px' }}>
-                حُفظ طلبك في هذه الجلسة فقط
+                تم استلام طلبك بنجاح
               </h3>
               <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
-                طلب تجريبي باسم <strong>{childName}</strong>. لم يُرسل إلى فريق فاهم ولا يُعد حجزًا أو تأكيدًا لموعد.
+                حُفظ طلب الحصة التجريبية باسم <strong>{childName}</strong> لدى فريق فاهم، وسنتواصل معك عبر واتساب لتأكيد الموعد. (لا يُعد هذا تأكيدًا نهائيًا للموعد حتى يصلك التواصل.)
               </p>
               <button
                 className="btn-accent"
