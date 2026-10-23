@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import RoleBar from './components/RoleBar';
+import BottomNav from './components/BottomNav';
 import ParentDashboard from './components/ParentDashboard';
 import ChildUniverse from './components/ChildUniverse';
 import TeacherStudio from './components/TeacherStudio';
@@ -35,6 +36,9 @@ function MainAppContent() {
 
       {/* Global Interactive Modals */}
       <Modals />
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNav />
 
       {/* Global Toast Alert */}
       {toastMessage && (

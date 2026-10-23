@@ -144,8 +144,8 @@ export default function PublicLandingPage() {
         </button>
       </div>
 
-      {/* 2. Marketing Header Navbar */}
-      <header style={{
+      {/* 2. Marketing Header Navbar - Desktop Only */}
+      <header className="desktop-header" style={{
         background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)',
         borderBottom: '1px solid #e2e8f0', position: 'sticky', top: 0, zIndex: 50,
         padding: '14px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'
@@ -166,8 +166,8 @@ export default function PublicLandingPage() {
           </div>
         </div>
 
-        {/* Quick Nav Links */}
-        <nav style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* Quick Nav Links - Hidden on Mobile */}
+        <nav className="desktop-nav" style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
           <a href="#features" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>المميزات</a>
           <a href="#subjects" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>المواد الـ 12</a>
           <a href="#timezone" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>حاسبة التوقيت</a>
@@ -177,7 +177,7 @@ export default function PublicLandingPage() {
         </nav>
 
         {/* CTA Buttons */}
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="desktop-cta" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
             style={{
               background: '#f1f5f9', color: '#1e293b', border: '1px solid #cbd5e1',
@@ -200,23 +200,67 @@ export default function PublicLandingPage() {
         </div>
       </header>
 
+      {/* Mobile Header - Simplified */}
+      <header className="mobile-header" style={{
+        display: 'none',
+        background: 'white',
+        padding: '12px 16px',
+        borderBottom: '1px solid #e2e8f0',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: 'linear-gradient(135deg, var(--blue), #1d4ed8)',
+              color: 'white', display: 'grid', placeItems: 'center',
+              fontSize: '18px', fontWeight: 900
+            }}>
+              ف
+            </div>
+            <span style={{ fontSize: '18px', fontWeight: 900, color: 'var(--navy)' }}>فاهم</span>
+          </div>
+          <button
+            className="btn-accent"
+            style={{ padding: '8px 14px', fontSize: '12px', borderRadius: '20px' }}
+            onClick={() => {
+              document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            احجز مجاناً 🎁
+          </button>
+        </div>
+      </header>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-header { display: none !important; }
+          .mobile-header { display: block !important; }
+          .desktop-nav { display: none !important; }
+          .desktop-cta { display: none !important; }
+        }
+      `}</style>
+
       {/* 3. Hero Section */}
       <section style={{
         background: 'radial-gradient(circle at 10% 20%, #eff6ff 0%, #ffffff 80%)',
-        padding: '70px 24px 60px', textAlign: 'center', position: 'relative', overflow: 'hidden'
+        padding: 'clamp(40px, 8vw, 70px) clamp(16px, 4vw, 24px) clamp(40px, 6vw, 60px)', 
+        textAlign: 'center', position: 'relative', overflow: 'hidden'
       }}>
         <div style={{ maxWidth: '950px', margin: '0 auto' }}>
           
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             background: '#e0e7ff', color: '#3730a3', padding: '6px 18px',
-            borderRadius: 'var(--radius-full)', fontSize: '13px', fontWeight: 800, marginBottom: '24px'
+            borderRadius: 'var(--radius-full)', fontSize: 'clamp(11px, 2.5vw, 13px)', fontWeight: 800, marginBottom: '24px'
           }}>
             <span>📚 محتوى تعليمي تجريبي قيد المراجعة الأكاديمية</span>
           </div>
 
           <h1 style={{
-            fontSize: '44px', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.25,
+            fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.25,
             marginBottom: '20px', letterSpacing: '-0.5px'
           }}>
             التعليم الحي المتقن لأبنائنا في الخارج.. <br />
@@ -226,7 +270,7 @@ export default function PublicLandingPage() {
           </h1>
 
           <p style={{
-            fontSize: '18px', color: '#475569', lineHeight: 1.7, maxWidth: '780px',
+            fontSize: 'clamp(14px, 3vw, 18px)', color: '#475569', lineHeight: 1.7, maxWidth: '780px',
             margin: '0 auto 36px'
           }}>
             حصص تفاعلية مباشرة في <strong>مجموعات مصغرة (4 طلاب فقط)</strong> مع نخبة المعلمين المتخصصين، أرشفة ذكية دائمة لكل حصة، وإتقان تام للمنهج الوزاري وامتحانات السفارة بلا ضياع أو إحباط.
@@ -237,7 +281,7 @@ export default function PublicLandingPage() {
             <button
               className="btn-accent"
               style={{
-                fontSize: '18px', padding: '16px 36px', borderRadius: 'var(--radius-full)',
+                fontSize: 'clamp(14px, 3vw, 18px)', padding: 'clamp(12px, 3vw, 16px) clamp(20px, 5vw, 36px)', borderRadius: 'var(--radius-full)',
                 boxShadow: '0 12px 30px rgba(234, 88, 12, 0.3)'
               }}
               onClick={() => {
@@ -251,7 +295,7 @@ export default function PublicLandingPage() {
             <button
               style={{
                 background: 'white', color: 'var(--navy)', border: '2px solid #cbd5e1',
-                fontSize: '16px', padding: '16px 28px', borderRadius: 'var(--radius-full)',
+                fontSize: 'clamp(13px, 2.5vw, 16px)', padding: 'clamp(12px, 3vw, 16px) clamp(16px, 4vw, 28px)', borderRadius: 'var(--radius-full)',
                 fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
                 boxShadow: 'var(--shadow-sm)'
               }}
@@ -262,26 +306,28 @@ export default function PublicLandingPage() {
             </button>
           </div>
 
-          {/* Social Proof Strip */}
+          {/* Social Proof Strip - Horizontal Scroll on Mobile */}
           <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '32px',
-            flexWrap: 'wrap', paddingTop: '20px', borderTop: '1px solid #e2e8f0', color: '#64748b', fontSize: '13.5px'
+            display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'clamp(16px, 4vw, 32px)',
+            flexWrap: 'nowrap', paddingTop: '20px', borderTop: '1px solid #e2e8f0', color: '#64748b', 
+            fontSize: 'clamp(11px, 2.5vw, 13.5px)', overflowX: 'auto', WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none', msOverflowStyle: 'none'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
               <span style={{ color: '#f59e0b', fontSize: '16px' }}>⭐⭐⭐⭐⭐</span>
-              <strong>نموذج أولي — لا توجد تقييمات فعلية</strong>
+              <strong>نموذج أولي</strong>
             </div>
-            <div>
-              <strong>التسجيل التجريبي لم يبدأ بعد</strong>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <strong>🇸🇦 +150 طالب</strong>
             </div>
-            <div>
-              <strong>🇦🇪 +78 طالب في الإمارات</strong>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <strong>🇦🇪 +78 طالب</strong>
             </div>
-            <div>
-              <strong>🇰🇼 +38 طالب في الكويت</strong>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <strong>🇰🇼 +38 طالب</strong>
             </div>
-            <div>
-              <strong>🌍 تغطية بريطانيا وأوروبا وأمريكا</strong>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <strong>🌍 تغطية عالمية</strong>
             </div>
           </div>
         </div>
