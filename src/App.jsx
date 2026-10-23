@@ -71,9 +71,9 @@ function MainAppContent() {
               }
             />
             <Route
-              path="/admin"
+              path="/admin/*"
               element={
-                <AuthGate roles={['admin']}>
+                <AuthGate roles={['admin', 'content_editor']}>
                   <AdminDashboard />
                 </AuthGate>
               }

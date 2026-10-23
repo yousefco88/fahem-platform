@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { saveAttachment } from '../utils/attachmentStore';
 import { useApp } from '../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
 import FamiliesPanel from './admin/FamiliesPanel';
+import { GradesPanel, SubjectsPanel, LessonsPanel, LessonEditor } from './admin/curriculum';
+import './admin/curriculum/CurriculumAdmin.css';
 
 export default function AdminDashboard() {
   const {
@@ -346,7 +349,8 @@ export default function AdminDashboard() {
         marginBottom: '24px', overflowX: 'auto', paddingBottom: '2px'
       }}>
         {[
-          { id: 'cms', label: '📖 محرر المناهج والصفحات (CMS)', icon: '📖' },
+          { id: 'curriculum', label: '📚 إدارة المناهج (Supabase)', icon: '📚' },
+          { id: 'cms', label: '📖 محرر المناهج المحلي', icon: '📖' },
           { id: 'bookings', label: '📋 حجوزات الحصص التجريبية', icon: '📋' },
           { id: 'families', label: '👨‍👩‍👧‍👦 حسابات الأسر', icon: '👨‍👩‍👧‍👦' },
           { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
@@ -368,6 +372,19 @@ export default function AdminDashboard() {
           </button>
         ))}
       </div>
+
+      {/* TAB: CURRICULUM CMS (Supabase) */}
+      {activeAdminTab === 'curriculum' && (
+        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+          <Routes>
+            <Route index element={<GradesPanel />} />
+            <Route path="grades" element={<GradesPanel />} />
+            <Route path="subjects" element={<SubjectsPanel />} />
+            <Route path="lessons" element={<LessonsPanel />} />
+            <Route path="lesson/:id" element={<LessonEditor />} />
+          </Routes>
+        </div>
+      )}
 
       {/* TAB 1: CURRICULUM CMS */}
       {activeAdminTab === 'cms' && (
