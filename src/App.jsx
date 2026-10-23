@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { PATH_TO_SCREEN, SCREEN_META } from './routes';
+import { screenFromPath, SCREEN_META } from './routes';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import { UIProvider, useUIState } from './context/UIContext';
@@ -38,7 +38,7 @@ function ToastBanner() {
 function DocumentMeta() {
   const { pathname } = useLocation();
   useEffect(() => {
-    const meta = SCREEN_META[PATH_TO_SCREEN[pathname]] || SCREEN_META.landing;
+    const meta = SCREEN_META[screenFromPath(pathname)] || SCREEN_META.landing;
     document.title = meta.title;
     if (meta.description) {
       document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description);
@@ -61,7 +61,7 @@ function MainAppContent() {
           <Routes>
             <Route path="/" element={<PublicLandingPage />} />
             <Route path="/parent" element={<ParentDashboard />} />
-            <Route path="/child" element={<ChildUniverse />} />
+            <Route path="/child/*" element={<ChildUniverse />} />
             <Route
               path="/teacher"
               element={

@@ -8,7 +8,7 @@ import { normalizeCurriculum } from '../utils/todayPlan';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { useUIActions } from './UIContext';
-import { SCREEN_PATHS, PATH_TO_SCREEN } from '../routes';
+import { SCREEN_PATHS, screenFromPath } from '../routes';
 
 const AppContext = createContext();
 
@@ -18,22 +18,22 @@ const DEFAULT_CHILDREN = [
     name: 'أحمد',
     grade: 'الصف الأول الابتدائي',
     avatar: '🦁',
-    points: 280,
-    badges: 4,
+    points: 0,
+    badges: 0,
     baaMastered: false,
-    masteredLessons: ['alef', 'math_numbers_1_5'],
-    masteredSkills: 7
+    masteredLessons: [],
+    masteredSkills: 0
   },
   {
     id: 'child_2',
     name: 'مريم',
     grade: 'الصف الثالث الابتدائي',
     avatar: '🌸',
-    points: 410,
-    badges: 6,
-    baaMastered: true,
-    masteredLessons: ['alef', 'baa', 'math_numbers_1_5', 'math_compare'],
-    masteredSkills: 9
+    points: 0,
+    badges: 0,
+    baaMastered: false,
+    masteredLessons: [],
+    masteredSkills: 0
   }
 ];
 
@@ -42,7 +42,7 @@ export function AppProvider({ children }) {
   // فيبقى كل الكود القديم المستخدم لـ setCurrentScreen يعمل كما هو.
   const navigate = useNavigate();
   const location = useLocation();
-  const currentScreen = PATH_TO_SCREEN[location.pathname] || 'landing';
+  const currentScreen = screenFromPath(location.pathname) || 'landing';
   const setCurrentScreen = useCallback((screenId) => {
     navigate(SCREEN_PATHS[screenId] || '/');
   }, [navigate]);
@@ -86,7 +86,14 @@ export function AppProvider({ children }) {
   const [childrenList, setChildrenList] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('fahem_children') || 'null');
-      return Array.isArray(saved) && saved.length ? saved : DEFAULT_CHILDREN;
+      if (!Array.isArray(saved) || !saved.length) return DEFAULT_CHILDREN;
+      // تنظيف لمرة واحدة: إزالة الأرقام المزروعة القديمة من التخزين المحلي —
+      // التقدم الحقيقي يُعاد بناؤه من سجل التعلم والمزامنة السحابية
+      if (localStorage.getItem("fahem_children_clean_v") !== "1") {
+        localStorage.setItem("fahem_children_clean_v", "1");
+        return saved.map(c => ({ ...c, points: 0, badges: 0, masteredSkills: 0, masteredLessons: [], baaMastered: false }));
+      }
+      return saved;
     } catch {
       return DEFAULT_CHILDREN;
     }
@@ -120,11 +127,14 @@ export function AppProvider({ children }) {
     try {
       const saved = localStorage.getItem('fahem_curriculum');
       const parsed = saved ? JSON.parse(saved) : {};
-      return normalizeCurriculum(
-        parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-          ? { ...CURRICULUM_DATA, ...parsed }
-          : CURRICULUM_DATA
-      );
+      const merged = parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+        ? { ...CURRICULUM_DATA, ...parsed }
+        : { ...CURRICULUM_DATA };
+      // إصلاح نسخ محفوظة تالفة: مفاتيح مصفوفية (expatExamCalendar) حُوّلت سابقاً لكائن
+      Object.entries(CURRICULUM_DATA).forEach(([k, v]) => {
+        if (Array.isArray(v) && !Array.isArray(merged[k])) merged[k] = v;
+      });
+      return normalizeCurriculum(merged);
     } catch {
       return normalizeCurriculum(CURRICULUM_DATA);
     }
@@ -428,11 +438,11 @@ export function AppProvider({ children }) {
       name: cleanName,
       grade: gradeVal || 'الصف الأول الابتدائي',
       avatar: '⭐',
-      points: 100,
-      badges: 1,
+      points: 0,
+      badges: 0,
       baaMastered: false,
       masteredLessons: [],
-      masteredSkills: 1
+      masteredSkills: 0
     };
     setChildrenList(prev => [...prev, newChild]);
     setSelectedChildId(newChild.id);

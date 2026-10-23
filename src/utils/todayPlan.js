@@ -11,6 +11,11 @@
 export function normalizeCurriculum(data) {
   const out = {};
   Object.entries(data || {}).forEach(([key, subj]) => {
+    // المفاتيح غير المادية (مثل expatExamCalendar وهي مصفوفة) تمر كما هي — تحويلها لكائن يكسر .map
+    if (!subj || typeof subj !== 'object' || Array.isArray(subj)) {
+      out[key] = subj;
+      return;
+    }
     out[key] = {
       ...subj,
       lessons: (subj?.lessons || []).map((l, i) => ({

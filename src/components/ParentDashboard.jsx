@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import ExamAttemptsCard from './parent/ExamAttemptsCard';
+import { getChildStats } from '../utils/childProgress';
+import { isLessonDone } from '../utils/todayPlan';
 
 export default function ParentDashboard() {
   const {
@@ -17,6 +19,8 @@ export default function ParentDashboard() {
     setShowLiveModal,
     triggerToast
   } = useApp();
+  // كل الأرقام مشتقة من سجل التعلم الفعلي — لا قيم مخزنة أو مزروعة
+  const childStats = getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []);
 
   const [showAddChildModal, setShowAddChildModal] = useState(false);
   const [newChildName, setNewChildName] = useState('');
@@ -33,7 +37,7 @@ export default function ParentDashboard() {
     setShowAddChildModal(false);
   };
 
-  const calendarEvents = curriculumData.expatExamCalendar || [];
+  const calendarEvents = Array.isArray(curriculumData.expatExamCalendar) ? curriculumData.expatExamCalendar : [];
 
   return (
     <div className="parent-grid-layout">
@@ -301,8 +305,8 @@ export default function ParentDashboard() {
             }}>
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>المهارات المتقنة بنجاح</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{activeChild.masteredSkills} / 10</h3>
-                <small style={{ color: 'var(--green)', fontWeight: 600, fontSize: '12px' }}>⭐ في العربي والماث والكونكت</small>
+                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.done} / {childStats.total}</h3>
+                <small style={{ color: 'var(--green)', fontWeight: 600, fontSize: '12px' }}>⭐ درس متقن من المنهج المنشور</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#fefce8', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🏆</div>
             </div>
@@ -314,7 +318,7 @@ export default function ParentDashboard() {
             }}>
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>مواد ومسارات تجريبية</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>12 مسارًا</h3>
+                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{Object.values(curriculumData || {}).filter(v => Array.isArray(v?.lessons)).length} مسارًا</h3>
                 <small style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
@@ -327,8 +331,8 @@ export default function ParentDashboard() {
             }}>
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>نقاط الفهم والشارات</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{activeChild.points} ⭐</h3>
-                <small style={{ color: 'var(--orange)', fontWeight: 600, fontSize: '12px' }}>🔥 {activeChild.badges} شارات إتقان مكتسبة</small>
+                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.points} ⭐</h3>
+                <small style={{ color: 'var(--orange)', fontWeight: 600, fontSize: '12px' }}>🔥 {childStats.badges} شارات إتقان مكتسبة</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#fff7ed', color: '#ea580c', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
             </div>
@@ -447,7 +451,7 @@ export default function ParentDashboard() {
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>التمييز السمعي والبصري للحركات الطويلة</div>
                   </div>
                   <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('arabic', 'baa', 'quiz')}>
-                    {activeChild.baaMastered ? '✓ متقن' : '↺ مراجعة'}
+                    {isLessonDone('baa', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن' : '↺ مراجعة'}
                   </button>
                 </div>
 

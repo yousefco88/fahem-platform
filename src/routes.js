@@ -15,6 +15,14 @@ export const PATH_TO_SCREEN = Object.fromEntries(
   Object.entries(SCREEN_PATHS).map(([screen, path]) => [path, screen])
 );
 
+// يحل الشاشة من المسار بما فيها المسارات الفرعية (/child/lesson/x → child)
+export function screenFromPath(pathname = '/') {
+  const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  if (PATH_TO_SCREEN[clean]) return PATH_TO_SCREEN[clean];
+  const prefix = '/' + (clean.split('/')[1] || '');
+  return PATH_TO_SCREEN[prefix] || null;
+}
+
 // عناوين ووصف لكل شاشة — تُحقن ديناميكياً في <head> (SEO)
 export const SCREEN_META = {
   landing: {
