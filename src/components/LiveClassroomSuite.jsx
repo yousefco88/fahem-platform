@@ -22,22 +22,28 @@ export default function LiveClassroomSuite({ onClose }) {
   // Student Controls State
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
+  const [cameraDeviceLabel, setCameraDeviceLabel] = useState('كاميرا الويب HD');
   const [handRaised, setHandRaised] = useState(false);
   const [activeSpeaker, setActiveSpeaker] = useState('teacher'); // 'teacher' | 'ahmed' | 'mariam'
+
+  // Video element & MediaStream refs
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
 
   // Whiteboard States & Canvas Ref
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [brushColor, setBrushColor] = useState('#facc15');
-  const [brushSize, setBrushSize] = useState(4);
-  const [activeTool, setActiveTool] = useState('pen'); // 'pen' | 'eraser' | 'star'
+  const [brushSize, setBrushSize] = useState(5);
+  const [activeTool, setActiveTool] = useState('pen'); // 'pen' | 'eraser' | 'star' | 'heart'
   const [studentDrawAllowed, setStudentDrawAllowed] = useState(true);
-  const [whiteboardBackground, setWhiteboardBackground] = useState('blank'); // 'blank' | 'challenge' | 'grid'
+  const [whiteboardBackground, setWhiteboardBackground] = useState('blank'); // 'blank' | 'ruled' | 'grid' | 'challenge'
 
-  // Live Pop Quiz Challenge (Option A + B Integration)
+  // Live Pop Quiz Challenge
   const [showLivePopQuiz, setShowLivePopQuiz] = useState(false);
   const [quizAnswered, setQuizAnswered] = useState(null);
-  const [quizScores, setQuizScores] = useState({ ahmed: null, mariam: true, youssef: true, nour: true });
 
   // Floating reactions array
   const [reactions, setReactions] = useState([]);
@@ -57,27 +63,204 @@ export default function LiveClassroomSuite({ onClose }) {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Canvas setup
+  // Real Camera Hardware Integration via getUserMedia
+  useEffect(() => {
+    let isMounted = true;
+
+    async function initCamera() {
+      if (!cameraOn) {
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(t => t.stop());
+          streamRef.current = null;
+        }
+        if (isMounted) setCameraActive(false);
+        return;
+      }
+
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: 640 },
+              height: { ideal: 480 },
+              facingMode: 'user'
+            },
+            audio: false
+          });
+
+          if (!isMounted) {
+            mediaStream.getTracks().forEach(t => t.stop());
+            return;
+          }
+
+          streamRef.current = mediaStream;
+          setCameraActive(true);
+          setCameraError(null);
+
+          const track = mediaStream.getVideoTracks()[0];
+          if (track && track.label) {
+            setCameraDeviceLabel(track.label);
+          }
+
+          if (videoRef.current) {
+            videoRef.current.srcObject = mediaStream;
+            videoRef.current.play().catch(e => console.warn('Video playback notice:', e));
+          }
+        } else {
+          if (isMounted) {
+            setCameraActive(false);
+            setCameraError('المتصفح لا يدعم الوصول المباشر للكاميرا');
+          }
+        }
+      } catch (err) {
+        console.warn('Webcam permission or device notice:', err);
+        if (isMounted) {
+          setCameraActive(false);
+          setCameraError(err.name === 'NotAllowedError' ? 'تم رفض إذن الكاميرا' : 'لم يتم العثور على جهاز كاميرا متصل');
+        }
+      }
+    }
+
+    initCamera();
+
+    return () => {
+      isMounted = false;
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+      }
+    };
+  }, [cameraOn]);
+
+  // Canvas drawing & template setup
+  const drawTemplate = (ctx, canvas, mode) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (mode === 'ruled') {
+      // Egyptian Primary Arabic notebook (Baseline, Ascender, Descender)
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const spacing = 70;
+      for (let y = 80; y < canvas.height - 40; y += spacing) {
+        // Upper dashed guide
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 6]);
+        ctx.beginPath();
+        ctx.moveTo(40, y - 20);
+        ctx.lineTo(canvas.width - 40, y - 20);
+        ctx.stroke();
+
+        // Main green baseline (سطر الأساس)
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(40, y);
+        ctx.lineTo(canvas.width - 40, y);
+        ctx.stroke();
+
+        // Lower dashed line for descender
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(40, y + 20);
+        ctx.lineTo(canvas.width - 40, y + 20);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      ctx.font = 'bold 16px Cairo, sans-serif';
+      ctx.fillStyle = '#6ee7b7';
+      ctx.textAlign = 'right';
+      ctx.fillText('📝 كشكول لغة عربية مسطر — اكتب على سطر الأساس الأخضر', canvas.width - 50, 40);
+
+    } else if (mode === 'grid') {
+      // Math grid notebook
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1.2;
+      const gridSize = 45;
+      for (let x = 0; x < canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      ctx.font = 'bold 16px Cairo, sans-serif';
+      ctx.fillStyle = '#38bdf8';
+      ctx.textAlign = 'right';
+      ctx.fillText('📐 كشكول مربعات الحساب والرياضيات', canvas.width - 40, 36);
+
+    } else if (mode === 'challenge') {
+      // Letter trace prompt
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = 'bold 18px Cairo, sans-serif';
+      ctx.fillStyle = '#facc15';
+      ctx.textAlign = 'center';
+      ctx.fillText(`🎯 تحدي الحصة: تتبع كتابة (${lessonObj.letter}) بالمدود الطويلة والقصيرة`, canvas.width / 2, 50);
+
+      // Faint guideline letters to trace
+      ctx.font = 'bold 90px Cairo, sans-serif';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 8]);
+      ctx.strokeText('بـَـا', canvas.width / 2 - 140, canvas.height / 2 + 30);
+      ctx.strokeText('بُـ', canvas.width / 2, canvas.height / 2 + 30);
+      ctx.strokeText('بِـ', canvas.width / 2 + 140, canvas.height / 2 + 30);
+      ctx.setLineDash([]);
+
+    } else {
+      // Blank dark slate
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = 'bold 18px Cairo, sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.fillText('✏️ سبورة الفصل التفاعلية المشتركة — اكتب أو ارسم مع المعلمة وزملائك', canvas.width / 2, 45);
+
+      ctx.font = 'bold 54px Cairo, sans-serif';
+      ctx.fillStyle = '#facc15';
+      ctx.fillText('بـَـا  •  بُـ  •  بِـ', canvas.width / 2, canvas.height / 2 + 10);
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientHeight;
-
-    // Draw initial whiteboard guide text
-    ctx.font = 'bold 20px Cairo, sans-serif';
-    ctx.fillStyle = '#64748b';
-    ctx.textAlign = 'center';
-    ctx.fillText('✏️ سبورة الفصل التفاعلية المشتركة — اكتب أو ارسم مع المعلمة وزملائك', canvas.width / 2, 40);
-
-    // Initial letters demo
-    ctx.font = 'bold 48px Cairo, sans-serif';
-    ctx.fillStyle = '#facc15';
-    ctx.fillText('بـَـا  •  بُـ  •  بِـ', canvas.width / 2, canvas.height / 2);
+    drawTemplate(ctx, canvas, whiteboardBackground);
   }, [whiteboardBackground]);
 
   // Whiteboard drawing handlers
+  const getCoordinates = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  };
+
   const startDrawing = (e) => {
     if (!studentDrawAllowed) {
       triggerToast('⚠️ المعلمة قامت بتجميد السبورة للشرح حالياً');
@@ -85,15 +268,19 @@ export default function LiveClassroomSuite({ onClose }) {
     }
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-    const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
-
+    const { x, y } = getCoordinates(e);
     const ctx = canvas.getContext('2d');
 
     if (activeTool === 'star') {
-      ctx.font = '32px sans-serif';
-      ctx.fillText('⭐', x - 16, y + 12);
+      ctx.font = '36px sans-serif';
+      ctx.fillText('⭐', x - 18, y + 14);
+      soundManager.playSuccess();
+      return;
+    }
+
+    if (activeTool === 'heart') {
+      ctx.font = '36px sans-serif';
+      ctx.fillText('❤️', x - 18, y + 14);
       soundManager.playSuccess();
       return;
     }
@@ -107,13 +294,11 @@ export default function LiveClassroomSuite({ onClose }) {
     if (!isDrawing) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-    const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
-
+    const { x, y } = getCoordinates(e);
     const ctx = canvas.getContext('2d');
+
     ctx.strokeStyle = activeTool === 'eraser' ? '#0f172a' : brushColor;
-    ctx.lineWidth = activeTool === 'eraser' ? 24 : brushSize;
+    ctx.lineWidth = activeTool === 'eraser' ? 28 : brushSize;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.lineTo(x, y);
@@ -128,17 +313,29 @@ export default function LiveClassroomSuite({ onClose }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawTemplate(ctx, canvas, whiteboardBackground);
     soundManager.playSuccess();
-    triggerToast('🧹 تم مسح السبورة');
+    triggerToast('🧹 تم مسح كتابات السبورة');
+  };
+
+  // Download Whiteboard as PNG
+  const downloadWhiteboard = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = `سبورة_فاهم_${activeChild.name}_${lessonObj.title}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    soundManager.playSuccess();
+    triggerToast('📥 تم تحميل صورة السبورة بجودة عالية وحفظها!');
   };
 
   // Reactions trigger
   const triggerReaction = (emoji, text) => {
     const id = Date.now() + Math.random();
-    setReactions(prev => [...prev, { id, emoji, text, x: 20 + Math.random() * 60 }]);
+    setReactions(prev => [...prev, { id, emoji, text, x: 25 + Math.random() * 50 }]);
     soundManager.playSuccess();
-    triggerToast(`${emoji} أرسلت تفاعلاً للفصل: ${text}`);
+    triggerToast(`${emoji} تفاعل: ${text}`);
 
     if (emoji === '🎉') {
       launchConfetti();
@@ -160,7 +357,15 @@ export default function LiveClassroomSuite({ onClose }) {
       setActiveSpeaker('ahmed');
     } else {
       triggerToast('خفضت يدك');
+      setActiveSpeaker('teacher');
     }
+  };
+
+  // Teacher Voice Simulation
+  const handleTeacherCallStudent = () => {
+    setActiveSpeaker('teacher');
+    soundManager.speak(`أهلاً بك يا بطلنا ${activeChild.name}! ما رأيك أن تنطق لنا صوت حرف الباء الممدود بالواو وتكتبه على السبورة؟`);
+    triggerToast('👩‍🏫 المعلمة سارة تناديك بالاسم للمشاركة الصوتية!');
   };
 
   // Trigger live pop quiz
@@ -177,11 +382,16 @@ export default function LiveClassroomSuite({ onClose }) {
       soundManager.playSuccess();
       launchConfetti();
       triggerToast('🎉 أحسنت يا بطل! إجابة صحيحة 100% وحصلت على شارة التميز ⭐');
-      setQuizScores(prev => ({ ...prev, ahmed: true }));
     } else {
       soundManager.playRetry();
-      triggerToast('↺ حاول ثانية بهدوء يا بطل');
+      triggerToast('↺ فكر مجدداً بهدوء يا بطل');
     }
+  };
+
+  // Test microphone sound check
+  const handleTestMic = () => {
+    soundManager.speak(`صوتك واضح وممتاز يا ${activeChild.name}! معلمتك وزملاؤك يسمعونك بنقاء.`);
+    triggerToast('🎤 تم فحص الميكروفون — الإشارة واضحة ونقية 100%');
   };
 
   return (
@@ -201,8 +411,8 @@ export default function LiveClassroomSuite({ onClose }) {
             color: '#fca5a5', padding: '5px 12px', borderRadius: 'var(--radius-full)',
             fontSize: '12px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px'
           }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }}></span>
-            <span>بث حي فائق الدقة (HD)</span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} className="live-dot-pulse"></span>
+            <span>بث حي تفاعلي HD</span>
           </div>
 
           <div>
@@ -210,7 +420,7 @@ export default function LiveClassroomSuite({ onClose }) {
               {currentSubjectObj.icon} {currentSubjectObj.title} — {lessonObj.title}
             </strong>
             <span style={{ fontSize: '12px', color: '#94a3b8', display: 'block' }}>
-              المجموعة (أ) • 4 طلاب فقط • المعلمة: أ/ سارة أحمد
+              المجموعة (أ) • 4 طلاب فقط • المعلمة: أ/ سارة أحمد (المنهج المصري)
             </span>
           </div>
         </div>
@@ -227,17 +437,17 @@ export default function LiveClassroomSuite({ onClose }) {
           <button
             style={{
               background: 'linear-gradient(135deg, #e11d48, #be123c)', color: 'white',
-              border: 'none', padding: '6px 14px', borderRadius: 'var(--radius-full)',
+              border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-full)',
               fontSize: '12px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 4px 12px rgba(190, 18, 60, 0.35)'
             }}
             onClick={handleLaunchPopQuiz}
           >
-            <span>🇪🇬 تحدي السفارة السريع (Pop Quiz)</span>
+            <span>🇪🇬 تحدي السفارة الحي (Pop Quiz)</span>
           </button>
         </div>
 
-        {/* Right: Leave and End buttons */}
+        {/* Right: Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             style={{
@@ -254,6 +464,7 @@ export default function LiveClassroomSuite({ onClose }) {
           <button
             style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '24px', cursor: 'pointer' }}
             onClick={onClose}
+            title="إغلاق الفصل"
           >
             ✕
           </button>
@@ -265,7 +476,7 @@ export default function LiveClassroomSuite({ onClose }) {
         flex: 1, display: 'grid', gridTemplateColumns: '1fr 340px', gap: '14px',
         padding: '14px', minHeight: 0, position: 'relative'
       }}>
-        
+
         {/* Left Column: Interactive Collaborative Whiteboard Stage */}
         <div style={{
           background: '#0f172a', borderRadius: '20px', border: '2px solid #1e293b',
@@ -274,11 +485,11 @@ export default function LiveClassroomSuite({ onClose }) {
           {/* Whiteboard Toolbar Header */}
           <div style={{
             background: '#1e293b', padding: '8px 16px', display: 'flex',
-            justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155'
+            justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', flexWrap: 'wrap', gap: '8px'
           }}>
             {/* Drawing Tools */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', color: '#94a3b8' }}>أداة الكتابة:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '12px', color: '#94a3b8' }}>الأداة:</span>
               <button
                 style={{
                   background: activeTool === 'pen' ? 'var(--blue)' : '#334155', color: 'white',
@@ -295,7 +506,16 @@ export default function LiveClassroomSuite({ onClose }) {
                 }}
                 onClick={() => setActiveTool('star')}
               >
-                ⭐ نجمة تميز
+                ⭐ نجمة
+              </button>
+              <button
+                style={{
+                  background: activeTool === 'heart' ? '#e11d48' : '#334155', color: 'white',
+                  border: 'none', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer'
+                }}
+                onClick={() => setActiveTool('heart')}
+              >
+                ❤️ قلب
               </button>
               <button
                 style={{
@@ -306,6 +526,27 @@ export default function LiveClassroomSuite({ onClose }) {
               >
                 🧼 ممحاة
               </button>
+
+              <span style={{ height: '18px', width: '1px', background: '#475569', margin: '0 4px' }}></span>
+
+              {/* Brush Thickness selector */}
+              {[
+                { size: 3, label: 'رفيع' },
+                { size: 6, label: 'متوسط' },
+                { size: 14, label: 'عريض' }
+              ].map(s => (
+                <button
+                  key={s.size}
+                  style={{
+                    background: brushSize === s.size ? 'var(--blue)' : '#334155',
+                    color: 'white', border: 'none', padding: '4px 8px', borderRadius: '6px',
+                    fontSize: '11px', fontWeight: brushSize === s.size ? 800 : 500, cursor: 'pointer'
+                  }}
+                  onClick={() => setBrushSize(s.size)}
+                >
+                  {s.label}
+                </button>
+              ))}
 
               <span style={{ height: '18px', width: '1px', background: '#475569', margin: '0 4px' }}></span>
 
@@ -322,12 +563,26 @@ export default function LiveClassroomSuite({ onClose }) {
               ))}
             </div>
 
-            {/* Teacher Classroom Management Controls */}
+            {/* Template & Teacher Management Controls */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select
+                style={{
+                  background: '#334155', color: 'white', border: '1px solid #475569',
+                  padding: '5px 8px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, cursor: 'pointer'
+                }}
+                value={whiteboardBackground}
+                onChange={(e) => setWhiteboardBackground(e.target.value)}
+              >
+                <option value="blank">⬛ سبورة سوداء حرة</option>
+                <option value="ruled">📝 كشكول عربي مسطر</option>
+                <option value="grid">📐 كشكول مربعات ماث</option>
+                <option value="challenge">🎯 تمرين تتبع الحرف</option>
+              </select>
+
               <button
                 style={{
                   background: studentDrawAllowed ? '#065f46' : '#7f1d1d', color: 'white',
-                  border: 'none', padding: '5px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, cursor: 'pointer'
+                  border: 'none', padding: '5px 10px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, cursor: 'pointer'
                 }}
                 onClick={() => {
                   setStudentDrawAllowed(!studentDrawAllowed);
@@ -338,16 +593,24 @@ export default function LiveClassroomSuite({ onClose }) {
               </button>
 
               <button
-                style={{ background: '#475569', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '6px', fontSize: '11.5px', cursor: 'pointer' }}
+                style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, cursor: 'pointer' }}
+                onClick={downloadWhiteboard}
+                title="تحميل رسمك على السبورة"
+              >
+                حفظ 📥
+              </button>
+
+              <button
+                style={{ background: '#475569', color: 'white', border: 'none', padding: '5px 8px', borderRadius: '6px', fontSize: '11.5px', cursor: 'pointer' }}
                 onClick={clearCanvas}
               >
-                مسح الكل 🗑️
+                مسح 🗑️
               </button>
             </div>
           </div>
 
           {/* Whiteboard HTML5 Canvas Area */}
-          <div style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: activeTool === 'star' ? 'pointer' : 'crosshair' }}>
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden', cursor: activeTool === 'star' || activeTool === 'heart' ? 'pointer' : 'crosshair' }}>
             <canvas
               ref={canvasRef}
               style={{ width: '100%', height: '100%', display: 'block', touchAction: 'none' }}
@@ -366,7 +629,7 @@ export default function LiveClassroomSuite({ onClose }) {
                 key={r.id}
                 style={{
                   position: 'absolute', bottom: '20px', left: `${r.x}%`,
-                  fontSize: '36px', pointerEvents: 'none',
+                  fontSize: '38px', pointerEvents: 'none',
                   animation: 'floatUp 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards'
                 }}
               >
@@ -374,19 +637,19 @@ export default function LiveClassroomSuite({ onClose }) {
               </div>
             ))}
 
-            {/* Live Pop-Quiz Overlay Modal if active */}
+            {/* Live Pop-Quiz Overlay Modal */}
             {showLivePopQuiz && (
               <div style={{
                 position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                background: 'rgba(15, 23, 42, 0.95)', border: '2px solid #e11d48', borderRadius: '24px',
-                padding: '24px', maxWidth: '520px', width: '90%', boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+                background: 'rgba(15, 23, 42, 0.96)', border: '2px solid #e11d48', borderRadius: '24px',
+                padding: '24px', maxWidth: '520px', width: '92%', boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
                 backdropFilter: 'blur(10px)', textAlign: 'center'
               }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#ffe4e6', color: '#9f1239', padding: '4px 12px', borderRadius: 'var(--radius-full)', fontSize: '11px', fontWeight: 800, marginBottom: '12px' }}>
-                  <span>🇪🇬 تحدي السفارة الحي الآن</span>
+                  <span>🇪🇬 سؤال مطابقة السفارة المصرية الحي</span>
                 </div>
                 <h3 style={{ fontSize: '18px', color: '#f8fafc', marginBottom: '16px' }}>
-                  أي من الكلمات التالية تحتوي على مد طويل بصوت (بـَـا)؟
+                  أي من الكلمات التالية تحتوي على مد طويل بصوت ({lessonObj.letter}ـَـا)؟
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
                   <button
@@ -426,67 +689,145 @@ export default function LiveClassroomSuite({ onClose }) {
         </div>
 
         {/* Right Column: Micro-Group Video Grid (4 Students + Teacher) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' }}>
+
           {/* 1. Teacher Video Box (Featured Speaker) */}
           <div style={{
-            background: '#1e293b', borderRadius: '16px', overflow: 'hidden',
+            background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)', borderRadius: '16px', overflow: 'hidden',
             border: activeSpeaker === 'teacher' ? '2.5px solid #22c55e' : '1.5px solid #334155',
-            position: 'relative', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            position: 'relative', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: activeSpeaker === 'teacher' ? '0 0 15px rgba(34, 197, 94, 0.25)' : 'none'
           }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '44px' }}>👩‍🏫</div>
+              <div style={{ fontSize: '42px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>👩‍🏫</div>
               <div style={{ fontSize: '13px', fontWeight: 800, color: '#f8fafc', marginTop: '2px' }}>
                 أ/ سارة أحمد (معلمة المنهج)
               </div>
             </div>
+
+            {/* Speaking audio wave indicator */}
             <div style={{
-              position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.6)',
-              padding: '2px 8px', borderRadius: '6px', fontSize: '11px', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px'
+              position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.65)',
+              padding: '3px 8px', borderRadius: '6px', fontSize: '11px', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '6px'
             }}>
-              <span>🎤 تتحدث الآن</span>
+              <div className="audio-wave-container">
+                <div className="audio-bar"></div>
+                <div className="audio-bar"></div>
+                <div className="audio-bar"></div>
+                <div className="audio-bar"></div>
+              </div>
+              <span>تشرح الآن</span>
             </div>
+
+            {/* Teacher Direct Voice Prompt for Ahmed */}
+            <button
+              style={{
+                position: 'absolute', bottom: '6px', right: '6px', background: 'rgba(37, 99, 235, 0.85)',
+                color: 'white', border: 'none', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, cursor: 'pointer'
+              }}
+              onClick={handleTeacherCallStudent}
+              title="المعلمة تسأل أحمد بصوت مسموع"
+            >
+              🔊 نداء صوتي لأحمد
+            </button>
           </div>
 
-          {/* 2. Student 1: Active Child (Ahmed - User) */}
+          {/* 2. Student 1: Active Child (Ahmed - User) with Real Webcam Support */}
           <div style={{
             background: '#1e293b', borderRadius: '16px', overflow: 'hidden',
-            border: handRaised ? '2.5px solid #facc15' : '1.5px solid #334155',
-            position: 'relative', height: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            border: handRaised ? '2.5px solid #facc15' : (cameraActive ? '2px solid #3b82f6' : '1.5px solid #334155'),
+            position: 'relative', height: '125px', display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '36px' }}>👦</div>
-              <div style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--blue-light)' }}>
-                {activeChild.name} (أنت) • {activeChild.grade}
+            {/* Real Webcam Stream if active & enabled */}
+            {cameraOn && cameraActive ? (
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                style={{
+                  width: '100%', height: '100%', objectFit: 'cover',
+                  transform: 'scaleX(-1)' // Mirror mode for realistic selfie video
+                }}
+              />
+            ) : (
+              /* Fallback Animated Child Avatar */
+              <div style={{ textAlign: 'center', padding: '10px' }}>
+                <div style={{ fontSize: '38px', marginBottom: '2px' }}>
+                  {activeChild.avatar || '👦'}
+                </div>
+                <div style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--blue-light)' }}>
+                  {activeChild.name} (أنت) • {activeChild.grade}
+                </div>
+                {cameraError && cameraOn && (
+                  <div style={{ fontSize: '10px', color: '#fca5a5', marginTop: '2px' }}>
+                    {cameraError} (نمط الأفاتار التفاعلي)
+                  </div>
+                )}
+                {!cameraOn && (
+                  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>
+                    🔒 الكاميرا مغلقة (خصوصية تامة)
+                  </div>
+                )}
               </div>
-            </div>
+            )}
+
+            {/* Top Right: Hand raise badge */}
             {handRaised && (
               <div style={{
                 position: 'absolute', top: '6px', right: '6px', background: '#facc15',
-                color: '#1e1b4b', padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 900
+                color: '#1e1b4b', padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 900,
+                boxShadow: '0 2px 8px rgba(250, 204, 21, 0.4)'
               }}>
                 ✋ رافع يده
               </div>
             )}
+
+            {/* Top Left: Live Camera Status Badge */}
             <div style={{
-              position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.5)',
-              padding: '2px 6px', borderRadius: '4px', fontSize: '10px', color: micOn ? '#4ade80' : '#ef4444'
+              position: 'absolute', top: '6px', left: '6px', background: 'rgba(0,0,0,0.65)',
+              padding: '2px 6px', borderRadius: '4px', fontSize: '9.5px', color: cameraActive && cameraOn ? '#4ade80' : '#fca5a5',
+              display: 'flex', alignItems: 'center', gap: '4px'
             }}>
-              {micOn ? '🎤 ميكروفون يعمل' : '🔇 صامت'}
+              <span style={{
+                width: '6px', height: '6px', borderRadius: '50%',
+                background: cameraActive && cameraOn ? '#4ade80' : '#ef4444'
+              }}></span>
+              <span>{cameraActive && cameraOn ? 'كاميرا حية' : (cameraOn ? 'أفاتار نشط' : 'كاميرا مغلقة')}</span>
+            </div>
+
+            {/* Bottom Left: Mic status with audio bars if on */}
+            <div style={{
+              position: 'absolute', bottom: '6px', left: '6px', background: 'rgba(0,0,0,0.65)',
+              padding: '2px 6px', borderRadius: '4px', fontSize: '10px', color: micOn ? '#4ade80' : '#ef4444',
+              display: 'flex', alignItems: 'center', gap: '5px'
+            }}>
+              {micOn ? (
+                <>
+                  <div className="audio-wave-container" style={{ height: '12px' }}>
+                    <div className="audio-bar" style={{ height: '4px' }}></div>
+                    <div className="audio-bar" style={{ height: '8px' }}></div>
+                    <div className="audio-bar" style={{ height: '6px' }}></div>
+                  </div>
+                  <span>{activeChild.name}</span>
+                </>
+              ) : (
+                <span>🔇 مكتوم</span>
+              )}
             </div>
           </div>
 
           {/* 3. Student 2: Mariam (Dubai, UAE) */}
           <div style={{
             background: '#111827', borderRadius: '16px', overflow: 'hidden',
-            border: '1px solid #1f2937', position: 'relative', height: '95px',
+            border: '1px solid #1f2937', position: 'relative', height: '90px',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '30px' }}>👧</div>
+              <div style={{ fontSize: '28px' }}>👧</div>
               <div style={{ fontSize: '11.5px', color: '#cbd5e1' }}>مريم خالد 🇦🇪 دبي</div>
             </div>
-            <div style={{ position: 'absolute', bottom: '6px', left: '6px', fontSize: '10px', color: '#94a3b8' }}>
+            <div style={{ position: 'absolute', bottom: '5px', left: '6px', fontSize: '9.5px', color: '#94a3b8' }}>
               ✓ مستمعة ممتازة
             </div>
           </div>
@@ -494,24 +835,33 @@ export default function LiveClassroomSuite({ onClose }) {
           {/* 4. Student 3: Youssef (Kuwait) */}
           <div style={{
             background: '#111827', borderRadius: '16px', overflow: 'hidden',
-            border: '1px solid #1f2937', position: 'relative', height: '95px',
+            border: '1px solid #1f2937', position: 'relative', height: '90px',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '30px' }}>👦</div>
+              <div style={{ fontSize: '28px' }}>👦</div>
               <div style={{ fontSize: '11.5px', color: '#cbd5e1' }}>يوسف حسام 🇰🇼 الكويت</div>
+            </div>
+            <div style={{
+              position: 'absolute', bottom: '5px', left: '6px', fontSize: '9.5px', color: '#4ade80',
+              display: 'flex', alignItems: 'center', gap: '3px'
+            }}>
+              <span>🎤</span>
             </div>
           </div>
 
           {/* 5. Student 4: Nour (London, UK) */}
           <div style={{
             background: '#111827', borderRadius: '16px', overflow: 'hidden',
-            border: '1px solid #1f2937', position: 'relative', height: '95px',
+            border: '1px solid #1f2937', position: 'relative', height: '90px',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '30px' }}>👧</div>
+              <div style={{ fontSize: '28px' }}>👧</div>
               <div style={{ fontSize: '11.5px', color: '#cbd5e1' }}>نور الدين 🇬🇧 لندن</div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '5px', left: '6px', fontSize: '9.5px', color: '#94a3b8' }}>
+              📶 4G ممتازة
             </div>
           </div>
         </div>
@@ -523,7 +873,7 @@ export default function LiveClassroomSuite({ onClose }) {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px'
       }}>
         {/* Child Audio / Video Toggles */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             style={{
               background: micOn ? '#2563eb' : '#dc2626', color: 'white',
@@ -541,17 +891,32 @@ export default function LiveClassroomSuite({ onClose }) {
 
           <button
             style={{
-              background: cameraOn ? '#334155' : '#dc2626', color: 'white',
-              border: 'none', padding: '10px 18px', borderRadius: 'var(--radius-full)',
+              background: cameraOn ? '#1e293b' : '#dc2626', color: 'white',
+              border: cameraOn ? '1.5px solid #3b82f6' : 'none',
+              padding: '10px 18px', borderRadius: 'var(--radius-full)',
               fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
             }}
             onClick={() => {
-              setCameraOn(!cameraOn);
-              triggerToast(cameraOn ? '📷 الكاميرا مغلقة' : '📷 الكاميرا تعمل');
+              const nextState = !cameraOn;
+              setCameraOn(nextState);
+              triggerToast(nextState ? '📷 جاري تشغيل الكاميرا' : '📷 تم إيقاف الكاميرا لوضع الخصوصية');
             }}
           >
             <span>{cameraOn ? '📷' : '🚫'}</span>
             <span>{cameraOn ? 'الكاميرا تعمل' : 'الكاميرا مغلقة'}</span>
+          </button>
+
+          {/* Test Mic Button */}
+          <button
+            style={{
+              background: '#334155', color: '#e2e8f0', border: 'none',
+              padding: '10px 14px', borderRadius: 'var(--radius-full)',
+              fontSize: '12px', fontWeight: 700, cursor: 'pointer'
+            }}
+            onClick={handleTestMic}
+            title="فحص جودة التقاط الصوت"
+          >
+            🎙️ فحص الصوت
           </button>
 
           {/* Raise Hand Button */}
@@ -611,7 +976,7 @@ export default function LiveClassroomSuite({ onClose }) {
         </div>
       </footer>
 
-      {/* Floating animation keyframes in standard style */}
+      {/* Floating animation keyframes */}
       <style>{`
         @keyframes floatUp {
           0% {

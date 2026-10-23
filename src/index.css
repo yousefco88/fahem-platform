@@ -318,3 +318,40 @@ input, select, textarea {
 @media (max-width: 1024px) {
   .sidebar-panel { display: none; }
 }
+
+/* Audio wave visualizer bars */
+.audio-wave-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+
+.audio-bar {
+  width: 3px;
+  background: #4ade80;
+  border-radius: 2px;
+  animation: audioWave 0.8s ease-in-out infinite alternate;
+}
+
+.audio-bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+.audio-bar:nth-child(2) { height: 14px; animation-delay: 0.25s; }
+.audio-bar:nth-child(3) { height: 10px; animation-delay: 0.15s; }
+.audio-bar:nth-child(4) { height: 16px; animation-delay: 0.35s; }
+.audio-bar:nth-child(5) { height: 8px; animation-delay: 0.2s; }
+
+@keyframes audioWave {
+  0% { transform: scaleY(0.4); opacity: 0.6; }
+  100% { transform: scaleY(1.3); opacity: 1; }
+}
+
+/* Live glowing indicators */
+@keyframes liveDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+.live-dot-pulse {
+  animation: liveDotPulse 1.5s infinite;
+}
+
