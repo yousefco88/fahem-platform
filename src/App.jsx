@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
+import AuthGate from './components/AuthGate';
 import RoleBar from './components/RoleBar';
 import BottomNav from './components/BottomNav';
 import ParentDashboard from './components/ParentDashboard';
@@ -26,8 +28,16 @@ function MainAppContent() {
         {currentScreen === 'landing' && <PublicLandingPage />}
         {currentScreen === 'parent' && <ParentDashboard />}
         {currentScreen === 'child' && <ChildUniverse />}
-        {currentScreen === 'teacher' && <TeacherStudio />}
-        {currentScreen === 'admin' && <AdminDashboard />}
+        {currentScreen === 'teacher' && (
+          <AuthGate roles={['teacher', 'admin']}>
+            <TeacherStudio />
+          </AuthGate>
+        )}
+        {currentScreen === 'admin' && (
+          <AuthGate roles={['admin']}>
+            <AdminDashboard />
+          </AuthGate>
+        )}
         {currentScreen === 'exam' && <EmbassyExamSimulator />}
         {currentScreen === 'onboarding' && <OnboardingFlow />}
         {currentScreen === 'pricing' && <PricingPlans />}
@@ -52,8 +62,10 @@ function MainAppContent() {
 
 export default function App() {
   return (
-    <AppProvider>
-      <MainAppContent />
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <MainAppContent />
+      </AppProvider>
+    </AuthProvider>
   );
 }
