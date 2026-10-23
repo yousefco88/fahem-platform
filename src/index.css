@@ -105,23 +105,30 @@ input, select, textarea {
 .role-bar {
   background: var(--navy-dark);
   color: #94a3b8;
-  padding: 8px 24px;
+  padding: 8px 24px 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   font-size: 13px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
-  flex-wrap: nowrap;
-  gap: 10px;
+  gap: 8px;
+}
+
+.role-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .role-bar-left {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
+  white-space: nowrap;
 }
 
 .role-bar-title {
@@ -135,31 +142,70 @@ input, select, textarea {
   font-size: 12px;
 }
 
+.role-bar-current {
+  color: #e2e8f0;
+  font-weight: 800;
+  font-size: 12.5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.role-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-bar-toggle {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.role-bar-toggle:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 .role-pills {
   display: flex;
-  gap: 8px;
+  gap: 8px 14px;
   align-items: center;
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 2px 0 6px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  flex-wrap: wrap;
   direction: rtl;
 }
 
-.role-pills-label {
-  color: #94a3b8;
-  font-size: 11px;
+.role-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.role-group-label {
+  color: #64748b;
+  font-size: 10.5px;
+  font-weight: 800;
   white-space: nowrap;
-  padding: 0 4px;
+  padding: 0 6px;
 }
 
 .role-pill-btn {
   background: rgba(255, 255, 255, 0.08);
   color: #cbd5e1;
-  padding: 6px 14px;
+  padding: 5px 13px;
   border-radius: var(--radius-full);
   font-size: 12px;
   font-weight: 700;
@@ -167,7 +213,7 @@ input, select, textarea {
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  min-height: 34px;
+  min-height: 32px;
   border: 1px solid transparent;
 }
 
@@ -188,6 +234,20 @@ input, select, textarea {
 
 .role-pill-btn.teacher.active {
   background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.role-pill-btn.admin.active {
+  background: #0f172a;
+  color: #38bdf8;
+  border: 1.5px solid #38bdf8;
+  box-shadow: none;
+}
+
+.role-pill-btn.exam.active {
+  background: #be123c;
+  color: #ffe4e6;
+  border: 1.5px solid #fb7185;
+  box-shadow: none;
 }
 
 .role-pill-btn.live {

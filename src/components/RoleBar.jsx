@@ -1,114 +1,102 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+
+// ترتيب منطقي بمجموعات حسب الجمهور — بدل صف واحد طويل يُقصّ أفقياً
+const NAV_GROUPS = [
+  {
+    label: 'عام',
+    items: [
+      { screen: 'landing', icon: '🌐', text: 'صفحة الهبوط' },
+      { screen: 'pricing', icon: '💳', text: 'الباقات' },
+      { screen: 'onboarding', icon: '📝', text: 'تسجيل الأسر' }
+    ]
+  },
+  {
+    label: 'ولي الأمر',
+    items: [
+      { screen: 'parent', icon: '👨‍👩‍👦', text: 'لوحة ولي الأمر' },
+      { screen: 'account', icon: '🔐', text: 'الحساب' },
+      { screen: 'exam', icon: '🇪🇬', text: 'محاكي الامتحانات', variant: 'exam' }
+    ]
+  },
+  {
+    label: 'التعلّم',
+    items: [
+      { screen: 'child', icon: '🚀', text: 'مساحة الطفل', variant: 'child' },
+      { screen: 'teacher', icon: '👩‍🏫', text: 'مساحة المعلم', variant: 'teacher' }
+    ]
+  },
+  {
+    label: 'الإدارة',
+    items: [
+      { screen: 'admin', icon: '⚙️', text: 'الإدارة (Admin)', variant: 'admin' }
+    ]
+  }
+];
+
+const ALL_ITEMS = NAV_GROUPS.flatMap(g => g.items);
 
 export default function RoleBar() {
   const { currentScreen, setCurrentScreen, setShowLiveModal } = useApp();
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('fahem_rolebar_collapsed') === '1');
+
+  const toggleCollapsed = () => {
+    setCollapsed(prev => {
+      localStorage.setItem('fahem_rolebar_collapsed', prev ? '0' : '1');
+      return !prev;
+    });
+  };
+
+  const current = ALL_ITEMS.find(i => i.screen === currentScreen);
 
   return (
-    <header className="role-bar">
-      <div className="role-bar-left">
-        <span className="role-bar-title">منصة فاهم (React App)</span>
-        <span style={{ opacity: 0.4 }}>|</span>
-        <span className="role-bar-sub">نظام التعليم الحي والمتقن لأبنائنا بالخارج</span>
+    <header className={`role-bar ${collapsed ? 'collapsed' : ''}`}>
+      <div className="role-bar-top">
+        <div className="role-bar-left">
+          <span className="role-bar-title">منصة فاهم</span>
+          <span className="role-bar-sub">التعليم الحي والمتقن لأبنائنا بالخارج</span>
+        </div>
+
+        {collapsed && current && (
+          <span className="role-bar-current">
+            {current.icon} {current.text}
+          </span>
+        )}
+
+        <div className="role-bar-actions">
+          <button className="role-pill-btn live" onClick={() => setShowLiveModal(true)}>
+            🔴 الفصل الحي
+          </button>
+          <button
+            className="role-bar-toggle"
+            onClick={toggleCollapsed}
+            aria-expanded={!collapsed}
+            title={collapsed ? 'إظهار أقسام المنصة' : 'إخفاء أقسام المنصة'}
+          >
+            {collapsed ? '🧭 الأقسام' : '▲ إخفاء'}
+          </button>
+        </div>
       </div>
 
-      <nav className="role-pills" aria-label="أقسام منصة فاهم">
-        <span className="role-pills-label">الواجهة الحالية</span>
-        
-        <button
-          className={`role-pill-btn ${currentScreen === 'landing' ? 'active' : ''}`}
-          style={{
-            background: currentScreen === 'landing' ? '#2563eb' : 'rgba(255,255,255,0.12)',
-            color: 'white',
-            fontWeight: 800
-          }}
-          onClick={() => setCurrentScreen('landing')}
-          aria-current={currentScreen === 'landing' ? 'page' : undefined}
-        >
-          🌐 صفحة الهبوط العامة
-        </button>
-
-        <button
-          className={`role-pill-btn ${currentScreen === 'parent' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('parent')}
-          aria-current={currentScreen === 'parent' ? 'page' : undefined}
-        >
-          👨‍👩‍👦 لوحة ولي الأمر
-        </button>
-
-        <button
-          className={`role-pill-btn child ${currentScreen === 'child' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('child')}
-          aria-current={currentScreen === 'child' ? 'page' : undefined}
-        >
-          🚀 مساحة الطفل
-        </button>
-
-        <button
-          className={`role-pill-btn teacher ${currentScreen === 'teacher' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('teacher')}
-          aria-current={currentScreen === 'teacher' ? 'page' : undefined}
-        >
-          👩‍🏫 مساحة المعلم
-        </button>
-
-        <button
-          className={`role-pill-btn ${currentScreen === 'admin' ? 'active' : ''}`}
-          style={{
-            background: currentScreen === 'admin' ? '#0f172a' : 'rgba(255,255,255,0.12)',
-            color: currentScreen === 'admin' ? '#38bdf8' : '#e2e8f0',
-            border: currentScreen === 'admin' ? '1.5px solid #38bdf8' : '1px solid rgba(255,255,255,0.2)'
-          }}
-          onClick={() => setCurrentScreen('admin')}
-          aria-current={currentScreen === 'admin' ? 'page' : undefined}
-        >
-          ⚙️ الإدارة العامة (Admin)
-        </button>
-
-        <button
-          className={`role-pill-btn ${currentScreen === 'exam' ? 'active' : ''}`}
-          style={{
-            background: currentScreen === 'exam' ? '#be123c' : 'rgba(255,255,255,0.12)',
-            color: currentScreen === 'exam' ? '#ffe4e6' : '#f8fafc',
-            border: currentScreen === 'exam' ? '1.5px solid #fb7185' : '1px solid rgba(255,255,255,0.2)'
-          }}
-          onClick={() => setCurrentScreen('exam')}
-          aria-current={currentScreen === 'exam' ? 'page' : undefined}
-        >
-          🇪🇬 محاكي امتحانات السفارة
-        </button>
-
-        <button
-          className={`role-pill-btn ${currentScreen === 'onboarding' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('onboarding')}
-          aria-current={currentScreen === 'onboarding' ? 'page' : undefined}
-        >
-          📝 تسجيل الأسر والمنطقة
-        </button>
-
-        <button
-          className={`role-pill-btn ${currentScreen === 'account' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('account')}
-          aria-current={currentScreen === 'account' ? 'page' : undefined}
-        >
-          🔐 حساب ولي الأمر (تجريبي)
-        </button>
-
-        <button
-          className={`role-pill-btn ${currentScreen === 'pricing' ? 'active' : ''}`}
-          onClick={() => setCurrentScreen('pricing')}
-          aria-current={currentScreen === 'pricing' ? 'page' : undefined}
-        >
-          💳 الباقات والاشتراك
-        </button>
-
-        <button
-          className="role-pill-btn live"
-          onClick={() => setShowLiveModal(true)}
-        >
-          🔴 الفصل الحي المباشر
-        </button>
-      </nav>
+      {!collapsed && (
+        <nav className="role-pills" aria-label="أقسام منصة فاهم">
+          {NAV_GROUPS.map(group => (
+            <div className="role-group" key={group.label}>
+              <span className="role-group-label">{group.label}</span>
+              {group.items.map(item => (
+                <button
+                  key={item.screen}
+                  className={`role-pill-btn ${item.variant || ''} ${currentScreen === item.screen ? 'active' : ''}`}
+                  onClick={() => setCurrentScreen(item.screen)}
+                  aria-current={currentScreen === item.screen ? 'page' : undefined}
+                >
+                  {item.icon} {item.text}
+                </button>
+              ))}
+            </div>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }
