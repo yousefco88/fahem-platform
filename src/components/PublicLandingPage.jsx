@@ -550,14 +550,14 @@ export default function PublicLandingPage() {
             background: 'rgba(255,255,255,0.2)', padding: '6px 16px', borderRadius: 'var(--radius-full)',
             fontSize: '12.5px', fontWeight: 800, display: 'inline-block', marginBottom: '16px'
           }}>
-            التسجيل التجريبي — نموذج محلي غير متصل
+            التسجيل التجريبي — طلب محفوظ بأمان
           </span>
 
           <h2 style={{ fontSize: '32px', fontWeight: 900, marginBottom: '12px' }}>
             سجّل اهتمامك بالنسخة التجريبية
           </h2>
           <p style={{ fontSize: '15px', color: '#dbeafe', marginBottom: '30px' }}>
-            نموذج طلب حصة تجريبية؛ يتم تأكيد الموعد بعد تفعيل خدمة الحجز والتواصل
+            أرسل طلبك، وسيقوم فريق فاهم بمراجعة البيانات والتواصل معك لتأكيد الموعد.
           </p>
 
           <div style={{
