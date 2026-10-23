@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { soundManager } from '../utils/audio';
 import { launchConfetti } from '../utils/confetti';
 import { CURRICULUM_DATA } from '../data/curriculumData';
+import { supabase } from '../lib/supabase';
 
 const AppContext = createContext();
 
@@ -138,6 +139,13 @@ export function AppProvider({ children }) {
     }
   }, [activeSubject, curriculumData, selectedLessonId]);
   const activeChild = childrenList.find(c => c.id === selectedChildId) || childrenList[0];
+
+  const persistLearningRecord = (childId, lessonId, status = 'started', score = null) => {
+    if (!supabase || !childId || !lessonId) return;
+    supabase.from('learning_records').upsert({ child_id: childId, lesson_id: lessonId, status, score, updated_at: new Date().toISOString() }, { onConflict: 'child_id,lesson_id' }).then(({ error }) => {
+      if (error) console.warn('تعذر مزامنة سجل التعلم:', error.message);
+    });
+  };
 
   // Subject and Lesson Selection
   // Compute Active Lesson
@@ -302,6 +310,7 @@ export function AppProvider({ children }) {
         }
       }
     }));
+    persistLearningRecord(childId, lessonId, 'completed');
 
     soundManager.playSuccess();
     if (!wasCompleted) launchConfetti();
@@ -343,6 +352,7 @@ export function AppProvider({ children }) {
         }
       };
     });
+    persistLearningRecord(childId, lessonId, 'started', isCorrect ? 100 : 0);
   };
 
   const recordLessonOpened = (lessonId, subjectKey = activeSubject) => {
@@ -364,6 +374,7 @@ export function AppProvider({ children }) {
         }
       };
     });
+    persistLearningRecord(childId, lessonId, 'started');
   };
 
   const recordVideoProgress = (lessonId, currentTime, duration, subjectKey = activeSubject) => {

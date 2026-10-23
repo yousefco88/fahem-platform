@@ -59,4 +59,11 @@ create policy "parents own learning records" on public.learning_records
   with check (exists (select 1 from public.children c where c.id = child_id and c.parent_id = auth.uid()));
 
 -- Public booking submissions are intentionally restricted to a server-side API.
--- Do not expose an anonymous INSERT policy until abuse protection/rate limiting is configured.
+-- This initial public form policy validates shape; add Edge Function rate limiting before paid acquisition.
+create policy "public can submit booking" on public.bookings
+  for insert to anon, authenticated
+  with check (length(trim(parent_name)) between 2 and 100
+    and length(trim(child_name)) between 2 and 80
+    and length(trim(whatsapp)) between 6 and 40
+    and length(trim(grade)) between 2 and 100
+    and length(trim(country_code)) between 2 and 40);

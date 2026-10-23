@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { launchConfetti } from '../utils/confetti';
+import { supabase } from '../lib/supabase';
 
 export default function PublicLandingPage() {
   const {
@@ -68,18 +69,33 @@ export default function PublicLandingPage() {
   const currentCalc = timezoneData[calcCountry] || timezoneData.saudi;
 
   // Handle Free Trial Booking
-  const handleBookingSubmit = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!parentName.trim() || !whatsappNumber.trim() || !childName.trim()) {
       triggerToast('يرجى ملء جميع الحقول المطلوبة للتسجيل');
       return;
     }
 
+    if (!supabase) {
+      triggerToast('نموذج الحجز غير متصل حاليًا بالخادم.');
+      return;
+    }
+    const { error } = await supabase.from('bookings').insert({
+      parent_name: parentName.trim(),
+      whatsapp: whatsappNumber.trim(),
+      child_name: childName.trim(),
+      grade: selectedGrade,
+      country_code: selectedCountry
+    });
+    if (error) {
+      triggerToast('تعذر حفظ الطلب. حاول مرة أخرى.');
+      return;
+    }
     setBookingSuccess(true);
     launchConfetti();
     soundManager.playSuccess();
     soundManager.speak(`أهلاً بك يا أستاذ ${parentName}! تم تسجيل طلب الحصة التجريبية للبطل ${childName}.`);
-    triggerToast(`تم تسجيل طلب الحصة التجريبية لـ ${childName}. سيتواصل فريق فاهم معكم بعد تفعيل خدمة الحجز.`);
+    triggerToast(`تم استلام طلب الحصة التجريبية لـ ${childName}.`);
   };
 
   // FAQ Accordion State
