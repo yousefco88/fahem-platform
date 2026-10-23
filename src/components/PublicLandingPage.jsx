@@ -313,21 +313,20 @@ export default function PublicLandingPage() {
             fontSize: 'clamp(11px, 2.5vw, 13.5px)', overflowX: 'auto', WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none', msOverflowStyle: 'none'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-              <span style={{ color: '#f59e0b', fontSize: '16px' }}>⭐⭐⭐⭐⭐</span>
-              <strong>نموذج أولي</strong>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <strong>🇪🇬 المنهج الوزاري الرسمي</strong>
             </div>
             <div style={{ whiteSpace: 'nowrap' }}>
-              <strong>🇸🇦 +150 طالب</strong>
+              <strong>👩‍🏫 مجموعات مصغرة (4 طلاب)</strong>
             </div>
             <div style={{ whiteSpace: 'nowrap' }}>
-              <strong>🇦🇪 +78 طالب</strong>
+              <strong>📼 أرشفة ذكية لكل حصة</strong>
             </div>
             <div style={{ whiteSpace: 'nowrap' }}>
-              <strong>🇰🇼 +38 طالب</strong>
+              <strong>🕐 مواعيد تناسب الخليج وأوروبا</strong>
             </div>
             <div style={{ whiteSpace: 'nowrap' }}>
-              <strong>🌍 تغطية عالمية</strong>
+              <strong>🇪🇬 محاكي امتحانات السفارة</strong>
             </div>
           </div>
         </div>
@@ -538,50 +537,6 @@ export default function PublicLandingPage() {
             <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
               لا توجد شهادات أو نتائج موثقة حتى الآن؛ لن نعرض تجارب افتراضية على أنها حقيقية.
             </p>
-          </div>
-
-          <div style={{ display: 'none', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-            <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: '20px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ color: '#f59e0b', fontSize: '16px', marginBottom: '12px' }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontSize: '14px', color: '#334155', lineHeight: 1.6, marginBottom: '16px' }}>
-                "ابني عمر كان يعاني جداً من منهج Connect Plus لغات، والدروس الخصوصية في الرياض كانت تستنزف ميزانيتنا بلا نتيجة. مع فاهم والأستاذة سارة، أصبح يحب المادة وينتظر الحصة كل أسبوع!"
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dbeafe', display: 'grid', placeItems: 'center', fontSize: '18px' }}>👩‍👧</div>
-                <div>
-                  <strong style={{ fontSize: '13.5px', display: 'block' }}>أم عمر — الرياض 🇸🇦</strong>
-                  <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>ولي أمر طالب بالصف الأول الابتدائي</span>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: '20px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ color: '#f59e0b', fontSize: '16px', marginBottom: '12px' }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontSize: '14px', color: '#334155', lineHeight: 1.6, marginBottom: '16px' }}>
-                "محاكي امتحانات السفارة في فاهم أزال كل الخوف والتوتر من امتحانات السفارة الإلكترونية. ابنتي مريم دخلت الامتحان التجريبي وحصلت على اللون الأزرق (ممتاز) وطبعنا كشف الدرجات بثقة."
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', display: 'grid', placeItems: 'center', fontSize: '18px' }}>👨‍💼</div>
-                <div>
-                  <strong style={{ fontSize: '13.5px', display: 'block' }}>م. حازم القاضي — دبي 🇦🇪</strong>
-                  <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>مهندس برمجيات وولي أمر</span>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: '20px', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ color: '#f59e0b', fontSize: '16px', marginBottom: '12px' }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontSize: '14px', color: '#334155', lineHeight: 1.6, marginBottom: '16px' }}>
-                "كنا نخشى أن يفقد أولادنا ارتباطهم بمصر ولغتهم العربية بسبب نشأتهم في لندن. مسار تاريخ ومعالم مصر ونور البيان في فاهم بنى لديهم عزة نفس وحباً كبيراً لبلدهم."
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fef08a', display: 'grid', placeItems: 'center', fontSize: '18px' }}>👩‍⚕️</div>
-                <div>
-                  <strong style={{ fontSize: '13.5px', display: 'block' }}>د. نادية العوضي — لندن 🇬🇧</strong>
-                  <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>طبيبة استشارية بمستشفيات بريطانيا</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

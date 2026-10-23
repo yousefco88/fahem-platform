@@ -650,24 +650,11 @@ export default function AdminDashboard() {
             <h3 style={{ fontSize: '17px', color: 'var(--navy)', marginBottom: '14px' }}>
               🌍 التوزيع الجغرافي لأسر المغتربين النشطة
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {[
-                { country: '🇸🇦 المملكة العربية السعودية', count: '275 طالباً', percent: '65.5%', color: '#16a34a' },
-                { country: '🇦🇪 دولة الإمارات العربية المتحدة', count: '78 طالباً', percent: '18.5%', color: '#2563eb' },
-                { country: '🇰🇼 دولة الكويت', count: '38 طالباً', percent: '9.0%', color: '#ea580c' },
-                { country: '🇬🇧 المملكة المتحدة وأوروبا', count: '20 طالباً', percent: '4.8%', color: '#7c3aed' },
-                { country: '🇺🇸 الولايات المتحدة الأمريكية', count: '9 طلاب', percent: '2.2%', color: '#dc2626' }
-              ].map((item, i) => (
-                <div key={i} style={{ padding: '10px', background: '#f8fafc', borderRadius: '8px', border: '1px solid var(--line)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '13px', fontWeight: 700 }}>
-                    <span>{item.country}</span>
-                    <span>{item.count} ({item.percent})</span>
-                  </div>
-                  <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                    <div style={{ width: item.percent, height: '100%', background: item.color }}></div>
-                  </div>
-                </div>
-              ))}
+            <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '10px', border: '1px dashed var(--line)', textAlign: 'center' }}>
+              <div style={{ fontSize: '28px', marginBottom: '6px' }}>🗺️</div>
+              <p style={{ fontSize: '13.5px', color: 'var(--muted)', margin: 0 }}>
+                لا توجد أسر مسجلة بعد — سيُبنى التوزيع الجغرافي تلقائياً من بيانات التسجيل الفعلية.
+              </p>
             </div>
           </div>
 

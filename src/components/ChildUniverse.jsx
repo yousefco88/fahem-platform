@@ -140,10 +140,10 @@ export default function ChildUniverse() {
               background: 'rgba(255,255,255,0.2)', display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '4px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 800, marginBottom: '12px'
             }}>
-              <span>🔴 حصتك المباشرة اليوم مع الأستاذة سارة</span>
+              <span>🔴 الحصص المباشرة ستبدأ قريباً</span>
               <button
                 style={{ background: 'white', color: 'var(--navy)', borderRadius: '50%', width: '22px', height: '22px', display: 'grid', placeItems: 'center', fontSize: '11px' }}
-                onClick={() => soundManager.speak('حصتك المباشرة اليوم مع الأستاذة سارة')}
+                onClick={() => soundManager.speak('الحصص المباشرة ستبدأ قريباً')}
                 title="استمع للصوت"
               >
                 🔊

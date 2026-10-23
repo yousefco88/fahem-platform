@@ -49,7 +49,7 @@ export default function RoleBar() {
           onClick={() => setCurrentScreen('teacher')}
           aria-current={currentScreen === 'teacher' ? 'page' : undefined}
         >
-          👩‍🏫 مساحة المعلم (أ/ سارة)
+          👩‍🏫 مساحة المعلم
         </button>
 
         <button

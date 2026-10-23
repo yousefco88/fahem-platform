@@ -287,8 +287,8 @@ export default function ParentDashboard() {
             }}>
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>حضور الحصص الحية</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>100%</h3>
-                <small style={{ color: 'var(--green)', fontWeight: 600, fontSize: '12px' }}>✓ 5 مواد أساسية مغطاة</small>
+                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>—</h3>
+                <small style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '12px' }}>يُحتسب بعد بدء الحصص المباشرة</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#ecfdf5', color: '#10b981', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🗓</div>
             </div>
