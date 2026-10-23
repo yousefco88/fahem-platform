@@ -31,7 +31,9 @@ const DEFAULT_CHILDREN = [
 ];
 
 export function AppProvider({ children }) {
-  const [currentScreen, setCurrentScreen] = useState('parent');
+  // Public visitors should start on the product landing page. Role dashboards
+  // remain available through the role switcher and authenticated flows.
+  const [currentScreen, setCurrentScreen] = useState('landing');
 
   // Load parent & preferences
   const [parentName, setParentName] = useState(() => {
