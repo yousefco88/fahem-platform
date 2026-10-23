@@ -8,6 +8,7 @@
     "api:dev": "node server/server.js",
     "api:test": "node --test server/server.test.js",
     "seed:curriculum": "node scripts/seed-curriculum.mjs",
+    "export:curriculum-sql": "node scripts/export-curriculum-sql.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },
