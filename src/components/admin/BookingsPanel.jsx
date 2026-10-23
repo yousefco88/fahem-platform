@@ -128,6 +128,13 @@ export default function BookingsPanel() {
                 <span style={{ padding: '5px 12px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 800, color: st.color, background: st.bg }}>
                   {st.label}
                 </span>
+                <a
+                  href={`https://wa.me/${(b.whatsapp || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`مرحباً ${b.parent_name}، معك فريق منصة فاهم بخصوص طلب الحصة التجريبية لـ${b.child_name} 🌟`)}`}
+                  target="_blank" rel="noreferrer"
+                  style={{ background: '#16a34a', color: 'white', padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: 800, textDecoration: 'none', whiteSpace: 'nowrap' }}
+                >
+                  💬 تواصل واتساب
+                </a>
                 <select
                   value={b.status || 'new'}
                   onChange={e => updateStatus(b.id, e.target.value)}

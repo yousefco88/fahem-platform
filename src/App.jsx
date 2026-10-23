@@ -1,5 +1,6 @@
-import React, { Suspense, lazy } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { PATH_TO_SCREEN, SCREEN_META } from './routes';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import { UIProvider, useUIState } from './context/UIContext';
@@ -33,9 +34,24 @@ function ToastBanner() {
   return <div className="toast-banner">{toastMessage}</div>;
 }
 
+// SEO: عنوان ووصف ديناميكيان لكل مسار
+function DocumentMeta() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const meta = SCREEN_META[PATH_TO_SCREEN[pathname]] || SCREEN_META.landing;
+    document.title = meta.title;
+    if (meta.description) {
+      document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description);
+    }
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://fahem-platform.vercel.app${pathname === '/' ? '/' : pathname}`);
+  }, [pathname]);
+  return null;
+}
+
 function MainAppContent() {
   return (
     <div className="app-container">
+      <DocumentMeta />
       {/* Top Role & View Switcher */}
       <RoleBar />
 

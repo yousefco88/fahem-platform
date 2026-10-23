@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /teacher
+Disallow: /account
+
+Sitemap: https://fahem-platform.vercel.app/sitemap.xml

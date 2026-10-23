@@ -3,6 +3,7 @@ import { saveAttachment } from '../utils/attachmentStore';
 import { useApp } from '../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
+import FamiliesPanel from './admin/FamiliesPanel';
 
 export default function AdminDashboard() {
   const {
@@ -347,6 +348,7 @@ export default function AdminDashboard() {
         {[
           { id: 'cms', label: '📖 محرر المناهج والصفحات (CMS)', icon: '📖' },
           { id: 'bookings', label: '📋 حجوزات الحصص التجريبية', icon: '📋' },
+          { id: 'families', label: '👨‍👩‍👧‍👦 حسابات الأسر', icon: '👨‍👩‍👧‍👦' },
           { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
           { id: 'rbac', label: '👥 المستخدمين والصلاحيات (RBAC)', icon: '👥' },
           { id: 'audit', label: '🛡️ سجل التدقيق والرقابة (Audit Trail)', icon: '🛡️' },
@@ -570,6 +572,13 @@ export default function AdminDashboard() {
       {activeAdminTab === 'bookings' && (
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <BookingsPanel />
+        </div>
+      )}
+
+      {/* TAB: FAMILIES (real data) */}
+      {activeAdminTab === 'families' && (
+        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+          <FamiliesPanel />
         </div>
       )}
 
