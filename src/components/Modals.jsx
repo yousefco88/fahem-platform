@@ -1,0 +1,608 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
+import LiveClassroomSuite from './LiveClassroomSuite';
+
+export default function Modals() {
+  const {
+    showLiveModal, setShowLiveModal,
+    showGateModal, setShowGateModal,
+    showStudioModal, setShowStudioModal,
+    studioActiveTab, setStudioActiveTab,
+    showScheduleModal, setShowScheduleModal,
+    activeChild,
+    activeLesson,
+    completeLessonMastery,
+    soundManager,
+    setCurrentScreen,
+    triggerToast
+  } = useApp();
+
+  // Whiteboard Canvas State
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [brushColor, setBrushColor] = useState('#facc15');
+  const [brushSize, setBrushSize] = useState(4);
+
+  // Lesson Studio State
+  const [quizAnswered, setQuizAnswered] = useState(null); // 'correct' | 'wrong' | null
+  const [builtSyllables, setBuiltSyllables] = useState([]);
+  const [builderCompleted, setBuilderCompleted] = useState(false);
+
+  // Parent Gate math
+  const [gateNum1] = useState(5);
+  const [gateNum2] = useState(4);
+  const [gateInput, setGateInput] = useState('');
+
+  // Schedule class form state
+  const [schedTitle, setSchedTitle] = useState('حرف التاء وكتابة الكلمات الثلاثية');
+
+  // Teacher Post-Class Feedback Modal State
+  const [showPostClassFeedback, setShowPostClassFeedback] = useState(false);
+  const [feedbackNote, setFeedbackNote] = useState(`أحمد شارك بنشاط ونطق الحرف بشكل رائع اليوم.`);
+
+  // Reset quiz/builder state when activeLesson changes
+  useEffect(() => {
+    setQuizAnswered(null);
+    setBuiltSyllables([]);
+    setBuilderCompleted(false);
+  }, [activeLesson?.id]);
+
+  // Setup Whiteboard Canvas
+  useEffect(() => {
+    if (showLiveModal && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      // Set resolution
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      // Dark background with initial template
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw faint guidelines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let y = 60; y < canvas.height; y += 60) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Teacher sample text
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 36px Cairo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('سبورة الفصل التفاعلي — اكتب الحرف هنا ✏️', canvas.width / 2, 70);
+    }
+  }, [showLiveModal]);
+
+  // Canvas drawing handlers
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = brushColor;
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    triggerToast('تم مسح السبورة');
+  };
+
+  // Live modal handlers
+  const handleEndLiveSession = () => {
+    setShowLiveModal(false);
+    setShowPostClassFeedback(true);
+  };
+
+  const handleFinishTeacherFeedback = (e) => {
+    e.preventDefault();
+    setShowPostClassFeedback(false);
+    triggerToast('✓ تم إرسال تقرير الحصة والملاحظة التشجيعية إلى ولي الأمر وأرشفة التسجيل بنجاح!');
+  };
+
+  // Parent Gate handler
+  const handleVerifyGate = () => {
+    if (parseInt(gateInput.trim()) === gateNum1 + gateNum2) {
+      setShowGateModal(false);
+      setGateInput('');
+      setCurrentScreen('parent');
+      triggerToast('تم التحقق بنجاح — مرحباً بك في مساحة ولي الأمر');
+    } else {
+      triggerToast('إجابة غير صحيحة، حاول مجدداً');
+      setGateInput('');
+    }
+  };
+
+  // Quiz evaluation
+  const handleEvalQuiz = (isCorrect) => {
+    if (isCorrect) {
+      setQuizAnswered('correct');
+      soundManager.playSuccess();
+      soundManager.speak('أحسنت يا بطل! إجابة صحيحة ومتقنة تماماً.');
+    } else {
+      setQuizAnswered('wrong');
+      soundManager.playRetry();
+      soundManager.speak('محاولة جيدة! استمع للشرح وجرب مرة ثانية.');
+    }
+  };
+
+  // Syllable Builder Tap/Drag handler
+  const handleTapSyllable = (syl) => {
+    if (builtSyllables.includes(syl)) return;
+    const nextList = [...builtSyllables, syl];
+    setBuiltSyllables(nextList);
+
+    soundManager.speak(syl);
+
+    const expected = activeLesson?.interactiveBuilder?.correctOrder || [];
+    if (nextList.length === expected.length) {
+      const isMatch = nextList.every((val, idx) => val === expected[idx]);
+      if (isMatch) {
+        setBuilderCompleted(true);
+        soundManager.playSuccess();
+        soundManager.speak(`ممتاز! ركبت الكلمة بنجاح: ${activeLesson?.interactiveBuilder?.targetWord}`);
+      } else {
+        triggerToast('ترتيب المقاطع يحتاج مراجعة، اضغط مسح وحاول ثانية ↺');
+        soundManager.playRetry();
+      }
+    }
+  };
+
+  const handleResetBuilder = () => {
+    setBuiltSyllables([]);
+    setBuilderCompleted(false);
+  };
+
+  return (
+    <>
+      {/* 1. Live Virtual Classroom Suite (Micro-Group + Video Grid + Shared Canvas + Pop Quiz) */}
+      {showLiveModal && (
+        <LiveClassroomSuite onClose={() => setShowLiveModal(false)} />
+      )}
+
+      {/* Post-Class Teacher Feedback Modal */}
+      {showPostClassFeedback && (
+        <div className="modal-overlay">
+          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '480px', width: '100%' }}>
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <div style={{ fontSize: '36px', marginBottom: '8px' }}>📝</div>
+              <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>تقييم وملاحظة ما بعد الحصة</h3>
+              <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
+                اكتملت الحصة وأُرشفت بنجاح! شارك ولي أمر الطالب <strong>{activeChild.name}</strong> بملاحظتك لترسل له فوراً:
+              </p>
+            </div>
+
+            <form onSubmit={handleFinishTeacherFeedback}>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>مستوى تفاعل الطالب</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>ممتاز ⭐</button>
+                  <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>جيد جداً 👍</button>
+                  <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>يحتاج متابعة 💡</button>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>ملاحظة المعلمة لولي الأمر</label>
+                <textarea
+                  rows="3"
+                  style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', fontSize: '14px', resize: 'vertical' }}
+                  value={feedbackNote}
+                  onChange={(e) => setFeedbackNote(e.target.value)}
+                />
+              </div>
+
+              <button className="btn-accent" style={{ width: '100%', justifyContent: 'center' }} type="submit">
+                إرسال لولي الأمر وحفظ الأرشيف ✓
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Interactive Lesson Studio Modal */}
+      {showStudioModal && activeLesson && (
+        <div className="modal-overlay">
+          <div style={{
+            background: '#ffffff', width: '100%', maxWidth: '1150px',
+            borderRadius: '28px', overflow: 'hidden', maxHeight: '92vh',
+            display: 'flex', flexDirection: 'column'
+          }}>
+            <header style={{
+              background: 'var(--navy-dark)', color: 'white', padding: '16px 28px',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+            }}>
+              <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className="tag-badge mastered" style={{ fontSize: '12px' }}>{activeLesson.letter}</span>
+                <span>{activeLesson.title}</span>
+              </h3>
+              <button style={{ background: 'none', color: 'white', fontSize: '22px' }} onClick={() => setShowStudioModal(false)}>
+                ✕
+              </button>
+            </header>
+
+            <nav style={{ display: 'flex', background: '#f1f5f9', borderBottom: '2px solid var(--line)', padding: '0 24px', gap: '12px', overflowX: 'auto' }}>
+              <button
+                className={`studio-tab-btn ${studioActiveTab === 'video' ? 'active' : ''}`}
+                onClick={() => setStudioActiveTab('video')}
+              >
+                🎥 تسجيل الحصة المباشرة
+              </button>
+              <button
+                className={`studio-tab-btn ${studioActiveTab === 'quiz' ? 'active' : ''}`}
+                onClick={() => setStudioActiveTab('quiz')}
+              >
+                🎯 تحدي الإتقان وبناء الكلمة
+              </button>
+              <button
+                className={`studio-tab-btn ${studioActiveTab === 'pdf' ? 'active' : ''}`}
+                onClick={() => setStudioActiveTab('pdf')}
+              >
+                📄 ورقة العمل PDF
+              </button>
+              <button
+                className={`studio-tab-btn ${studioActiveTab === 'guide' ? 'active' : ''}`}
+                onClick={() => setStudioActiveTab('guide')}
+              >
+                💡 دليل ولي الأمر للمذاكرة
+              </button>
+            </nav>
+
+            <div style={{ padding: '28px', overflowY: 'auto', flex: 1 }}>
+              {/* Tab 1: Video */}
+              {studioActiveTab === 'video' && (
+                <div>
+                  <div style={{
+                    background: '#000', borderRadius: '20px', aspectRatio: '16 / 9',
+                    maxHeight: '440px', margin: '0 auto 20px', display: 'flex',
+                    flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white'
+                  }}>
+                    <button className="btn-accent" onClick={() => triggerToast(`جاري تشغيل تسجيل: ${activeLesson.title}...`)}>
+                      ▶ تشغيل تسجيل الحصة ({activeLesson.duration} دقيقة)
+                    </button>
+                    <span style={{ fontSize: '13px', marginTop: '12px', opacity: 0.8 }}>الهدف: {activeLesson.objective}</span>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
+                    <strong>محطات الحصة المسجلة للقفز السريع:</strong>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
+                      {activeLesson.videoChapters?.map((ch, idx) => (
+                        <span
+                          key={idx}
+                          className="tag-badge info"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => triggerToast(`القفز إلى الدقيقة ${ch.time}: ${ch.label}`)}
+                        >
+                          ⏱ {ch.time} {ch.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Interactive Mastery Challenge & Syllable Builder */}
+              {studioActiveTab === 'quiz' && (
+                <div style={{ maxWidth: '780px', margin: '0 auto', textAlign: 'center' }}>
+                  
+                  {/* Part 1: Interactive Syllable Puzzle / Word Builder */}
+                  {activeLesson.interactiveBuilder && (
+                    <div style={{ background: '#eff6ff', border: '2px solid #bfdbfe', borderRadius: '20px', padding: '22px', marginBottom: '28px' }}>
+                      <h4 style={{ color: 'var(--blue)', fontSize: '18px', marginBottom: '6px' }}>
+                        🧩 نشاط تركيبي: اضغط على المقاطع لبناء: «{activeLesson.interactiveBuilder.targetWord}»
+                      </h4>
+                      <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '16px' }}>
+                        استمع لصوت كل مقطع عند الضغط عليه، ورتبها بالترتيب الصحيح:
+                      </p>
+
+                      {/* Drop Zone Box */}
+                      <div style={{
+                        minHeight: '60px', background: 'white', border: '2px dashed var(--blue)',
+                        borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        gap: '12px', padding: '10px', marginBottom: '16px'
+                      }}>
+                        {builtSyllables.length === 0 ? (
+                          <span style={{ color: 'var(--muted)', fontSize: '14px' }}>اضغط على المقاطع بالأسفل لوضعها هنا...</span>
+                        ) : (
+                          builtSyllables.map((s, idx) => (
+                            <span
+                              key={idx}
+                              style={{
+                                background: '#dbeafe', color: 'var(--blue)', padding: '8px 18px',
+                                borderRadius: '10px', fontSize: '22px', fontWeight: 800, border: '1px solid #bfdbfe'
+                              }}
+                            >
+                              {s}
+                            </span>
+                          ))
+                        )}
+                      </div>
+
+                      {/* Syllable Options */}
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        {activeLesson.interactiveBuilder.syllables.map((syl, i) => (
+                          <button
+                            key={i}
+                            style={{
+                              background: builtSyllables.includes(syl) ? '#e2e8f0' : 'white',
+                              color: builtSyllables.includes(syl) ? '#94a3b8' : 'var(--navy)',
+                              border: '2px solid var(--line)', padding: '10px 20px',
+                              borderRadius: '12px', fontSize: '20px', fontWeight: 800,
+                              cursor: builtSyllables.includes(syl) ? 'not-allowed' : 'pointer'
+                            }}
+                            disabled={builtSyllables.includes(syl)}
+                            onClick={() => handleTapSyllable(syl)}
+                          >
+                            {syl}
+                          </button>
+                        ))}
+                        <button
+                          style={{ background: '#f1f5f9', color: 'var(--muted)', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 700 }}
+                          onClick={handleResetBuilder}
+                        >
+                          مسح ↺
+                        </button>
+                      </div>
+
+                      {builderCompleted && (
+                        <div style={{ marginTop: '14px', color: '#16a34a', fontWeight: 800, fontSize: '15px' }}>
+                          ✓ رائع جداً! تم تركيب «{activeLesson.interactiveBuilder.targetWord}» بنجاح!
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Part 2: Multiple Choice Challenge */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                      <div style={{
+                        display: 'inline-block', background: '#eff6ff', color: 'var(--blue)',
+                        padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px'
+                      }}>
+                        سؤال الإتقان (إعادة الاختبار متاحة حتى 100%)
+                      </div>
+                      <button
+                        style={{
+                          background: '#fef08a', border: '1px solid #facc15', borderRadius: 'var(--radius-full)',
+                          padding: '4px 12px', fontSize: '12px', fontWeight: 800, color: '#713f12', display: 'flex', alignItems: 'center', gap: '6px'
+                        }}
+                        onClick={() => soundManager.speak(activeLesson.question)}
+                        title="استمع للسؤال بصوت ناطق"
+                      >
+                        <span>🔊</span>
+                        <span>اقرأ لي السؤال</span>
+                      </button>
+                    </div>
+
+                    <h3 style={{ fontSize: '22px', marginBottom: '8px' }}>{activeLesson.question}</h3>
+                    <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '24px' }}>
+                      استمع وتذكر شرح المعلمة في الحصة المسجلة
+                    </p>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '20px 0' }}>
+                      {activeLesson.options?.map((opt, i) => (
+                        <div
+                          key={i}
+                          className={`quiz-option-card ${quizAnswered === 'correct' && opt.correct ? 'correct' : ''} ${quizAnswered === 'wrong' && !opt.correct ? 'wrong' : ''}`}
+                          onClick={() => handleEvalQuiz(opt.correct)}
+                        >
+                          <span>{opt.icon}</span> {opt.text}
+                        </div>
+                      ))}
+                    </div>
+
+                    {quizAnswered === 'correct' && (
+                      <div style={{ background: '#ecfdf5', border: '2px solid #86efac', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
+                        <h4 style={{ color: '#166534', fontSize: '20px', marginBottom: '6px' }}>أحسنت يا بطل! أتقنت المهارة بنسبة 100% ⭐</h4>
+                        <p style={{ color: '#166534', fontSize: '14px', marginBottom: '14px' }}>
+                          تم منحك شارة الإتقان الذهبية وإضافة 30 نقطة فهم لحسابك!
+                        </p>
+                        <button className="btn-accent" style={{ background: '#16a34a', color: 'white' }} onClick={() => completeLessonMastery(activeLesson.id)}>
+                          حفظ الإتقان والعودة للخريطة ✓
+                        </button>
+                      </div>
+                    )}
+
+                    {quizAnswered === 'wrong' && (
+                      <div style={{ background: '#fff7ed', border: '2px solid #fed7aa', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
+                        <h4 style={{ color: '#9a3412', fontSize: '18px', marginBottom: '6px' }}>محاولة جيدة! قرّبت جداً من الحل الصحيح 💡</h4>
+                        <p style={{ color: '#9a3412', fontSize: '13.5px', marginBottom: '14px' }}>
+                          راجع فيديو الحصة المسجلة ثم أعد المحاولة دون أي قلق.
+                        </p>
+                        <button className="btn-secondary" onClick={() => setQuizAnswered(null)}>
+                          أعد المحاولة الآن ↺
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
+              {/* Tab 3: PDF */}
+              {studioActiveTab === 'pdf' && (
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <div style={{ fontSize: '56px', marginBottom: '12px' }}>📄</div>
+                  <h3 style={{ fontSize: '20px', marginBottom: '6px' }}>{activeLesson.pdfTitle}</h3>
+                  <p style={{ color: 'var(--muted)', marginBottom: '20px' }}>ملف تفاعلي جاهز للطباعة والحل المنزلي مع ولي الأمر</p>
+                  <button className="btn-accent" onClick={() => triggerToast(`تم تحميل ملف PDF: ${activeLesson.pdfTitle}`)}>
+                    تحميل وطباعة ورقة العمل
+                  </button>
+                </div>
+              )}
+
+              {/* Tab 4: Parent Companion Guide */}
+              {studioActiveTab === 'guide' && activeLesson.parentGuide && (
+                <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'right' }}>
+                  <div style={{
+                    background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px',
+                    padding: '20px', marginBottom: '24px'
+                  }}>
+                    <h4 style={{ color: '#166534', fontSize: '16px', marginBottom: '6px' }}>
+                      💡 خلاصة الهدف التربوي لولي الأمر:
+                    </h4>
+                    <p style={{ color: '#15803d', fontSize: '14px', lineHeight: 1.6 }}>
+                      {activeLesson.parentGuide.summary}
+                    </p>
+                  </div>
+
+                  <h4 style={{ fontSize: '16px', marginBottom: '14px', color: 'var(--navy)' }}>
+                    3 نصائح سريعة للمذاكرة في 5 دقائق بدون ضغط عصبي:
+                  </h4>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {activeLesson.parentGuide.tips.map((tip, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          background: '#f8fafc', border: '1px solid var(--line)', borderRadius: '12px',
+                          padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px'
+                        }}
+                      >
+                        <span style={{
+                          width: '28px', height: '28px', borderRadius: '50%', background: 'var(--blue)',
+                          color: 'white', display: 'grid', placeItems: 'center', fontWeight: 800, fontSize: '13px', flexShrink: 0
+                        }}>
+                          {idx + 1}
+                        </span>
+                        <span style={{ fontSize: '13.5px', color: '#334155' }}>{tip}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Parent Gate Modal */}
+      {showGateModal && (
+        <div className="modal-overlay">
+          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔒</div>
+            <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>بوابة ولي الأمر</h3>
+            <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '16px' }}>
+              لحماية الطفل، يُرجى حل المسألة الرياضية للعودة:
+            </p>
+            <div style={{
+              fontSize: '24px', fontWeight: 800, color: 'var(--blue)', background: '#eff6ff',
+              padding: '12px', borderRadius: '12px', marginBottom: '16px'
+            }}>
+              كم حاصل: {gateNum1} + {gateNum2} ؟
+            </div>
+            <input
+              type="number"
+              value={gateInput}
+              onChange={(e) => setGateInput(e.target.value)}
+              placeholder="اكتب الناتج هنا"
+              style={{
+                width: '100%', padding: '12px', textAlign: 'center', fontSize: '18px',
+                border: '2px solid var(--line)', borderRadius: '12px', marginBottom: '16px'
+              }}
+              autoFocus
+            />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="btn-accent" style={{ flex: 1, justifyContent: 'center' }} onClick={handleVerifyGate}>
+                دخول
+              </button>
+              <button
+                style={{ background: '#e2e8f0', color: 'var(--navy)', border: 'none', padding: '12px 20px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
+                onClick={() => setShowGateModal(false)}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Teacher Schedule Modal */}
+      {showScheduleModal && (
+        <div className="modal-overlay">
+          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '500px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>جدولة حصة حية جديدة</h3>
+              <button style={{ background: 'none', fontSize: '20px' }} onClick={() => setShowScheduleModal(false)}>✕</button>
+            </div>
+            <form onSubmit={handleSaveSchedule}>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '6px' }}>عنوان الحصة والمهارة</label>
+                <input
+                  type="text"
+                  style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px' }}
+                  value={schedTitle}
+                  onChange={(e) => setSchedTitle(e.target.value)}
+                  required
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '6px' }}>المادة المقررة</label>
+                  <select style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'white', fontSize: '13px' }}>
+                    <option>📖 اللغة العربية</option>
+                    <option>🌟 Connect Plus (لغات)</option>
+                    <option>📐 Math (English — لغات)</option>
+                    <option>🔢 الرياضيات (عربي)</option>
+                    <option>🔤 Connect الإنجليزية</option>
+                    <option>🔬 اكتشف (Discover)</option>
+                    <option>💻 تكنولوجيا المعلومات (ICT)</option>
+                    <option>🇪🇬 معالم وتاريخ مصر (الهوية)</option>
+                    <option>🛠️ المهارات الحياتية والمهنية</option>
+                    <option>✍️ نور البيان والخط العربي</option>
+                    <option>🕋 التربية الإسلامية والقرآن</option>
+                    <option>✝️ التربية المسيحية</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '6px' }}>المجموعة</label>
+                  <select style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'white' }}>
+                    <option>المجموعة أ (4 طلاب)</option>
+                    <option>المجموعة ب (4 طلاب)</option>
+                  </select>
+                </div>
+              </div>
+              <button className="btn-accent" style={{ width: '100%', justifyContent: 'center' }} type="submit">
+                تأكيد ونشر الحصة في جداول الطلاب 📢
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

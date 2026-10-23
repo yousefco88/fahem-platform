@@ -1,0 +1,1921 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فاهم — منصة التعليم الحي والمتقن لأبنائنا بالخارج</title>
+  <!-- خطوط عربية حديثة معتمدة بالهوية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #eff6ff;
+      --teal: #14b8a6;
+      --teal-light: #f0fdfa;
+      --yellow: #facc15;
+      --yellow-light: #fefce8;
+      --navy: #16324f;
+      --navy-dark: #0f172a;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --line: #e2e8f0;
+      --muted: #64748b;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --orange: #f97316;
+      --orange-light: #fff7ed;
+      --red: #ef4444;
+      --purple: #8b5cf6;
+      --purple-light: #f5f3ff;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 2px 6px rgba(22, 50, 79, 0.05);
+      --shadow-md: 0 10px 25px -5px rgba(22, 50, 79, 0.08);
+      --shadow-lg: 0 20px 35px -10px rgba(37, 99, 235, 0.15);
+      --font-title: 'Cairo', system-ui, sans-serif;
+      --font-body: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--navy);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, .brand-font {
+      font-family: var(--font-title);
+      font-weight: 700;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    button:active { transform: scale(0.97); }
+
+    /* Top Role & View Switcher Bar */
+    .role-switcher-bar {
+      background: var(--navy-dark);
+      color: #94a3b8;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .role-badges {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .role-pill {
+      background: rgba(255,255,255,0.08);
+      color: #cbd5e1;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .role-pill:hover { background: rgba(255,255,255,0.18); color: white; }
+    .role-pill.active {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 0 14px rgba(37,99,235,0.5);
+    }
+    .role-pill.child-pill.active {
+      background: linear-gradient(135deg, #f59e0b, #ec4899);
+      color: white;
+    }
+    .role-pill.teacher-pill.active {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    /* Core View Container */
+    .app-shell { min-height: calc(100vh - 46px); display: flex; flex-direction: column; }
+    .screen-view { display: none; width: 100%; flex: 1; }
+    .screen-view.active { display: flex; flex-direction: column; }
+
+    /* ========================================================
+       1. مساحة ولي الأمر (Parent Dashboard)
+       ======================================================== */
+    .parent-layout { display: flex; flex: 1; }
+    .sidebar {
+      width: 270px;
+      background: #ffffff;
+      border-left: 1px solid var(--line);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), #1d4ed8);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 900;
+      box-shadow: var(--shadow-lg);
+    }
+    .brand-text h3 { font-size: 20px; color: var(--navy); line-height: 1.1; }
+    .brand-text span { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+    .child-card-picker {
+      background: var(--blue-light);
+      border: 1.5px solid #bfdbfe;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .child-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      background: #dbeafe;
+      border: 2px solid var(--blue);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+    .child-info h4 { font-size: 15px; margin-bottom: 2px; }
+    .child-info span { font-size: 12px; color: var(--muted); }
+
+    .nav-list { display: flex; flex-direction: column; gap: 6px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      color: #475569;
+      font-weight: 600;
+      font-size: 14px;
+      background: transparent;
+      width: 100%;
+      text-align: right;
+    }
+    .nav-item:hover { background: #f1f5f9; color: var(--navy); }
+    .nav-item.active { background: var(--blue-light); color: var(--blue); font-weight: 700; }
+    .nav-item .icon { font-size: 18px; width: 24px; }
+
+    .launch-child-btn {
+      margin-top: auto;
+      background: linear-gradient(135deg, #f59e0b, #ec4899);
+      color: white;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 700;
+      box-shadow: 0 10px 20px rgba(236,72,153,0.25);
+    }
+    .launch-child-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(236,72,153,0.35); }
+
+    .main-viewport { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .parent-topbar {
+      height: 72px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      padding: 0 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .parent-content { padding: 32px; max-width: 1350px; width: 100%; margin: 0 auto; }
+
+    /* Live Hero Card */
+    .live-hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -10px rgba(30, 58, 138, 0.4);
+      margin-bottom: 30px;
+    }
+    .live-hero-card::after {
+      content: '🎙️';
+      position: absolute;
+      left: 30px;
+      bottom: -20px;
+      font-size: 160px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    .live-badge-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: pulseAnim 1.6s infinite;
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .live-hero-title { font-size: 26px; margin-bottom: 8px; font-weight: 800; }
+    .live-hero-desc { color: #cbd5e1; max-width: 650px; font-size: 14.5px; margin-bottom: 22px; }
+    .live-hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    
+    .btn-live-enter {
+      background: var(--yellow);
+      color: var(--navy-dark);
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 16px rgba(250, 204, 21, 0.3);
+    }
+    .btn-live-enter:hover { background: #fde047; transform: translateY(-2px); }
+
+    .btn-ghost-light {
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .btn-ghost-light:hover { background: rgba(255, 255, 255, 0.2); }
+
+    /* Reassurance Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .metric-data span { font-size: 13px; color: var(--muted); font-weight: 500; display: block; margin-bottom: 6px; }
+    .metric-data h3 { font-size: 28px; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+    .metric-data small { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .metric-data small.good { color: var(--green); }
+    .metric-data small.info { color: var(--blue); }
+    .metric-icon-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    /* Two Columns Section */
+    .two-col-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+    .card-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-header h3 { font-size: 18px; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+
+    /* Mastery Matrix List */
+    .mastery-list { display: flex; flex-direction: column; gap: 14px; }
+    .mastery-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #fafaf9;
+      transition: all 0.2s;
+    }
+    .mastery-row:hover { background: #ffffff; border-color: #cbd5e1; box-shadow: var(--shadow-sm); }
+    .skill-title { font-weight: 700; font-size: 14.5px; margin-bottom: 4px; }
+    .skill-sub { font-size: 12px; color: var(--muted); }
+    .mastery-status { display: flex; align-items: center; gap: 12px; }
+    .tag-status {
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tag-mastered { background: var(--green-light); color: var(--green); border: 1px solid #a7f3d0; }
+    .tag-review { background: var(--orange-light); color: var(--orange); border: 1px solid #fed7aa; }
+    .btn-retake {
+      background: var(--blue-light);
+      color: var(--blue);
+      border: 1px solid #bfdbfe;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .btn-retake:hover { background: var(--blue); color: white; }
+
+    /* Recorded Archive List */
+    .archive-list { display: flex; flex-direction: column; gap: 12px; }
+    .archive-item {
+      display: flex;
+      gap: 14px;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: white;
+      align-items: center;
+    }
+    .archive-thumb {
+      width: 72px;
+      height: 52px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1e293b, #3b82f6);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 18px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .archive-thumb small {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-size: 9px;
+      background: rgba(0,0,0,0.6);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+    .archive-info { flex: 1; min-width: 0; }
+    .archive-info h5 { font-size: 13.5px; margin-bottom: 2px; }
+    .archive-info span { font-size: 11.5px; color: var(--muted); }
+    .archive-play-btn {
+      background: var(--blue-light);
+      color: var(--blue);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+    }
+    .archive-play-btn:hover { background: var(--blue); color: white; }
+
+    /* ========================================================
+       2. مساحة الطفل (Child Universe)
+       ======================================================== */
+    .child-universe {
+      background: radial-gradient(circle at 10% 20%, #eff6ff 0%, #f0fdf4 90%);
+      padding: 24px;
+      position: relative;
+    }
+    .child-top-nav {
+      max-width: 1200px;
+      margin: 0 auto 28px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border: 2px solid #e0e7ff;
+      border-radius: var(--radius-full);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.08);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .child-profile-pill { display: flex; align-items: center; gap: 12px; }
+    .child-avatar-big {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fef08a;
+      border: 3px solid #f59e0b;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+    }
+    .child-name-badge h3 { font-size: 18px; color: var(--navy); }
+    .child-name-badge span { font-size: 12px; color: #4338ca; font-weight: 700; }
+
+    .child-rewards-bar { display: flex; align-items: center; gap: 16px; }
+    .reward-pill {
+      background: #ffffff;
+      border: 2px solid #fed7aa;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+      font-size: 15px;
+      color: #ea580c;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(234, 88, 12, 0.08);
+    }
+    .reward-pill.stars { border-color: #fde047; color: #ca8a04; }
+
+    .parent-gate-btn {
+      background: #f1f5f9;
+      color: var(--muted);
+      border: 1px solid #cbd5e1;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .parent-gate-btn:hover { background: #e2e8f0; color: var(--navy); }
+
+    .child-container { max-width: 1200px; margin: 0 auto; }
+    .child-hero-banner {
+      background: linear-gradient(135deg, #4338ca, #3b82f6 60%, #06b6d4);
+      color: white;
+      border-radius: 32px;
+      padding: 32px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 20px 35px rgba(59, 130, 246, 0.25);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 34px;
+    }
+    .child-hero-banner h1 { font-size: 32px; margin-bottom: 8px; font-weight: 900; }
+    .child-hero-banner p { font-size: 16px; color: #e0e7ff; max-width: 580px; margin-bottom: 20px; }
+    .btn-child-live {
+      background: #facc15;
+      color: #1e1b4b;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 16px 32px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(250, 204, 21, 0.4);
+      animation: bounceSmall 2s infinite ease-in-out;
+    }
+    @keyframes bounceSmall {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .mascot-avatar { font-size: 90px; }
+
+    .adventure-track {
+      background: white;
+      border: 3px solid #e0e7ff;
+      border-radius: 36px;
+      padding: 32px;
+      box-shadow: 0 15px 30px rgba(99, 102, 241, 0.05);
+      margin-bottom: 40px;
+    }
+    .path-nodes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .node-card {
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      padding: 24px 18px;
+      text-align: center;
+      background: #ffffff;
+      position: relative;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .node-card:hover { transform: translateY(-6px); box-shadow: 0 16px 28px rgba(37, 99, 235, 0.12); border-color: var(--blue); }
+    .node-card.mastered { background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%); border-color: #86efac; }
+    .node-card.active-now { border-color: var(--yellow); box-shadow: 0 0 0 4px #fef08a; background: #fffbeb; }
+    .node-badge-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+    }
+    .mastered .node-badge-circle { background: #dcfce7; border: 3px solid #22c55e; }
+    .active-now .node-badge-circle { background: #fef08a; border: 3px solid #eab308; }
+    .status-stamp {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .status-stamp.stamp-mastered { background: #dcfce7; color: #15803d; }
+    .status-stamp.stamp-review { background: #ffedd5; color: #c2410c; }
+    .node-action-btn { width: 100%; padding: 10px; border-radius: var(--radius-md); font-weight: 700; font-size: 13px; }
+    .btn-play-review { background: var(--blue); color: white; }
+    .btn-retake-quiz { background: #ea580c; color: white; }
+
+    /* ========================================================
+       3. شاشة تسجيل وبدء ولي الأمر (PARENT ONBOARDING FLOW)
+       ======================================================== */
+    .onboarding-container {
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+    .stepper-header {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 36px;
+    }
+    .stepper-header::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: var(--line);
+      z-index: 1;
+    }
+    .step-item {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      background: var(--bg);
+      padding: 0 10px;
+    }
+    .step-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      margin: 0 auto 8px;
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+    .step-item.active .step-num {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+      box-shadow: 0 0 16px rgba(37,99,235,0.4);
+    }
+    .step-item.completed .step-num {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+    .step-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+
+    .onboarding-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--line);
+    }
+    .form-group { margin-bottom: 22px; }
+    .form-label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; color: var(--navy); }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+      background: white;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    
+    .timezone-pill-box {
+      background: #eff6ff;
+      border: 1.5px dashed #bfdbfe;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .timezone-badge {
+      background: white;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      color: var(--blue);
+      border: 1px solid #bfdbfe;
+      font-size: 13px;
+    }
+
+    /* ========================================================
+       4. مساحة المعلم (TEACHER STUDIO & COMMAND CENTER)
+       ======================================================== */
+    .teacher-container {
+      max-width: 1350px;
+      margin: 30px auto;
+      padding: 0 30px;
+      width: 100%;
+    }
+    .teacher-hero-card {
+      background: linear-gradient(135deg, #064e3b, #059669 60%, #10b981);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 15px 30px rgba(16, 185, 129, 0.25);
+    }
+    .teacher-hero-card h1 { font-size: 26px; margin-bottom: 6px; }
+    .teacher-hero-card p { opacity: 0.9; font-size: 14px; max-width: 600px; }
+
+    .attention-box {
+      background: #fff7ed;
+      border: 2px solid #fed7aa;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 30px;
+    }
+    .attention-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .attention-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .attention-student-card {
+      background: white;
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .attention-student-card h4 { font-size: 15px; color: var(--navy); margin-bottom: 4px; }
+    .attention-student-card p { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+
+    /* ========================================================
+       5. شاشة الباقات والاشتراك (PRICING & PLANS)
+       ======================================================== */
+    .pricing-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .pricing-header h1 { font-size: 34px; margin-bottom: 12px; }
+    .pricing-header p { color: var(--muted); font-size: 16px; max-width: 650px; margin: 0 auto 36px; }
+    
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+    .plan-card {
+      background: white;
+      border: 2px solid var(--line);
+      border-radius: 28px;
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.25s;
+    }
+    .plan-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--blue); }
+    .plan-card.featured {
+      border-color: var(--blue);
+      box-shadow: 0 20px 35px -5px rgba(37,99,235,0.2);
+      background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+    }
+    .featured-badge {
+      position: absolute;
+      top: -14px;
+      right: 50%;
+      transform: translateX(50%);
+      background: var(--blue);
+      color: white;
+      padding: 5px 18px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .plan-name { font-size: 22px; margin-bottom: 8px; color: var(--navy); }
+    .plan-desc { font-size: 13.5px; color: var(--muted); margin-bottom: 24px; min-height: 42px; }
+    .plan-price { font-size: 40px; font-weight: 900; color: var(--navy); margin-bottom: 4px; }
+    .plan-price span { font-size: 15px; font-weight: 600; color: var(--muted); }
+    .plan-features {
+      list-style: none;
+      margin: 28px 0;
+      padding: 0;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .plan-features li { font-size: 14px; display: flex; align-items: center; gap: 10px; color: #334155; }
+    .plan-features li span { color: var(--green); font-weight: 900; }
+
+    /* Modals & Overlays */
+    .parent-gate-modal, .live-classroom-modal, .lesson-studio-modal, .schedule-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      place-items: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+    }
+    .parent-gate-modal.active, .schedule-modal.active { display: grid; }
+    .live-classroom-modal.active { display: flex; flex-direction: column; }
+    .lesson-studio-modal.active { display: grid; }
+
+    /* Toast Message */
+    #toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: var(--navy-dark);
+      color: white;
+      padding: 14px 22px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 14px;
+      z-index: 200;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    /* Lesson Studio Mockup styles */
+    .studio-container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 1150px;
+      border-radius: 28px;
+      overflow: hidden;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .studio-topbar {
+      background: var(--navy-dark);
+      color: white;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .studio-tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-bottom: 2px solid var(--line);
+      padding: 0 24px;
+      gap: 12px;
+    }
+    .studio-tab-btn {
+      padding: 14px 22px;
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--muted);
+      background: transparent;
+      border-bottom: 3px solid transparent;
+    }
+    .studio-tab-btn.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+      background: white;
+      border-radius: 12px 12px 0 0;
+    }
+    .studio-body { padding: 28px; overflow-y: auto; flex: 1; }
+    
+    .video-mockup-wrapper {
+      background: #000;
+      border-radius: 20px;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      max-height: 440px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .interactive-options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .quiz-option-card {
+      background: white;
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .quiz-option-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .quiz-option-card.correct { background: #ecfdf5; border-color: #10b981; color: #047857; }
+    .quiz-option-card.wrong { background: #fef2f2; border-color: #ef4444; color: #b91c1c; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col-layout { grid-template-columns: 1fr; }
+      .path-nodes { grid-template-columns: repeat(2, 1fr); }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .attention-card-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .parent-content { padding: 18px; }
+      .path-nodes { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شريط التبديل الشامل لجميع واجهات وأطراف المنصة -->
+  <header class="role-switcher-bar">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="color:#ffffff; font-weight:800; font-size:14px;">منصة فاهم</span>
+      <span style="opacity:0.4;">|</span>
+      <span style="font-size:12px;">نظام التعليم الحي والمتقن للمنهج المصري</span>
+    </div>
+    <div class="role-badges">
+      <span style="font-size:11px; margin-left:4px; opacity:0.8;">الواجهة:</span>
+      <button class="role-pill active" id="btn-tab-parent" onclick="showScreen('parent')">
+        👨‍👩‍👦 لوحة ولي الأمر
+      </button>
+      <button class="role-pill child-pill" id="btn-tab-child" onclick="showScreen('child')">
+        🚀 مساحة الطفل (أحمد)
+      </button>
+      <button class="role-pill teacher-pill" id="btn-tab-teacher" onclick="showScreen('teacher')">
+        👩‍🏫 مساحة المعلم (أ/ سارة)
+      </button>
+      <button class="role-pill" id="btn-tab-onboarding" onclick="showScreen('onboarding')">
+        📝 تسجيل الأسر والمنطقة الزمنية
+      </button>
+      <button class="role-pill" id="btn-tab-pricing" onclick="showScreen('pricing')">
+        💳 الباقات والاشتراك
+      </button>
+      <button class="role-pill" style="background:#dc2626; color:white;" onclick="launchLiveClassModal()">
+        🔴 الفصل الحي المباشر
+      </button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+
+    <!-- ========================================================
+         1. شاشة ولي الأمر (PARENT DASHBOARD)
+         ======================================================== -->
+    <div class="screen-view active" id="view-parent">
+      <div class="parent-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="brand-box">
+            <div class="brand-icon">ف</div>
+            <div class="brand-text">
+              <h3>فاهم</h3>
+              <span>التعليم الحي لأبنائنا بالخارج</span>
+            </div>
+          </div>
+
+          <div class="child-card-picker">
+            <div class="child-avatar">👦</div>
+            <div class="child-info">
+              <h4 id="parent-child-name-label">أحمد محمد</h4>
+              <span>الصف الأول الابتدائي (مصر)</span>
+            </div>
+          </div>
+
+          <nav class="nav-list">
+            <button class="nav-item active"><span class="icon">⌂</span> لوحة المتابعة الشاملة</button>
+            <button class="nav-item" onclick="toast('جدول الحصص المباشرة والمسجلة متاح أدناه')"><span class="icon">🗓</span> جدول الحصص الحية</button>
+            <button class="nav-item" onclick="toast('سجل إتقان المهارات معروض في اللوحة الرئيسية')"><span class="icon">🎯</span> مصفوفة إتقان المهارات</button>
+            <button class="nav-item" onclick="showScreen('pricing')"><span class="icon">💳</span> باقة الاشتراك النشطة</button>
+          </nav>
+
+          <button class="launch-child-btn" onclick="showScreen('child')">
+            <span>دخول مساحة الطفل</span>
+            <span style="font-size:18px;">🚀</span>
+          </button>
+        </aside>
+
+        <!-- Main Viewport -->
+        <main class="main-viewport">
+          <header class="parent-topbar">
+            <div>
+              <h2 style="font-size: 20px;">متابعة تقدّم: أحمد 🌟</h2>
+              <span style="font-size: 13px; color: var(--muted);" id="parent-tz-indicator">التوقيت المحلي: الرياض / مكة المكرمة (GMT+3)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <button class="tag-status tag-mastered" onclick="showScreen('pricing')">
+                🟢 باقة التأسيس الحي النشطة
+              </button>
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: #dbeafe; color: var(--blue); display: grid; place-items: center; font-weight: 800;">
+                أ.م
+              </div>
+            </div>
+          </header>
+
+          <div class="parent-content">
+            <!-- Hero Live Card -->
+            <section class="live-hero-card">
+              <div class="live-badge-pulse">
+                <span class="pulse-dot"></span>
+                <span>الحصة الحية القادمة اليوم</span>
+              </div>
+              <h1 class="live-hero-title">اللغة العربية: أصوات حرف الباء الممدودة وتكوين الكلمات</h1>
+              <p class="live-hero-desc">
+                حصة تفاعلية مباشرة مع الأستاذة <strong>سارة أحمد</strong> في مجموعة صغيرة (4 طلاب). يتعلم فيها أحمد نطق الحرف، التمييز السمعي، والمشاركة الصوتية.
+              </p>
+              <div class="live-hero-actions">
+                <button class="btn-live-enter" onclick="launchLiveClassModal()">
+                  <span>دخول الفصل الحي الآن</span>
+                  <span>🔴</span>
+                </button>
+                <button class="btn-ghost-light" onclick="toast('تم تفعيل التذكير عبر واتساب قبل الحصة بـ 15 دقيقة')">
+                  🔔 تذكير ولي الأمر
+                </button>
+                <span style="font-size: 13px; opacity: 0.85;" id="hero-live-time">الموعد: اليوم 7:00 م (بتوقيتك المحلي)</span>
+              </div>
+            </section>
+
+            <!-- Metrics -->
+            <section class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-data">
+                  <span>حضور الحصص الحية</span>
+                  <h3>100%</h3>
+                  <small class="good">✓ حضر 8 من أصل 8 حصص</small>
+                </div>
+                <div class="metric-icon-box" style="background:#ecfdf5; color:#10b981;">🗓</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-data">
+                  <span>المهارات المتقنة بنجاح</span>
+                  <h3 id="parent-stat-mastered">7 / 10</h3>
+                  <small class="good">⭐ تجاوزت اختبارات الإتقان</small>
+                </div>
+                <div class="metric-icon-box" style="background:#fefce8; color:#ca8a04;">🏆</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-data">
+                  <span>ساعات مراجعة التسجيلات</span>
+                  <h3>3.5 س</h3>
+                  <small class="info">↺ أعاد مشاهدة 4 حصص مسجلة</small>
+                </div>
+                <div class="metric-icon-box" style="background:#eff6ff; color:#2563eb;">🎥</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-data">
+                  <span>نقاط الفهم والشارات</span>
+                  <h3 id="parent-stat-points">280 ⭐</h3>
+                  <small class="good">🔥 4 شارات إتقان مكتسبة</small>
+                </div>
+                <div class="metric-icon-box" style="background:#fff7ed; color:#ea580c;">⭐</div>
+              </div>
+            </section>
+
+            <!-- Two Columns -->
+            <div class="two-col-layout">
+              <div class="card-panel">
+                <div class="panel-header">
+                  <h3><span>🎯</span> مصفوفة إتقان المهارات (Mastery Learning)</h3>
+                </div>
+                <div class="mastery-list">
+                  <div class="mastery-row">
+                    <div>
+                      <div class="skill-title">نطق وكتابة حرف الألف بحركاته (أَ، أُ، إِ)</div>
+                      <div class="skill-sub">اللغة العربية · الوحدة الأولى · اجتياز بنسبة 100%</div>
+                    </div>
+                    <span class="tag-status tag-mastered">✓ متقن بالكامل</span>
+                  </div>
+                  <div class="mastery-row" id="row-skill-baa">
+                    <div>
+                      <div class="skill-title">تمييز صوت حرف الباء في أول ووسط الكلمة</div>
+                      <div class="skill-sub" id="sub-skill-baa">اللغة العربية · شاهد التسجيل 1 مرة · بانتظار الإتقان (محاولة 60%)</div>
+                    </div>
+                    <div class="mastery-status">
+                      <span class="tag-status tag-review" id="badge-skill-baa">↺ قيد المراجعة</span>
+                      <button class="btn-retake" onclick="openStudioLesson('baa', 'quiz')">إعادة الاختبار</button>
+                    </div>
+                  </div>
+                  <div class="mastery-row">
+                    <div>
+                      <div class="skill-title">العد التصاعدي والأرقام من 1 إلى 5</div>
+                      <div class="skill-sub">الرياضيات · الوحدة الأولى · تم الإتقان</div>
+                    </div>
+                    <span class="tag-status tag-mastered">✓ متقن بالكامل</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-panel">
+                <div class="panel-header">
+                  <h3><span>🎥</span> مكتبة الحصص المسجلة (للمراجعة)</h3>
+                </div>
+                <div class="archive-list">
+                  <div class="archive-item">
+                    <div class="archive-thumb">▶<small>32:10</small></div>
+                    <div class="archive-info">
+                      <h5>حصة مراجعة الأعداد والكميات</h5>
+                      <span>الرياضيات · أ/ محمود حسن · مسجلة قبل يومين</span>
+                    </div>
+                    <button class="archive-play-btn" onclick="openStudioLesson('math', 'video')">▶</button>
+                  </div>
+                  <div class="archive-item">
+                    <div class="archive-thumb" style="background: linear-gradient(135deg, #1e3a8a, #06b6d4);">▶<small>28:45</small></div>
+                    <div class="archive-info">
+                      <h5>حصة تأسيس حرف الباء والأصوات</h5>
+                      <span>اللغة العربية · أ/ سارة أحمد · مسجلة أمس</span>
+                    </div>
+                    <button class="archive-play-btn" onclick="openStudioLesson('baa', 'video')">▶</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         2. مساحة الطفل (CHILD UNIVERSE)
+         ======================================================== -->
+    <div class="screen-view" id="view-child">
+      <div class="child-universe">
+        <nav class="child-top-nav">
+          <div class="child-profile-pill">
+            <div class="child-avatar-big">🦁</div>
+            <div class="child-name-badge">
+              <h3 id="child-display-name">البطل أحمد</h3>
+              <span>الصف الأول الابتدائي 🚀</span>
+            </div>
+          </div>
+          <div class="child-rewards-bar">
+            <div class="reward-pill stars">
+              <span>⭐</span>
+              <span id="child-points-counter">280</span>
+              <span style="font-size:12px; font-weight:600;">نقطة</span>
+            </div>
+            <div class="reward-pill">
+              <span>🏆</span>
+              <span id="child-badges-counter">4</span>
+              <span style="font-size:12px; font-weight:600;">شارات</span>
+            </div>
+          </div>
+          <button class="parent-gate-btn" onclick="openParentGateModal()">
+            <span>🔒 مساحة ولي الأمر</span>
+          </button>
+        </nav>
+
+        <div class="child-container">
+          <section class="child-hero-banner">
+            <div>
+              <div style="background:rgba(255,255,255,0.2); display:inline-block; padding:4px 14px; border-radius:20px; font-size:13px; font-weight:800; margin-bottom:12px;">
+                🔴 حصتك المباشرة اليوم مع الأستاذة سارة
+              </div>
+              <h1>جاهز نفهم ونلعب سوا يا بطل؟ 🌟</h1>
+              <p>معلمتك وزملائك مستنينك في الفصل الحي! وإذا حبيت تراجع أي درس، كل الحصص مسجلة في جزيرتك.</p>
+              <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+                <button class="btn-child-live" onclick="launchLiveClassModal()">
+                  <span>ادخل الحصة الحية مع المعلم</span>
+                  <span>👋</span>
+                </button>
+                <button class="btn-ghost-light" style="border-radius:9999px; font-size:15px; padding:15px 24px;" onclick="openStudioLesson('baa', 'video')">
+                  <span>🎥 راجع تسجيل آخر حصة</span>
+                </button>
+              </div>
+            </div>
+            <div class="mascot-avatar">🦊</div>
+          </section>
+
+          <div class="adventure-track">
+            <div style="margin-bottom:20px; font-size:20px; font-weight:800;">خريطة مسار مادة اللغة العربية (المنهج المصري) 🗺️</div>
+            <div class="path-nodes">
+              <div class="node-card mastered" onclick="openStudioLesson('alef', 'video')">
+                <span class="status-stamp stamp-mastered">✓ متقن 100%</span>
+                <div class="node-badge-circle">أ</div>
+                <h4>حرف الألف بالحركات</h4>
+                <p>أتقنت الدرس بنجاح!</p>
+                <button class="node-action-btn btn-play-review">مشاهدة التسجيل ▶</button>
+              </div>
+              <div class="node-card active-now" id="card-node-baa">
+                <span class="status-stamp stamp-review" id="stamp-node-baa">↺ راجع لتتقن</span>
+                <div class="node-badge-circle">ب</div>
+                <h4>حرف الباء وأصواته</h4>
+                <p>باقيلك خطوة وتربح الشارة!</p>
+                <button class="node-action-btn btn-retake-quiz" id="btn-node-baa" onclick="openStudioLesson('baa', 'quiz')">
+                  تحدي الإتقان (أعد الاختبار) ↺
+                </button>
+              </div>
+              <div class="node-card" onclick="openStudioLesson('taa', 'video')">
+                <span class="status-stamp" style="background:#dbeafe; color:#1d4ed8;">🎥 تسجيل متاح</span>
+                <div class="node-badge-circle" style="background:#e0f2fe; border:3px solid #38bdf8;">ت</div>
+                <h4>حرف التاء والكلمات</h4>
+                <p>حصة مسجلة ممتعة.</p>
+                <button class="node-action-btn btn-play-review">ابدأ المراجعة ▶</button>
+              </div>
+              <div class="node-card" style="opacity:0.6;" onclick="toast('هذا الدرس سيشرحه المعلم في الحصة القادمة')">
+                <span class="status-stamp" style="background:#f1f5f9; color:var(--muted);">🔒 قريباً</span>
+                <div class="node-badge-circle" style="background:#f1f5f9;">ث</div>
+                <h4>حرف الثاء والتركيب</h4>
+                <p>في الحصة القادمة.</p>
+                <button class="node-action-btn" style="background:#e2e8f0; color:var(--muted);">قريباً</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         3. شاشة تسجيل ولي الأمر والمنطقة الزمنية (ONBOARDING FLOW)
+         ======================================================== -->
+    <div class="screen-view" id="view-onboarding">
+      <div class="onboarding-container">
+        <!-- Stepper -->
+        <div class="stepper-header">
+          <div class="step-item completed" id="step-indicator-1">
+            <div class="step-num">✓</div>
+            <div class="step-title">1. حساب ولي الأمر</div>
+          </div>
+          <div class="step-item active" id="step-indicator-2">
+            <div class="step-num">2</div>
+            <div class="step-title">2. إضافة الطفل والصف</div>
+          </div>
+          <div class="step-item" id="step-indicator-3">
+            <div class="step-num">3</div>
+            <div class="step-title">3. المنطقة وتأكيد الحصة</div>
+          </div>
+        </div>
+
+        <div class="onboarding-card">
+          <div style="text-align:center; margin-bottom:28px;">
+            <h2 style="font-size:24px; color:var(--navy); margin-bottom:6px;">أهلاً بك في منصة فاهم لأبنائنا بالخارج 🇪🇬</h2>
+            <p style="color:var(--muted); font-size:14px;">جهّز حساب طفلك لنربط مواعيد حصصه المباشرة تلقائياً مع توقيت إقامتكم.</p>
+          </div>
+
+          <div id="onboarding-form">
+            <div class="form-group">
+              <label class="form-label">اسم ولي الأمر</label>
+              <input type="text" class="form-input" id="onb-parent-name" value="أحمد محمد" placeholder="مثال: محمد السيد">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label class="form-label">اسم الطفل (الطالب)</label>
+                <input type="text" class="form-input" id="onb-child-name" value="أحمد" placeholder="مثال: يوسف">
+              </div>
+              <div class="form-group">
+                <label class="form-label">الصف الدراسي</label>
+                <select class="form-select" id="onb-child-grade">
+                  <option selected>الصف الأول الابتدائي (المنهج المصري)</option>
+                  <option>الصف الثاني الابتدائي (المنهج المصري)</option>
+                  <option>الصف الثالث الابتدائي (المنهج المصري)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">بلد الإقامة الحالية (لحساب المنطقة الزمنية تلقائياً)</label>
+              <select class="form-select" id="onb-country" onchange="updateTimezonePreview()">
+                <option value="KSA" selected>المملكة العربية السعودية (توقيت مكة GMT+3)</option>
+                <option value="UAE">الإمارات العربية المتحدة (توقيت دبي GMT+4)</option>
+                <option value="KUW">الكويت (GMT+3)</option>
+                <option value="QAT">قطر (GMT+3)</option>
+                <option value="EGY">مصر (توقيت القاهرة GMT+2)</option>
+                <option value="UK">المملكة المتحدة / بريطانيا (GMT+0 / GMT+1)</option>
+                <option value="GER">ألمانيا وأوروبا الوسطى (GMT+1 / GMT+2)</option>
+                <option value="USA">الولايات المتحدة / كندا (توقيت الشرق EST)</option>
+              </select>
+
+              <div class="timezone-pill-box">
+                <div>
+                  <strong style="color:var(--blue); font-size:14px; display:block;">توقيت الحصص التفاعلية المحسوب لك:</strong>
+                  <span style="font-size:12.5px; color:var(--muted);" id="tz-calculation-text">
+                    حصة اليوم 6:00 م بتوقيت القاهرة توافق <strong>7:00 م</strong> بتوقيت إقامتك بالسعودية.
+                  </span>
+                </div>
+                <div class="timezone-badge" id="tz-live-badge">الساعة 7:00 مساءً</div>
+              </div>
+            </div>
+
+            <button class="btn-live-enter" style="width:100%; justify-content:center; padding:16px; font-size:16px; margin-top:14px;" onclick="saveOnboardingProfile()">
+              <span>تأكيد البيانات والدخول للوحة المتابعة 🚀</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         4. مساحة المعلم (TEACHER STUDIO & COMMAND CENTER)
+         ======================================================== -->
+    <div class="screen-view" id="view-teacher">
+      <div class="teacher-container">
+        <!-- Teacher Hero -->
+        <section class="teacher-hero-card">
+          <div>
+            <h1>مرحباً أ/ سارة أحمد 👋</h1>
+            <p>معلمة المنهج المصري — اللغة العربية للصف الأول الابتدائي. لديك اليوم حصتان مباشرتان مسجلتان.</p>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button class="btn-live-enter" style="background:#fef08a; color:#064e3b;" onclick="openScheduleModal()">
+              <span>+ جدولة حصة جديدة</span>
+            </button>
+            <button class="btn-ghost-light" onclick="launchLiveClassModal()">
+              <span>بدء الفصل الحي الآن 🔴</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Teacher Metrics -->
+        <section class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-data">
+              <span>الحصص المجدولة هذا الأسبوع</span>
+              <h3>6 حصص</h3>
+              <small class="good">✓ 4 حصص مكتملة ومؤرشفة</small>
+            </div>
+            <div class="metric-icon-box" style="background:#ecfdf5; color:#10b981;">🗓</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-data">
+              <span>الطلاب المسجلون بمجموعاتي</span>
+              <h3>18 طالباً</h3>
+              <small class="info">👥 4 مجموعات مصغرة</small>
+            </div>
+            <div class="metric-icon-box" style="background:#eff6ff; color:#2563eb;">🎒</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-data">
+              <span>نسبة إتقان المهارات</span>
+              <h3>88%</h3>
+              <small class="good">⭐ بعد مراجعة التسجيلات</small>
+            </div>
+            <div class="metric-icon-box" style="background:#fefce8; color:#ca8a04;">🏆</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-data">
+              <span>طلاب بحاجة لتركيز إضافي</span>
+              <h3 style="color:#ea580c;">3 طلاب</h3>
+              <small style="color:#ea580c;">↺ في مهارة المدود</small>
+            </div>
+            <div class="metric-icon-box" style="background:#fff7ed; color:#ea580c;">⚠️</div>
+          </div>
+        </section>
+
+        <!-- Students Needing Attention Box -->
+        <div class="attention-box">
+          <div class="attention-header">
+            <div>
+              <h3 style="font-size:18px; color:#9a3412;">⚠️ قائمة المتابعة الخاصة: طلاب بحاجة لتشجيع في الحصة القادمة</h3>
+              <span style="font-size:12.5px; color:#c2410c;">تم رصدهم تلقائياً بناءً على محاولات اختبار الإتقان في الحصة السابقة:</span>
+            </div>
+            <button class="tag-status" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; cursor:pointer;" onclick="toast('تم إرسال تلميحات مراجعة إضافية للأسر')">
+              إرسال رسائل تشجيع لأولياء الأمور
+            </button>
+          </div>
+
+          <div class="attention-card-grid">
+            <div class="attention-student-card">
+              <div>
+                <h4>👦 أحمد محمد (السعودية)</h4>
+                <p>المهارة المتعثرة: تمييز المد الطويل (بَا) عن الحركة القصيرة (بَـ). أجرى محاولة 60%.</p>
+              </div>
+              <button class="btn-retake" style="width:100%;" onclick="toast('تم تخصيص سؤال تدفئة تفاعلي لأحمد في بداية الحصة')">
+                تخصيص سؤال في الحصة القادمة
+              </button>
+            </div>
+
+            <div class="attention-student-card">
+              <div>
+                <h4>👧 مريم خالد (الإمارات)</h4>
+                <p>المهارة المتعثرة: نطق حرف الألف المكسور (إِ). شاهدت التسجيل ولم تعد الاختبار بعد.</p>
+              </div>
+              <button class="btn-retake" style="width:100%;" onclick="toast('تم إشعار ولي الأمر لتشجيع مريم على إعادة الاختبار')">
+                تذكير بمراجعة التسجيل
+              </button>
+            </div>
+
+            <div class="attention-student-card">
+              <div>
+                <h4>👦 يوسف حسام (الكويت)</h4>
+                <p>المهارة المتعثرة: رسم الحرف في أول الكلمة. أتقن 80% وباقي خطوة واحدة.</p>
+              </div>
+              <button class="btn-retake" style="width:100%;" onclick="toast('تم إرسال ورقة عمل إضافية مجانية')">
+                إرسال ورقة تدريب PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teacher Schedule & Upload Panel -->
+        <div class="two-col-layout">
+          <div class="card-panel">
+            <div class="panel-header">
+              <h3><span>🗓️</span> جدول حصصي المباشرة اليوم</h3>
+            </div>
+            <div class="archive-list">
+              <div class="archive-item">
+                <div class="archive-thumb" style="background:#059669;">🔴<small>مباشر</small></div>
+                <div class="archive-info">
+                  <h5>حصة اللغة العربية: حرف الباء بالحركات والمدود</h5>
+                  <span>المجموعة (أ) · 4 طلاب · موعد البدء: 6:00 م بتوقيت مصر</span>
+                </div>
+                <button class="btn-live-enter" style="padding:8px 14px; font-size:12px;" onclick="launchLiveClassModal()">
+                  فتح الفصل الآن
+                </button>
+              </div>
+              <div class="archive-item">
+                <div class="archive-thumb" style="background:#1e293b;">🗓<small>غداً</small></div>
+                <div class="archive-info">
+                  <h5>حصة مراجعة الحروف السابقة وتكوين كلمات</h5>
+                  <span>المجموعة (ب) · 4 طلاب · غداً 5:30 م</span>
+                </div>
+                <button class="btn-ghost-light" style="color:var(--navy); border-color:#cbd5e1; padding:6px 12px; font-size:12px;" onclick="toast('رابط الفصل جاهز للإرسال')">
+                  تجهيز
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <div class="panel-header">
+              <h3><span>📄</span> رفع وتجهيز أوراق عمل الدروس (PDF)</h3>
+            </div>
+            <div style="border:2px dashed var(--line); border-radius:16px; padding:24px; text-align:center; background:#fafafa;">
+              <div style="font-size:36px; margin-bottom:8px;">📤</div>
+              <h5 style="font-size:14px; margin-bottom:4px;">اسحب أوراق العمل التفاعلية هنا لربطها بالحصة</h5>
+              <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">يتم إتاحة الملف تلقائياً لولي الأمر والطفل للطباعة والمراجعة</p>
+              <button class="btn-retake" onclick="toast('تم اختيار ورفع ورقة عمل حرف الباء بنجاح')">اختيار ملف من الجهاز</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================
+         5. شاشة الباقات والاشتراك (PRICING & PLANS)
+         ======================================================== -->
+    <div class="screen-view" id="view-pricing">
+      <div class="pricing-container">
+        <div class="pricing-header">
+          <div style="display:inline-block; background:#eff6ff; color:var(--blue); font-weight:800; font-size:13px; padding:6px 16px; border-radius:var(--radius-full); margin-bottom:12px;">
+            باقات مخصصة لأسر المصريين بالخارج 🌍
+          </div>
+          <h1>استثمر في فهم طفلك للمنهج المصري وهوية لغته</h1>
+          <p>تعليم حي تفاعلي بمجموعات صغيرة (4 طلاب فقط) يضمن المشاركة والنطق الصحيح، مع حفظ كامل للتسجيلات وإعادة اختبارات الإتقان حتى النجاح الكامل.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Free Trial Plan -->
+          <div class="plan-card">
+            <h3 class="plan-name">الحصة التجريبية المجانية</h3>
+            <p class="plan-desc">جرب الفصل الحي وتفاعل طفلك مع المعلمة بدون أي التزام مالي.</p>
+            <div class="plan-price">مجاناً <span>/ حصة واحدة</span></div>
+            <ul class="plan-features">
+              <li><span>✓</span> حضور حصة مباشرة تفاعلية (40 دقيقة)</li>
+              <li><span>✓</span> تجربة الفصل المصغر (4 طلاب فقط)</li>
+              <li><span>✓</span> تقرير تقييم مستوى مبدئي من المعلمة</li>
+              <li><span>✓</span> وصول للتسجيل والاختبار لمدة 48 ساعة</li>
+            </ul>
+            <button class="btn-ghost-light" style="background:#f1f5f9; color:var(--navy); border:none; width:100%; padding:14px; font-weight:700;" onclick="toast('تم تسجيل حجز حصتك التجريبية المجانية بنجاح!')">
+              احجز حصة تجريبية الآن
+            </button>
+          </div>
+
+          <!-- Featured Plan -->
+          <div class="plan-card featured">
+            <div class="featured-badge">الأكثر اختياراً للأسر بالخارج ⭐</div>
+            <h3 class="plan-name">باقة التأسيس الحي</h3>
+            <p class="plan-desc">الخيار الأمثل لتغطية المنهج المصري أسبوعياً وضمان الإتقان المستمر.</p>
+            <div class="plan-price">290 <span>ريال / شهرياً</span></div>
+            <span style="font-size:12px; color:var(--muted);">(أو ما يعادله بالدرهم أو الدولار)</span>
+            <ul class="plan-features">
+              <li><span>✓</span> <strong>8 حصص حية مباشرة</strong> شهرياً مع معلم مصري متخصص</li>
+              <li><span>✓</span> مجموعات مصغرة لضمان تفاعل كل طفل</li>
+              <li><span>✓</span> أرشفة دائمة للتسجيلات لإعادة المشاهدة في أي وقت</li>
+              <li><span>✓</span> نظام اختبارات الإتقان المتكررة حتى اجتياز 100%</li>
+              <li><span>✓</span> تقرير اطمئنان أسبوعي لولي الأمر ومتابعة واتساب</li>
+              <li><span>✓</span> جميع أوراق العمل والأنشطة PDF جاهزة للطباعة</li>
+            </ul>
+            <button class="btn-live-enter" style="width:100%; justify-content:center; padding:15px;" onclick="toast('تم اختيار باقة التأسيس الحي — جاري نقلك لبوابة الدفع الآمنة')">
+              اشترك الآن في باقة التأسيس
+            </button>
+          </div>
+
+          <!-- Intensive Plan -->
+          <div class="plan-card">
+            <h3 class="plan-name">باقة التفوق الفردي (VIP)</h3>
+            <p class="plan-desc">متابعة مكثفة ومعلم خاص لطفلك للمراجعة والتحضير للامتحانات.</p>
+            <div class="plan-price">480 <span>ريال / شهرياً</span></div>
+            <ul class="plan-features">
+              <li><span>✓</span> <strong>حصص فردية (1-on-1)</strong> أو ثنائية مكثفة</li>
+              <li><span>✓</span> مرونة تامة في اختيار وتغيير المواعيد أسبوعياً</li>
+              <li><span>✓</span> مراجعة وتجهيز خاص لامتحانات «أبنائنا في الخارج»</li>
+              <li><span>✓</span> متابعة صوتية يومية عبر واتساب للطفل وولي الأمر</li>
+              <li><span>✓</span> شهادات إتقان شهرية معتمدة من الأكاديمية</li>
+            </ul>
+            <button class="btn-ghost-light" style="background:#f1f5f9; color:var(--navy); border:none; width:100%; padding:14px; font-weight:700;" onclick="toast('تم تسجيل طلب باقة التفوق — سيتواصل معك المستشار التعليمي')">
+              طلب استشارة وتنسيق المواعيد
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================
+       MODALS: استوديو الدرس، الفصل الحي، بوابة الأمان، الجدولة
+       ======================================================== -->
+
+  <!-- 1. Lesson Studio Modal -->
+  <div class="lesson-studio-modal" id="modal-lesson-studio">
+    <div class="studio-container">
+      <header class="studio-topbar">
+        <h3>
+          <span class="tag-status tag-mastered" style="font-size:12px;">اللغة العربية</span>
+          <span id="studio-title-text">تسجيل الحصة: حرف الباء بالحركات والكلمات</span>
+        </h3>
+        <button style="background:none; color:white; font-size:22px;" onclick="closeStudioLesson()">✕</button>
+      </header>
+
+      <nav class="studio-tabs">
+        <button class="studio-tab-btn active" id="tab-btn-video" onclick="switchStudioTab('video')">🎥 تسجيل الحصة المباشرة</button>
+        <button class="studio-tab-btn" id="tab-btn-pdf" onclick="switchStudioTab('pdf')">📄 ملخص وأوراق العمل PDF</button>
+        <button class="studio-tab-btn" id="tab-btn-quiz" onclick="switchStudioTab('quiz')">🎯 تحدي الفهم والإتقان (المحاولات متاحة)</button>
+      </nav>
+
+      <div class="studio-body">
+        <div id="studio-view-video">
+          <div class="video-mockup-wrapper">
+            <button class="btn-live-enter" onclick="toast('جاري تشغيل تسجيل الحصة المباشرة بصوت وشرح المعلمة سارة...')">
+              ▶ تشغيل تسجيل الحصة (30 دقيقة)
+            </button>
+          </div>
+          <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid var(--line);">
+            <strong>محطات الحصة المسجلة للقفز السريع:</strong>
+            <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+              <span class="tag-status tag-mastered" style="cursor:pointer;" onclick="toast('القفز للدقيقة 04:20 نطق حرف الباء')">⏱ 04:20 نطق حرف الباء</span>
+              <span class="tag-status tag-review" style="cursor:pointer;" onclick="toast('القفز للدقيقة 12:15 الفرق بين المد الطويل والقصير')">⭐ 12:15 الفرق بين المدود (مهم للاختبار)</span>
+              <span class="tag-status" style="background:#e0f2fe; color:#0369a1; cursor:pointer;" onclick="toast('القفز للدقيقة 22:00 مشاركات الطلاب')">⏱ 22:00 ألعاب الطلاب</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="studio-view-pdf" style="display:none; text-align:center; padding:30px;">
+          <div style="font-size:50px; margin-bottom:10px;">📄</div>
+          <h3>ورقة عمل وتدريب حرف الباء (المنهج المصري)</h3>
+          <p style="color:var(--muted); margin-bottom:18px;">جاهزة للطباعة والتلوين المنزلي</p>
+          <button class="btn-live-enter" onclick="toast('تم تحميل ملف PDF بنجاح')">تحميل وطباعة ورقة العمل</button>
+        </div>
+
+        <div id="studio-view-quiz" style="display:none;">
+          <div style="max-width:700px; margin:0 auto; text-align:center;">
+            <div style="display:inline-block; background:#eff6ff; color:var(--blue); padding:4px 14px; border-radius:20px; font-weight:700; font-size:13px; margin-bottom:12px;">
+              المحاولة الحالية: 2 (إعادة الاختبار متاحة مجاناً حتى الإتقان الكامل)
+            </div>
+            <h3 style="font-size:22px; margin-bottom:8px;">أي كلمة مما يلي تحتوي على مد طويل بصوت (بَا)؟</h3>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">استمع للشرح وتذكر الدقيقة 12 من تسجيل الحصة</p>
+
+            <div class="interactive-options-grid">
+              <div class="quiz-option-card" onclick="evalQuiz(this, true)">🚪 بَابْ (بـَـا)</div>
+              <div class="quiz-option-card" onclick="evalQuiz(this, false)">🦆 بَطَّة (بـَ)</div>
+              <div class="quiz-option-card" onclick="evalQuiz(this, false)">🐱 قِطَّة</div>
+              <div class="quiz-option-card" onclick="evalQuiz(this, false)">✏️ قَلَم</div>
+            </div>
+
+            <div id="quiz-success-box" style="display:none; background:#ecfdf5; border:2px solid #86efac; border-radius:18px; padding:20px; margin-top:20px;">
+              <h4 style="color:#166534; font-size:20px; margin-bottom:6px;">أحسنت يا بطل! أتقنت المهارة بنسبة 100% ⭐</h4>
+              <p style="color:#166534; font-size:14px; margin-bottom:14px;">تم منحك شارة الإتقان الذهبية وإضافة 30 نقطة فهم لحسابك!</p>
+              <button class="btn-live-enter" style="background:#16a34a; color:white;" onclick="confirmQuizMastery()">
+                حفظ الإتقان والعودة للخريطة ✓
+              </button>
+            </div>
+
+            <div id="quiz-retry-box" style="display:none; background:#fff7ed; border:2px solid #fed7aa; border-radius:18px; padding:20px; margin-top:20px;">
+              <h4 style="color:#9a3412; font-size:18px; margin-bottom:6px;">محاولة جيدة! قرّبت جداً من الحل الصحيح 💡</h4>
+              <p style="color:#9a3412; font-size:13.5px; margin-bottom:14px;">شاهد الدقيقة 12 من تسجيل الحصة لتتذكر صوت المد الطويل، ثم أعد المحاولة دون قلق.</p>
+              <button class="btn-retake" onclick="resetQuizTest()">أعد المحاولة الآن ↺</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Live Virtual Classroom Modal -->
+  <div class="live-classroom-modal" id="modal-live-classroom">
+    <header style="background:#111827; border-bottom:1px solid #1f2937; padding:12px 24px; color:white; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="background:#dc2626; color:white; font-size:12px; font-weight:800; padding:4px 12px; border-radius:var(--radius-full);">● مباشر</span>
+        <strong style="font-size:16px;">فصل المنهج المصري: اللغة العربية (الصف الأول الابتدائي)</strong>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="tag-status tag-mastered" onclick="endLiveSessionAutoArchive()">
+          إنهاء الحصة وأرشفتها تلقائياً بالدروس المسجلة 💾
+        </button>
+        <button style="background:none; color:white; font-size:22px;" onclick="closeLiveClassModal()">✕</button>
+      </div>
+    </header>
+
+    <div style="flex:1; display:grid; grid-template-columns:1fr 300px; gap:16px; padding:16px; min-height:0; background:#090d16;">
+      <div style="background:#1f2937; border-radius:20px; display:flex; align-items:center; justify-content:center; text-align:center; color:white; padding:30px; position:relative;">
+        <div style="position:absolute; top:16px; left:16px; background:#334155; padding:8px 14px; border-radius:12px; border:2px solid var(--blue); font-size:12px;">
+          👩‍🏫 أ/ سارة أحمد (المعلمة تبث الآن)
+        </div>
+        <div>
+          <h2 style="font-size:38px; color:#facc15; margin-bottom:12px;">بَـ... بـَطَّة 🦆 &nbsp;|&nbsp; بـَا... بـَابْ 🚪</h2>
+          <p style="color:#cbd5e1; font-size:18px;">يلا يا أبطال، دور الطالب <strong>أحمد</strong> ينطق الفرق بين الصوتين...</p>
+        </div>
+      </div>
+      <div style="background:#111827; border-radius:20px; padding:16px; color:white; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-weight:700; font-size:14px; padding-bottom:10px; border-bottom:1px solid #1f2937;">👥 الطلاب الحاضرون (4)</div>
+        <div style="padding:10px; background:#1f2937; border-radius:10px; font-size:13px; color:#22c55e;">👦 أحمد محمد (أنت - يتحدث الآن)</div>
+        <div style="padding:10px; background:#1f2937; border-radius:10px; font-size:13px; color:#9ca3af;">👧 مريم خالد (السعودية)</div>
+        <div style="padding:10px; background:#1f2937; border-radius:10px; font-size:13px; color:#9ca3af;">👦 يوسف حسام (الكويت)</div>
+        <div style="padding:10px; background:#1f2937; border-radius:10px; font-size:13px; color:#9ca3af;">👧 نور الدين (الإمارات)</div>
+      </div>
+    </div>
+
+    <footer style="height:70px; background:#111827; display:flex; justify-content:center; align-items:center; gap:16px;">
+      <button style="width:44px; height:44px; border-radius:50%; background:var(--blue); color:white; font-size:18px;" onclick="toast('الميكروفون نشط')">🎤</button>
+      <button style="width:44px; height:44px; border-radius:50%; background:#374151; color:white; font-size:18px;" onclick="toast('الكاميرا مغلقة')">📷</button>
+      <button style="width:44px; height:44px; border-radius:50%; background:#374151; color:white; font-size:18px;" onclick="toast('رفعت يدك للإجابة')">✋</button>
+      <button style="width:44px; height:44px; border-radius:50%; background:#dc2626; color:white; font-size:18px;" onclick="closeLiveClassModal()">📞</button>
+    </footer>
+  </div>
+
+  <!-- 3. Parent Gate Modal -->
+  <div class="parent-gate-modal" id="modal-parent-gate">
+    <div style="background:white; border-radius:24px; padding:30px; max-width:400px; width:100%; text-align:center;">
+      <div style="font-size:36px; margin-bottom:8px;">🔒</div>
+      <h3>بوابة ولي الأمر</h3>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">لحماية الطفل، يُرجى حل المسألة الرياضية للعودة:</p>
+      <div id="gate-question-box" style="font-size:24px; font-weight:800; color:var(--blue); background:#eff6ff; padding:12px; border-radius:12px; margin-bottom:16px;">
+        كم حاصل: 5 + 3 ؟
+      </div>
+      <input type="number" id="gate-answer-input" placeholder="اكتب الناتج هنا" style="width:100%; padding:12px; text-align:center; font-size:18px; border:2px solid var(--line); border-radius:12px; margin-bottom:16px;">
+      <div style="display:flex; gap:10px;">
+        <button class="btn-live-enter" style="flex:1; justify-content:center;" onclick="validateParentGate()">دخول</button>
+        <button class="btn-ghost-light" style="background:#e2e8f0; color:var(--navy); border:none;" onclick="closeParentGateModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Schedule Class Modal for Teachers -->
+  <div class="schedule-modal" id="modal-schedule-class">
+    <div style="background:white; border-radius:24px; padding:30px; max-width:500px; width:100%;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h3 style="font-size:18px; color:var(--navy);">جدولة حصة حية جديدة</h3>
+        <button style="background:none; font-size:20px;" onclick="closeScheduleModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">عنوان الحصة والمهارة المستهدفة</label>
+        <input type="text" class="form-input" id="sched-title" value="حرف التاء وكتابة الكلمات الثلاثية">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label class="form-label">المادة</label>
+          <select class="form-select">
+            <option>اللغة العربية</option>
+            <option>الرياضيات</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المجموعة</label>
+          <select class="form-select">
+            <option>المجموعة أ (4 طلاب)</option>
+            <option>المجموعة ب (4 طلاب)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label class="form-label">تاريخ الحصة</label>
+          <input type="date" class="form-input" value="2026-10-24">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الوقت (بتوقيت القاهرة)</label>
+          <input type="time" class="form-input" value="18:00">
+        </div>
+      </div>
+      <button class="btn-live-enter" style="width:100%; justify-content:center;" onclick="saveScheduledClass()">
+        تأكيد ونشر الحصة في جداول الطلاب 📢
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div id="toast-msg"></div>
+
+  <!-- ========================================================
+       JAVASCRIPT: إدارة الواجهات والتوقيت المحلي والإتقان
+       ======================================================== -->
+  <script>
+    const AppState = {
+      parentName: 'أحمد محمد',
+      childName: 'أحمد',
+      grade: 'الصف الأول الابتدائي',
+      country: 'KSA',
+      timezoneName: 'الرياض (GMT+3)',
+      timeOffsetHours: 3,
+      masteredSkills: 7,
+      totalPoints: 280,
+      gateAnswer: 8
+    };
+
+    function toast(msg) {
+      const t = document.getElementById('toast-msg');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    // Switch Screens
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.role-pill').forEach(p => p.classList.remove('active'));
+
+      const target = document.getElementById('view-' + screenId);
+      if (target) target.classList.add('active');
+
+      const pill = document.getElementById('btn-tab-' + screenId);
+      if (pill) pill.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Onboarding & Timezone Calculation
+    function updateTimezonePreview() {
+      const c = document.getElementById('onb-country').value;
+      const text = document.getElementById('tz-calculation-text');
+      const badge = document.getElementById('tz-live-badge');
+
+      if (c === 'KSA' || c === 'KUW' || c === 'QAT') {
+        text.innerHTML = 'حصة اليوم 6:00 م بتوقيت القاهرة توافق <strong>7:00 م</strong> بتوقيت إقامتك بالخليج.';
+        badge.textContent = 'الساعة 7:00 مساءً';
+      } else if (c === 'UAE') {
+        text.innerHTML = 'حصة اليوم 6:00 م بتوقيت القاهرة توافق <strong>8:00 م</strong> بتوقيت دبي بالإمارات.';
+        badge.textContent = 'الساعة 8:00 مساءً';
+      } else if (c === 'EGY') {
+        text.innerHTML = 'حصة اليوم ستكون في موعدها المعتاد <strong>6:00 م</strong> بتوقيت مصر.';
+        badge.textContent = 'الساعة 6:00 مساءً';
+      } else if (c === 'UK') {
+        text.innerHTML = 'حصة اليوم 6:00 م بتوقيت القاهرة توافق <strong>4:00 أو 5:00 م</strong> بتوقيت بريطانيا.';
+        badge.textContent = 'الساعة 5:00 مساءً';
+      } else if (c === 'GER') {
+        text.innerHTML = 'حصة اليوم 6:00 م بتوقيت القاهرة توافق <strong>5:00 م</strong> بتوقيت ألمانيا.';
+        badge.textContent = 'الساعة 5:00 مساءً';
+      } else if (c === 'USA') {
+        text.innerHTML = 'حصة اليوم 6:00 م بتوقيت القاهرة توافق <strong>11:00 أو 12:00 ظهراً</strong> بتوقيت شرق أمريكا.';
+        badge.textContent = 'الساعة 12:00 ظهراً';
+      }
+    }
+
+    function saveOnboardingProfile() {
+      const pName = document.getElementById('onb-parent-name').value.trim() || 'أحمد محمد';
+      const cName = document.getElementById('onb-child-name').value.trim() || 'أحمد';
+      const country = document.getElementById('onb-country').selectedOptions[0].text;
+
+      AppState.parentName = pName;
+      AppState.childName = cName;
+
+      document.getElementById('parent-child-name-label').textContent = `${cName} (ابنك)`;
+      document.getElementById('child-display-name').textContent = `البطل ${cName}`;
+      document.getElementById('parent-tz-indicator').textContent = `التوقيت المحلي المحسوب: ${country}`;
+
+      toast(`تم تسجيل وتحديث ملف ${cName} بنجاح ومواءمة المواعيد مع بلد إقامتكم ✓`);
+      showScreen('parent');
+    }
+
+    // Parent Gate
+    function openParentGateModal() {
+      const a = Math.floor(Math.random() * 5) + 3;
+      const b = Math.floor(Math.random() * 4) + 2;
+      AppState.gateAnswer = a + b;
+      document.getElementById('gate-question-box').textContent = `كم حاصل: ${a} + ${b} ؟`;
+      document.getElementById('gate-answer-input').value = '';
+      document.getElementById('modal-parent-gate').classList.add('active');
+    }
+
+    function closeParentGateModal() {
+      document.getElementById('modal-parent-gate').classList.remove('active');
+    }
+
+    function validateParentGate() {
+      const ans = parseInt(document.getElementById('gate-answer-input').value.trim());
+      if (ans === AppState.gateAnswer) {
+        closeParentGateModal();
+        showScreen('parent');
+        toast('تم التحقق بنجاح — مرحباً بك في مساحة ولي الأمر');
+      } else {
+        toast('إجابة غير صحيحة، حاول مجدداً');
+        document.getElementById('gate-answer-input').value = '';
+      }
+    }
+
+    // Lesson Studio
+    function openStudioLesson(key, tab) {
+      document.getElementById('modal-lesson-studio').classList.add('active');
+      switchStudioTab(tab || 'video');
+    }
+
+    function closeStudioLesson() {
+      document.getElementById('modal-lesson-studio').classList.remove('active');
+    }
+
+    function switchStudioTab(tab) {
+      document.querySelectorAll('.studio-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('studio-view-video').style.display = 'none';
+      document.getElementById('studio-view-pdf').style.display = 'none';
+      document.getElementById('studio-view-quiz').style.display = 'none';
+
+      if (tab === 'video') {
+        document.getElementById('tab-btn-video').classList.add('active');
+        document.getElementById('studio-view-video').style.display = 'block';
+      } else if (tab === 'pdf') {
+        document.getElementById('tab-btn-pdf').classList.add('active');
+        document.getElementById('studio-view-pdf').style.display = 'block';
+      } else if (tab === 'quiz') {
+        document.getElementById('tab-btn-quiz').classList.add('active');
+        document.getElementById('studio-view-quiz').style.display = 'block';
+      }
+    }
+
+    function evalQuiz(el, isCorrect) {
+      document.querySelectorAll('.quiz-option-card').forEach(c => c.style.pointerEvents = 'none');
+      if (isCorrect) {
+        el.classList.add('correct');
+        document.getElementById('quiz-success-box').style.display = 'block';
+        document.getElementById('quiz-retry-box').style.display = 'none';
+      } else {
+        el.classList.add('wrong');
+        document.getElementById('quiz-retry-box').style.display = 'block';
+        document.getElementById('quiz-success-box').style.display = 'none';
+      }
+    }
+
+    function resetQuizTest() {
+      document.querySelectorAll('.quiz-option-card').forEach(c => {
+        c.className = 'quiz-option-card';
+        c.style.pointerEvents = 'auto';
+      });
+      document.getElementById('quiz-retry-box').style.display = 'none';
+      toast('أعد المحاولة بتركيز — تذكر أن الفهم يسبق الحل!');
+    }
+
+    function confirmQuizMastery() {
+      AppState.masteredSkills = 8;
+      AppState.totalPoints += 30;
+
+      document.getElementById('child-points-counter').textContent = AppState.totalPoints;
+      document.getElementById('parent-stat-points').textContent = `${AppState.totalPoints} ⭐`;
+      document.getElementById('parent-stat-mastered').textContent = `${AppState.masteredSkills} / 10`;
+
+      // Update Node
+      const node = document.getElementById('card-node-baa');
+      node.className = 'node-card mastered';
+      document.getElementById('stamp-node-baa').className = 'status-stamp stamp-mastered';
+      document.getElementById('stamp-node-baa').textContent = '✓ متقن 100%';
+      document.getElementById('btn-node-baa').className = 'node-action-btn btn-play-review';
+      document.getElementById('btn-node-baa').textContent = 'مشاهدة التسجيل ▶';
+      document.getElementById('btn-node-baa').onclick = () => openStudioLesson('baa', 'video');
+
+      // Update parent matrix row
+      document.getElementById('badge-skill-baa').className = 'tag-status tag-mastered';
+      document.getElementById('badge-skill-baa').textContent = '✓ متقن بالكامل';
+      document.getElementById('sub-skill-baa').textContent = 'اللغة العربية · تم الإتقان بعد مراجعة التسجيل واجتياز الاختبار بنجاح';
+
+      closeStudioLesson();
+      toast('مبارك! تم تسجيل إتقان المهارة بنجاح وإشعار ولي الأمر والمعلمة ⭐');
+    }
+
+    // Live Classroom
+    function launchLiveClassModal() {
+      document.getElementById('modal-live-classroom').classList.add('active');
+      toast('أهلاً بك في الفصل الافتراضي المباشر 🔴');
+    }
+
+    function closeLiveClassModal() {
+      document.getElementById('modal-live-classroom').classList.remove('active');
+    }
+
+    function endLiveSessionAutoArchive() {
+      closeLiveClassModal();
+      toast('✓ تم إنهاء الحصة وأرشفتها تلقائياً بالكامل في مسار الدروس المسجلة للمراجعة!');
+    }
+
+    // Teacher Scheduling Modal
+    function openScheduleModal() {
+      document.getElementById('modal-schedule-class').classList.add('active');
+    }
+    function closeScheduleModal() {
+      document.getElementById('modal-schedule-class').classList.remove('active');
+    }
+    function saveScheduledClass() {
+      const title = document.getElementById('sched-title').value;
+      closeScheduleModal();
+      toast(`✓ تم جدولة حصة «${title}» ونشر موعدها لجداول الطلاب والأسر بتوقيتاتهم المحلية.`);
+    }
+  </script>
+</body>
+</html>
