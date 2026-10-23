@@ -16,6 +16,18 @@ export default function RoleBar() {
         <span style={{ fontSize: '11px', opacity: 0.8, marginLeft: '4px' }}>الواجهة الحالية:</span>
         
         <button
+          className={`role-pill-btn ${currentScreen === 'landing' ? 'active' : ''}`}
+          style={{
+            background: currentScreen === 'landing' ? '#2563eb' : 'rgba(255,255,255,0.12)',
+            color: 'white',
+            fontWeight: 800
+          }}
+          onClick={() => setCurrentScreen('landing')}
+        >
+          🌐 صفحة الهبوط العامة
+        </button>
+
+        <button
           className={`role-pill-btn ${currentScreen === 'parent' ? 'active' : ''}`}
           onClick={() => setCurrentScreen('parent')}
         >

@@ -8,6 +8,7 @@ import OnboardingFlow from './components/OnboardingFlow';
 import PricingPlans from './components/PricingPlans';
 import AdminDashboard from './components/AdminDashboard';
 import EmbassyExamSimulator from './components/EmbassyExamSimulator';
+import PublicLandingPage from './components/PublicLandingPage';
 import Modals from './components/Modals';
 
 function MainAppContent() {
@@ -20,6 +21,7 @@ function MainAppContent() {
 
       {/* Main View Router */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {currentScreen === 'landing' && <PublicLandingPage />}
         {currentScreen === 'parent' && <ParentDashboard />}
         {currentScreen === 'child' && <ChildUniverse />}
         {currentScreen === 'teacher' && <TeacherStudio />}
