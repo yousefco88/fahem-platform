@@ -1,8 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
 import { launchConfetti } from '../utils/confetti';
 import { CURRICULUM_DATA } from '../data/curriculumData';
 import { supabase } from '../lib/supabase';
+import { useUIActions } from './UIContext';
+import { SCREEN_PATHS, PATH_TO_SCREEN } from '../routes';
 
 const AppContext = createContext();
 
@@ -32,9 +35,24 @@ const DEFAULT_CHILDREN = [
 ];
 
 export function AppProvider({ children }) {
-  // Public visitors should start on the product landing page. Role dashboards
-  // remain available through the role switcher and authenticated flows.
-  const [currentScreen, setCurrentScreen] = useState('landing');
+  // الشاشة الحالية مشتقة من الـ URL (React Router) — والـ setter يتنقل فعلياً،
+  // فيبقى كل الكود القديم المستخدم لـ setCurrentScreen يعمل كما هو.
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentScreen = PATH_TO_SCREEN[location.pathname] || 'landing';
+  const setCurrentScreen = useCallback((screenId) => {
+    navigate(SCREEN_PATHS[screenId] || '/');
+  }, [navigate]);
+
+  // أفعال الواجهة (toast/نوافذ) من UIContext — مرجع ثابت لا يسبب إعادة تصيير
+  const {
+    triggerToast,
+    setShowLiveModal,
+    setShowGateModal,
+    setShowStudioModal,
+    setStudioActiveTab,
+    setShowScheduleModal
+  } = useUIActions();
 
   // Load parent & preferences
   const [parentName, setParentName] = useState(() => {
@@ -152,13 +170,7 @@ export function AppProvider({ children }) {
   const currentLessonsList = curriculumData[activeSubject]?.lessons || curriculumData.arabic.lessons;
   const activeLesson = currentLessonsList.find(l => l.id === selectedLessonId) || currentLessonsList[0];
 
-  // Modals state
-  const [showLiveModal, setShowLiveModal] = useState(false);
-  const [showGateModal, setShowGateModal] = useState(false);
-  const [showStudioModal, setShowStudioModal] = useState(false);
-  const [studioActiveTab, setStudioActiveTab] = useState('video');
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  // Modals state moved to UIContext (actions consumed above; state read via useUIState)
 
   // Persist to localStorage
   useEffect(() => {
@@ -226,13 +238,6 @@ export function AppProvider({ children }) {
       setGrade(activeChild.grade);
     }
   }, [activeChild?.id]);
-
-  const triggerToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage('');
-    }, 3200);
-  };
 
   const switchChild = (childId) => {
     setSelectedChildId(childId);
@@ -447,13 +452,13 @@ export function AppProvider({ children }) {
     recordLessonOpened,
     recordVideoProgress,
     seedSampleStudents,
-    // Modals
-    showLiveModal, setShowLiveModal,
-    showGateModal, setShowGateModal,
-    showStudioModal, setShowStudioModal,
-    studioActiveTab, setStudioActiveTab,
-    showScheduleModal, setShowScheduleModal,
-    toastMessage, triggerToast,
+    // Modals — أفعال فقط (مراجع ثابتة من UIContext)؛ الحالة تُقرأ عبر useUIState
+    setShowLiveModal,
+    setShowGateModal,
+    setShowStudioModal,
+    setStudioActiveTab,
+    setShowScheduleModal,
+    triggerToast,
     soundManager
   };
 

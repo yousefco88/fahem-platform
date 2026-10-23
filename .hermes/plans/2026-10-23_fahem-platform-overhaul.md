@@ -67,6 +67,15 @@
 
 **تقدير:** 2 جلسة عمل.
 
+#### ✅ المرحلة 2 — منفذة ومتحقق منها (2026-10-23)
+- 2.1 ✓ `react-router-dom@7` — مسارات `/`, `/child`, `/parent`, `/teacher`, `/admin`, `/exam`, `/onboarding`, `/pricing`, `/account` + تحويل المجهول إلى `/`. `setCurrentScreen` أصبح غلافاً لـ `navigate` (src/routes.js خريطة الشاشات) فبقي كل الكود القديم يعمل والـ URL مصدر الحقيقة. زر الرجوع مختبر ✓
+- 2.2 ✓ `React.lazy` للشاشات التسع + `LiveClassroomSuite` داخل Modals + `manualChunks` (vendor-react / vendor-supabase / curriculum-data). الحزمة الرئيسية: 577KB → **259KB (81KB gzip)**، 14 حزمة منفصلة، لا تحذيرات
+- 2.3 ✓ `UIContext.jsx` بسياقين (حالة/أفعال): toast والنوافذ خرجت من AppContext؛ الأفعال ثابتة المرجع — تغيير toast لا يعيد تصيير AppContext ومستهلكيه. Modals وApp يقرآن الحالة عبر `useUIState()`
+- 2.4 ✓ `PublicLandingPage` 767 → **27 سطراً** + 9 أقسام في `src/components/landing/` (أكبرها BookingSection = 185 سطراً، كلها < 200)
+- 2.5 ✓ BottomNav/RoleBar يحدّثان الـ URL عبر غلاف navigate (مختبر: نقر تبويب ⇒ `/exam`)
+- إضافة `vercel.json` بـ SPA rewrites للروابط المباشرة على الإنتاج
+- اختبارات متصفح 11/11: روابط مباشرة، زر رجوع، بوابة `/admin`، مسار مجهول، toast، حاسبة التوقيت، FAQ، نموذج الحجز، أزرار CTA
+
 ---
 
 ### المرحلة 3: البيانات الحقيقية 💾 (P1)

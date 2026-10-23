@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useApp } from '../context/AppContext';
-import LiveClassroomSuite from './LiveClassroomSuite';
+import { useUIState } from '../context/UIContext';
 import { loadAttachment } from '../utils/attachmentStore';
+
+// حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
+const LiveClassroomSuite = lazy(() => import('./LiveClassroomSuite'));
 
 function useLocalAttachmentUrl(metadata, storageKey) {
   const [url, setUrl] = useState(metadata?.dataUrl || '');
@@ -26,11 +29,18 @@ function useLocalAttachmentUrl(metadata, storageKey) {
 
 export default function Modals() {
   const {
-    showLiveModal, setShowLiveModal,
-    showGateModal, setShowGateModal,
-    showStudioModal, setShowStudioModal,
-    studioActiveTab, setStudioActiveTab,
-    showScheduleModal, setShowScheduleModal,
+    showLiveModal,
+    showGateModal,
+    showStudioModal,
+    studioActiveTab,
+    showScheduleModal
+  } = useUIState();
+  const {
+    setShowLiveModal,
+    setShowGateModal,
+    setShowStudioModal,
+    setStudioActiveTab,
+    setShowScheduleModal,
     activeChild,
     activeLesson,
     activeSubject,
@@ -225,7 +235,9 @@ export default function Modals() {
     <>
       {/* 1. Live Virtual Classroom Suite (Micro-Group + Video Grid + Shared Canvas + Pop Quiz) */}
       {showLiveModal && (
-        <LiveClassroomSuite onClose={() => setShowLiveModal(false)} />
+        <Suspense fallback={null}>
+          <LiveClassroomSuite onClose={() => setShowLiveModal(false)} />
+        </Suspense>
       )}
 
       {/* Post-Class Teacher Feedback Modal */}
