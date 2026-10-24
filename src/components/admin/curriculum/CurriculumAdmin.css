@@ -745,3 +745,77 @@
   color: var(--text-danger, #dc2626);
   font-size: 0.9rem;
 }
+
+/* ============================================================================
+   QUIZ EDITOR — TRUE/FALSE & ARRANGE
+   ============================================================================ */
+
+.truefalse-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.tf-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.tf-option:hover {
+  border-color: var(--accent, #2563eb);
+  background: var(--bg-muted, #f9fafb);
+}
+
+.tf-option.selected {
+  border-color: var(--accent, #2563eb);
+  background: var(--bg-accent-light, #eff6ff);
+  color: var(--accent, #2563eb);
+  font-weight: 600;
+}
+
+.tf-option input[type="radio"] {
+  display: none;
+}
+
+.arrange-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.arrange-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--bg-muted, #f9fafb);
+  border-radius: 8px;
+}
+
+.arrange-number {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent, #2563eb);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.arrange-controls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.arrange-item .input-md {
+  flex: 1;
+}

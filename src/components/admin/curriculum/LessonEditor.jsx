@@ -76,6 +76,8 @@ export default function LessonEditor() {
         choices: content.choices || ['', '', '', ''],
         answer: content.answer ?? 0,
         celebration: content.celebration || '',
+        // Arrange items
+        arrangeItems: content.arrangeItems || [],
         // Word Builder
         wordBuilder: content.wordBuilder || null,
         // Parent Guide
@@ -105,6 +107,7 @@ export default function LessonEditor() {
       question: form.question,
       choices: form.choices,
       answer: form.answer,
+      arrangeItems: form.arrangeItems,
       celebration: form.celebration,
       wordBuilder: form.wordBuilder,
       parentGuide: form.parentGuide,
@@ -512,6 +515,41 @@ function QuizTab({ form, updateForm }) {
         </div>
       )}
 
+      {form.quizType === 'truefalse' && (
+        <div className="form-group">
+          <label>الإجابة الصحيحة</label>
+          <div className="truefalse-options">
+            <label className={`tf-option ${form.answer === true ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                checked={form.answer === true}
+                onChange={() => updateForm('answer', true)}
+              />
+              ✓ صح
+            </label>
+            <label className={`tf-option ${form.answer === false ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                checked={form.answer === false}
+                onChange={() => updateForm('answer', false)}
+              />
+              ✕ خطأ
+            </label>
+          </div>
+        </div>
+      )}
+
+      {form.quizType === 'arrange' && (
+        <div className="form-group">
+          <label>عناصر الترتيب (بالترتيب الصحيح)</label>
+          <ArrangeEditor
+            items={form.arrangeItems || []}
+            onChange={items => updateForm('arrangeItems', items)}
+          />
+          <small className="hint">أضف العناصر بالترتيب الصحيح، وستُخلط عند العرض للطفل</small>
+        </div>
+      )}
+
       <div className="form-group">
         <label>رسالة التهنئة (اختياري)</label>
         <input
@@ -656,6 +694,79 @@ function ParentGuideTab({ form, updateForm }) {
           + إضافة قسم
         </button>
       </div>
+    </div>
+  );
+}
+
+// ArrangeEditor للترتيب
+function ArrangeEditor({ items, onChange }) {
+  function addItem() {
+    onChange([...items, '']);
+  }
+
+  function updateItem(index, value) {
+    const updated = [...items];
+    updated[index] = value;
+    onChange(updated);
+  }
+
+  function removeItem(index) {
+    onChange(items.filter((_, i) => i !== index));
+  }
+
+  function moveItem(from, to) {
+    if (to < 0 || to >= items.length) return;
+    const updated = [...items];
+    const [item] = updated.splice(from, 1);
+    updated.splice(to, 0, item);
+    onChange(updated);
+  }
+
+  return (
+    <div className="arrange-editor">
+      {items.map((item, i) => (
+        <div key={i} className="arrange-item">
+          <span className="arrange-number">{i + 1}</span>
+          <input
+            type="text"
+            value={item}
+            onChange={e => updateItem(i, e.target.value)}
+            placeholder={`العنصر ${i + 1}`}
+            className="input-md"
+          />
+          <div className="arrange-controls">
+            <button 
+              type="button" 
+              className="btn-icon" 
+              onClick={() => moveItem(i, i - 1)}
+              disabled={i === 0}
+              title="تحريك للأعلى"
+            >
+              ⬆️
+            </button>
+            <button 
+              type="button" 
+              className="btn-icon" 
+              onClick={() => moveItem(i, i + 1)}
+              disabled={i === items.length - 1}
+              title="تحريك للأسفل"
+            >
+              ⬇️
+            </button>
+            <button 
+              type="button" 
+              className="btn-icon btn-danger" 
+              onClick={() => removeItem(i)}
+              title="حذف"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+      ))}
+      <button type="button" className="btn-muted btn-sm" onClick={addItem}>
+        + إضافة عنصر
+      </button>
     </div>
   );
 }
