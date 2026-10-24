@@ -267,8 +267,21 @@ export default function AdminDashboard() {
   const [staffMembers, setStaffMembers] = useState([]);
   const [staffLoading, setStaffLoading] = useState(true);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
-  const [newMember, setNewMember] = useState({ email: '', role: 'teacher', name: '' });
+  const [newMember, setNewMember] = useState({ email: '', role: 'teacher', name: '', addType: 'invite' });
   const [addingMember, setAddingMember] = useState(false);
+  const [pendingInvites, setPendingInvites] = useState([]);
+
+  // جلب الدعوات المعلقة
+  useEffect(() => {
+    if (!supabase) return;
+    supabase
+      .from('staff_invites')
+      .select('*')
+      .eq('status', 'pending')
+      .then(({ data }) => {
+        if (data) setPendingInvites(data);
+      });
+  }, []);
 
   // دالة إضافة عضو جديد
   const handleAddMember = async () => {
@@ -283,35 +296,64 @@ export default function AdminDashboard() {
     
     setAddingMember(true);
     try {
-      // إنشاء معرّف مؤقت (في الإنتاج سيكون من auth.users)
-      const tempUserId = crypto.randomUUID();
-      
-      const { data, error } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: tempUserId,
-          role: newMember.role
-        })
-        .select()
-        .single();
+      if (newMember.addType === 'invite') {
+        // === إرسال دعوة جديدة ===
+        const { data, error } = await supabase
+          .from('staff_invites')
+          .insert({
+            email: newMember.email,
+            name: newMember.name,
+            role: newMember.role
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // إضافة للقائمة المحلية
-      setStaffMembers(prev => [...prev, {
-        id: data.id,
-        name: newMember.name,
-        role: newMember.role === 'admin' ? 'مدير النظام' : newMember.role === 'teacher' ? 'معلم' : 'موظف',
-        email: newMember.email,
-        status: 'نشط',
-        canEditCMS: newMember.role === 'admin',
-        canAudit: ['admin', 'staff'].includes(newMember.role),
-        canBilling: newMember.role === 'admin'
-      }]);
+        setPendingInvites(prev => [...prev, data]);
+        triggerToast(`✅ تم إرسال دعوة لـ ${newMember.name}`);
+      } else {
+        // === إضافة مستخدم موجود مباشرة ===
+        // البحث عن المستخدم بالبريد
+        const { data: users, error: searchError } = await supabase
+          .from('profiles')
+          .select('id, email, full_name')
+          .eq('email', newMember.email)
+          .single();
 
-      triggerToast(`✅ تمت إضافة ${newMember.name} بنجاح`);
+        if (searchError || !users) {
+          triggerToast('❌ لم يتم العثور على مستخدم بهذا البريد');
+          setAddingMember(false);
+          return;
+        }
+
+        // إضافة الدور
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: users.id,
+            role: newMember.role
+          });
+
+        if (roleError) throw roleError;
+
+        // إضافة للقائمة المحلية
+        setStaffMembers(prev => [...prev, {
+          id: users.id,
+          name: users.full_name || newMember.name,
+          role: newMember.role === 'admin' ? 'مدير النظام' : newMember.role === 'teacher' ? 'معلم' : 'موظف',
+          email: newMember.email,
+          status: 'نشط',
+          canEditCMS: newMember.role === 'admin',
+          canAudit: ['admin', 'staff'].includes(newMember.role),
+          canBilling: newMember.role === 'admin'
+        }]);
+
+        triggerToast(`✅ تمت إضافة ${newMember.name} بنجاح`);
+      }
+
       setShowAddMemberModal(false);
-      setNewMember({ email: '', role: 'teacher', name: '' });
+      setNewMember({ email: '', role: 'teacher', name: '', addType: 'invite' });
     } catch (err) {
       console.error('Error adding member:', err);
       triggerToast(`❌ خطأ: ${err.message}`);
@@ -873,6 +915,42 @@ export default function AdminDashboard() {
             <h3 style={{ fontSize: '18px', color: 'var(--navy)', marginBottom: '20px', textAlign: 'center' }}>
               👤 إضافة عضو أو معلم جديد
             </h3>
+
+            {/* نوع الإضافة */}
+            <div style={{ marginBottom: '20px', display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => setNewMember(prev => ({ ...prev, addType: 'invite' }))}
+                style={{
+                  flex: 1, padding: '10px', border: newMember.addType === 'invite' ? '2px solid #f59e0b' : '1px solid #d1d5db',
+                  borderRadius: '8px', background: newMember.addType === 'invite' ? '#fef3c7' : 'white',
+                  fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: '#374151'
+                }}
+              >
+                ✉️ دعوة جديدة
+              </button>
+              <button
+                onClick={() => setNewMember(prev => ({ ...prev, addType: 'existing' }))}
+                style={{
+                  flex: 1, padding: '10px', border: newMember.addType === 'existing' ? '2px solid #f59e0b' : '1px solid #d1d5db',
+                  borderRadius: '8px', background: newMember.addType === 'existing' ? '#fef3c7' : 'white',
+                  fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: '#374151'
+                }}
+              >
+                👤 مستخدم موجود
+              </button>
+            </div>
+
+            {newMember.addType === 'invite' && (
+              <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#166534' }}>
+                💡 سيتم إرسال دعوة للبريد المحدد. عند تسجيل المستخدم، سيُضاف تلقائياً بالدور المحدد.
+              </div>
+            )}
+
+            {newMember.addType === 'existing' && (
+              <div style={{ background: '#eff6ff', border: '1px solid #93c5fd', borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#1e40af' }}>
+                🔍 أدخل بريد مستخدم مسجّل مسبقاً لإضافته للفريق مباشرة.
+              </div>
+            )}
             
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>الاسم الكامل</label>
@@ -928,7 +1006,7 @@ export default function AdminDashboard() {
                   opacity: addingMember ? 0.7 : 1
                 }}
               >
-                {addingMember ? 'جارٍ الإضافة...' : '✅ إضافة العضو'}
+                {addingMember ? 'جارٍ الإضافة...' : newMember.addType === 'invite' ? '✉️ إرسال الدعوة' : '✅ إضافة العضو'}
               </button>
               <button
                 onClick={() => setShowAddMemberModal(false)}
