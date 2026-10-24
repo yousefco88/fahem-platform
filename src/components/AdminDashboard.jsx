@@ -290,8 +290,7 @@ export default function AdminDashboard() {
         .from('user_roles')
         .insert({
           user_id: tempUserId,
-          role: newMember.role,
-          metadata: { name: newMember.name, email: newMember.email }
+          role: newMember.role
         })
         .select()
         .single();
