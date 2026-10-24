@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 export const scrollToBooking = () => {
   document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -7,23 +8,27 @@ export const scrollToBooking = () => {
 
 export default function LandingHeader() {
   const { setCurrentScreen } = useApp();
+  const { settings } = useSiteSettings();
+  const { banner, header } = settings;
 
   return (
     <>
       {/* 1. Global Marketing Top Banner */}
+      {banner.visible !== false && (
       <div style={{
         background: 'linear-gradient(90deg, #1e3a8a, #2563eb, #1d4ed8)', color: 'white',
         padding: '10px 20px', textAlign: 'center', fontSize: '13px', fontWeight: 700,
         display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', flexWrap: 'wrap'
       }}>
-        <span>🎉 فتح باب التسجيل المبكر لموسم امتحانات «أبنائنا في الخارج» بالسفارات والقنصليات</span>
+        <span>{banner.text}</span>
         <button
           style={{ background: '#facc15', color: '#1e1b4b', border: 'none', padding: '4px 12px', borderRadius: 'var(--radius-full)', fontWeight: 900, fontSize: '11.5px', cursor: 'pointer' }}
           onClick={scrollToBooking}
         >
-          احجز حصتك المجانية 🎁
+          {banner.buttonLabel}
         </button>
       </div>
+      )}
 
       {/* 2. Marketing Header Navbar - Desktop Only */}
       <header className="desktop-header" style={{
@@ -42,8 +47,8 @@ export default function LandingHeader() {
             ف
           </div>
           <div>
-            <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.1 }}>فاهم</h2>
-            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>التعليم الحي لأبنائنا بالخارج 🇪🇬</span>
+            <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.1 }}>{header.brandName}</h2>
+            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>{header.tagline}</span>
           </div>
         </div>
 
@@ -73,7 +78,7 @@ export default function LandingHeader() {
             style={{ padding: '9px 20px', fontSize: '13px', borderRadius: 'var(--radius-full)' }}
             onClick={scrollToBooking}
           >
-            <span>احجز حصة تجريبية مجاناً</span>
+            <span>{header.ctaLabel}</span>
             <span>🚀</span>
           </button>
         </div>

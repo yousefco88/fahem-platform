@@ -1,8 +1,11 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 export default function FooterSection() {
   const { setCurrentScreen } = useApp();
+  const { settings } = useSiteSettings();
+  const { footer, header } = settings;
 
   return (
     <footer style={{ background: '#0f172a', color: 'white', padding: '50px 24px 30px' }}>
@@ -13,10 +16,10 @@ export default function FooterSection() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--blue)', color: 'white', display: 'grid', placeItems: 'center', fontWeight: 900, fontSize: '20px' }}>ف</div>
-            <span style={{ fontSize: '20px', fontWeight: 900 }}>فاهم</span>
+            <span style={{ fontSize: '20px', fontWeight: 900 }}>{header.brandName}</span>
           </div>
           <p style={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.6 }}>
-            المنصة المتخصصة الأولى لأبنائنا بالخارج في السعودية والإمارات والكويت وأوروبا. تعليم حي، أرشفة ذكية، وإتقان تام للمنهج المصري.
+            {footer.about}
           </p>
         </div>
 
@@ -33,15 +36,15 @@ export default function FooterSection() {
         <div>
           <h4 style={{ fontSize: '15px', marginBottom: '14px', color: '#f8fafc' }}>تواصل معنا</h4>
           <div style={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.7 }}>
-            <div>📞 رقم واتساب الدعم يُعلن مع بدء التشغيل التجريبي</div>
-            <div>✉️ راسلنا عبر نموذج «احجز حصة تجريبية» أعلاه</div>
-            <div>🌍 نخدم أسر المصريين في الخليج وأوروبا</div>
+            {(footer.contactLines || []).map((line, i) => (
+              <div key={i}>{line}</div>
+            ))}
           </div>
         </div>
       </div>
 
       <div style={{ borderTop: '1px solid #1e293b', paddingTop: '20px', textAlign: 'center', fontSize: '12px', color: '#64748b' }}>
-        جميع الحقوق محفوظة © لمنصة «فاهم» للتعليم الحي لأبنائنا بالخارج — 2026.
+        {footer.copyright}
       </div>
     </footer>
   );

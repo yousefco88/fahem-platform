@@ -1,9 +1,12 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { scrollToBooking } from './LandingHeader';
 
 export default function HeroSection() {
   const { setCurrentScreen } = useApp();
+  const { settings } = useSiteSettings();
+  const { hero } = settings;
 
   return (
     <section style={{
@@ -18,16 +21,16 @@ export default function HeroSection() {
           background: '#e0e7ff', color: '#3730a3', padding: '6px 18px',
           borderRadius: 'var(--radius-full)', fontSize: 'clamp(11px, 2.5vw, 13px)', fontWeight: 800, marginBottom: '24px'
         }}>
-          <span>📚 محتوى تعليمي تجريبي قيد المراجعة الأكاديمية</span>
+          <span>{hero.badge}</span>
         </div>
 
         <h1 style={{
           fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.25,
           marginBottom: '20px', letterSpacing: '-0.5px'
         }}>
-          التعليم الحي المتقن لأبنائنا في الخارج.. <br />
+          {hero.titleLine1} <br />
           <span style={{ color: 'var(--blue)', background: 'linear-gradient(135deg, #2563eb, #14b8a6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            كأن طفلك في أفضل مدارس مصر وأنت بجواره في الغربة
+            {hero.titleHighlight}
           </span>
         </h1>
 
@@ -35,7 +38,7 @@ export default function HeroSection() {
           fontSize: 'clamp(14px, 3vw, 18px)', color: '#475569', lineHeight: 1.7, maxWidth: '780px',
           margin: '0 auto 36px'
         }}>
-          حصص تفاعلية مباشرة في <strong>مجموعات مصغرة (4 طلاب فقط)</strong> مع نخبة المعلمين المتخصصين، أرشفة ذكية دائمة لكل حصة، وإتقان تام للمنهج الوزاري وامتحانات السفارة بلا ضياع أو إحباط.
+          {hero.subtitle}
         </p>
 
         {/* Hero CTAs */}
@@ -48,7 +51,7 @@ export default function HeroSection() {
             }}
             onClick={scrollToBooking}
           >
-            <span>احجز حصة تجريبية مجانية لطفلك</span>
+            <span>{hero.ctaPrimary}</span>
             <span>🎁</span>
           </button>
 
@@ -61,7 +64,7 @@ export default function HeroSection() {
             }}
             onClick={() => setCurrentScreen('child')}
           >
-            <span>جرب مساحة الطفل التفاعلية</span>
+            <span>{hero.ctaSecondary}</span>
             <span>🦊</span>
           </button>
         </div>

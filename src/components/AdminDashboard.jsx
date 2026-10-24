@@ -6,6 +6,7 @@ import { useApp } from '../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
 import FamiliesPanel from './admin/FamiliesPanel';
+import SiteSettingsPanel from './admin/SiteSettingsPanel';
 import { GradesPanel, SubjectsPanel, LessonsPanel, LessonEditor } from './admin/curriculum';
 import './admin/curriculum/CurriculumAdmin.css';
 
@@ -494,8 +495,9 @@ export default function AdminDashboard() {
         marginBottom: '24px', overflowX: 'auto', paddingBottom: '2px'
       }}>
         {[
+          { id: 'settings', label: '⚙️ إعدادات الموقع', icon: '⚙️' },
           { id: 'curriculum', label: '📚 إدارة المناهج (Supabase)', icon: '📚' },
-          { id: 'cms', label: '📖 محرر المناهج المحلي', icon: '📖' },
+          { id: 'cms', label: '📖 محرر المناهج المحلي (قديم)', icon: '📖' },
           { id: 'bookings', label: '📋 حجوزات الحصص التجريبية', icon: '📋' },
           { id: 'families', label: '👨‍👩‍👧‍👦 حسابات الأسر', icon: '👨‍👩‍👧‍👦' },
           { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
@@ -534,6 +536,9 @@ export default function AdminDashboard() {
         ))}
       </div>
 
+      {/* TAB: SITE SETTINGS */}
+      {activeAdminTab === 'settings' && <SiteSettingsPanel />}
+
       {/* TAB: CURRICULUM CMS (Supabase) */}
       {activeAdminTab === 'curriculum' && (
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
@@ -547,8 +552,13 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 1: CURRICULUM CMS */}
+      {/* TAB 1: CURRICULUM CMS (محلي — قديم) */}
       {activeAdminTab === 'cms' && (
+        <>
+        <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '12px 18px', marginBottom: '18px', fontSize: '13px', color: '#92400e', fontWeight: 700 }}>
+          ⚠️ هذا محرر <strong>محلي</strong> يعمل على متصفحك فقط (localStorage) ولا يُنشر للطلاب.
+          المصدر المعتمد للمناهج المنشورة هو تبويب «📚 إدارة المناهج (Supabase)». استخدم هذا المحرر للتجربة والمعاينة فقط.
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '24px' }}>
           {/* Subject & Lesson Navigator */}
           <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
@@ -744,6 +754,7 @@ export default function AdminDashboard() {
             </form>
           </div>
         </div>
+        </>
       )}
 
       {/* TAB: TRIAL BOOKINGS (real data) */}

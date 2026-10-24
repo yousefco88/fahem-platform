@@ -4,6 +4,7 @@ import { screenFromPath, SCREEN_META } from './routes';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
 import { UIProvider, useUIState } from './context/UIContext';
+import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
 import AuthGate from './components/AuthGate';
 import RoleBar from './components/RoleBar';
 import BottomNav from './components/BottomNav';
@@ -37,17 +38,21 @@ function ToastBanner() {
   return <div className="toast-banner">{toastMessage}</div>;
 }
 
-// SEO: عنوان ووصف ديناميكيان لكل مسار
+// SEO: عنوان ووصف ديناميكيان لكل مسار (الرئيسية قابلة للتعديل من إعدادات الموقع)
 function DocumentMeta() {
   const { pathname } = useLocation();
+  const { settings } = useSiteSettings();
   useEffect(() => {
-    const meta = SCREEN_META[screenFromPath(pathname)] || SCREEN_META.landing;
-    document.title = meta.title;
-    if (meta.description) {
-      document.querySelector('meta[name="description"]')?.setAttribute('content', meta.description);
+    const screen = screenFromPath(pathname);
+    const meta = SCREEN_META[screen] || SCREEN_META.landing;
+    const title = screen === 'landing' ? (settings.seo?.landingTitle || meta.title) : meta.title;
+    const description = screen === 'landing' ? (settings.seo?.landingDescription || meta.description) : meta.description;
+    document.title = title;
+    if (description) {
+      document.querySelector('meta[name="description"]')?.setAttribute('content', description);
     }
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://fahem-platform.vercel.app${pathname === '/' ? '/' : pathname}`);
-  }, [pathname]);
+  }, [pathname, settings.seo]);
   return null;
 }
 
@@ -110,7 +115,9 @@ export default function App() {
     <AuthProvider>
       <UIProvider>
         <AppProvider>
-          <MainAppContent />
+          <SiteSettingsProvider>
+            <MainAppContent />
+          </SiteSettingsProvider>
         </AppProvider>
       </UIProvider>
     </AuthProvider>
