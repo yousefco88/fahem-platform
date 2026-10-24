@@ -4,6 +4,8 @@ import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import { getChildStats } from '../utils/childProgress';
 import { isLessonDone } from '../utils/todayPlan';
 import { recordedSessions } from '../data/curriculumData';
+// Dynamic import for PDF (lazy load - reduces bundle)
+const loadPdfGenerator = () => import('./parent/WeeklyReportPDF');
 import useStreak, { getStreakMessage, getLevelTitle } from '../hooks/useStreak';
 
 export default function ParentDashboard() {
@@ -28,6 +30,7 @@ export default function ParentDashboard() {
   const streak = useStreak(activeChild?.id);
 
   const [showAddChildModal, setShowAddChildModal] = useState(false);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
   const [newChildName, setNewChildName] = useState('');
   const [newChildGrade, setNewChildGrade] = useState('الصف الثاني الابتدائي');
 
@@ -40,6 +43,61 @@ export default function ParentDashboard() {
     addChild(newChildName, newChildGrade);
     setNewChildName('');
     setShowAddChildModal(false);
+  };
+
+  // 📄 Generate & Download Weekly PDF Report
+  const handleDownloadReport = async () => {
+    if (pdfGenerating) return;
+    setPdfGenerating(true);
+    try {
+      // Dynamic import - loads PDF library only when needed
+      const { downloadWeeklyReport } = await loadPdfGenerator();
+
+      // Prepare subjects data from curriculum
+      const subjectsList = curriculumData.subjects?.map(subject => {
+        const lessons = subject.modules?.flatMap(m => m.lessons || []) || [];
+        const completed = lessons.filter(l => 
+          learningRecords?.[activeChild.id]?.[l.id]?.status === 'completed' ||
+          (activeChild.masteredLessons || []).includes(l.id)
+        ).length;
+        return {
+          name: subject.title,
+          emoji: subject.icon || '📘',
+          completed,
+          total: lessons.length,
+          percent: lessons.length > 0 ? Math.round((completed / lessons.length) * 100) : 0
+        };
+      }) || [];
+
+      await downloadWeeklyReport({
+        child: {
+          name: activeChild.name,
+          grade: activeChild.grade
+        },
+        streak: {
+          currentStreak: streak.currentStreak || 0,
+          bestStreak: streak.bestStreak || 0,
+          xpTotal: streak.xpTotal || 0,
+          level: streak.level || 1
+        },
+        stats: {
+          lessonsCompleted: childStats.totalMastered || 0,
+          totalLessons: childStats.totalLessons || 0,
+          progressPercent: childStats.totalLessons > 0 
+            ? Math.round((childStats.totalMastered / childStats.totalLessons) * 100) 
+            : 0,
+          hoursStudied: 0 // Future: calculate from activity logs
+        },
+        subjects: subjectsList,
+        weekRange: `أسبوع ${new Date().toLocaleDateString('ar-EG', { month: 'long', day: 'numeric' })}`
+      });
+      triggerToast('✅ تم تحميل التقرير بنجاح!');
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      triggerToast('❌ حدث خطأ في إنشاء التقرير');
+    } finally {
+      setPdfGenerating(false);
+    }
   };
 
   const calendarEvents = Array.isArray(curriculumData.expatExamCalendar) ? curriculumData.expatExamCalendar : [];
@@ -211,6 +269,22 @@ export default function ParentDashboard() {
         >
           <span>💬</span>
           <span>إرسال الرابط عبر واتساب</span>
+        </button>
+
+        {/* 📄 Weekly PDF Report Button */}
+        <button
+          style={{
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white',
+            padding: '11px', borderRadius: 'var(--radius-md)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+            fontWeight: 700, fontSize: '12.5px', boxShadow: '0 4px 10px rgba(99,102,241,0.25)',
+            opacity: pdfGenerating ? 0.7 : 1, cursor: pdfGenerating ? 'wait' : 'pointer'
+          }}
+          onClick={handleDownloadReport}
+          disabled={pdfGenerating}
+        >
+          <span>{pdfGenerating ? '⏳' : '📄'}</span>
+          <span>{pdfGenerating ? 'جاري إنشاء التقرير...' : 'تحميل التقرير الأسبوعي'}</span>
         </button>
 
         <button
