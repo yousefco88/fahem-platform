@@ -4,6 +4,7 @@ import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import { getChildStats } from '../utils/childProgress';
 import { isLessonDone } from '../utils/todayPlan';
 import { recordedSessions } from '../data/curriculumData';
+import useStreak, { getStreakMessage, getLevelTitle } from '../hooks/useStreak';
 
 export default function ParentDashboard() {
   const {
@@ -22,6 +23,9 @@ export default function ParentDashboard() {
   } = useApp();
   // كل الأرقام مشتقة من سجل التعلم الفعلي — لا قيم مخزنة أو مزروعة
   const childStats = getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []);
+
+  // 🔥 Streak & XP data for active child
+  const streak = useStreak(activeChild?.id);
 
   const [showAddChildModal, setShowAddChildModal] = useState(false);
   const [newChildName, setNewChildName] = useState('');
@@ -113,6 +117,44 @@ export default function ParentDashboard() {
               <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{activeChild.grade}</span>
             </div>
           </div>
+
+          {/* 🔥 Child Streak Mini Card */}
+          {!streak.loading && (
+            <div style={{
+              background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
+              border: '1.5px solid #fbbf24',
+              borderRadius: 'var(--radius-md)',
+              padding: '12px',
+              marginTop: '10px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '20px' }}>🔥</span>
+                  <span style={{ fontWeight: 800, color: '#92400e', fontSize: '18px' }}>
+                    {streak.currentStreak}
+                  </span>
+                  <span style={{ fontWeight: 600, color: '#b45309', fontSize: '12px' }}>
+                    {streak.currentStreak === 1 ? 'يوم' : 'أيام'}
+                  </span>
+                </div>
+                <span style={{
+                  background: streak.isActiveToday ? '#22c55e' : '#94a3b8',
+                  color: 'white',
+                  padding: '3px 8px',
+                  borderRadius: '10px',
+                  fontSize: '10px',
+                  fontWeight: 700
+                }}>
+                  {streak.isActiveToday ? '✅ نشط' : '⏳ لم يبدأ'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: '#78350f' }}>
+                <span>⭐ {streak.xpTotal} XP</span>
+                <span>🎖️ Lv.{streak.level}</span>
+                <span>🏆 أفضل: {streak.bestStreak}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
