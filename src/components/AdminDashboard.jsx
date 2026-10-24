@@ -427,7 +427,7 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             style={{
-              background: '#38bdf8', color: '#0f172a', padding: '10px 18px',
+              background: '#38bdf8', color: 'var(--navy)', padding: '10px 18px',
               borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: 'pointer'
             }}
             onClick={() => triggerToast('ميزة النسخ الاحتياطي غير متصلة بقاعدة بيانات بعد.')}
@@ -809,7 +809,7 @@ export default function AdminDashboard() {
                   {[...scheduleData].sort((a, b) => a.day - b.day || String(a.time).localeCompare(String(b.time))).map(slot => {
                     const subjLessons = curriculumData[slot.subjectId]?.lessons || [];
                     return (
-                      <tr key={slot.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <tr key={slot.id} style={{ borderBottom: '1px solid var(--line)' }}>
                         <td style={{ padding: '8px' }}>
                           <select value={slot.day} onChange={e => updateSlot(slot.id, 'day', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                             {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
@@ -918,7 +918,7 @@ export default function AdminDashboard() {
                   <td style={{ padding: '14px 16px' }}>{member.canBilling ? '✅ مسموح' : '❌ محجوب'}</td>
                   <td style={{ padding: '14px 16px' }}>
                     <button
-                      style={{ background: 'var(--bg)', border: '1px solid #cbd5e1', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                      style={{ background: 'var(--bg)', border: '1px solid var(--line)', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                       onClick={() => triggerToast(`تعديل صلاحيات ${member.name}`)}
                     >
                       تعديل

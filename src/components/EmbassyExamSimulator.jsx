@@ -249,7 +249,7 @@ export default function EmbassyExamSimulator() {
 
   // Egyptian Color Band Assessment (Edu 2.0 system)
   const getAssessmentColorBand = (score) => {
-    if (score >= 85) return { title: 'أداء متميز', color: '#2563eb', bg: '#eff6ff', tag: 'متميز' };
+    if (score >= 85) return { title: 'أداء متميز', color: 'var(--blue)', bg: 'var(--blue-light)', tag: 'متميز' };
     if (score >= 65) return { title: 'أداء جيد', color: '#16a34a', bg: '#f0fdf4', tag: 'جيد' };
     if (score >= 50) return { title: 'يحتاج إلى مراجعة بسيطة', color: '#ca8a04', bg: '#fefce8', tag: 'مراجعة' };
     return { title: 'يحتاج إلى دعم ومراجعة', color: '#dc2626', bg: '#fef2f2', tag: 'دعم' };
@@ -292,7 +292,7 @@ export default function EmbassyExamSimulator() {
               <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>بيانات الطالب المتقدم:</span>
               <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue)', marginTop: '4px' }}>{activeChild.name}</div>
               <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '2px' }}>{activeChild.grade}</div>
-              <div style={{ fontSize: '11px', background: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', marginTop: '10px', color: '#334155' }}>
+              <div style={{ fontSize: '11px', background: 'var(--bg)', padding: '4px 8px', borderRadius: '6px', marginTop: '10px', color: 'var(--navy)' }}>
                 محاكاة تدريبية — ليست رقم جلوس رسمياً
               </div>
             </div>
@@ -539,7 +539,7 @@ export default function EmbassyExamSimulator() {
             position: 'relative'
           }}>
             {/* Watermark Banner */}
-            <div style={{ textAlign: 'center', borderBottom: '2px solid #f1f5f9', paddingBottom: '20px', marginBottom: '24px' }}>
+            <div style={{ textAlign: 'center', borderBottom: '2px solid var(--line)', paddingBottom: '20px', marginBottom: '24px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '26px' }}>🦅</span>
                 <span style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.5px', color: '#1e293b' }}>
@@ -585,7 +585,7 @@ export default function EmbassyExamSimulator() {
             <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '12px' }}>
               ملخص الأداء التدريبي:
             </h4>
-            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '14px', marginBottom: '24px' }}>
+            <div style={{ background: 'var(--blue-light)', border: '1px solid var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '24px' }}>
               <strong style={{ color: '#1e3a8a' }}>نتيجة المحاولة الحالية: {correctCount} من {totalQuestions} ({percentage}%)</strong>
               <p style={{ color: '#475569', fontSize: '13px', margin: '6px 0 0' }}>يعرض التقرير نتيجة الاختبار الذي أجراه الطالب فقط.</p>
             </div>
@@ -596,7 +596,7 @@ export default function EmbassyExamSimulator() {
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>نوع التقرير:</span>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px', border: '2px solid #2563eb',
-                  color: '#2563eb', padding: '6px 14px', borderRadius: '8px', fontWeight: 900, fontSize: '12px', marginTop: '6px'
+                  color: 'var(--blue)', padding: '6px 14px', borderRadius: '8px', fontWeight: 900, fontSize: '12px', marginTop: '6px'
                 }}>
                   <span>★</span> نتيجة اختبار تدريبي من فاهم <span>★</span>
                 </div>

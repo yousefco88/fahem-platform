@@ -5,9 +5,9 @@ import { useApp } from '../../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 
 const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
-const h2 = { fontSize: 17, color: '#0f172a', margin: '0 0 12px' };
+const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
 const muted = { color: '#475569', fontSize: 13.5 };
-const tabBtn = (on) => ({ padding: '8px 14px', borderRadius: 10, border: '1px solid #cbd5e1', cursor: 'pointer', font: 'inherit', fontSize: 13.5, background: on ? '#1d4ed8' : '#f8fafc', color: on ? 'white' : '#0f172a' });
+const tabBtn = (on) => ({ padding: '8px 14px', borderRadius: 10, border: '1px solid var(--line)', cursor: 'pointer', font: 'inherit', fontSize: 13.5, background: on ? '#1d4ed8' : '#f8fafc', color: on ? 'white' : '#0f172a' });
 
 // طلاب المعلم = من أسندهم له المسؤول فقط (teacher_students). حصصه = schedule_slots.teacher_id.
 export default function TeacherRoster() {
@@ -54,7 +54,7 @@ export default function TeacherRoster() {
           <h2 style={h2}>طلابي ({students?.length ?? '…'})</h2>
           {students?.length === 0 && !err && <p style={muted}>لم يُسنَد إليك أي طالب بعد. يُسنِد المسؤول الطلاب من «مساحتي».</p>}
           {students?.map(s => (
-            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid #f1f5f9', color: '#0f172a' }}>
+            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)' }}>
               <span style={{ fontSize: 22 }}>{s.avatar || '🧒'}</span>
               <div style={{ flex: 1 }}><strong>{s.name}</strong><div style={muted}>{s.grade}</div></div>
               <span style={muted}>دروس مكتملة: <strong>{s.completed}</strong></span>
@@ -68,7 +68,7 @@ export default function TeacherRoster() {
           {slots === null && <p style={muted}>جارٍ التحميل…</p>}
           {slots?.length === 0 && <p style={muted}>لا توجد حصص مسندة إليك في الجدول.</p>}
           {slots?.map(s => (
-            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid #f1f5f9', color: '#0f172a', fontSize: 14 }}>
+            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)', fontSize: 14 }}>
               <strong>{DAY_NAMES[s.day]}</strong>
               <span style={{ direction: 'ltr' }}>{s.time}</span>
               <span>{curriculumData?.[s.subject_id]?.title || s.subject_id}</span>

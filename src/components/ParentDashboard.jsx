@@ -448,7 +448,7 @@ export default function ParentDashboard() {
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{Object.values(curriculumData || {}).filter(v => Array.isArray(v?.lessons)).length} مسارًا</h3>
                 <small style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
             </div>
 
             <div style={{

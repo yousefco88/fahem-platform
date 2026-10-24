@@ -61,7 +61,7 @@ export default function TeacherStudio() {
             <h3 style={{ fontSize: '28px', color: 'var(--navy)', marginBottom: '6px' }}>—</h3>
             <small style={{ color: 'var(--muted)', fontWeight: 600 }}>👥 لا يوجد طلاب مسجلون بعد</small>
           </div>
-          <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🎒</div>
+          <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🎒</div>
         </div>
 
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', display: 'flex', justifyContent: 'space-between' }}>

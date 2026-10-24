@@ -184,7 +184,7 @@ export default function OnboardingFlow() {
             </select>
 
             <div style={{
-              background: '#eff6ff', border: '1.5px dashed #bfdbfe', borderRadius: 'var(--radius-md)',
+              background: 'var(--blue-light)', border: '1.5px dashed var(--line)', borderRadius: 'var(--radius-md)',
               padding: '16px', marginTop: '12px', display: 'flex', alignItems: 'center',
               justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px'
             }}>
@@ -192,7 +192,7 @@ export default function OnboardingFlow() {
                 <strong style={{ color: 'var(--blue)', fontSize: '14px', display: 'block' }}>توقيت الحصص التفاعلية المحسوب لك:</strong>
                 <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>{currentTz.desc}</span>
               </div>
-              <div style={{ background: 'white', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--blue)', border: '1px solid #bfdbfe', fontSize: '13px' }}>
+              <div style={{ background: 'white', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--blue)', border: '1px solid var(--line)', fontSize: '13px' }}>
                 {currentTz.badge}
               </div>
             </div>

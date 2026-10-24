@@ -301,7 +301,7 @@ export default function Modals() {
               </button>
             </header>
 
-            <nav style={{ display: 'flex', background: '#f1f5f9', borderBottom: '2px solid var(--line)', padding: '0 24px', gap: '12px', overflowX: 'auto' }}>
+            <nav style={{ display: 'flex', background: 'var(--bg)', borderBottom: '2px solid var(--line)', padding: '0 24px', gap: '12px', overflowX: 'auto' }}>
               <button
                 className={`studio-tab-btn ${studioActiveTab === 'video' ? 'active' : ''}`}
                 onClick={() => setStudioActiveTab('video')}
@@ -392,7 +392,7 @@ export default function Modals() {
                   
                   {/* Part 1: Interactive Syllable Puzzle / Word Builder */}
                   {activeLesson.interactiveBuilder && (
-                    <div style={{ background: '#eff6ff', border: '2px solid #bfdbfe', borderRadius: '20px', padding: '22px', marginBottom: '28px' }}>
+                    <div style={{ background: 'var(--blue-light)', border: '2px solid var(--line)', borderRadius: '20px', padding: '22px', marginBottom: '28px' }}>
                       <h4 style={{ color: 'var(--blue)', fontSize: '18px', marginBottom: '6px' }}>
                         🧩 نشاط تركيبي: اضغط على المقاطع لبناء: «{activeLesson.interactiveBuilder.targetWord}»
                       </h4>
@@ -414,7 +414,7 @@ export default function Modals() {
                               key={idx}
                               style={{
                                 background: '#dbeafe', color: 'var(--blue)', padding: '8px 18px',
-                                borderRadius: '10px', fontSize: '22px', fontWeight: 800, border: '1px solid #bfdbfe'
+                                borderRadius: '10px', fontSize: '22px', fontWeight: 800, border: '1px solid var(--line)'
                               }}
                             >
                               {s}
@@ -442,7 +442,7 @@ export default function Modals() {
                           </button>
                         ))}
                         <button
-                          style={{ background: '#f1f5f9', color: 'var(--muted)', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 700 }}
+                          style={{ background: 'var(--bg)', color: 'var(--muted)', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 700 }}
                           onClick={handleResetBuilder}
                         >
                           مسح ↺
@@ -461,7 +461,7 @@ export default function Modals() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                       <div style={{
-                        display: 'inline-block', background: '#eff6ff', color: 'var(--blue)',
+                        display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue)',
                         padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px'
                       }}>
                         سؤال الإتقان (إعادة الاختبار متاحة حتى 100%)
@@ -573,7 +573,7 @@ export default function Modals() {
                         }}>
                           {idx + 1}
                         </span>
-                        <span style={{ fontSize: '13.5px', color: '#334155' }}>{tip}</span>
+                        <span style={{ fontSize: '13.5px', color: 'var(--navy)' }}>{tip}</span>
                       </div>
                     ))}
                   </div>
@@ -594,7 +594,7 @@ export default function Modals() {
               لحماية الطفل، يُرجى حل المسألة الرياضية للعودة:
             </p>
             <div style={{
-              fontSize: '24px', fontWeight: 800, color: 'var(--blue)', background: '#eff6ff',
+              fontSize: '24px', fontWeight: 800, color: 'var(--blue)', background: 'var(--blue-light)',
               padding: '12px', borderRadius: '12px', marginBottom: '16px'
             }}>
               كم حاصل: {gateNum1} + {gateNum2} ؟

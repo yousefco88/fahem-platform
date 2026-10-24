@@ -10,15 +10,15 @@ import TeacherRoster from './TeacherRoster';
 import AssignStudents from './AssignStudents';
 
 const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
-const h2 = { fontSize: 17, color: '#0f172a', margin: '0 0 12px' };
+const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
 const muted = { color: '#475569', fontSize: 13.5 };
-const btn = { padding: '9px 14px', borderRadius: 10, border: '1px solid #cbd5e1', background: '#f8fafc', color: '#0f172a', cursor: 'pointer', font: 'inherit', fontSize: 13.5 };
+const btn = { padding: '9px 14px', borderRadius: 10, border: '1px solid var(--line)', background: '#f8fafc', color: 'var(--navy)', cursor: 'pointer', font: 'inherit', fontSize: 13.5 };
 const btnPrimary = { ...btn, background: '#1d4ed8', borderColor: '#1d4ed8', color: 'white' };
 
 function Stat({ label, value }) {
   return (
     <div style={{ flex: '1 1 120px', background: '#f8fafc', borderRadius: 12, padding: 12, textAlign: 'center' }}>
-      <div style={{ fontSize: 22, fontWeight: 800, color: '#0f172a' }}>{value}</div>
+      <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--navy)' }}>{value}</div>
       <div style={{ fontSize: 12, color: '#475569' }}>{label}</div>
     </div>
   );
@@ -33,7 +33,7 @@ function TodaySchedule({ slots, curriculumData }) {
       {today.length === 0 ? (
         <p style={muted}>لا توجد خانات في الجدول لهذا اليوم.</p>
       ) : today.map(s => (
-        <div key={s.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid #f1f5f9', fontSize: 14, color: '#0f172a' }}>
+        <div key={s.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--line)', fontSize: 14, color: 'var(--navy)' }}>
           <strong style={{ direction: 'ltr' }}>{s.time}</strong>
           <span>{SLOT_TYPES[s.type]?.icon} {curriculumData?.[s.subjectId]?.title || s.subjectId}</span>
           <span style={{ ...muted, marginInlineStart: 'auto' }}>{SLOT_TYPES[s.type]?.label}</span>
@@ -63,9 +63,9 @@ function ParentSpace({ go }) {
         <h2 style={h2}>👧 أبنائي ({childrenList.length})</h2>
         {childrenList.length === 0 && <p style={muted}>لم تُضف ملفات أبناء بعد — أضفهم من قسم «إدارة ملفات الأبناء» أدناه.</p>}
         {childrenList.map(c => (
-          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
+          <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--line)' }}>
             <span style={{ fontSize: 24 }}>{c.avatar || '🧒'}</span>
-            <div style={{ flex: 1, color: '#0f172a' }}>
+            <div style={{ flex: 1, color: 'var(--navy)' }}>
               <strong>{c.name}</strong>
               <div style={muted}>{c.grade}{activeChild?.id === c.id ? ' — الملف النشط' : ''}</div>
             </div>
@@ -92,7 +92,7 @@ function ParentSpace({ go }) {
         {attempts === null && <p style={muted}>جارٍ التحميل…</p>}
         {attempts?.length === 0 && <p style={muted}>لا توجد نتائج موثقة حتى الآن.</p>}
         {attempts?.map(a => (
-          <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', color: '#0f172a', fontSize: 14 }}>
+          <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', color: 'var(--navy)', fontSize: 14 }}>
             <span>{a.child_name || 'طفل'} — {new Date(a.created_at).toLocaleDateString('ar-EG')}</span>
             <strong>{Math.round(a.percentage)}%{a.band ? ` · ${a.band}` : ''}</strong>
           </div>
@@ -178,7 +178,7 @@ function PersonalSettings() {
       <h2 style={h2}>⚙️ الإعدادات الشخصية</h2>
       <form onSubmit={saveName} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="الاسم الكامل" aria-label="الاسم الكامل"
-          style={{ flex: '1 1 200px', padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: 10, font: 'inherit' }} />
+          style={{ flex: '1 1 200px', padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, font: 'inherit' }} />
         <button style={btnPrimary} disabled={busy}>حفظ الاسم</button>
       </form>
       <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
@@ -203,7 +203,7 @@ export default function MySpace() {
   const staff = navRole === 'admin' || navRole === 'content_editor';
 
   return (
-    <main dir="rtl" style={{ maxWidth: 760, width: 'calc(100% - 32px)', margin: '24px auto', color: '#0f172a' }}>
+    <main dir="rtl" style={{ maxWidth: 760, width: 'calc(100% - 32px)', margin: '24px auto', color: 'var(--navy)' }}>
       <section style={{ ...card, display: 'flex', alignItems: 'center', gap: 14 }}>
         <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#1d4ed8', color: 'white', display: 'grid', placeItems: 'center', fontSize: 22, fontWeight: 800 }}>
           {(name || '?').trim().charAt(0)}
@@ -212,7 +212,7 @@ export default function MySpace() {
           <h1 style={{ fontSize: 20, margin: 0 }}>مرحباً، {name}</h1>
           <div style={muted}>{user.email}</div>
         </div>
-        <span style={{ background: '#eff6ff', color: '#1d4ed8', borderRadius: 999, padding: '4px 12px', fontSize: 12.5, fontWeight: 700 }}>
+        <span style={{ background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 999, padding: '4px 12px', fontSize: 12.5, fontWeight: 700 }}>
           {ROLE_LABELS[navRole]}
         </span>
       </section>
