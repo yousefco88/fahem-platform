@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import { getChildStats } from '../utils/childProgress';
 import { isLessonDone } from '../utils/todayPlan';
+import { recordedSessions } from '../data/curriculumData';
 
 export default function ParentDashboard() {
   const {
@@ -128,7 +129,7 @@ export default function ParentDashboard() {
               borderRadius: 'var(--radius-md)', background: 'transparent', color: '#475569',
               fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
             }}
-            onClick={() => triggerToast('جدول الحصص المباشرة والمسجلة متاح في الأسفل')}
+            onClick={() => document.getElementById('live-schedule-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span>🗓</span> جدول الحصص الحية
           </button>
@@ -138,7 +139,7 @@ export default function ParentDashboard() {
               borderRadius: 'var(--radius-md)', background: 'transparent', color: '#475569',
               fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
             }}
-            onClick={() => triggerToast('سجل إتقان المهارات معروض في اللوحة')}
+            onClick={() => document.getElementById('mastery-matrix-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span>🎯</span> مصفوفة إتقان المهارات (5 مواد)
           </button>
@@ -161,7 +162,10 @@ export default function ParentDashboard() {
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             fontWeight: 700, fontSize: '12.5px', boxShadow: '0 4px 10px rgba(37,211,102,0.25)'
           }}
-          onClick={() => triggerToast('إرسال واتساب غير متاح حتى ربط المنصة بمزود رسائل.')}
+          onClick={() => {
+            const shareText = `سجّل طفلك في منصة فاهم للتعليم المصري بالخارج 📚\n${window.location.origin}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+          }}
         >
           <span>💬</span>
           <span>إرسال الرابط عبر واتساب</span>
@@ -195,8 +199,8 @@ export default function ParentDashboard() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <button className="tag-badge mastered" onClick={() => setCurrentScreen('pricing')}>
-              🟢 باقة التأسيس الحي النشطة (شاملة الـ 5 مواد)
+            <button className="tag-badge info" onClick={() => setCurrentScreen('pricing')}>
+              📚 الوصول التجريبي المجاني
             </button>
             <div style={{
               width: '40px', height: '40px', borderRadius: '50%',
@@ -235,7 +239,7 @@ export default function ParentDashboard() {
           </div>
 
           {/* 1. Live Hero Session Card */}
-          <section style={{
+          <section id="live-schedule-section" style={{
             background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%)',
             color: 'white', borderRadius: 'var(--radius-lg)', padding: '28px 32px',
             position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px -10px rgba(30, 58, 138, 0.4)',
@@ -432,7 +436,7 @@ export default function ParentDashboard() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
             
             {/* Left: Mastery Matrix across all official subjects */}
-            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+            <div id="mastery-matrix-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -554,44 +558,22 @@ export default function ParentDashboard() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
-                  <div style={{ width: '72px', height: '52px', borderRadius: '8px', background: 'linear-gradient(135deg, #1e293b, #8b5cf6)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '18px', flexShrink: 0, position: 'relative' }}>
-                    ▶<small style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '9px', background: 'rgba(0,0,0,0.6)', padding: '1px 4px', borderRadius: '4px' }}>27:30</small>
+                {recordedSessions.map(session => (
+                  <div key={session.id} style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
+                    <div style={{ width: '72px', height: '52px', borderRadius: '8px', background: session.gradient, display: 'grid', placeItems: 'center', color: 'white', fontSize: '18px', flexShrink: 0, position: 'relative' }}>
+                      ▶<small style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '9px', background: 'rgba(0,0,0,0.6)', padding: '1px 4px', borderRadius: '4px' }}>{session.duration}</small>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>{session.title}</h5>
+                      <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>
+                        {session.teacher ? `${session.teacher} · ` : ''}مسجلة
+                      </span>
+                    </div>
+                    <button style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center' }} onClick={() => openLesson(session.subjectKey, session.lessonId, 'video')}>
+                      ▶
+                    </button>
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>Connect 1: Unit 1 Phonics & Busy Bee</h5>
-                    <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>اللغة الإنجليزية · أ/ دينا مصطفى · مسجلة</span>
-                  </div>
-                  <button style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center' }} onClick={() => openLesson('english', 'eng_hello', 'video')}>
-                    ▶
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
-                  <div style={{ width: '72px', height: '52px', borderRadius: '8px', background: 'linear-gradient(135deg, #1e3a8a, #0284c7)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '18px', flexShrink: 0, position: 'relative' }}>
-                    ▶<small style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '9px', background: 'rgba(0,0,0,0.6)', padding: '1px 4px', borderRadius: '4px' }}>29:30</small>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>اكتشف: الحواس الخمس واستكشاف العالم</h5>
-                    <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>ديسكفر · أ/ أحمد سالم · مسجلة</span>
-                  </div>
-                  <button style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center' }} onClick={() => openLesson('discover', 'disc_senses', 'video')}>
-                    ▶
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
-                  <div style={{ width: '72px', height: '52px', borderRadius: '8px', background: 'linear-gradient(135deg, #1e3a8a, #d97706)', display: 'grid', placeItems: 'center', color: 'white', fontSize: '18px', flexShrink: 0, position: 'relative' }}>
-                    ▶<small style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '9px', background: 'rgba(0,0,0,0.6)', padding: '1px 4px', borderRadius: '4px' }}>25:20</small>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>التربية والأخلاق: الصدق والأمانة في الفصل</h5>
-                    <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>القيم والأخلاق · مسجلة</span>
-                  </div>
-                  <button style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center' }} onClick={() => openLesson('values', 'val_honesty', 'video')}>
-                    ▶
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
 

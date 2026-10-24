@@ -348,14 +348,25 @@ export default function Modals() {
                       />
                       <div style={{ color: '#e2e8f0', fontSize: '12px', padding: '8px' }}>{lessonVideos[`${activeSubject}:${activeLesson.id}`].name} · مقطع محفوظ محليًا</div>
                     </div>
-                  ) : <div style={{
-                    background: '#000', borderRadius: '20px', aspectRatio: '16 / 9',
-                    maxHeight: '440px', margin: '0 auto 20px', display: 'flex',
-                    flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white'
-                  }}>
-                    <span style={{ fontSize: '14px', fontWeight: 700 }}>لا يوجد فيديو مرفق بهذا الدرس على هذا المتصفح.</span>
-                    <span style={{ fontSize: '13px', marginTop: '12px', opacity: 0.8 }}>الهدف: {activeLesson.objective}</span>
-                  </div>}
+                  ) : (
+                                      <div style={{
+                                        background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%)',
+                                        borderRadius: '20px', aspectRatio: '16 / 9',
+                                        maxHeight: '440px', margin: '0 auto 20px', display: 'flex',
+                                        flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white',
+                                        textAlign: 'center', padding: '24px'
+                                      }}>
+                                        <span style={{ fontSize: '48px', marginBottom: '16px' }}>🎬</span>
+                                        <span style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>الفيديو قيد التحضير</span>
+                                        <span style={{ fontSize: '14px', opacity: 0.9, marginBottom: '16px' }}>سيتوفر قريباً — تابع الإشعارات</span>
+                                        <div style={{ 
+                                          background: 'rgba(255,255,255,0.15)', padding: '12px 20px', borderRadius: '12px',
+                                          fontSize: '13px', maxWidth: '500px'
+                                        }}>
+                                          <strong>🎯 هدف الدرس:</strong> {activeLesson.objective}
+                                        </div>
+                                      </div>
+                                    )}
 
                   <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
                     <strong>محطات الحصة المسجلة للقفز السريع:</strong>
