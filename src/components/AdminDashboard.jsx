@@ -266,6 +266,60 @@ export default function AdminDashboard() {
   // Staff & RBAC — بيانات حقيقية من Supabase user_roles
   const [staffMembers, setStaffMembers] = useState([]);
   const [staffLoading, setStaffLoading] = useState(true);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [newMember, setNewMember] = useState({ email: '', role: 'teacher', name: '' });
+  const [addingMember, setAddingMember] = useState(false);
+
+  // دالة إضافة عضو جديد
+  const handleAddMember = async () => {
+    if (!newMember.email || !newMember.name) {
+      triggerToast('يرجى إدخال الاسم والبريد الإلكتروني');
+      return;
+    }
+    if (!supabase) {
+      triggerToast('Supabase غير متصل');
+      return;
+    }
+    
+    setAddingMember(true);
+    try {
+      // إنشاء معرّف مؤقت (في الإنتاج سيكون من auth.users)
+      const tempUserId = crypto.randomUUID();
+      
+      const { data, error } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: tempUserId,
+          role: newMember.role,
+          metadata: { name: newMember.name, email: newMember.email }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // إضافة للقائمة المحلية
+      setStaffMembers(prev => [...prev, {
+        id: data.id,
+        name: newMember.name,
+        role: newMember.role === 'admin' ? 'مدير النظام' : newMember.role === 'teacher' ? 'معلم' : 'موظف',
+        email: newMember.email,
+        status: 'نشط',
+        canEditCMS: newMember.role === 'admin',
+        canAudit: ['admin', 'staff'].includes(newMember.role),
+        canBilling: newMember.role === 'admin'
+      }]);
+
+      triggerToast(`✅ تمت إضافة ${newMember.name} بنجاح`);
+      setShowAddMemberModal(false);
+      setNewMember({ email: '', role: 'teacher', name: '' });
+    } catch (err) {
+      console.error('Error adding member:', err);
+      triggerToast(`❌ خطأ: ${err.message}`);
+    } finally {
+      setAddingMember(false);
+    }
+  };
 
   useEffect(() => {
     if (!supabase) { setStaffLoading(false); return; }
@@ -739,7 +793,7 @@ export default function AdminDashboard() {
             <button
               className="btn-accent"
               style={{ padding: '8px 16px', fontSize: '13px' }}
-              onClick={() => triggerToast('فتح نافذة دعوة عضو فريق جديد')}
+              onClick={() => setShowAddMemberModal(true)}
             >
               + إضافة عضو أو معلم جديد
             </button>
@@ -804,6 +858,90 @@ export default function AdminDashboard() {
             </tbody>
           </table>
           )}
+        </div>
+      )}
+
+      {/* Modal: إضافة عضو جديد */}
+      {showAddMemberModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }} onClick={() => setShowAddMemberModal(false)}>
+          <div style={{
+            background: 'white', borderRadius: '16px', padding: '28px', width: '90%', maxWidth: '420px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+          }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '18px', color: 'var(--navy)', marginBottom: '20px', textAlign: 'center' }}>
+              👤 إضافة عضو أو معلم جديد
+            </h3>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>الاسم الكامل</label>
+              <input
+                type="text"
+                value={newMember.name}
+                onChange={e => setNewMember(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="مثال: أحمد محمد"
+                style={{
+                  width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
+                  fontSize: '14px', direction: 'rtl'
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>البريد الإلكتروني</label>
+              <input
+                type="email"
+                value={newMember.email}
+                onChange={e => setNewMember(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="example@email.com"
+                style={{
+                  width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
+                  fontSize: '14px', direction: 'ltr', textAlign: 'left'
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>الدور</label>
+              <select
+                value={newMember.role}
+                onChange={e => setNewMember(prev => ({ ...prev, role: e.target.value }))}
+                style={{
+                  width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
+                  fontSize: '14px', background: 'white', cursor: 'pointer'
+                }}
+              >
+                <option value="teacher">👩‍🏫 معلم</option>
+                <option value="staff">👤 موظف دعم</option>
+                <option value="admin">🔐 مدير النظام</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={handleAddMember}
+                disabled={addingMember}
+                style={{
+                  flex: 1, padding: '12px', background: '#f59e0b', color: 'white', border: 'none',
+                  borderRadius: '8px', fontWeight: 700, fontSize: '14px', cursor: addingMember ? 'wait' : 'pointer',
+                  opacity: addingMember ? 0.7 : 1
+                }}
+              >
+                {addingMember ? 'جارٍ الإضافة...' : '✅ إضافة العضو'}
+              </button>
+              <button
+                onClick={() => setShowAddMemberModal(false)}
+                style={{
+                  padding: '12px 20px', background: '#f1f5f9', color: '#64748b', border: 'none',
+                  borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer'
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
