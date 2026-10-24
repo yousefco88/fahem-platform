@@ -228,6 +228,8 @@ export default function MySpace() {
       {navRole === 'parent' && (
         <details style={card}>
           <summary style={{ cursor: 'pointer', fontWeight: 700 }}>👧 إدارة ملفات الأبناء (إضافة / حذف)</summary>
+          {/* ⚠️ ملاحظة لأي وكيل/مطوّر: MySpace.jsx يستدعي <ParentAccount embedded />، فلا تُزل هذه الخاصية —
+              embedded يلغي الإطار والهيدر كي تندمج اللوحة داخل هذا القسم. */}
           <ParentAccount embedded />
         </details>
       )}
