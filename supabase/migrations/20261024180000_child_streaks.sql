@@ -58,12 +58,12 @@ create policy "parents own child daily activity" on public.child_daily_activity
 -- Admin policies
 create policy "admin reads child streaks" on public.child_streaks
   for select using (
-    exists (select 1 from public.user_roles where user_id = auth.uid() and role in ('admin', 'super_admin'))
+    public.is_admin()
   );
 
 create policy "admin reads child daily activity" on public.child_daily_activity
   for select using (
-    exists (select 1 from public.user_roles where user_id = auth.uid() and role in ('admin', 'super_admin'))
+    public.is_admin()
   );
 
 -- Function: update_streak_on_activity
@@ -72,6 +72,7 @@ create or replace function public.update_child_streak(p_child_id uuid, p_xp_earn
 returns jsonb
 language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   v_streak record;
@@ -81,6 +82,11 @@ declare
   v_new_xp integer;
   v_new_level integer;
 begin
+  if not exists (select 1 from public.children c where c.id = p_child_id and c.parent_id = auth.uid()) then
+    raise exception 'not allowed' using errcode = '42501';
+  end if;
+  p_xp_earned := least(greatest(coalesce(p_xp_earned, 0), 0), 100);
+
   -- Get or create streak record
   insert into public.child_streaks (child_id, current_streak, best_streak, last_activity_date, xp_total, level)
   values (p_child_id, 0, 0, null, 0, 1)
@@ -134,6 +140,7 @@ end;
 $$;
 
 -- Grant execute to authenticated users
+revoke execute on function public.update_child_streak(uuid, integer) from public, anon;
 grant execute on function public.update_child_streak(uuid, integer) to authenticated;
 
 -- Grant table access
