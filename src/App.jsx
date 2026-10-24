@@ -19,6 +19,7 @@ const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulato
 const OnboardingFlow = lazy(() => import('./components/OnboardingFlow'));
 const PricingPlans = lazy(() => import('./components/PricingPlans'));
 const ParentAccount = lazy(() => import('./components/ParentAccount'));
+const AITutor = lazy(() => import('./components/ai/AITutor'));
 
 function ScreenFallback() {
   return (
@@ -61,6 +62,7 @@ function MainAppContent() {
           <Routes>
             <Route path="/" element={<PublicLandingPage />} />
             <Route path="/parent" element={<ParentDashboard />} />
+            <Route path="/ai-tutor" element={<AITutor />} />
             <Route path="/child/*" element={<ChildUniverse />} />
             <Route
               path="/teacher"
