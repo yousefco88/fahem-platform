@@ -11,7 +11,7 @@ export default function FaqSection() {
       <div style={{ maxWidth: '850px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
-          <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a' }}>
             {title}
           </h2>
         </div>
@@ -29,7 +29,7 @@ export default function FaqSection() {
                 style={{
                   width: '100%', padding: '18px 20px', background: 'none', border: 'none',
                   textAlign: 'right', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  fontWeight: 800, fontSize: '15px', color: 'var(--navy)', cursor: 'pointer'
+                  fontWeight: 800, fontSize: '15px', color: '#0f172a', cursor: 'pointer'
                 }}
                 onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
               >

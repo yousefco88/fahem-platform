@@ -10,10 +10,10 @@ export default function SubjectsSection() {
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
-          <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a' }}>
             {subjects.length} {titleSuffix}
           </h2>
-          <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
+          <p style={{ color: '#475569', fontSize: '15px' }}>
             {subtitle}
           </p>
         </div>
@@ -32,8 +32,8 @@ export default function SubjectsSection() {
                   <span style={{ fontSize: '32px' }}>{s.icon}</span>
                   <span className="tag-badge info" style={{ fontSize: '11px' }}>{s.badge}</span>
                 </div>
-                <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>{s.title}</h3>
-                <p style={{ fontSize: '12.5px', color: 'var(--muted)', lineHeight: 1.5 }}>{s.desc}</p>
+                <h3 style={{ fontSize: '16px', color: '#0f172a', marginBottom: '6px' }}>{s.title}</h3>
+                <p style={{ fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>{s.desc}</p>
               </div>
             </div>
           ))}

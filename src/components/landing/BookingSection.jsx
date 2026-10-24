@@ -66,7 +66,7 @@ export default function BookingSection() {
         </p>
 
         <div style={{
-          background: 'white', color: 'var(--navy)', borderRadius: '24px',
+          background: 'white', color: '#0f172a', borderRadius: '24px',
           padding: '36px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)', textAlign: 'right'
         }}>
           {bookingSuccess ? (

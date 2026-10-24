@@ -59,10 +59,10 @@ export default function TimezoneSection() {
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
-          <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a' }}>
             {title}
           </h2>
-          <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
+          <p style={{ color: '#475569', fontSize: '15px' }}>
             {subtitle}
           </p>
         </div>

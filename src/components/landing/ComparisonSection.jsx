@@ -10,10 +10,10 @@ export default function ComparisonSection() {
       <div style={{ maxWidth: '1050px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
-          <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a' }}>
             {title}
           </h2>
-          <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
+          <p style={{ color: '#475569', fontSize: '15px' }}>
             {subtitle}
           </p>
         </div>
@@ -22,7 +22,7 @@ export default function ComparisonSection() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', fontSize: '14px' }}>
             <thead>
               <tr style={{ background: '#f1f5f9', borderBottom: '2px solid var(--line)' }}>
-                <th style={{ padding: '16px 20px', fontWeight: 800, color: 'var(--navy)' }}>وجه المقارنة</th>
+                <th style={{ padding: '16px 20px', fontWeight: 800, color: '#0f172a' }}>وجه المقارنة</th>
                 <th style={{ padding: '16px 20px', fontWeight: 900, color: 'var(--blue)', background: '#eff6ff' }}>{fahemColumn}</th>
                 <th style={{ padding: '16px 20px', fontWeight: 700, color: '#64748b' }}>{otherColumn}</th>
               </tr>
@@ -30,7 +30,7 @@ export default function ComparisonSection() {
             <tbody>
               {rows.map((row, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid var(--line)' }}>
-                  <td style={{ padding: '16px 20px', fontWeight: 700, color: 'var(--navy)' }}>{row.aspect}</td>
+                  <td style={{ padding: '16px 20px', fontWeight: 700, color: '#0f172a' }}>{row.aspect}</td>
                   <td style={{ padding: '16px 20px', fontWeight: 700, color: '#166534', background: '#f0fdf4' }}>
                     ✓ {row.fahem}
                   </td>

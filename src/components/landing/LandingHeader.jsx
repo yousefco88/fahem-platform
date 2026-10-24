@@ -47,8 +47,8 @@ export default function LandingHeader() {
             ف
           </div>
           <div>
-            <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.1 }}>{header.brandName}</h2>
-            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>{header.tagline}</span>
+            <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#0f172a', lineHeight: 1.1 }}>{header.brandName}</h2>
+            <span style={{ fontSize: '11px', color: '#475569', fontWeight: 700 }}>{header.tagline}</span>
           </div>
         </div>
 
@@ -104,7 +104,7 @@ export default function LandingHeader() {
             }}>
               ف
             </div>
-            <span style={{ fontSize: '18px', fontWeight: 900, color: 'var(--navy)' }}>فاهم</span>
+            <span style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a' }}>فاهم</span>
           </div>
           <button
             className="btn-accent"

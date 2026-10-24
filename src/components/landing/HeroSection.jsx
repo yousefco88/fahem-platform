@@ -57,7 +57,7 @@ export default function HeroSection() {
 
           <button
             style={{
-              background: 'white', color: 'var(--navy)', border: '2px solid #cbd5e1',
+              background: 'white', color: '#0f172a', border: '2px solid #cbd5e1',
               fontSize: 'clamp(13px, 2.5vw, 16px)', padding: 'clamp(12px, 3vw, 16px) clamp(16px, 4vw, 28px)', borderRadius: 'var(--radius-full)',
               fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               boxShadow: 'var(--shadow-sm)'
