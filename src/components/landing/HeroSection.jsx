@@ -66,6 +66,38 @@ export default function HeroSection() {
           </button>
         </div>
 
+        {/* Product Preview — مبني من مكونات حقيقية موجودة في المنصة */}
+        <div style={{
+          maxWidth: '760px', margin: '0 auto 40px', borderRadius: '20px', overflow: 'hidden',
+          border: '1px solid #e2e8f0', boxShadow: '0 25px 60px -15px rgba(30, 58, 138, 0.25)',
+          background: 'white', textAlign: 'right'
+        }}>
+          {/* window bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f87171' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#34d399' }} />
+            <span style={{ marginRight: 'auto', fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>fahem-platform.vercel.app</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', padding: '18px' }}>
+            <div style={{ background: 'linear-gradient(135deg, #eef2ff, #e0e7ff)', borderRadius: '14px', padding: '16px' }}>
+              <div style={{ fontSize: '26px', marginBottom: '6px' }}>🦊</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
+              <div style={{ fontSize: '11.5px', color: '#64748b' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
+            </div>
+            <div style={{ background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)', borderRadius: '14px', padding: '16px' }}>
+              <div style={{ fontSize: '26px', marginBottom: '6px' }}>📊</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
+              <div style={{ fontSize: '11.5px', color: '#64748b' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
+            </div>
+            <div style={{ background: 'linear-gradient(135deg, #fef2f2, #fee2e2)', borderRadius: '14px', padding: '16px' }}>
+              <div style={{ fontSize: '26px', marginBottom: '6px' }}>🇪🇬</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
+              <div style={{ fontSize: '11.5px', color: '#64748b' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
+            </div>
+          </div>
+        </div>
+
         {/* Social Proof Strip - Horizontal Scroll on Mobile */}
         <div style={{
           display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'clamp(16px, 4vw, 32px)',

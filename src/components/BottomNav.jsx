@@ -19,6 +19,8 @@ export default function BottomNav() {
   const [showMore, setShowMore] = React.useState(false);
 
   const moreItems = [
+    { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
+    { id: 'lessons', icon: '📹', label: 'الدروس المسجلة' },
     { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم' },
     { id: 'admin', icon: '⚙️', label: 'الإدارة' },
     { id: 'pricing', icon: '💳', label: 'اشتراكي' },

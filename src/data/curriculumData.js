@@ -984,36 +984,6 @@ export const CURRICULUM_DATA = {
   ]
 };
 
-// مكتبة الحصص المسجلة — بيانات مركزية بدلاً من JSX ثابت
-export const recordedSessions = [
-  {
-    id: 'rec_connect1_u1',
-    subjectKey: 'english',
-    lessonId: 'eng_hello',
-    title: 'Connect 1: Unit 1 Phonics & Busy Bee',
-    teacher: 'أ/ دينا مصطفى',
-    duration: '27:30',
-    gradient: 'linear-gradient(135deg, #1e293b, #8b5cf6)',
-    recordedAt: '2026-10-20'
-  },
-  {
-    id: 'rec_discover_senses',
-    subjectKey: 'discover',
-    lessonId: 'disc_senses',
-    title: 'اكتشف: الحواس الخمس واستكشاف العالم',
-    teacher: 'أ/ أحمد سالم',
-    duration: '29:30',
-    gradient: 'linear-gradient(135deg, #1e3a8a, #0284c7)',
-    recordedAt: '2026-10-18'
-  },
-  {
-    id: 'rec_values_honesty',
-    subjectKey: 'values',
-    lessonId: 'val_honesty',
-    title: 'التربية والأخلاق: الصدق والأمانة في الفصل',
-    teacher: null,
-    duration: '25:20',
-    gradient: 'linear-gradient(135deg, #1e3a8a, #d97706)',
-    recordedAt: '2026-10-15'
-  }
-];
+// مكتبة الحصص المسجلة — تُملأ من تسجيلات حقيقية فقط (لا بيانات وهمية)
+// أضف الحصص هنا بعد رفع تسجيلات فعلية: { id, subjectKey, lessonId, title, teacher, duration, gradient, recordedAt }
+export const recordedSessions = [];

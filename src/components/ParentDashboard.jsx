@@ -674,6 +674,13 @@ export default function ParentDashboard() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {recordedSessions.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '28px 16px', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)', color: 'var(--muted)' }}>
+                    <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎥</div>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginBottom: '4px' }}>لا توجد حصص مسجلة بعد</div>
+                    <div style={{ fontSize: '12px' }}>تُضاف تسجيلات الحصص الحية هنا تلقائياً بعد انعقادها</div>
+                  </div>
+                )}
                 {recordedSessions.map(session => (
                   <div key={session.id} style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
                     <div style={{ width: '72px', height: '52px', borderRadius: '8px', background: session.gradient, display: 'grid', placeItems: 'center', color: 'white', fontSize: '18px', flexShrink: 0, position: 'relative' }}>

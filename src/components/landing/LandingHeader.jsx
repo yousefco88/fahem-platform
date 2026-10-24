@@ -16,7 +16,7 @@ export default function LandingHeader() {
         padding: '10px 20px', textAlign: 'center', fontSize: '13px', fontWeight: 700,
         display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', flexWrap: 'wrap'
       }}>
-        <span>🎉 خصم 20% بمناسبة فتح باب التسجيل لامتحانات «أبنائنا في الخارج» بالسفارات والقنصليات</span>
+        <span>🎉 فتح باب التسجيل المبكر لموسم امتحانات «أبنائنا في الخارج» بالسفارات والقنصليات</span>
         <button
           style={{ background: '#facc15', color: '#1e1b4b', border: 'none', padding: '4px 12px', borderRadius: 'var(--radius-full)', fontWeight: 900, fontSize: '11.5px', cursor: 'pointer' }}
           onClick={scrollToBooking}

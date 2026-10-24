@@ -8,6 +8,7 @@ import TestimonialsSection from './landing/TestimonialsSection';
 import BookingSection from './landing/BookingSection';
 import FaqSection from './landing/FaqSection';
 import FooterSection from './landing/FooterSection';
+import StickyMobileCta from './landing/StickyMobileCta';
 
 // صفحة الهبوط العامة — تركيب أقسام فقط؛ كل قسم يملك حالته ومحتواه
 export default function PublicLandingPage() {
@@ -22,6 +23,7 @@ export default function PublicLandingPage() {
       <BookingSection />
       <FaqSection />
       <FooterSection />
+      <StickyMobileCta />
     </div>
   );
 }
