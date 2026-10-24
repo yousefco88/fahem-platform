@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
+import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
 
 const TABS = [
@@ -193,10 +194,10 @@ export default function LessonEditor() {
           <BasicTab form={form} updateForm={updateForm} subjects={subjects} />
         )}
         {activeTab === 'video' && (
-          <VideoTab form={form} updateForm={updateForm} />
+          <VideoTab form={form} updateForm={updateForm} lessonId={id} />
         )}
         {activeTab === 'pdf' && (
-          <PdfTab form={form} updateForm={updateForm} />
+          <PdfTab form={form} updateForm={updateForm} lessonId={id} />
         )}
         {activeTab === 'quiz' && (
           <QuizTab form={form} updateForm={updateForm} />
@@ -270,7 +271,7 @@ function BasicTab({ form, updateForm, subjects }) {
   );
 }
 
-function VideoTab({ form, updateForm }) {
+function VideoTab({ form, updateForm, lessonId }) {
   return (
     <div className="tab-panel">
       <div className="form-group">
@@ -290,32 +291,44 @@ function VideoTab({ form, updateForm }) {
               checked={form.video_type === 'upload'}
               onChange={() => updateForm('video_type', 'upload')}
             />
-            📤 رفع ملف (قريباً)
+            📤 رفع ملف
           </label>
         </div>
       </div>
 
-      <div className="form-group">
-        <label>رابط الفيديو</label>
-        <input
-          type="url"
-          value={form.video_url}
-          onChange={e => updateForm('video_url', e.target.value)}
-          placeholder="https://www.youtube.com/watch?v=..."
-          className="input-lg"
-          dir="ltr"
-        />
-        {form.video_url && form.video_url.includes('youtube') && (
-          <div className="video-preview">
-            <iframe
-              src={form.video_url.replace('watch?v=', 'embed/')}
-              title="معاينة الفيديو"
-              frameBorder="0"
-              allowFullScreen
-            />
-          </div>
-        )}
-      </div>
+      {form.video_type === 'link' ? (
+        <div className="form-group">
+          <label>رابط الفيديو</label>
+          <input
+            type="url"
+            value={form.video_url}
+            onChange={e => updateForm('video_url', e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=..."
+            className="input-lg"
+            dir="ltr"
+          />
+          {form.video_url && form.video_url.includes('youtube') && (
+            <div className="video-preview">
+              <iframe
+                src={form.video_url.replace('watch?v=', 'embed/')}
+                title="معاينة الفيديو"
+                frameBorder="0"
+                allowFullScreen
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="form-group">
+          <label>رفع ملف فيديو</label>
+          <FileUploader
+            type="video"
+            currentUrl={form.video_url}
+            onUpload={url => updateForm('video_url', url)}
+            lessonId={lessonId}
+          />
+        </div>
+      )}
 
       <div className="form-group">
         <label>فصول الفيديو (اختياري)</label>
@@ -370,7 +383,7 @@ function VideoChaptersEditor({ chapters, onChange }) {
   );
 }
 
-function PdfTab({ form, updateForm }) {
+function PdfTab({ form, updateForm, lessonId }) {
   return (
     <div className="tab-panel">
       <div className="form-group">
@@ -401,27 +414,39 @@ function PdfTab({ form, updateForm }) {
               checked={form.pdf_type === 'upload'}
               onChange={() => updateForm('pdf_type', 'upload')}
             />
-            📤 رفع ملف (قريباً)
+            📤 رفع ملف
           </label>
         </div>
       </div>
 
-      <div className="form-group">
-        <label>رابط PDF</label>
-        <input
-          type="url"
-          value={form.pdf_url}
-          onChange={e => updateForm('pdf_url', e.target.value)}
-          placeholder="https://drive.google.com/..."
-          className="input-lg"
-          dir="ltr"
-        />
-        {form.pdf_url && (
-          <a href={form.pdf_url} target="_blank" rel="noopener noreferrer" className="preview-link">
-            📄 معاينة الملف →
-          </a>
-        )}
-      </div>
+      {form.pdf_type === 'link' ? (
+        <div className="form-group">
+          <label>رابط PDF</label>
+          <input
+            type="url"
+            value={form.pdf_url}
+            onChange={e => updateForm('pdf_url', e.target.value)}
+            placeholder="https://drive.google.com/..."
+            className="input-lg"
+            dir="ltr"
+          />
+          {form.pdf_url && (
+            <a href={form.pdf_url} target="_blank" rel="noopener noreferrer" className="preview-link">
+              📄 معاينة الملف →
+            </a>
+          )}
+        </div>
+      ) : (
+        <div className="form-group">
+          <label>رفع ملف PDF</label>
+          <FileUploader
+            type="pdf"
+            currentUrl={form.pdf_url}
+            onUpload={url => updateForm('pdf_url', url)}
+            lessonId={lessonId}
+          />
+        </div>
+      )}
     </div>
   );
 }

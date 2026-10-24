@@ -643,3 +643,105 @@
 .lessons-link:hover {
   text-decoration: underline;
 }
+
+/* ============================================================================
+   FILE UPLOADER
+   ============================================================================ */
+
+.file-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.current-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-success-light, #ecfdf5);
+  border: 1px solid var(--border-success, #86efac);
+  border-radius: 8px;
+}
+
+.current-file .file-icon {
+  font-size: 1.25rem;
+}
+
+.current-file .file-link {
+  flex: 1;
+  color: var(--text-success, #16a34a);
+  text-decoration: none;
+}
+
+.current-file .file-link:hover {
+  text-decoration: underline;
+}
+
+.upload-zone {
+  border: 2px dashed var(--border, #e5e7eb);
+  border-radius: 12px;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.upload-zone:hover {
+  border-color: var(--accent, #2563eb);
+  background: var(--bg-muted, #f9fafb);
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.upload-label.uploading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.upload-label.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.upload-icon {
+  font-size: 2rem;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.upload-progress {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent, #2563eb);
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--bg-muted, #e5e7eb);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent, #2563eb);
+  transition: width 0.2s ease;
+}
+
+.upload-error {
+  padding: 0.75rem 1rem;
+  background: var(--bg-danger-light, #fef2f2);
+  border: 1px solid var(--border-danger, #fecaca);
+  border-radius: 8px;
+  color: var(--text-danger, #dc2626);
+  font-size: 0.9rem;
+}
