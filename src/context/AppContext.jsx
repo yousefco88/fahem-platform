@@ -707,6 +707,7 @@ export function AppProvider({ children }) {
     liveClassTimeText, setLiveClassTimeText,
     childrenList,
     activeChild,
+    activeChildCloudId: childCloudIds[activeChild?.id] || null,
     learningRecords: learningRecords[activeChild?.id] || {},
     scheduleData, setScheduleData, saveScheduleToCloud,
     curriculumSource,

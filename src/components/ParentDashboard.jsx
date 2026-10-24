@@ -13,6 +13,7 @@ export default function ParentDashboard() {
     activeChild,
     childrenList,
     switchChild,
+    activeChildCloudId,
     addChild,
     learningRecords,
     curriculumData,
@@ -27,7 +28,7 @@ export default function ParentDashboard() {
   const childStats = getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []);
 
   // 🔥 Streak & XP data for active child
-  const streak = useStreak(activeChild?.id);
+  const streak = useStreak(activeChildCloudId);
 
   const [showAddChildModal, setShowAddChildModal] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);

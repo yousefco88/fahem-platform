@@ -12,13 +12,13 @@ import useStreak from '../../hooks/useStreak';
 export default function ChildHome() {
   const navigate = useNavigate();
   const {
-    activeChild, curriculumData, activeSubject, soundManager, triggerToast,
+    activeChild, activeChildCloudId, curriculumData, activeSubject, soundManager, triggerToast,
     setShowLiveModal, setCurrentScreen, learningRecords, scheduleData
   } = useApp();
   const [activeCategory, setActiveCategory] = useState('all');
 
   // 🔥 Streak & XP system
-  const streak = useStreak(activeChild?.id);
+  const streak = useStreak(activeChildCloudId);
 
   const masteredLessons = activeChild.masteredLessons || [];
   const todayPlan = getTodayPlan({ schedule: scheduleData, curriculum: curriculumData, learningRecords, masteredLessons });

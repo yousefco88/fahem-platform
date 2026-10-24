@@ -20,7 +20,9 @@ export function useStreak(childId) {
 
   // Fetch current streak data
   const fetchStreak = useCallback(async () => {
-    if (!childId) return;
+    // تبديل الطفل: لا نُبقي أرقام الطفل السابق ظاهرة
+    setStreak(prev => ({ ...prev, currentStreak: 0, bestStreak: 0, xpTotal: 0, level: 1, lastActivityDate: null, isActiveToday: false, loading: Boolean(childId), error: null }));
+    if (!childId || !supabase) return;
 
     try {
       const { data, error } = await supabase
