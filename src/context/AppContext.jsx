@@ -174,6 +174,96 @@ export function AppProvider({ children }) {
     return () => { cancelled = true; };
   }, []);
 
+  // المرحلة ج: قراءة المنهج من Supabase (للدروس المنشورة فقط)
+  useEffect(() => {
+    if (!supabase) return;
+    let cancelled = false;
+    
+    async function fetchCurriculumFromDB() {
+      try {
+        // جلب المواد المنشورة
+        const { data: subjects, error: subjectsError } = await supabase
+          .from('curriculum_subjects')
+          .select('*')
+          .eq('published', true)
+          .order('sort_order');
+
+        if (cancelled || subjectsError || !subjects?.length) return;
+
+        const subjectKeys = subjects.map(s => s.key);
+
+        // جلب الدروس المنشورة
+        const { data: lessons, error: lessonsError } = await supabase
+          .from('curriculum_lessons')
+          .select('*')
+          .in('subject_key', subjectKeys)
+          .eq('published', true)
+          .order('sort_order');
+
+        if (cancelled || lessonsError) return;
+
+        // دمج مع البيانات الثابتة
+        const dbCurriculum = {};
+        subjects.forEach(subject => {
+          const subjectLessons = (lessons || [])
+            .filter(l => l.subject_key === subject.key)
+            .map(l => {
+              const content = l.content || {};
+              return {
+                id: l.id,
+                title: content.title || l.title,
+                objective: content.objective || '',
+                order: l.sort_order,
+                videoUrl: l.video_url,
+                videoType: l.video_type,
+                videoChapters: content.videoChapters || [],
+                pdfUrl: l.pdf_url,
+                pdfType: l.pdf_type,
+                pdfTitle: content.pdfTitle || '',
+                quizType: content.quizType || 'choice',
+                question: content.question || '',
+                options: (content.choices || []).map((text, i) => ({
+                  text, correct: i === content.answer, icon: ''
+                })),
+                parentGuide: content.parentGuide || null,
+                interactiveBuilder: content.wordBuilder || null,
+                celebration: content.celebration || '',
+              };
+            })
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+          // استخدام metadata من CURRICULUM_DATA إن وُجدت
+          const staticSubject = CURRICULUM_DATA[subject.key] || {};
+          dbCurriculum[subject.key] = {
+            id: subject.key,
+            title: subject.name,
+            icon: staticSubject.icon || '📚',
+            badge: staticSubject.badge || '',
+            color: staticSubject.color || '#6b7280',
+            grade: subject.grade_id,
+            lessons: subjectLessons,
+          };
+        });
+
+        // دمج: البيانات من قاعدة البيانات تأخذ الأولوية
+        setCurriculumData(prev => {
+          const merged = { ...prev };
+          Object.entries(dbCurriculum).forEach(([key, value]) => {
+            if (value.lessons.length > 0) {
+              merged[key] = { ...merged[key], ...value };
+            }
+          });
+          return merged;
+        });
+      } catch (err) {
+        console.error('Error fetching curriculum from DB:', err);
+      }
+    }
+
+    fetchCurriculumFromDB();
+    return () => { cancelled = true; };
+  }, []);
+
   // حفظ الجدول إلى Supabase (يتطلب جلسة staff بحكم سياسات RLS)
   const saveScheduleToCloud = async (slots) => {
     if (!supabase) return { ok: false, reason: 'Supabase غير مهيأ على هذا الجهاز' };
