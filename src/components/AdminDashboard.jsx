@@ -451,13 +451,13 @@ export default function AdminDashboard() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: '16px', marginBottom: '26px'
       }}>
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>الأسر المسجلة</span>
           <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{kpiLoading ? '...' : kpiStats.families}</h3>
           <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>{kpiStats.children} طفل مسجّل</small>
         </div>
 
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>حجوزات الحصص التجريبية</span>
           <h3 style={{ fontSize: '26px', color: 'var(--blue)' }}>{kpiLoading ? '...' : kpiStats.bookings}</h3>
           <small style={{ color: kpiStats.newBookings > 0 ? '#dc2626' : 'var(--blue)', fontWeight: 700, fontSize: '11.5px' }}>
@@ -465,13 +465,13 @@ export default function AdminDashboard() {
           </small>
         </div>
 
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>المواد والمسارات النشطة</span>
           <h3 style={{ fontSize: '26px', color: '#7c3aed' }}>{subjectsCount} مادة</h3>
           <small style={{ color: '#7c3aed', fontWeight: 700, fontSize: '11.5px' }}>شاملة Connect Plus والماث</small>
         </div>
 
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>فريق العمل</span>
           <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{staffLoading ? '...' : staffMembers.length}</h3>
           <small style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>
@@ -480,7 +480,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <section style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+      <section style={{ background: 'var(--blue-light)', border: '1px solid var(--line)', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
         <span style={{ color: '#1e3a8a', fontSize: '13px' }}>
           {supabase ? 'متصل بـ Supabase — البيانات أعلاه حقيقية من قاعدة البيانات.' : 'غير متصل بـ Supabase — البيانات محلية فقط.'}
         </span>
@@ -523,7 +523,7 @@ export default function AdminDashboard() {
               padding: '12px 20px', borderRadius: '12px 12px 0 0', fontWeight: 800, fontSize: '13.5px',
               border: 'none', cursor: 'pointer', transition: 'all 0.2s',
               background: activeAdminTab === tab.id ? 'var(--blue)' : 'transparent',
-              color: activeAdminTab === tab.id ? 'white' : '#64748b'
+              color: activeAdminTab === tab.id ? 'white' : 'var(--muted)'
             }}
             onClick={() => setActiveAdminTab(tab.id)}
           >
@@ -538,7 +538,7 @@ export default function AdminDashboard() {
 
       {/* TAB: CURRICULUM CMS (Supabase) */}
       {activeAdminTab === 'curriculum' && (
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <Routes>
             <Route index element={<GradesPanel />} />
             <Route path="grades" element={<GradesPanel />} />
@@ -552,13 +552,13 @@ export default function AdminDashboard() {
       {/* TAB 1: CURRICULUM CMS (محلي — قديم) */}
       {activeAdminTab === 'cms' && (
         <>
-        <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '12px 18px', marginBottom: '18px', fontSize: '13px', color: '#92400e', fontWeight: 700 }}>
+        <div style={{ background: 'var(--yellow-light)', border: '1px solid var(--yellow)', borderRadius: '12px', padding: '12px 18px', marginBottom: '18px', fontSize: '13px', color: 'var(--orange)', fontWeight: 700 }}>
           ⚠️ هذا محرر <strong>محلي</strong> يعمل على متصفحك فقط (localStorage) ولا يُنشر للطلاب.
           المصدر المعتمد للمناهج المنشورة هو تبويب «📚 إدارة المناهج (Supabase)». استخدم هذا المحرر للتجربة والمعاينة فقط.
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '24px' }}>
           {/* Subject & Lesson Navigator */}
-          <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
             <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span>قائمة المواد والدروس</span>
               <button
@@ -581,7 +581,7 @@ export default function AdminDashboard() {
                       style={{
                         textAlign: 'right', padding: '10px 12px', borderRadius: 'var(--radius-md)',
                         border: selectedSubjectId === key ? '2px solid var(--blue)' : '1px solid var(--line)',
-                        background: selectedSubjectId === key ? 'var(--blue-light)' : '#ffffff',
+                        background: selectedSubjectId === key ? 'var(--blue-light)' : 'var(--card-bg)',
                         color: selectedSubjectId === key ? 'var(--blue)' : 'var(--navy)',
                         fontWeight: selectedSubjectId === key ? 800 : 600, fontSize: '13px',
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer'
@@ -609,7 +609,7 @@ export default function AdminDashboard() {
                   style={{
                     textAlign: 'right', padding: '8px 10px', borderRadius: '8px',
                     border: selectedLessonId === les.id ? '1.5px solid #2563eb' : '1px solid var(--line)',
-                    background: selectedLessonId === les.id ? '#eff6ff' : '#fafafa',
+                    background: selectedLessonId === les.id ? 'var(--blue-light)' : 'var(--bg)',
                     fontSize: '12px', fontWeight: selectedLessonId === les.id ? 700 : 500, cursor: 'pointer'
                   }}
                   onClick={() => {
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Lesson Editor Form */}
-          <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid var(--line)' }}>
               <div>
                 <span className="tag-badge info" style={{ marginBottom: '6px' }}>محرر الدروس المباشر</span>
@@ -637,7 +637,7 @@ export default function AdminDashboard() {
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
-                  style={{ background: '#f1f5f9', color: '#475569', padding: '8px 14px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+                  style={{ background: 'var(--bg)', color: 'var(--muted)', padding: '8px 14px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
                   onClick={handleSaveDraft}
                 >
                   حفظ كمسودة محلية 📝
@@ -707,7 +707,7 @@ export default function AdminDashboard() {
 
               {/* Syllable Builder & Word info */}
               {currentLesson?.interactiveBuilder && (
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
+                <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
                   <h4 style={{ fontSize: '14px', color: 'var(--navy)', marginBottom: '8px' }}>
                     🧩 لغز تركيب الكلمة التفاعلي للطفل:
                   </h4>
@@ -718,10 +718,10 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '14px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ background: 'var(--blue-light)', border: '1px solid var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <div>
                   <strong style={{ color: '#1e40af', fontSize: '13px', display: 'block' }}>فيديو الدرس المحفوظ محليًا</strong>
-                  <span style={{ fontSize: '12.5px', color: '#1d4ed8' }}>{lessonVideos[`${selectedSubjectId}:${currentLesson?.id}`]?.name || 'لا يوجد فيديو مرفق'}</span>
+                  <span style={{ fontSize: '12.5px', color: 'var(--blue)' }}>{lessonVideos[`${selectedSubjectId}:${currentLesson?.id}`]?.name || 'لا يوجد فيديو مرفق'}</span>
                 </div>
                 <input id="lesson-video-file" type="file" accept="video/*" onChange={handleVideoSelected} style={{ display: 'none' }} />
                 <label htmlFor="lesson-video-file" style={{ background: '#1d4ed8', color: 'white', padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
@@ -756,21 +756,21 @@ export default function AdminDashboard() {
 
       {/* TAB: TRIAL BOOKINGS (real data) */}
       {activeAdminTab === 'bookings' && (
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <BookingsPanel />
         </div>
       )}
 
       {/* TAB: FAMILIES (real data) */}
       {activeAdminTab === 'families' && (
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <FamiliesPanel />
         </div>
       )}
 
       {/* TAB: WEEKLY SCHEDULE */}
       {activeAdminTab === 'schedule' && (
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>🗓️ الجدول الأسبوعي لمساحة الطفل</h3>
@@ -799,7 +799,7 @@ export default function AdminDashboard() {
             <div style={{ overflowX: 'auto', marginTop: '14px' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
-                  <tr style={{ background: '#f8fafc', color: '#475569' }}>
+                  <tr style={{ background: 'var(--bg)', color: 'var(--muted)' }}>
                     {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', 'المعلم', ''].map(h => (
                       <th key={h} style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid var(--line)' }}>{h}</th>
                     ))}
@@ -855,7 +855,7 @@ export default function AdminDashboard() {
 
       {/* TAB 2: RBAC & USERS */}
       {activeAdminTab === 'rbac' && (
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>فريق العمل وصلاحيات الوصول (Role-Based Access Control)</h3>
@@ -871,16 +871,16 @@ export default function AdminDashboard() {
           </div>
 
           {staffLoading && (
-            <div style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontWeight: 700 }}>
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>
               جارٍ تحميل فريق العمل من Supabase…
             </div>
           )}
 
           {!staffLoading && staffMembers.length === 0 && (
-            <div style={{ padding: '40px', textAlign: 'center', background: '#f8fafc', borderRadius: '14px', border: '1px dashed var(--line)' }}>
+            <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)' }}>
               <div style={{ fontSize: '32px', marginBottom: '8px' }}>👥</div>
-              <div style={{ fontWeight: 800, color: '#334155' }}>لا يوجد أعضاء فريق بعد</div>
-              <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '4px' }}>
+              <div style={{ fontWeight: 800, color: 'var(--navy)' }}>لا يوجد أعضاء فريق بعد</div>
+              <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px' }}>
                 الصلاحيات تُدار عبر جدول user_roles في Supabase.<br/>
                 أضف صفوفاً هناك لتظهر هنا تلقائياً.
               </div>
@@ -890,7 +890,7 @@ export default function AdminDashboard() {
           {!staffLoading && staffMembers.length > 0 && (
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', fontSize: '13.5px' }}>
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '2px solid var(--line)' }}>
+              <tr style={{ background: 'var(--bg)', borderBottom: '2px solid var(--line)' }}>
                 <th style={{ padding: '12px 16px', fontWeight: 700 }}>الاسم والبريد</th>
                 <th style={{ padding: '12px 16px', fontWeight: 700 }}>الدور والمسمى</th>
                 <th style={{ padding: '12px 16px', fontWeight: 700 }}>الحالة</th>
@@ -918,7 +918,7 @@ export default function AdminDashboard() {
                   <td style={{ padding: '14px 16px' }}>{member.canBilling ? '✅ مسموح' : '❌ محجوب'}</td>
                   <td style={{ padding: '14px 16px' }}>
                     <button
-                      style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                      style={{ background: 'var(--bg)', border: '1px solid #cbd5e1', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                       onClick={() => triggerToast(`تعديل صلاحيات ${member.name}`)}
                     >
                       تعديل
@@ -939,7 +939,7 @@ export default function AdminDashboard() {
           background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
         }} onClick={() => setShowAddMemberModal(false)}>
           <div style={{
-            background: 'white', borderRadius: '16px', padding: '28px', width: '90%', maxWidth: '420px',
+            background: 'var(--card-bg)', borderRadius: '16px', padding: '28px', width: '90%', maxWidth: '420px',
             boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
           }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: '18px', color: 'var(--navy)', marginBottom: '20px', textAlign: 'center' }}>
@@ -952,7 +952,7 @@ export default function AdminDashboard() {
                 onClick={() => setNewMember(prev => ({ ...prev, addType: 'invite' }))}
                 style={{
                   flex: 1, padding: '10px', border: newMember.addType === 'invite' ? '2px solid #f59e0b' : '1px solid #d1d5db',
-                  borderRadius: '8px', background: newMember.addType === 'invite' ? '#fef3c7' : 'white',
+                  borderRadius: '8px', background: newMember.addType === 'invite' ? 'var(--yellow-light)' : 'var(--card-bg)',
                   fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: '#374151'
                 }}
               >
@@ -962,7 +962,7 @@ export default function AdminDashboard() {
                 onClick={() => setNewMember(prev => ({ ...prev, addType: 'existing' }))}
                 style={{
                   flex: 1, padding: '10px', border: newMember.addType === 'existing' ? '2px solid #f59e0b' : '1px solid #d1d5db',
-                  borderRadius: '8px', background: newMember.addType === 'existing' ? '#fef3c7' : 'white',
+                  borderRadius: '8px', background: newMember.addType === 'existing' ? 'var(--yellow-light)' : 'var(--card-bg)',
                   fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: '#374151'
                 }}
               >
@@ -977,7 +977,7 @@ export default function AdminDashboard() {
             )}
 
             {newMember.addType === 'existing' && (
-              <div style={{ background: '#eff6ff', border: '1px solid #93c5fd', borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#1e40af' }}>
+              <div style={{ background: 'var(--blue-light)', border: '1px solid #93c5fd', borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#1e40af' }}>
                 🔍 أدخل بريد مستخدم مسجّل مسبقاً لإضافته للفريق مباشرة.
               </div>
             )}
@@ -1017,7 +1017,7 @@ export default function AdminDashboard() {
                 onChange={e => setNewMember(prev => ({ ...prev, role: e.target.value }))}
                 style={{
                   width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
-                  fontSize: '14px', background: 'white', cursor: 'pointer'
+                  fontSize: '14px', background: 'var(--card-bg)', cursor: 'pointer'
                 }}
               >
                 <option value="teacher">👩‍🏫 معلم</option>
@@ -1041,7 +1041,7 @@ export default function AdminDashboard() {
               <button
                 onClick={() => setShowAddMemberModal(false)}
                 style={{
-                  padding: '12px 20px', background: '#f1f5f9', color: '#64748b', border: 'none',
+                  padding: '12px 20px', background: 'var(--bg)', color: 'var(--muted)', border: 'none',
                   borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer'
                 }}
               >
@@ -1054,7 +1054,7 @@ export default function AdminDashboard() {
 
       {/* TAB 3: AUDIT TRAIL & QUALITY */}
       {activeAdminTab === 'audit' && (
-        <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>سجل التدقيق التاريخي والرقابة التربوية (Audit Trail)</h3>
@@ -1077,7 +1077,7 @@ export default function AdminDashboard() {
                 key={idx}
                 style={{
                   padding: '14px 18px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)',
-                  background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px'
+                  background: 'var(--bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px'
                 }}
               >
                 <div>
@@ -1085,7 +1085,7 @@ export default function AdminDashboard() {
                     <strong style={{ color: 'var(--navy)', fontSize: '14px' }}>{log.user}</strong>
                     <span className="tag-badge info" style={{ fontSize: '10.5px' }}>{log.badge}</span>
                   </div>
-                  <p style={{ fontSize: '13px', color: '#334155', margin: 0 }}>{log.action}</p>
+                  <p style={{ fontSize: '13px', color: 'var(--navy)', margin: 0 }}>{log.action}</p>
                 </div>
                 <div style={{ textAlign: 'left', fontSize: '12px', color: 'var(--muted)' }}>
                   <div>{log.time}</div>
@@ -1100,11 +1100,11 @@ export default function AdminDashboard() {
       {/* TAB 4: SUBSCRIPTIONS & EXPAT DISTRIBUTION */}
       {activeAdminTab === 'subscriptions' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-          <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
             <h3 style={{ fontSize: '17px', color: 'var(--navy)', marginBottom: '14px' }}>
               🌍 التوزيع الجغرافي لأسر المغتربين النشطة
             </h3>
-            <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '10px', border: '1px dashed var(--line)', textAlign: 'center' }}>
+            <div style={{ padding: '24px', background: 'var(--bg)', borderRadius: '10px', border: '1px dashed var(--line)', textAlign: 'center' }}>
               <div style={{ fontSize: '28px', marginBottom: '6px' }}>🗺️</div>
               <p style={{ fontSize: '13.5px', color: 'var(--muted)', margin: 0 }}>
                 لا توجد أسر مسجلة بعد — سيُبنى التوزيع الجغرافي تلقائياً من بيانات التسجيل الفعلية.
@@ -1112,7 +1112,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
             <h3 style={{ fontSize: '17px', color: 'var(--navy)', marginBottom: '14px' }}>
               💳 مؤشرات الاشتراكات والإيرادات الشهرية
             </h3>
@@ -1121,7 +1121,7 @@ export default function AdminDashboard() {
                 <span style={{ fontSize: '12px', color: '#166534', fontWeight: 600 }}>الإيرادات:</span>
                 <h4 style={{ fontSize: '20px', color: '#166534', margin: '4px 0 0' }}>غير متاحة — الدفع غير مفعّل</h4>
               </div>
-              <div style={{ padding: '14px', background: '#eff6ff', borderRadius: '10px', border: '1px solid #bfdbfe' }}>
+              <div style={{ padding: '14px', background: 'var(--blue-light)', borderRadius: '10px', border: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: 600 }}>خطط الاشتراك:</span>
                 <h4 style={{ fontSize: '18px', color: '#1e40af', margin: '4px 0 0' }}>قيد الدراسة — لا توجد اشتراكات فعلية</h4>
               </div>

@@ -62,7 +62,7 @@ export default function AdminKPICards({ subjectsCount }) {
       value: kpiLoading ? '...' : kpiStats.newBookings, 
       icon: '🆕', 
       color: '#f59e0b',
-      bg: '#fef3c7'
+      bg: 'var(--yellow-light)'
     },
     { 
       label: 'المواد', 
@@ -111,7 +111,7 @@ export default function AdminKPICards({ subjectsCount }) {
           </span>
           <span style={{
             fontSize: '12px',
-            color: '#64748b',
+            color: 'var(--muted)',
             fontWeight: 600
           }}>
             {card.label}

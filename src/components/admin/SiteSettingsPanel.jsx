@@ -8,9 +8,9 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
  */
 
 const label = { display: 'block', fontSize: '12.5px', fontWeight: 800, color: 'var(--navy)', marginBottom: '6px' };
-const input = { width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '13.5px', fontFamily: 'inherit', background: 'white', color: 'var(--navy)' };
+const input = { width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '13.5px', fontFamily: 'inherit', background: 'var(--card-bg)', color: 'var(--navy)' };
 const textarea = { ...input, minHeight: '70px', resize: 'vertical' };
-const card = { background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '22px', boxShadow: 'var(--shadow-sm)', marginBottom: '20px' };
+const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '22px', boxShadow: 'var(--shadow-sm)', marginBottom: '20px' };
 const sectionTitle = { fontSize: '16px', color: 'var(--navy)', marginBottom: '4px' };
 const hint = { fontSize: '12px', color: 'var(--muted)', marginBottom: '16px' };
 
@@ -90,7 +90,7 @@ export default function SiteSettingsPanel() {
   return (
     <div>
       {tableMissing && (
-        <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', fontSize: '13px', color: '#92400e', fontWeight: 700 }}>
+        <div style={{ background: 'var(--yellow-light)', border: '1px solid var(--yellow)', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', fontSize: '13px', color: 'var(--orange)', fontWeight: 700 }}>
           ⚠️ جدول site_settings غير موجود بعد في Supabase — طبّق الـ migration:
           <code style={{ display: 'block', marginTop: '6px', direction: 'ltr', textAlign: 'left', fontSize: '12px' }}>supabase/migrations/20261024210000_site_settings.sql</code>
           حتى ذلك الحين يعرض الموقع القيم الافتراضية ولن يُحفظ أي تعديل.
@@ -272,7 +272,7 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.comparison.rows || []).map((row, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: '#fafafa' }}>
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>صف #{idx + 1}</span>
               {removeBtn(() => removeListItem('comparison', 'rows', idx))}
@@ -319,7 +319,7 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.subjects.items || []).map((s, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: '#fafafa' }}>
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>{s.icon} {s.title || `مادة #${idx + 1}`}</span>
               {removeBtn(() => removeListItem('subjects', 'items', idx))}
@@ -412,7 +412,7 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.faq.items || []).map((f, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: '#fafafa' }}>
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>سؤال #{idx + 1}</span>
               {removeBtn(() => removeListItem('faq', 'items', idx))}
@@ -454,7 +454,7 @@ export default function SiteSettingsPanel() {
         </div>
 
         {(draft.pricing.plans || []).map((plan, idx) => (
-          <div key={plan.id} style={{ border: '1px dashed var(--line)', borderRadius: '14px', padding: '16px', marginBottom: '14px', background: plan.featured ? '#eff6ff' : '#fafafa' }}>
+          <div key={plan.id} style={{ border: '1px dashed var(--line)', borderRadius: '14px', padding: '16px', marginBottom: '14px', background: plan.featured ? 'var(--blue-light)' : 'var(--bg)' }}>
             <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '12px' }}>
               {plan.featured ? '⭐' : '▫️'} باقة #{idx + 1} — {plan.name}
             </div>

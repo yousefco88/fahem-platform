@@ -18,7 +18,7 @@ export default function PricingPlans() {
     <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 24px', textAlign: 'center' }}>
       <div style={{ marginBottom: '36px' }}>
         <div style={{
-          display: 'inline-block', background: '#eff6ff', color: 'var(--blue)',
+          display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue)',
           fontWeight: 800, fontSize: '13px', padding: '6px 16px', borderRadius: 'var(--radius-full)', marginBottom: '12px'
         }}>
           {pricing.badge}
@@ -38,11 +38,11 @@ export default function PricingPlans() {
           <div
             key={plan.id}
             style={plan.featured ? {
-              background: 'linear-gradient(180deg, #ffffff 0%, #eff6ff 100%)', border: '2px solid var(--blue)',
+              background: 'linear-gradient(180deg, var(--card-bg) 0%, var(--blue-light) 100%)', border: '2px solid var(--blue)',
               borderRadius: '28px', padding: '36px 28px', display: 'flex', flexDirection: 'column',
               position: 'relative', textAlign: 'right', boxShadow: '0 20px 35px -5px rgba(37,99,235,0.2)'
             } : {
-              background: 'white', border: '2px solid var(--line)', borderRadius: '28px',
+              background: 'var(--card-bg)', border: '2px solid var(--line)', borderRadius: '28px',
               padding: '36px 28px', display: 'flex', flexDirection: 'column', textAlign: 'right',
               position: 'relative'
             }}
@@ -75,7 +75,7 @@ export default function PricingPlans() {
               className={plan.featured ? 'btn-accent' : undefined}
               style={plan.featured
                 ? { width: '100%', justifyContent: 'center', padding: '15px' }
-                : { background: '#f1f5f9', color: 'var(--navy)', border: 'none', width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
+                : { background: 'var(--bg)', color: 'var(--navy)', border: 'none', width: '100%', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
               onClick={() => triggerToast(ctaMessages[plan.id] || 'هذه الخدمة غير متاحة بعد.')}
             >
               {plan.ctaLabel}

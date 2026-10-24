@@ -46,7 +46,7 @@ export default function AdminActivityLog() {
 
   return (
     <div style={{
-      background: 'white',
+      background: 'var(--card-bg)',
       borderRadius: '12px',
       padding: '20px',
       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -63,7 +63,7 @@ export default function AdminActivityLog() {
         📋 سجل النشاطات
         <span style={{
           fontSize: '11px',
-          background: '#fef3c7',
+          background: 'var(--yellow-light)',
           color: '#b45309',
           padding: '3px 8px',
           borderRadius: '8px',
@@ -86,30 +86,30 @@ export default function AdminActivityLog() {
               alignItems: 'center',
               gap: '12px',
               padding: '10px 14px',
-              background: '#f8fafc',
+              background: 'var(--bg)',
               borderRadius: '8px',
               fontSize: '13px'
             }}
           >
             <span style={{
-              background: '#e2e8f0',
+              background: 'var(--line)',
               padding: '4px 8px',
               borderRadius: '6px',
               fontSize: '11px',
-              color: '#64748b',
+              color: 'var(--muted)',
               minWidth: '50px',
               textAlign: 'center'
             }}>
               {log.time}
             </span>
-            <span style={{ fontWeight: 600, color: '#334155' }}>
+            <span style={{ fontWeight: 600, color: 'var(--navy)' }}>
               {log.user}
             </span>
-            <span style={{ flex: 1, color: '#64748b' }}>
+            <span style={{ flex: 1, color: 'var(--muted)' }}>
               {log.action}
             </span>
             <span style={{
-              background: '#fef3c7',
+              background: 'var(--yellow-light)',
               color: '#b45309',
               padding: '2px 8px',
               borderRadius: '6px',
