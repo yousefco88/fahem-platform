@@ -9,6 +9,10 @@ create table if not exists public.site_settings (
 
 alter table public.site_settings enable row level security;
 
+-- صلاحيات الوصول الأساسية (RLS يقيّد التفاصيل)
+grant select on public.site_settings to anon, authenticated;
+grant insert, update, delete on public.site_settings to authenticated;
+
 -- الجميع يقرأ (محتوى عام للموقع)
 create policy "site settings are publicly readable" on public.site_settings
   for select using (true);
