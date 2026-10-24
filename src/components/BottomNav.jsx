@@ -17,7 +17,7 @@ export default function BottomNav() {
   const moreItems = [
     { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم' },
     { id: 'admin', icon: '⚙️', label: 'الإدارة' },
-    { id: 'pricing', icon: '💳', label: 'الباقات' },
+    { id: 'pricing', icon: '💳', label: 'اشتراكي' },
     { id: 'account', icon: '🔐', label: 'حسابي' },
     { id: 'onboarding', icon: '📋', label: 'التسجيل' },
     { id: 'live', icon: '🔴', label: 'البث المباشر' },

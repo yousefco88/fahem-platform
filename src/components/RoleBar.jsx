@@ -6,9 +6,9 @@ const NAV_GROUPS = [
   {
     label: 'عام',
     items: [
-      { screen: 'landing', icon: '🌐', text: 'صفحة الهبوط' },
-      { screen: 'pricing', icon: '💳', text: 'الباقات' },
-      { screen: 'onboarding', icon: '📝', text: 'تسجيل الأسر' }
+      { screen: 'landing', icon: '🏠', text: 'الصفحة الرئيسية' },
+      { screen: 'pricing', icon: '💳', text: 'اشتراكي' },
+      { screen: 'account', icon: '👤', text: 'الحساب' }
     ]
   },
   {
