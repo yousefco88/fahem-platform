@@ -85,18 +85,18 @@ export default function HeroSection() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', padding: '18px' }}>
             <div style={{ background: 'linear-gradient(135deg, #eef2ff, #e0e7ff)', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🦊</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
-              <div style={{ fontSize: '11.5px', color: '#64748b' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: '#0f172a', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
+              <div style={{ fontSize: '11.5px', color: '#475569' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>📊</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
-              <div style={{ fontSize: '11.5px', color: '#64748b' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: '#0f172a', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
+              <div style={{ fontSize: '11.5px', color: '#475569' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, #fef2f2, #fee2e2)', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🇪🇬</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
-              <div style={{ fontSize: '11.5px', color: '#64748b' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: '#0f172a', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
+              <div style={{ fontSize: '11.5px', color: '#475569' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
             </div>
           </div>
         </div>
