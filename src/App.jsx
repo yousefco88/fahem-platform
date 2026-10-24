@@ -21,6 +21,7 @@ const PricingPlans = lazy(() => import('./components/PricingPlans'));
 const ParentAccount = lazy(() => import('./components/ParentAccount'));
 const AITutor = lazy(() => import('./components/ai/AITutor'));
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'));
+const RecordedLessons = lazy(() => import('./components/RecordedLessons'));
 
 function ScreenFallback() {
   return (
@@ -65,6 +66,7 @@ function MainAppContent() {
             <Route path="/parent" element={<ParentDashboard />} />
             <Route path="/ai-tutor" element={<AITutor />} />
             <Route path="/analytics" element={<AnalyticsDashboard />} />
+            <Route path="/lessons" element={<RecordedLessons />} />
             <Route path="/child/*" element={<ChildUniverse />} />
             <Route
               path="/teacher"
