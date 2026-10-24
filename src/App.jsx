@@ -19,7 +19,7 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulator'));
 const OnboardingFlow = lazy(() => import('./components/OnboardingFlow'));
 const PricingPlans = lazy(() => import('./components/PricingPlans'));
-const ParentAccount = lazy(() => import('./components/ParentAccount'));
+const MySpace = lazy(() => import('./components/myspace/MySpace'));
 const AITutor = lazy(() => import('./components/ai/AITutor'));
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'));
 const RecordedLessons = lazy(() => import('./components/RecordedLessons'));
@@ -92,7 +92,7 @@ function MainAppContent() {
             <Route path="/exam" element={<EmbassyExamSimulator />} />
             <Route path="/onboarding" element={<OnboardingFlow />} />
             <Route path="/pricing" element={<PricingPlans />} />
-            <Route path="/account" element={<ParentAccount />} />
+            <Route path="/account" element={<MySpace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

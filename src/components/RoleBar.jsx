@@ -1,43 +1,19 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-
-// ترتيب منطقي بمجموعات حسب الجمهور — بدل صف واحد طويل يُقصّ أفقياً
-const NAV_GROUPS = [
-  {
-    label: 'عام',
-    items: [
-      { screen: 'landing', icon: '🏠', text: 'الصفحة الرئيسية' },
-      { screen: 'pricing', icon: '💳', text: 'اشتراكي' },
-      { screen: 'account', icon: '👤', text: 'الحساب' }
-    ]
-  },
-  {
-    label: 'ولي الأمر',
-    items: [
-      { screen: 'parent', icon: '👨‍👩‍👦', text: 'لوحة ولي الأمر' },
-      { screen: 'account', icon: '🔐', text: 'الحساب' },
-      { screen: 'exam', icon: '🇪🇬', text: 'محاكي الامتحانات', variant: 'exam' }
-    ]
-  },
-  {
-    label: 'التعلّم',
-    items: [
-      { screen: 'child', icon: '🚀', text: 'مساحة الطفل', variant: 'child' },
-      { screen: 'teacher', icon: '👩‍🏫', text: 'مساحة المعلم', variant: 'teacher' }
-    ]
-  },
-  {
-    label: 'الإدارة',
-    items: [
-      { screen: 'admin', icon: '⚙️', text: 'الإدارة (Admin)', variant: 'admin' }
-    ]
-  }
-];
-
-const ALL_ITEMS = NAV_GROUPS.flatMap(g => g.items);
+import { useAuth } from '../context/AuthContext';
+import { getNavForRole, resolveNavRole, ROLE_LABELS } from '../navigation/navConfig';
 
 export default function RoleBar() {
   const { currentScreen, setCurrentScreen, setShowLiveModal } = useApp();
+  const { user, role } = useAuth();
+  const navRole = resolveNavRole(user, role);
+  const nav = getNavForRole(navRole);
+  const NAV_GROUPS = [
+    { label: ROLE_LABELS[navRole], items: nav.primary },
+    ...(nav.more.length ? [{ label: 'المزيد', items: nav.more }] : [])
+  ];
+  const ALL_ITEMS = NAV_GROUPS.flatMap(g => g.items);
+  const handleItem = (id) => (id === 'live' ? setShowLiveModal(true) : setCurrentScreen(id));
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('fahem_rolebar_collapsed') === '1');
 
   const toggleCollapsed = () => {
@@ -47,7 +23,7 @@ export default function RoleBar() {
     });
   };
 
-  const current = ALL_ITEMS.find(i => i.screen === currentScreen);
+  const current = ALL_ITEMS.find(i => i.id === currentScreen);
 
   return (
     <header className={`role-bar ${collapsed ? 'collapsed' : ''}`}>
@@ -59,7 +35,7 @@ export default function RoleBar() {
 
         {collapsed && current && (
           <span className="role-bar-current">
-            {current.icon} {current.text}
+            {current.icon} {current.label}
           </span>
         )}
 
@@ -85,12 +61,12 @@ export default function RoleBar() {
               <span className="role-group-label">{group.label}</span>
               {group.items.map(item => (
                 <button
-                  key={item.screen}
-                  className={`role-pill-btn ${item.variant || ''} ${currentScreen === item.screen ? 'active' : ''}`}
-                  onClick={() => setCurrentScreen(item.screen)}
-                  aria-current={currentScreen === item.screen ? 'page' : undefined}
+                  key={item.id}
+                  className={`role-pill-btn ${item.variant || ''} ${currentScreen === item.id ? 'active' : ''}`}
+                  onClick={() => handleItem(item.id)}
+                  aria-current={currentScreen === item.id ? 'page' : undefined}
                 >
-                  {item.icon} {item.text}
+                  {item.icon} {item.label}
                 </button>
               ))}
             </div>

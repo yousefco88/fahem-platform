@@ -2,32 +2,20 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { getNavForRole, resolveNavRole } from '../navigation/navConfig';
 
 export default function BottomNav() {
   const { currentScreen, setCurrentScreen, setShowLiveModal } = useApp();
   const { lang, setLang, languages } = useLanguage();
   const { isDark, toggle: toggleTheme } = useTheme();
 
-  const navItems = [
-    { id: 'landing', icon: '🏠', label: 'الرئيسية' },
-    { id: 'child', icon: '🎓', label: 'التعلم' },
-    { id: 'exam', icon: '📝', label: 'الامتحانات' },
-    { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
-    { id: 'more', icon: '☰', label: 'المزيد' },
-  ];
+  const { user, role } = useAuth();
+  const nav = getNavForRole(resolveNavRole(user, role));
+  const navItems = [...nav.primary, { id: 'more', icon: '☰', label: 'المزيد' }];
+  const moreItems = nav.more;
 
   const [showMore, setShowMore] = React.useState(false);
-
-  const moreItems = [
-    { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
-    { id: 'lessons', icon: '📹', label: 'الدروس المسجلة' },
-    { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم' },
-    { id: 'admin', icon: '⚙️', label: 'الإدارة' },
-    { id: 'pricing', icon: '💳', label: 'اشتراكي' },
-    { id: 'account', icon: '🔐', label: 'حسابي' },
-    { id: 'onboarding', icon: '📋', label: 'التسجيل' },
-    { id: 'live', icon: '🔴', label: 'البث المباشر' },
-  ];
 
   const handleNavClick = (id) => {
     if (id === 'more') {
