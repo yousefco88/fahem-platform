@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { launchConfetti } from '../../utils/confetti';
 import { supabase } from '../../lib/supabase';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 export default function BookingSection() {
   const { setCurrentScreen, triggerToast, soundManager } = useApp();
+  const { settings } = useSiteSettings();
+  const bookingTexts = settings.booking;
 
   const [parentName, setParentName] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -52,14 +55,14 @@ export default function BookingSection() {
           background: 'rgba(255,255,255,0.2)', padding: '6px 16px', borderRadius: 'var(--radius-full)',
           fontSize: '12.5px', fontWeight: 800, display: 'inline-block', marginBottom: '16px'
         }}>
-          التسجيل التجريبي — طلب محفوظ بأمان
+          {bookingTexts.badge}
         </span>
 
         <h2 style={{ fontSize: '32px', fontWeight: 900, marginBottom: '12px' }}>
-          سجّل اهتمامك بالنسخة التجريبية
+          {bookingTexts.title}
         </h2>
         <p style={{ fontSize: '15px', color: '#dbeafe', marginBottom: '30px' }}>
-          أرسل طلبك، وسيقوم فريق فاهم بمراجعة البيانات والتواصل معك لتأكيد الموعد.
+          {bookingTexts.subtitle}
         </p>
 
         <div style={{
@@ -173,7 +176,7 @@ export default function BookingSection() {
                   padding: '14px', borderRadius: 'var(--radius-full)'
                 }}
               >
-                <span>تأكيد حجز الحصة التجريبية المجانية عبر واتساب</span>
+                <span>{bookingTexts.submitLabel}</span>
                 <span>📲</span>
               </button>
             </form>

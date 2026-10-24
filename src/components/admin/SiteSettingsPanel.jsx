@@ -52,6 +52,37 @@ export default function SiteSettingsPanel() {
       return { ...d, pricing: { ...d.pricing, plans } };
     });
 
+  // تعديل عنصر داخل قائمة (أسئلة شائعة / صفوف مقارنة / مواد)
+  const setListItem = (section, listKey, idx, field, value) =>
+    setDraft(d => {
+      const list = d[section][listKey].map((item, i) => (i === idx ? { ...item, [field]: value } : item));
+      return { ...d, [section]: { ...d[section], [listKey]: list } };
+    });
+
+  const addListItem = (section, listKey, template) =>
+    setDraft(d => ({ ...d, [section]: { ...d[section], [listKey]: [...d[section][listKey], template] } }));
+
+  const removeListItem = (section, listKey, idx) =>
+    setDraft(d => ({ ...d, [section]: { ...d[section], [listKey]: d[section][listKey].filter((_, i) => i !== idx) } }));
+
+  const removeBtn = (onClick) => (
+    <button
+      style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '8px', padding: '4px 10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+      onClick={onClick}
+    >
+      🗑 حذف
+    </button>
+  );
+
+  const addBtn = (text, onClick) => (
+    <button
+      style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '8px 16px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer' }}
+      onClick={onClick}
+    >
+      + {text}
+    </button>
+  );
+
   const err = (key) => saveState[key]?.error && (
     <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '8px' }}>⚠️ {saveState[key].error}</div>
   );
@@ -188,6 +219,219 @@ export default function SiteSettingsPanel() {
         </div>
         <SaveButton {...saveState.seo} onClick={() => save('seo', draft.seo)} />
         {err('seo')}
+      </div>
+
+      {/* حاسبة التوقيت */}
+      <div style={card}>
+        <h3 style={sectionTitle}>⏰ قسم حاسبة فروق التوقيت</h3>
+        <p style={hint}>ترويسة القسم فقط — بيانات الدول والفروق تُحسب آلياً في الكود.</p>
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div>
+            <label style={label}>الشارة</label>
+            <input style={input} value={draft.timezone.badge} onChange={e => set('timezone', 'badge', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>العنوان</label>
+            <input style={input} value={draft.timezone.title} onChange={e => set('timezone', 'title', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>النص التوضيحي</label>
+            <textarea style={textarea} value={draft.timezone.subtitle} onChange={e => set('timezone', 'subtitle', e.target.value)} />
+          </div>
+        </div>
+        <SaveButton {...saveState.timezone} onClick={() => save('timezone', draft.timezone)} />
+        {err('timezone')}
+      </div>
+
+      {/* المقارنة */}
+      <div style={card}>
+        <h3 style={sectionTitle}>⚖️ قسم المقارنة (فاهم مقابل الدروس الخصوصية)</h3>
+        <p style={hint}>الترويسة ورؤوس الأعمدة وكل صفوف الجدول.</p>
+        <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+            <div>
+              <label style={label}>الشارة</label>
+              <input style={input} value={draft.comparison.badge} onChange={e => set('comparison', 'badge', e.target.value)} />
+            </div>
+            <div>
+              <label style={label}>عمود فاهم</label>
+              <input style={input} value={draft.comparison.fahemColumn} onChange={e => set('comparison', 'fahemColumn', e.target.value)} />
+            </div>
+            <div>
+              <label style={label}>عمود البديل</label>
+              <input style={input} value={draft.comparison.otherColumn} onChange={e => set('comparison', 'otherColumn', e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label style={label}>العنوان</label>
+            <input style={input} value={draft.comparison.title} onChange={e => set('comparison', 'title', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>النص التوضيحي</label>
+            <input style={input} value={draft.comparison.subtitle} onChange={e => set('comparison', 'subtitle', e.target.value)} />
+          </div>
+        </div>
+        {(draft.comparison.rows || []).map((row, idx) => (
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: '#fafafa' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>صف #{idx + 1}</span>
+              {removeBtn(() => removeListItem('comparison', 'rows', idx))}
+            </div>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              <div>
+                <label style={label}>وجه المقارنة</label>
+                <input style={input} value={row.aspect} onChange={e => setListItem('comparison', 'rows', idx, 'aspect', e.target.value)} />
+              </div>
+              <div>
+                <label style={label}>✓ في فاهم</label>
+                <textarea style={{ ...textarea, minHeight: '48px' }} value={row.fahem} onChange={e => setListItem('comparison', 'rows', idx, 'fahem', e.target.value)} />
+              </div>
+              <div>
+                <label style={label}>❌ في البديل</label>
+                <textarea style={{ ...textarea, minHeight: '48px' }} value={row.other} onChange={e => setListItem('comparison', 'rows', idx, 'other', e.target.value)} />
+              </div>
+            </div>
+          </div>
+        ))}
+        {addBtn('صف مقارنة جديد', () => addListItem('comparison', 'rows', { aspect: '', fahem: '', other: '' }))}
+        <div><SaveButton {...saveState.comparison} onClick={() => save('comparison', draft.comparison)} /></div>
+        {err('comparison')}
+      </div>
+
+      {/* المواد والمسارات */}
+      <div style={card}>
+        <h3 style={sectionTitle}>📚 قسم المواد والمسارات (الرئيسية)</h3>
+        <p style={hint}>العداد في العنوان يُحسب تلقائياً من عدد البطاقات. هذا عرض تسويقي — المناهج الفعلية تُدار من تبويب إدارة المناهج.</p>
+        <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+            <div>
+              <label style={label}>الشارة</label>
+              <input style={input} value={draft.subjects.badge} onChange={e => set('subjects', 'badge', e.target.value)} />
+            </div>
+            <div>
+              <label style={label}>تكملة العنوان (بعد العدد)</label>
+              <input style={input} value={draft.subjects.titleSuffix} onChange={e => set('subjects', 'titleSuffix', e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label style={label}>النص التوضيحي</label>
+            <input style={input} value={draft.subjects.subtitle} onChange={e => set('subjects', 'subtitle', e.target.value)} />
+          </div>
+        </div>
+        {(draft.subjects.items || []).map((s, idx) => (
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: '#fafafa' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>{s.icon} {s.title || `مادة #${idx + 1}`}</span>
+              {removeBtn(() => removeListItem('subjects', 'items', idx))}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+              <div>
+                <label style={label}>أيقونة</label>
+                <input style={{ ...input, textAlign: 'center' }} value={s.icon} onChange={e => setListItem('subjects', 'items', idx, 'icon', e.target.value)} />
+              </div>
+              <div>
+                <label style={label}>اسم المادة</label>
+                <input style={input} value={s.title} onChange={e => setListItem('subjects', 'items', idx, 'title', e.target.value)} />
+              </div>
+              <div>
+                <label style={label}>الشارة</label>
+                <input style={input} value={s.badge} onChange={e => setListItem('subjects', 'items', idx, 'badge', e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <label style={label}>الوصف</label>
+              <textarea style={{ ...textarea, minHeight: '48px' }} value={s.desc} onChange={e => setListItem('subjects', 'items', idx, 'desc', e.target.value)} />
+            </div>
+          </div>
+        ))}
+        {addBtn('مادة جديدة', () => addListItem('subjects', 'items', { icon: '📘', title: '', badge: '', desc: '' }))}
+        <div><SaveButton {...saveState.subjects} onClick={() => save('subjects', draft.subjects)} /></div>
+        {err('subjects')}
+      </div>
+
+      {/* الشهادات */}
+      <div style={card}>
+        <h3 style={sectionTitle}>💬 قسم آراء الأسر</h3>
+        <p style={hint}>حالياً نص صادق «ستُضاف بعد التشغيل التجريبي» — عدّله عند توفر شهادات حقيقية موثقة.</p>
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div>
+            <label style={label}>الشارة</label>
+            <input style={input} value={draft.testimonials.badge} onChange={e => set('testimonials', 'badge', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>العنوان</label>
+            <input style={input} value={draft.testimonials.title} onChange={e => set('testimonials', 'title', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>النص التوضيحي</label>
+            <textarea style={textarea} value={draft.testimonials.subtitle} onChange={e => set('testimonials', 'subtitle', e.target.value)} />
+          </div>
+        </div>
+        <SaveButton {...saveState.testimonials} onClick={() => save('testimonials', draft.testimonials)} />
+        {err('testimonials')}
+      </div>
+
+      {/* نموذج الحجز */}
+      <div style={card}>
+        <h3 style={sectionTitle}>📋 قسم نموذج الحجز التجريبي</h3>
+        <p style={hint}>نصوص الترويسة وزر الإرسال — حقول النموذج نفسها ثابتة (ترتبط بقاعدة البيانات).</p>
+        <div style={{ display: 'grid', gap: '14px' }}>
+          <div>
+            <label style={label}>الشارة</label>
+            <input style={input} value={draft.booking.badge} onChange={e => set('booking', 'badge', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>العنوان</label>
+            <input style={input} value={draft.booking.title} onChange={e => set('booking', 'title', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>النص التوضيحي</label>
+            <textarea style={textarea} value={draft.booking.subtitle} onChange={e => set('booking', 'subtitle', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>نص زر الإرسال</label>
+            <input style={input} value={draft.booking.submitLabel} onChange={e => set('booking', 'submitLabel', e.target.value)} />
+          </div>
+        </div>
+        <SaveButton {...saveState.booking} onClick={() => save('booking', draft.booking)} />
+        {err('booking')}
+      </div>
+
+      {/* الأسئلة الشائعة */}
+      <div style={card}>
+        <h3 style={sectionTitle}>❓ الأسئلة الشائعة</h3>
+        <p style={hint}>الترويسة وكل الأسئلة والإجابات — أضف أو احذف أسئلة بحرية.</p>
+        <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
+          <div>
+            <label style={label}>الشارة</label>
+            <input style={input} value={draft.faq.badge} onChange={e => set('faq', 'badge', e.target.value)} />
+          </div>
+          <div>
+            <label style={label}>العنوان</label>
+            <input style={input} value={draft.faq.title} onChange={e => set('faq', 'title', e.target.value)} />
+          </div>
+        </div>
+        {(draft.faq.items || []).map((f, idx) => (
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: '#fafafa' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>سؤال #{idx + 1}</span>
+              {removeBtn(() => removeListItem('faq', 'items', idx))}
+            </div>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              <div>
+                <label style={label}>السؤال</label>
+                <input style={input} value={f.q} onChange={e => setListItem('faq', 'items', idx, 'q', e.target.value)} />
+              </div>
+              <div>
+                <label style={label}>الإجابة</label>
+                <textarea style={{ ...textarea, minHeight: '60px' }} value={f.a} onChange={e => setListItem('faq', 'items', idx, 'a', e.target.value)} />
+              </div>
+            </div>
+          </div>
+        ))}
+        {addBtn('سؤال جديد', () => addListItem('faq', 'items', { q: '', a: '' }))}
+        <div><SaveButton {...saveState.faq} onClick={() => save('faq', draft.faq)} /></div>
+        {err('faq')}
       </div>
 
       {/* الباقات والأسعار */}

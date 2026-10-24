@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const timezoneData = {
   saudi: {
@@ -48,6 +49,8 @@ const timezoneData = {
 export default function TimezoneSection() {
   const [calcCountry, setCalcCountry] = useState('saudi');
   const currentCalc = timezoneData[calcCountry] || timezoneData.saudi;
+  const { settings } = useSiteSettings();
+  const { badge, title, subtitle } = settings.timezone;
 
   return (
     <section id="timezone" style={{
@@ -55,12 +58,12 @@ export default function TimezoneSection() {
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <span className="tag-badge info" style={{ marginBottom: '8px' }}>⏰ صُمم خصيصاً للمغتربين</span>
+          <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
           <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
-            حاسبة فروق التوقيت ومواعيد الحصص لبلد إقامتك
+            {title}
           </h2>
           <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
-            لا داعي للحيرة أو الحساب اليدوي، نبرمج مواعيد فصولنا لتناسب عودة طفلك من مدرسته بالخارج
+            {subtitle}
           </p>
         </div>
 
