@@ -5,6 +5,8 @@ import { getTodayPlan, getContinueLesson } from '../../utils/todayPlan';
 import { getSubjectProgress } from '../../utils/childProgress';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { CHILD_SUBJECTS, CHILD_CATEGORIES, childPaths } from './childSubjects';
+import StreakBadge from './StreakBadge';
+import useStreak from '../../hooks/useStreak';
 
 // /child — الرئيسية: التحية + تابِع من حيث توقفت + يومك النهارده + المواد بتقدمها الحقيقي
 export default function ChildHome() {
@@ -14,6 +16,9 @@ export default function ChildHome() {
     setShowLiveModal, setCurrentScreen, learningRecords, scheduleData
   } = useApp();
   const [activeCategory, setActiveCategory] = useState('all');
+
+  // 🔥 Streak & XP system
+  const streak = useStreak(activeChild?.id);
 
   const masteredLessons = activeChild.masteredLessons || [];
   const todayPlan = getTodayPlan({ schedule: scheduleData, curriculum: curriculumData, learningRecords, masteredLessons });
@@ -97,6 +102,19 @@ export default function ChildHome() {
           <div style={{ fontSize: '90px' }}>🦊</div>
         </div>
       </section>
+
+      {/* 🔥 Streak & XP Badge */}
+      {!streak.loading && (
+        <section style={{ marginBottom: '28px' }}>
+          <StreakBadge
+            currentStreak={streak.currentStreak}
+            bestStreak={streak.bestStreak}
+            xpTotal={streak.xpTotal}
+            level={streak.level}
+            isActiveToday={streak.isActiveToday}
+          />
+        </section>
+      )}
 
       {/* تابِع من حيث توقفت — بطاقة بارزة من آخر درس فُتح فعلياً */}
       {continueLesson && (
