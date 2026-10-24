@@ -501,8 +501,23 @@ export default function AdminDashboard() {
           { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
           { id: 'rbac', label: '👥 المستخدمين والصلاحيات (RBAC)', icon: '👥' },
           { id: 'audit', label: '🛡️ سجل التدقيق والرقابة (Audit Trail)', icon: '🛡️' },
-          { id: 'subscriptions', label: '💳 الاشتراكات وتوزيع المغتربين', icon: '💳' }
+          { id: 'subscriptions', label: '💳 الاشتراكات وتوزيع المغتربين', icon: '💳' },
+          { id: 'analytics', label: '📊 لوحة التحليلات', icon: '📊', link: '/analytics' }
         ].map(tab => (
+          tab.link ? (
+            <a
+              key={tab.id}
+              href={tab.link}
+              style={{
+                padding: '12px 20px', borderRadius: '12px 12px 0 0', fontWeight: 800, fontSize: '13.5px',
+                border: 'none', cursor: 'pointer', transition: 'all 0.2s', textDecoration: 'none',
+                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                color: 'white', display: 'flex', alignItems: 'center', gap: '6px'
+              }}
+            >
+              📊 لوحة التحليلات ↗
+            </a>
+          ) : (
           <button
             key={tab.id}
             style={{
@@ -515,6 +530,7 @@ export default function AdminDashboard() {
           >
             {tab.label}
           </button>
+          )
         ))}
       </div>
 

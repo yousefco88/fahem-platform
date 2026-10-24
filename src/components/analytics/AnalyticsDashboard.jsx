@@ -308,23 +308,29 @@ export default function AnalyticsDashboard() {
         <ActivityTimeline activities={activities} />
       </div>
 
-      {/* Quick Insights */}
+      {/* Quick Insights — تُعرض فقط عند توفر بيانات حقيقية */}
       <div className="bg-gradient-to-l from-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
         <h3 className="text-lg font-bold mb-3">💡 رؤى سريعة</h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bg-white/10 rounded-xl p-4">
-            <p className="text-white/80 text-sm">أفضل يوم للتعلم</p>
-            <p className="text-xl font-bold">الأحد</p>
+        {activities && activities.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="bg-white/10 rounded-xl p-4">
+              <p className="text-white/80 text-sm">إجمالي الأنشطة المسجلة</p>
+              <p className="text-xl font-bold">{activities.length}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <p className="text-white/80 text-sm">نسبة الإتمام</p>
+              <p className="text-xl font-bold">{stats.completionRate}%</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <p className="text-white/80 text-sm">طلاب لديهم streak نشط</p>
+              <p className="text-xl font-bold">{stats.activeStreaks}</p>
+            </div>
           </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <p className="text-white/80 text-sm">متوسط وقت الجلسة</p>
-            <p className="text-xl font-bold">18 دقيقة</p>
+        ) : (
+          <div className="bg-white/10 rounded-xl p-4 text-center">
+            <p className="text-white/90">📊 ستظهر الرؤى هنا تلقائياً بعد تراكم بيانات استخدام حقيقية</p>
           </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <p className="text-white/80 text-sm">أعلى streak</p>
-            <p className="text-xl font-bold">14 يوم 🔥</p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

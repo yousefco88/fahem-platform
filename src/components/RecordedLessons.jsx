@@ -21,11 +21,17 @@ function VideoPlayer({ src, poster, title }) {
     <div className="relative bg-gray-900 rounded-2xl overflow-hidden aspect-video">
       {!playing ? (
         <>
-          <img 
-            src={poster || '/images/lesson-placeholder.jpg'} 
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          {poster ? (
+            <img 
+              src={poster} 
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700">
+              <span className="text-6xl">🎬</span>
+            </div>
+          )}
           <button
             onClick={() => setPlaying(true)}
             className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/30 transition-all group"
@@ -137,12 +143,8 @@ export default function RecordedLessons() {
       setLessons(data || []);
     } catch (err) {
       console.error('Load lessons error:', err);
-      // Use placeholder data for now
-      setLessons([
-        { id: 1, title: 'مقدمة في الجمع', description: 'تعلم أساسيات عملية الجمع', grade: 1, subject_name: 'الرياضيات', duration: '15:30' },
-        { id: 2, title: 'حرف الألف', description: 'تعلم كتابة ونطق حرف الألف', grade: 1, subject_name: 'اللغة العربية', duration: '12:45' },
-        { id: 3, title: 'الحيوانات الأليفة', description: 'نتعرف على الحيوانات التي نربيها في المنزل', grade: 2, subject_name: 'العلوم', duration: '18:20' }
-      ]);
+      // لا بيانات وهمية: عند فشل التحميل نعرض حالة فارغة صادقة
+      setLessons([]);
     } finally {
       setLoading(false);
     }

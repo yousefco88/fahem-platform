@@ -31,11 +31,11 @@ export default function FooterSection() {
         </div>
 
         <div>
-          <h4 style={{ fontSize: '15px', marginBottom: '14px', color: '#f8fafc' }}>خدمة العملاء بالسفارات</h4>
+          <h4 style={{ fontSize: '15px', marginBottom: '14px', color: '#f8fafc' }}>تواصل معنا</h4>
           <div style={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.7 }}>
-            <div>📞 واتساب الدعم الفني: +20 100 000 0000</div>
-            <div>✉️ البريد الإلكتروني: support@fahem.academy</div>
-            <div>🏛️ تنسيق سفارات: الرياض • دبي • الكويت • لندن</div>
+            <div>📞 رقم واتساب الدعم يُعلن مع بدء التشغيل التجريبي</div>
+            <div>✉️ راسلنا عبر نموذج «احجز حصة تجريبية» أعلاه</div>
+            <div>🌍 نخدم أسر المصريين في الخليج وأوروبا</div>
           </div>
         </div>
       </div>

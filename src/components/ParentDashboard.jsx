@@ -581,8 +581,8 @@ export default function ParentDashboard() {
                     <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#6d28d9' }}>🌟 Connect Plus (لغات): My Senses & Phonics /s/</div>
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>Sentence Building & Speaking Fluency</div>
                   </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('connect_plus', 'cp_senses', 'video')}>
-                    ✓ متقن (لغات)
+                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('connect_plus', 'cp_senses', 'video')}>
+                    {isLessonDone('cp_senses', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن (لغات)' : '↺ مراجعة'}
                   </button>
                 </div>
 
@@ -592,8 +592,8 @@ export default function ParentDashboard() {
                     <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#0f766e' }}>📐 Math (English): Numbers 1-10 & Ten-Frame</div>
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>Counting, Place Value & Greater/Less than</div>
                   </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('math_en', 'mathen_count_10', 'quiz')}>
-                    ✓ متقن (لغات)
+                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('math_en', 'mathen_count_10', 'quiz')}>
+                    {isLessonDone('mathen_count_10', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن (لغات)' : '↺ مراجعة'}
                   </button>
                 </div>
 
@@ -614,8 +614,8 @@ export default function ParentDashboard() {
                     <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#4338ca' }}>💻 تكنولوجيا المعلومات: مكونات الحاسوب والأمان</div>
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>الأمان الرقمي ومقدمة التفكير البرمجي</div>
                   </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('ict', 'ict_basics', 'quiz')}>
-                    ✓ متقن بالكامل
+                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('ict', 'ict_basics', 'quiz')}>
+                    {isLessonDone('ict_basics', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن بالكامل' : '↺ مراجعة'}
                   </button>
                 </div>
 
@@ -625,8 +625,8 @@ export default function ParentDashboard() {
                     <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#b91c1c' }}>🇪🇬 معالم وتاريخ مصر: نهر النيل والأهرامات</div>
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>الهوية الوطنية وخريطة مصر وألوان العلم</div>
                   </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('social', 'soc_nile', 'video')}>
-                    ✓ مسار الهوية
+                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('social', 'soc_nile', 'video')}>
+                    {isLessonDone('soc_nile', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن' : '🇪🇬 مسار الهوية'}
                   </button>
                 </div>
 
@@ -636,8 +636,8 @@ export default function ParentDashboard() {
                     <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#be185d' }}>✍️ نور البيان: التهجي السريع وقاعدة الفتح</div>
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>علاج ضعف القراءة لأبناء المغتربين والخط</div>
                   </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('phonics_arabic', 'ph_fast_reading', 'quiz')}>
-                    ✓ متقن بالكامل
+                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('phonics_arabic', 'ph_fast_reading', 'quiz')}>
+                    {isLessonDone('ph_fast_reading', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن بالكامل' : '↺ مراجعة'}
                   </button>
                 </div>
 
@@ -658,8 +658,8 @@ export default function ParentDashboard() {
                     <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px' }}>🕋 التربية الإسلامية: سورة الفاتحة والآداب</div>
                     <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>التلاوة والتجويد وقيم بر الوالدين والصدق</div>
                   </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('islamic_religion', 'isl_fatiha', 'video')}>
-                    ✓ متقن بالكامل
+                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('islamic_religion', 'isl_fatiha', 'video')}>
+                    {isLessonDone('isl_fatiha', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن بالكامل' : '↺ مراجعة'}
                   </button>
                 </div>
               </div>

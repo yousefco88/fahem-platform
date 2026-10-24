@@ -89,7 +89,7 @@ function randomFrom(arr) {
 
 export default function AITutor({ childName = 'صديقي', subject = null }) {
   const [messages, setMessages] = useState([
-    { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعدك الذكي. اسألني أي سؤال وأنا راح أساعدك! 🌟` }
+    { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعدك الذكي. اسألني أي سؤال وهساعدك! 🌟` }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -151,7 +151,7 @@ export default function AITutor({ childName = 'صديقي', subject = null }) {
           </div>
           <div>
             <h2 className="font-bold text-lg">فاهم - المساعد الذكي</h2>
-            <p className="text-white/80 text-sm">جاهز أساعدك في أي وقت!</p>
+            <p className="text-white/80 text-sm">مساعد تجريبي — ردود تعليمية مبسطة</p>
           </div>
         </div>
       </div>

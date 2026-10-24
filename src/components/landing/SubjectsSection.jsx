@@ -22,7 +22,7 @@ export default function SubjectsSection() {
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>📚 المنظومة الشاملة</span>
           <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
-            12 مادة ومساراً تعليمياً تغطي كافة احتياجات طفلك في الغربة
+            {subjects.length} مادة ومساراً تعليمياً تغطي كافة احتياجات طفلك في الغربة
           </h2>
           <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
             لا نقتصر على العربي والحساب، بل نبني شخصية الطفل وهويته ومهارات مستقبله
