@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Field from './account/Field';
+import { arabicAuthError } from './account/authErrors';
+import './account/account.css';
 
 const ROLE_LABELS = { parent: 'ولي أمر', teacher: 'معلم', admin: 'إدارة' };
 
 function GateShell({ icon, title, children }) {
   return (
-    <div style={{
-      flex: 1, display: 'grid', placeItems: 'center', padding: '24px',
-      background: 'linear-gradient(160deg, #f8fafc 0%, #eef2ff 100%)'
-    }}>
-      <div style={{
-        width: '100%', maxWidth: '420px', background: 'white',
-        border: '1px solid var(--line)', borderRadius: '20px',
-        padding: '28px', boxShadow: 'var(--shadow-md, 0 10px 30px rgba(15,23,42,.08))',
-        textAlign: 'center'
-      }}>
-        <div style={{ fontSize: '40px', marginBottom: '10px' }}>{icon}</div>
-        <h2 style={{ fontSize: '20px', color: 'var(--navy)', marginBottom: '16px' }}>{title}</h2>
+    <div className="acct-wrap">
+      <div className="acct-card" style={{ maxWidth: '420px' }}>
+        <header className="acct-head">
+          <div className="acct-logo" aria-hidden="true">{icon}</div>
+          <h2 style={{ fontSize: '20px' }}>{title}</h2>
+        </header>
         {children}
       </div>
     </div>
@@ -45,51 +42,45 @@ function LoginForm() {
     setBusy(false);
   };
 
-  const inputStyle = {
-    width: '100%', padding: '12px 14px', borderRadius: '12px',
-    border: '1px solid var(--line)', fontSize: '14px', fontFamily: 'inherit',
-    marginBottom: '12px', textAlign: 'right'
-  };
-
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} style={{ textAlign: 'right' }}>
       {mode === 'signup' && (
-        <input
-          style={inputStyle} type="text" placeholder="الاسم الكامل"
-          value={fullName} onChange={(e) => setFullName(e.target.value)}
-          autoComplete="name"
+        <Field
+          label="الاسم الكامل" type="text" value={fullName}
+          onChange={(e) => setFullName(e.target.value)} autoComplete="name"
+          placeholder="مثال: أحمد محمد"
         />
       )}
-      <input
-        style={{ ...inputStyle, direction: 'ltr', textAlign: 'left' }} type="email" required
-        placeholder="البريد الإلكتروني" value={email}
+      <Field
+        label="البريد الإلكتروني" type="email" required value={email}
         onChange={(e) => setEmail(e.target.value)} autoComplete="email"
+        placeholder="name@example.com"
       />
-      <input
-        style={{ ...inputStyle, direction: 'ltr', textAlign: 'left' }} type="password" required minLength={8}
-        placeholder="كلمة المرور (8 أحرف على الأقل)" value={password}
-        onChange={(e) => setPassword(e.target.value)}
+      <Field
+        label="كلمة المرور" type="password" required minLength={8}
+        value={password} onChange={(e) => setPassword(e.target.value)}
         autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+        placeholder={mode === 'login' ? '••••••••' : '8 أحرف على الأقل'}
       />
 
-      {authError && (
-        <p style={{ color: '#dc2626', fontSize: '13px', marginBottom: '10px' }}>⚠️ {authError}</p>
-      )}
-      {notice && (
-        <p style={{ color: '#059669', fontSize: '13px', marginBottom: '10px' }}>✓ {notice}</p>
-      )}
+      <div aria-live="polite">
+        {authError && <div className="acct-alert error" role="alert">⚠️ <span>{arabicAuthError(authError)}</span></div>}
+        {notice && <div className="acct-alert ok">✓ <span>{notice}</span></div>}
+      </div>
 
-      <button type="submit" className="btn-accent" disabled={busy} style={{ width: '100%', padding: '12px', fontSize: '15px' }}>
-        {busy ? '... جارٍ التنفيذ' : mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد'}
+      <button type="submit" className="acct-submit" disabled={busy}>
+        {busy ? '⏳ لحظات...' : mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد'}
       </button>
 
-      <button
-        type="button"
-        onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setNotice(''); }}
-        style={{ background: 'none', border: 'none', color: 'var(--blue, #2563eb)', fontSize: '13px', marginTop: '14px', cursor: 'pointer', fontFamily: 'inherit' }}
-      >
-        {mode === 'login' ? 'ليس لديك حساب؟ أنشئ حساباً' : 'لديك حساب؟ سجّل الدخول'}
-      </button>
+      <div className="acct-foot">
+        <button
+          type="button"
+          className="acct-link"
+          onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setNotice(''); }}
+        >
+          {mode === 'login' ? 'ليس لديك حساب؟ أنشئ حساباً' : 'لديك حساب؟ سجّل الدخول'}
+        </button>
+      </div>
     </form>
   );
 }

@@ -8,7 +8,7 @@ import { GRADES } from './AuthCard';
  * لوحة العائلة بعد تسجيل الدخول: بطاقة ولي الأمر + ملفات الأبناء + إضافة/حذف.
  * نفس عمليات Supabase السابقة — واجهة فقط.
  */
-export default function FamilyPanel({ parent, children, setChildren, onSignOut }) {
+export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
   const [newChild, setNewChild] = useState({ name: '', grade: GRADES[0] });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -23,7 +23,7 @@ export default function FamilyPanel({ parent, children, setChildren, onSignOut }
       .select().single();
     if (e2) setError(arabicAuthError(e2));
     else {
-      setChildren(k => [...k, data]);
+      setKids(k => [...k, data]);
       setNewChild(c => ({ ...c, name: '' }));
     }
     setBusy(false);
@@ -34,7 +34,7 @@ export default function FamilyPanel({ parent, children, setChildren, onSignOut }
     setError('');
     const { error: e2 } = await supabase.from('children').delete().eq('id', child.id);
     if (e2) setError(arabicAuthError(e2));
-    else setChildren(k => k.filter(x => x.id !== child.id));
+    else setKids(k => k.filter(x => x.id !== child.id));
     setConfirmId(null);
   };
 
@@ -53,13 +53,13 @@ export default function FamilyPanel({ parent, children, setChildren, onSignOut }
         {error && <div className="acct-alert error" role="alert">⚠️ <span>{error}</span></div>}
       </div>
 
-      <h2 className="fam-sec-title">🧒 ملفات الأبناء {children.length > 0 && <span className="tag-badge info">{children.length}</span>}</h2>
+      <h2 className="fam-sec-title">🧒 ملفات الأبناء {kids.length > 0 && <span className="tag-badge info">{kids.length}</span>}</h2>
 
-      {children.length === 0 && (
+      {kids.length === 0 && (
         <div className="fam-empty">لا توجد ملفات أبناء بعد — أضف أول ملف من النموذج بالأسفل 👇</div>
       )}
 
-      {children.map((c) => (
+      {kids.map((c) => (
         <div className="fam-child" key={c.id}>
           <span className="emoji" aria-hidden="true">🧒</span>
           <div className="info">

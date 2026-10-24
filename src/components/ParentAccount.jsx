@@ -1,18 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
+import AuthCard from './account/AuthCard';
+import FamilyPanel from './account/FamilyPanel';
+import './account/account.css';
 
-const grades = ['الأول','الثاني','الثالث','الرابع','الخامس','السادس'].map((n, i) => ({ label: `الصف ${n} الابتدائي`, value: `الصف ${n} الابتدائي`, i }));
-const inputStyle = { width: '100%', padding: '12px 14px', border: '1px solid #cbd5e1', borderRadius: 10, font: 'inherit', marginTop: 6 };
-
+/**
+ * صفحة حساب الأسرة — غلاف نحيف:
+ * - الجلسة من AuthContext (بدل إدارة مكررة)
+ * - بيانات ولي الأمر والأبناء تُجلب هنا وتُمرر للوحة العائلة
+ * - embedded: بلا إطار/خلفية (تُستخدم داخل «مساحتي»)
+ */
 export default function ParentAccount({ embedded = false }) {
-  const [mode, setMode] = useState('register'); const [parent, setParent] = useState(null); const [children, setChildren] = useState([]);
-  const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [form, setForm] = useState({ name: '', email: '', password: '', child: '', grade: grades[0].value }); const [newChild, setNewChild] = useState({ name: '', grade: grades[0].value });
-  const load = async user => { if (!user || !supabase) return; const [{ data: profile }, { data: kids }] = await Promise.all([supabase.from('parent_profiles').select('*').eq('id', user.id).maybeSingle(), supabase.from('children').select('*').eq('parent_id', user.id).order('created_at')]); setParent({ id: user.id, name: profile?.full_name || user.email, email: user.email }); setChildren(kids || []); };
-  useEffect(() => { if (!supabase) return; supabase.auth.getSession().then(({ data }) => load(data.session?.user)); const { data } = supabase.auth.onAuthStateChange((_e, session) => load(session?.user)); return () => data.subscription.unsubscribe(); }, []);
-  const submit = async e => { e.preventDefault(); setError(''); setBusy(true); try { if (!supabase) throw new Error('إعدادات Supabase غير متاحة في نسخة النشر الحالية.'); const result = mode === 'register' ? await supabase.auth.signUp({ email: form.email, password: form.password, options: { data: { full_name: form.name } } }) : await supabase.auth.signInWithPassword({ email: form.email, password: form.password }); if (result.error) throw result.error; const user = result.data.user; if (mode === 'register') { const { error: pe } = await supabase.from('parent_profiles').upsert({ id: user.id, full_name: form.name }); if (pe) throw pe; const { error: ce } = await supabase.from('children').insert({ parent_id: user.id, name: form.child, grade: form.grade }); if (ce) throw ce; } await load(user); setForm(f => ({ ...f, password: '' })); } catch (e2) { setError(e2.message || 'تعذر تنفيذ الطلب.'); } finally { setBusy(false); } };
-  const addChild = async e => { e.preventDefault(); if (!parent || !supabase) return; setBusy(true); const { data, error: e2 } = await supabase.from('children').insert({ parent_id: parent.id, name: newChild.name.trim(), grade: newChild.grade }).select().single(); if (e2) setError(e2.message); else { setChildren(k => [...k, data]); setNewChild({ ...newChild, name: '' }); } setBusy(false); };
-  const removeChild = async child => { if (!supabase || !window.confirm(`حذف ملف ${child.name}؟`)) return; const { error: e2 } = await supabase.from('children').delete().eq('id', child.id); if (e2) setError(e2.message); else setChildren(k => k.filter(x => x.id !== child.id)); };
-  const logout = async () => { if (supabase) await supabase.auth.signOut(); setParent(null); setChildren([]); };
-  const resetPassword = async () => { if (!supabase || !form.email) { setError('اكتب البريد الإلكتروني أولًا.'); return; } const { error: e2 } = await supabase.auth.resetPasswordForEmail(form.email, { redirectTo: window.location.origin }); if (e2) setError(e2.message); else setError('أرسلنا رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.'); };
-  return <main dir="rtl" style={{ maxWidth: 760, width: 'calc(100% - 32px)', margin: embedded ? '12px 0 0' : '40px auto', color: '#0f172a' }}><section style={{ background: 'white', border: embedded ? 'none' : '1px solid #e2e8f0', borderRadius: 20, padding: embedded ? 0 : 28 }}>{!embedded && <><span style={{ color: '#1d4ed8', fontWeight: 700 }}>حساب ولي الأمر — Supabase</span><h1>حساب ولي الأمر والأبناء</h1><p style={{ color: '#475569' }}>حسابات حقيقية مع صلاحيات منفصلة لكل أسرة.</p></>}{error && <div role="alert" style={{ background: '#fff1f2', color: '#9f1239', padding: 12, borderRadius: 10 }}>{error}</div>}{parent ? <><div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}><strong>{parent.name}<small style={{ display: 'block', color: '#64748b' }}>{parent.email}</small></strong><button onClick={logout}>تسجيل الخروج</button></div><h2>ملفات الأبناء</h2>{children.map(c => <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: 8 }}><span>{c.name} — {c.grade}</span><button onClick={() => removeChild(c)}>حذف</button></div>)}<form onSubmit={addChild}><h3>إضافة ابن/ابنة</h3><input required placeholder="اسم الطفل" value={newChild.name} onChange={e => setNewChild({ ...newChild, name: e.target.value })} style={inputStyle} /><select value={newChild.grade} onChange={e => setNewChild({ ...newChild, grade: e.target.value })} style={inputStyle}>{grades.map(g => <option key={g.i}>{g.value}</option>)}</select><button disabled={busy} style={{ marginTop: 12 }}>إضافة الملف</button></form></> : <><div style={{ display: 'flex', gap: 8, marginTop: 20 }}><button onClick={() => setMode('register')}>إنشاء حساب</button><button onClick={() => setMode('login')}>تسجيل الدخول</button></div><form onSubmit={submit}>{mode === 'register' && <><input required placeholder="اسم ولي الأمر" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={inputStyle} /><input required placeholder="اسم الطفل" value={form.child} onChange={e => setForm({ ...form, child: e.target.value })} style={inputStyle} /><select value={form.grade} onChange={e => setForm({ ...form, grade: e.target.value })} style={inputStyle}>{grades.map(g => <option key={g.i}>{g.value}</option>)}</select></>}<input required type="email" placeholder="البريد الإلكتروني" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} /><input required minLength={12} type="password" placeholder="كلمة المرور — 12 حرفًا على الأقل" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} style={inputStyle} /><button disabled={busy} style={{ marginTop: 16 }}>{busy ? 'جارٍ التنفيذ…' : mode === 'register' ? 'إنشاء الحساب' : 'تسجيل الدخول'}</button>{mode === 'login' && <button type="button" onClick={resetPassword} style={{ marginTop: 12, background: 'transparent', color: '#2563eb' }}>نسيت كلمة المرور؟</button>}</form></>}</section></main>;
+  const { user, signOut } = useAuth();
+  const [parent, setParent] = useState(null);
+  const [children, setChildren] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+    if (!user || !supabase) {
+      setParent(null);
+      setChildren([]);
+      return undefined;
+    }
+    Promise.all([
+      supabase.from('parent_profiles').select('*').eq('id', user.id).maybeSingle(),
+      supabase.from('children').select('*').eq('parent_id', user.id).order('created_at')
+    ]).then(([{ data: profile }, { data: kids }]) => {
+      if (!active) return;
+      setParent({ id: user.id, name: profile?.full_name || user.email, email: user.email });
+      setChildren(kids || []);
+    });
+    return () => { active = false; };
+  }, [user]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setParent(null);
+    setChildren([]);
+  };
+
+  return (
+    <main dir="rtl" className={`acct-wrap${embedded ? ' embedded' : ''}`}>
+      <section className="acct-card">
+        {!embedded && (
+          <header className="acct-head">
+            <div className="acct-logo" aria-hidden="true">🎓</div>
+            <h1>حساب الأسرة في فاهم</h1>
+            <p>حساب واحد لولي الأمر يجمع ملفات كل أبنائك — بأمان وخصوصية كاملة.</p>
+          </header>
+        )}
+
+        {user && parent ? (
+          <FamilyPanel
+            parent={parent}
+            kids={children}
+            setKids={setChildren}
+            onSignOut={handleSignOut}
+          />
+        ) : (
+          <AuthCard />
+        )}
+      </section>
+    </main>
+  );
 }
