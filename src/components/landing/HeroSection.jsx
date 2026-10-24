@@ -25,11 +25,11 @@ export default function HeroSection() {
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.25,
-          marginBottom: '20px', letterSpacing: '-0.5px'
+          fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 900, color: '#0f172a', lineHeight: 1.25,
+          marginBottom: '20px', letterSpacing: '-0.5px', textShadow: '0 1px 2px rgba(0,0,0,0.05)'
         }}>
           {hero.titleLine1} <br />
-          <span style={{ color: 'var(--blue)', background: 'linear-gradient(135deg, #2563eb, #14b8a6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <span style={{ background: 'linear-gradient(135deg, #1d4ed8, #0891b2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             {hero.titleHighlight}
           </span>
         </h1>

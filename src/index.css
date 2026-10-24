@@ -7,25 +7,25 @@
   --blue: #2563eb;
   --blue-dark: #1d4ed8;
   --blue-light: #eff6ff;
-  --teal: #14b8a6;
+  --teal: #0d9488;
   --teal-light: #f0fdfa;
-  --yellow: #facc15;
+  --yellow: #eab308;
   --yellow-light: #fefce8;
-  --navy: #16324f;
-  --navy-dark: #0f172a;
+  --navy: #0f172a;
+  --navy-dark: #020617;
   --bg: #f8fafc;
   --card-bg: #ffffff;
   --line: #e2e8f0;
-  --muted: #64748b;
+  --muted: #475569;
 
   /* Semantic Feedback Palette */
-  --green: #10b981;
+  --green: #059669;
   --green-light: #ecfdf5;
-  --orange: #f97316;
+  --orange: #ea580c;
   --orange-light: #fff7ed;
-  --red: #ef4444;
+  --red: #dc2626;
   --red-light: #fef2f2;
-  --purple: #8b5cf6;
+  --purple: #7c3aed;
   --purple-light: #f5f3ff;
 
   /* Typography */
