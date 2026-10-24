@@ -589,7 +589,10 @@ export function AppProvider({ children }) {
     supabase.rpc('update_child_streak', { p_child_id: childId, p_xp_earned: 10 })
       .then(({ data, error }) => {
         if (error) console.warn('Streak update failed:', error.message);
-        else if (data) console.log('🔥 Streak updated:', data);
+        else if (data) {
+          console.log('🔥 Streak updated:', data);
+          soundManager.playXP(); // 🔊 Play XP sound
+        }
       });
 
     soundManager.playSuccess();
