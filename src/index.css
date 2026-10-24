@@ -693,6 +693,56 @@ input, select, textarea {
   text-align: center;
 }
 
+/* Settings in More Menu */
+.more-menu-settings {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.settings-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.settings-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.settings-btn:active {
+  transform: scale(0.95);
+}
+
+.settings-btn.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+.settings-btn.theme-toggle {
+  min-width: 100px;
+}
+
 .more-menu-item.active .more-menu-label {
   color: var(--blue);
 }

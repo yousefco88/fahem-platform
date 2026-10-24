@@ -1,8 +1,12 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function BottomNav() {
   const { currentScreen, setCurrentScreen, setShowLiveModal } = useApp();
+  const { lang, setLang, languages } = useLanguage();
+  const { isDark, toggle: toggleTheme } = useTheme();
 
   const navItems = [
     { id: 'landing', icon: '🏠', label: 'الرئيسية' },
@@ -67,6 +71,36 @@ export default function BottomNav() {
                   <span className="more-menu-label">{item.label}</span>
                 </button>
               ))}
+            </div>
+            
+            {/* Settings Row */}
+            <div className="more-menu-settings">
+              {/* Language Toggle */}
+              <div className="settings-row">
+                <span className="settings-label">🌐 اللغة</span>
+                <div className="settings-buttons">
+                  {Object.entries(languages).map(([code, info]) => (
+                    <button
+                      key={code}
+                      onClick={() => setLang(code)}
+                      className={`settings-btn ${lang === code ? 'active' : ''}`}
+                    >
+                      {info.flag} {info.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Theme Toggle */}
+              <div className="settings-row">
+                <span className="settings-label">🎨 المظهر</span>
+                <button
+                  onClick={toggleTheme}
+                  className="settings-btn theme-toggle"
+                >
+                  {isDark ? '☀️ فاتح' : '🌙 داكن'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
