@@ -685,21 +685,6 @@ export function AppProvider({ children }) {
     });
   };
 
-  const seedSampleStudents = () => {
-    if (studentsSeeded && sampleStudents.length > 0) return false;
-    const examples = [
-      { name: 'ليلى', country: 'الإمارات', subject: 'اللغة العربية', attempts: 3 },
-      { name: 'عمر', country: 'الكويت', subject: 'الرياضيات', attempts: 2 },
-      { name: 'نور', country: 'المملكة المتحدة', subject: 'اللغة العربية', attempts: 4 }
-    ];
-    setSampleStudents(examples);
-    setStudentsSeeded(true);
-    localStorage.setItem('fahem_students_seeded', 'true');
-    localStorage.setItem('fahem_sample_students', JSON.stringify(examples));
-    triggerToast('أضيفت بيانات طلاب تجريبية محلية؛ لا تمثل أسرًا أو طلابًا حقيقيين.');
-    return true;
-  };
-
   const value = {
     currentScreen, setCurrentScreen,
     parentName, setParentName,
@@ -736,7 +721,6 @@ export function AppProvider({ children }) {
     recordQuizAttempt,
     recordLessonOpened,
     recordVideoProgress,
-    seedSampleStudents,
     // Modals — أفعال فقط (مراجع ثابتة من UIContext)؛ الحالة تُقرأ عبر useUIState
     setShowLiveModal,
     setShowGateModal,

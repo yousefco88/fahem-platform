@@ -68,9 +68,23 @@ function MainAppContent() {
         <Suspense fallback={<ScreenFallback />}>
           <Routes>
             <Route path="/" element={<PublicLandingPage />} />
-            <Route path="/parent" element={<ParentDashboard />} />
+            <Route
+              path="/parent"
+              element={
+                <AuthGate roles={['parent', 'admin']}>
+                  <ParentDashboard />
+                </AuthGate>
+              }
+            />
             <Route path="/ai-tutor" element={<AITutor />} />
-            <Route path="/analytics" element={<AnalyticsDashboard />} />
+            <Route
+              path="/analytics"
+              element={
+                <AuthGate roles={['teacher', 'admin']}>
+                  <AnalyticsDashboard />
+                </AuthGate>
+              }
+            />
             <Route path="/lessons" element={<RecordedLessons />} />
             <Route path="/child/*" element={<ChildUniverse />} />
             <Route

@@ -20,8 +20,6 @@ export default function AdminDashboard() {
     setLessonFiles,
     lessonVideos,
     setLessonVideos,
-    seedSampleStudents,
-    sampleStudents,
     setShowLiveModal,
     triggerToast,
     scheduleData,
@@ -486,9 +484,6 @@ export default function AdminDashboard() {
         <span style={{ color: '#1e3a8a', fontSize: '13px' }}>
           {supabase ? 'متصل بـ Supabase — البيانات أعلاه حقيقية من قاعدة البيانات.' : 'غير متصل بـ Supabase — البيانات محلية فقط.'}
         </span>
-        <button className="btn-secondary" disabled={sampleStudents.length > 0} onClick={seedSampleStudents}>
-          {sampleStudents.length ? 'تم تحميل البيانات التجريبية' : 'تحميل بيانات أسر تجريبية'}
-        </button>
       </section>
 
       {/* Admin Tabs */}
