@@ -585,6 +585,13 @@ export function AppProvider({ children }) {
     }));
     persistLearningRecord(childId, lessonId, 'completed');
 
+    // 🔥 Update streak & XP in Supabase (fire-and-forget, don't block UI)
+    supabase.rpc('update_child_streak', { p_child_id: childId, p_xp_earned: 10 })
+      .then(({ data, error }) => {
+        if (error) console.warn('Streak update failed:', error.message);
+        else if (data) console.log('🔥 Streak updated:', data);
+      });
+
     soundManager.playSuccess();
     if (!wasCompleted) launchConfetti();
 
@@ -604,7 +611,7 @@ export function AppProvider({ children }) {
       return child;
     }));
     setShowStudioModal(false);
-    triggerToast(`مبارك يا ${activeChild.name}! أتقنت المهارة وربحت 30 نقطة ⭐🎉`);
+    triggerToast(`مبارك يا ${activeChild.name}! أتقنت المهارة وربحت 30 نقطة + 10 XP 🔥⭐🎉`);
   };
 
   const recordQuizAttempt = (lessonId, isCorrect) => {
