@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { saveAttachment } from '../utils/attachmentStore';
 import { useApp } from '../context/AppContext';
@@ -29,6 +30,31 @@ export default function AdminDashboard() {
 
   const [activeAdminTab, setActiveAdminTab] = useState('cms');
   const [syncingSchedule, setSyncingSchedule] = useState(false);
+
+  // ===== KPI ديناميكي من Supabase =====
+  const [kpiStats, setKpiStats] = useState({ families: 0, children: 0, bookings: 0, newBookings: 0 });
+  const [kpiLoading, setKpiLoading] = useState(true);
+
+  useEffect(() => {
+    if (!supabase) { setKpiLoading(false); return; }
+    Promise.all([
+      supabase.from('parent_profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('children').select('id', { count: 'exact', head: true }),
+      supabase.from('bookings').select('id', { count: 'exact', head: true }),
+      supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'new')
+    ]).then(([parents, children, bookings, newBookings]) => {
+      setKpiStats({
+        families: parents.count || 0,
+        children: children.count || 0,
+        bookings: bookings.count || 0,
+        newBookings: newBookings.count || 0
+      });
+      setKpiLoading(false);
+    }).catch(() => setKpiLoading(false));
+  }, []);
+
+  // عدد المواد الفعلي
+  const subjectsCount = Object.keys(curriculumData).filter(k => k !== 'expatExamCalendar').length;
 
   // ===== محرر الجدول الأسبوعي =====
   const updateSlot = (id, field, value) =>
@@ -237,13 +263,31 @@ export default function AdminDashboard() {
     saveVideo();
   };
 
-  // Staff & RBAC Mock Data
-  const [staffMembers, setStaffMembers] = useState([
-    { id: 1, name: 'د. إبراهيم فؤاد', role: 'المدير العام (Super Admin)', email: 'director@fahem.academy', status: 'نشط', canEditCMS: true, canAudit: true, canBilling: true },
-    { id: 2, name: 'أ. منى عادل', role: 'مشرفة المناهج ولغات', email: 'mona.curriculum@fahem.academy', status: 'نشط', canEditCMS: true, canAudit: true, canBilling: false },
-    { id: 3, name: 'م. طارق حسن', role: 'مسؤول العمليات والدعم', email: 'support@fahem.academy', status: 'نشط', canEditCMS: false, canAudit: true, canBilling: false },
-    { id: 4, name: 'أ. سارة أحمد', role: 'نموذج معلمة تجريبي', email: 'teacher@example.invalid', status: 'تجريبي', canEditCMS: false, canAudit: false, canBilling: false }
-  ]);
+  // Staff & RBAC — بيانات حقيقية من Supabase user_roles
+  const [staffMembers, setStaffMembers] = useState([]);
+  const [staffLoading, setStaffLoading] = useState(true);
+
+  useEffect(() => {
+    if (!supabase) { setStaffLoading(false); return; }
+    supabase
+      .from('user_roles')
+      .select('id, user_id, role, created_at')
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setStaffMembers(data.map(r => ({
+            id: r.id,
+            name: r.role === 'admin' ? 'مدير' : r.role === 'teacher' ? 'معلم' : r.role,
+            role: r.role === 'admin' ? 'مدير النظام' : r.role === 'teacher' ? 'معلم' : r.role,
+            email: `${r.user_id.slice(0, 8)}...`,
+            status: 'نشط',
+            canEditCMS: r.role === 'admin',
+            canAudit: ['admin', 'staff'].includes(r.role),
+            canBilling: r.role === 'admin'
+          })));
+        }
+        setStaffLoading(false);
+      });
+  }, []);
 
   // Audit Log items
   const auditLogs = [
@@ -306,38 +350,44 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* Admin KPI Ribbon */}
+      {/* Admin KPI Ribbon — بيانات حقيقية من Supabase */}
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: '16px', marginBottom: '26px'
       }}>
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>سجلات أسر تجريبية</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{sampleStudents.length}</h3>
-          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>بيانات محلية مصطنعة</small>
+          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>الأسر المسجلة</span>
+          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{kpiLoading ? '...' : kpiStats.families}</h3>
+          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>{kpiStats.children} طفل مسجّل</small>
         </div>
 
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>نماذج حسابات المعلمين</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>نماذج للطاقم</h3>
-          <small style={{ color: 'var(--blue)', fontWeight: 700, fontSize: '11.5px' }}>حسابات توضيحية داخل الواجهة</small>
+          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>حجوزات الحصص التجريبية</span>
+          <h3 style={{ fontSize: '26px', color: 'var(--blue)' }}>{kpiLoading ? '...' : kpiStats.bookings}</h3>
+          <small style={{ color: kpiStats.newBookings > 0 ? '#dc2626' : 'var(--blue)', fontWeight: 700, fontSize: '11.5px' }}>
+            {kpiStats.newBookings > 0 ? `🔴 ${kpiStats.newBookings} جديد` : 'لا يوجد جديد'}
+          </small>
         </div>
 
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>المواد والمسارات النشطة</span>
-          <h3 style={{ fontSize: '26px', color: '#7c3aed' }}>12 مادة</h3>
+          <h3 style={{ fontSize: '26px', color: '#7c3aed' }}>{subjectsCount} مادة</h3>
           <small style={{ color: '#7c3aed', fontWeight: 700, fontSize: '11.5px' }}>شاملة Connect Plus والماث</small>
         </div>
 
         <div style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>مؤشر الإتقان ورضا الأسر</span>
-          <h3 style={{ fontSize: '20px', color: 'var(--green)' }}>غير متاح</h3>
-          <small style={{ color: 'var(--green)', fontWeight: 700, fontSize: '11.5px' }}>لا توجد نتائج فعلية بعد</small>
+          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>فريق العمل</span>
+          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{staffLoading ? '...' : staffMembers.length}</h3>
+          <small style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>
+            {staffMembers.length === 0 ? 'لا يوجد أعضاء بعد' : 'من user_roles'}
+          </small>
         </div>
       </div>
 
       <section style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <span style={{ color: '#1e3a8a', fontSize: '13px' }}>هذه لوحة تطوير محلية؛ بيانات الطلاب والطاقم والاشتراكات ليست سجلات تشغيلية.</span>
+        <span style={{ color: '#1e3a8a', fontSize: '13px' }}>
+          {supabase ? 'متصل بـ Supabase — البيانات أعلاه حقيقية من قاعدة البيانات.' : 'غير متصل بـ Supabase — البيانات محلية فقط.'}
+        </span>
         <button className="btn-secondary" disabled={sampleStudents.length > 0} onClick={seedSampleStudents}>
           {sampleStudents.length ? 'تم تحميل البيانات التجريبية' : 'تحميل بيانات أسر تجريبية'}
         </button>
@@ -695,6 +745,24 @@ export default function AdminDashboard() {
             </button>
           </div>
 
+          {staffLoading && (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontWeight: 700 }}>
+              جارٍ تحميل فريق العمل من Supabase…
+            </div>
+          )}
+
+          {!staffLoading && staffMembers.length === 0 && (
+            <div style={{ padding: '40px', textAlign: 'center', background: '#f8fafc', borderRadius: '14px', border: '1px dashed var(--line)' }}>
+              <div style={{ fontSize: '32px', marginBottom: '8px' }}>👥</div>
+              <div style={{ fontWeight: 800, color: '#334155' }}>لا يوجد أعضاء فريق بعد</div>
+              <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '4px' }}>
+                الصلاحيات تُدار عبر جدول user_roles في Supabase.<br/>
+                أضف صفوفاً هناك لتظهر هنا تلقائياً.
+              </div>
+            </div>
+          )}
+
+          {!staffLoading && staffMembers.length > 0 && (
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', fontSize: '13.5px' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid var(--line)' }}>
@@ -735,6 +803,7 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       )}
 
