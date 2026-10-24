@@ -3,6 +3,7 @@
  * /admin/grades
  */
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import './CurriculumAdmin.css';
 
@@ -15,6 +16,7 @@ const STAGES = [
 
 export default function GradesPanel() {
   const [grades, setGrades] = useState([]);
+  const [subjectCounts, setSubjectCounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -23,6 +25,7 @@ export default function GradesPanel() {
 
   useEffect(() => {
     fetchGrades();
+    fetchSubjectCounts();
   }, []);
 
   async function fetchGrades() {
@@ -38,6 +41,20 @@ export default function GradesPanel() {
       setGrades(data || []);
     }
     setLoading(false);
+  }
+
+  async function fetchSubjectCounts() {
+    const { data } = await supabase
+      .from('curriculum_subjects')
+      .select('grade_id');
+    
+    if (data) {
+      const counts = {};
+      data.forEach(s => {
+        counts[s.grade_id] = (counts[s.grade_id] || 0) + 1;
+      });
+      setSubjectCounts(counts);
+    }
   }
 
   function startEdit(grade) {
@@ -145,6 +162,15 @@ export default function GradesPanel() {
 
   return (
     <div className="curriculum-panel">
+      {/* Navigation Bar */}
+      <nav className="curriculum-nav">
+        <span className="nav-active">📚 الصفوف</span>
+        <span className="nav-arrow">→</span>
+        <Link to="/admin/subjects">المواد</Link>
+        <span className="nav-arrow">→</span>
+        <Link to="/admin/lessons">الدروس</Link>
+      </nav>
+
       <div className="curriculum-header">
         <h2>📚 إدارة الصفوف الدراسية</h2>
         <button className="btn-primary" onClick={startNew}>
@@ -160,6 +186,7 @@ export default function GradesPanel() {
               <th>العنوان</th>
               <th>المرحلة</th>
               <th>الترتيب</th>
+              <th>المواد</th>
               <th>الحالة</th>
               <th>الإجراءات</th>
             </tr>
@@ -264,6 +291,11 @@ export default function GradesPanel() {
                     <td>{grade.title}</td>
                     <td>{STAGES.find(s => s.id === grade.stage)?.label || grade.stage}</td>
                     <td>{grade.sort_order}</td>
+                    <td>
+                      <Link to={`/admin/subjects?grade=${grade.id}`} className="lessons-link">
+                        {subjectCounts[grade.id] || 0} مادة →
+                      </Link>
+                    </td>
                     <td>
                       <button 
                         className={`badge ${grade.published ? 'badge-success' : 'badge-muted'}`}

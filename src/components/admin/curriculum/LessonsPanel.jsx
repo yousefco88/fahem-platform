@@ -133,6 +133,15 @@ export default function LessonsPanel() {
 
   return (
     <div className="curriculum-panel">
+      {/* Navigation Bar */}
+      <nav className="curriculum-nav">
+        <Link to="/admin/grades">الصفوف</Link>
+        <span className="nav-arrow">→</span>
+        <Link to="/admin/subjects">المواد</Link>
+        <span className="nav-arrow">→</span>
+        <span className="nav-active">📝 الدروس</span>
+      </nav>
+
       <div className="curriculum-header">
         <h2>
           📝 إدارة الدروس

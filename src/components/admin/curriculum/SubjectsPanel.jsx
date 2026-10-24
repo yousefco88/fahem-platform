@@ -171,6 +171,15 @@ export default function SubjectsPanel() {
 
   return (
     <div className="curriculum-panel">
+      {/* Navigation Bar */}
+      <nav className="curriculum-nav">
+        <Link to="/admin/grades">الصفوف</Link>
+        <span className="nav-arrow">→</span>
+        <span className="nav-active">📚 المواد</span>
+        <span className="nav-arrow">→</span>
+        <Link to="/admin/lessons">الدروس</Link>
+      </nav>
+
       <div className="curriculum-header">
         <h2>📚 إدارة المواد الدراسية</h2>
         <div className="header-actions">

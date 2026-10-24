@@ -142,11 +142,19 @@ export default function LessonEditor() {
 
   return (
     <div className="lesson-editor">
+      {/* Navigation Bar */}
+      <nav className="curriculum-nav">
+        <Link to="/admin/grades">الصفوف</Link>
+        <span className="nav-arrow">→</span>
+        <Link to="/admin/subjects">المواد</Link>
+        <span className="nav-arrow">→</span>
+        <Link to={`/admin/lessons?subject=${form.subject_key}`}>الدروس</Link>
+        <span className="nav-arrow">→</span>
+        <span className="nav-active">✏️ {form.title || id}</span>
+      </nav>
+
       <div className="editor-header">
         <div className="editor-title">
-          <Link to={`/admin/lessons?subject=${form.subject_key}`} className="back-link">
-            ← العودة للدروس
-          </Link>
           <h2>
             {currentSubject?.icon} تعديل: {form.title || id}
           </h2>
