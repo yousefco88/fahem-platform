@@ -586,7 +586,8 @@ export function AppProvider({ children }) {
     persistLearningRecord(childId, lessonId, 'completed');
 
     // 🔥 Update streak & XP in Supabase (fire-and-forget, don't block UI)
-    supabase.rpc('update_child_streak', { p_child_id: childId, p_xp_earned: 10 })
+    const cloudChildId = childCloudIds[childId];
+    if (supabase && cloudChildId) supabase.rpc('update_child_streak', { p_child_id: cloudChildId, p_xp_earned: 10 })
       .then(({ data, error }) => {
         if (error) console.warn('Streak update failed:', error.message);
         else if (data) {
