@@ -293,7 +293,7 @@ export default function EmbassyExamSimulator() {
               <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue)', marginTop: '4px' }}>{activeChild.name}</div>
               <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '2px' }}>{activeChild.grade}</div>
               <div style={{ fontSize: '11px', background: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', marginTop: '10px', color: '#334155' }}>
-                رقم الجلوس التجريبي: <strong>EG-2026-1045</strong>
+                محاكاة تدريبية — ليست رقم جلوس رسمياً
               </div>
             </div>
           </div>

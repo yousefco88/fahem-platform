@@ -73,6 +73,13 @@ export default function AdminDashboard() {
       ? 'تم حفظ الجدول على Supabase ✓'
       : `الحفظ المحلي سارٍ، لكن تعذر الحفظ السحابي: ${res.reason}`);
   };
+  // المعلمون المتاحون لإسناد الحصص (الإدارة فقط تقرأ profiles)
+  const [teachers, setTeachers] = useState([]);
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.from('profiles').select('id, full_name').eq('role', 'teacher')
+      .then(({ data }) => setTeachers(data || []));
+  }, []);
   const [selectedSubjectId, setSelectedSubjectId] = useState('arabic');
   const [selectedLessonId, setSelectedLessonId] = useState(() => curriculumData.arabic.lessons?.find(lesson => lesson.id === 'baa')?.id || curriculumData.arabic.lessons?.[0]?.id || '');
 
@@ -386,13 +393,8 @@ export default function AdminDashboard() {
   }, []);
 
   // Audit Log items
-  const auditLogs = [
-    { time: 'مثال', user: 'حساب تجريبي', action: 'مثال توضيحي: تعديل محتوى', ip: 'غير متاح', badge: 'مثال' },
-    { time: 'مثال', user: 'حساب تجريبي', action: 'مثال توضيحي: جدولة حصة', ip: 'غير متاح', badge: 'مثال' },
-    { time: 'مثال', user: 'حساب تجريبي', action: 'مثال توضيحي: إرسال إشعار', ip: 'غير متاح', badge: 'مثال' },
-    { time: 'مثال', user: 'نظام تجريبي', action: 'لا توجد مدفوعات حقيقية؛ هذا صف تجريبي', ip: 'غير متاح', badge: 'مثال' },
-    { time: 'مثال', user: 'حساب تجريبي', action: 'لا يوجد نظام تدقيق أو مراقبة متصل', ip: 'غير متاح', badge: 'مثال' }
-  ];
+  // لا يوجد نظام تدقيق متصل؛ لا نعرض سجلاً مختلقاً
+  const auditLogs = [];
 
   return (
     <div style={{ maxWidth: '1400px', margin: '24px auto', padding: '0 24px', width: '100%' }}>
@@ -803,7 +805,7 @@ export default function AdminDashboard() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', color: '#475569' }}>
-                    {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', ''].map(h => (
+                    {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', 'المعلم', ''].map(h => (
                       <th key={h} style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid var(--line)' }}>{h}</th>
                     ))}
                   </tr>
@@ -835,6 +837,12 @@ export default function AdminDashboard() {
                         <td style={{ padding: '8px' }}>
                           <select value={slot.type || 'lesson'} onChange={e => updateSlot(slot.id, 'type', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                             {Object.entries(SLOT_TYPES).map(([id, t]) => <option key={id} value={id}>{t.icon} {t.label}</option>)}
+                          </select>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <select aria-label="المعلم" value={slot.teacherId || ''} onChange={e => updateSlot(slot.id, 'teacherId', e.target.value || null)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '150px' }}>
+                            <option value="">— بدون —</option>
+                            {teachers.map(t => <option key={t.id} value={t.id}>{t.full_name || t.id.slice(0, 8)}</option>)}
                           </select>
                         </td>
                         <td style={{ padding: '8px' }}>
@@ -1055,17 +1063,20 @@ export default function AdminDashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>سجل التدقيق التاريخي والرقابة التربوية (Audit Trail)</h3>
-              <p style={{ fontSize: '13px', color: 'var(--muted)' }}>أمثلة واجهة توضيحية فقط؛ لا يوجد سجل تدقيق فعلي في النسخة المحلية.</p>
+              <p style={{ fontSize: '13px', color: 'var(--muted)' }}>لا يوجد نظام تدقيق متصل بعد.</p>
             </div>
             <button
               style={{ background: '#0284c7', color: 'white', padding: '8px 16px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: '12.5px', cursor: 'pointer' }}
-              onClick={() => triggerToast('تصدير سجل التدقيق غير متاح؛ السجل المعروض تجريبي وغير محفوظ.')}
+              onClick={() => triggerToast('تصدير سجل التدقيق غير متاح؛ لا يوجد سجل تدقيق ليُصدَّر.')}
             >
               تصدير السجل (غير متاح) 📊
             </button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {auditLogs.length === 0 && (
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px' }}>لا توجد سجلات تدقيق — لم يُربط نظام تدقيق بعد.</div>
+            )}
             {auditLogs.map((log, idx) => (
               <div
                 key={idx}

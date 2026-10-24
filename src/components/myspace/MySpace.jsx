@@ -161,8 +161,11 @@ function PersonalSettings() {
     e.preventDefault();
     if (!supabase || !name.trim()) return;
     setBusy(true);
-    const { error } = await supabase.from('profiles').update({ full_name: name.trim() }).eq('id', user.id);
-    setMsg(error ? `تعذر الحفظ: ${error.message}` : 'تم حفظ الاسم. سيظهر بعد إعادة التحميل.');
+    const clean = name.trim();
+    const { error } = await supabase.from('profiles').update({ full_name: clean }).eq('id', user.id);
+    // parent_profiles مصدر اسم لوحة ولي الأمر؛ لا يُحدَّث إلا إن كان للمستخدم صف فيه
+    const { error: pe } = error ? { error: null } : await supabase.from('parent_profiles').update({ full_name: clean }).eq('id', user.id);
+    setMsg(error ? `تعذر الحفظ: ${error.message}` : pe ? `حُفظ الاسم في الحساب، وتعذر تحديث ملف ولي الأمر: ${pe.message}` : 'تم حفظ الاسم. سيظهر بعد إعادة التحميل.');
     setBusy(false);
   };
   const resetPassword = async () => {

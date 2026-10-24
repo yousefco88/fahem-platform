@@ -161,14 +161,15 @@ export function AppProvider({ children }) {
     let cancelled = false;
     supabase
       .from('schedule_slots')
-      .select('id, day, time, subject_id, lesson_ref, slot_type')
+      .select('id, day, time, subject_id, lesson_ref, slot_type, teacher_id')
       .order('day', { ascending: true })
       .order('time', { ascending: true })
       .then(({ data, error }) => {
         if (cancelled || error || !Array.isArray(data) || data.length === 0) return;
         setScheduleData(data.map(r => ({
           id: r.id, day: r.day, time: r.time,
-          subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson'
+          subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson',
+          teacherId: r.teacher_id || null
         })));
       });
     return () => { cancelled = true; };
@@ -269,7 +270,8 @@ export function AppProvider({ children }) {
     if (!supabase) return { ok: false, reason: 'Supabase غير مهيأ على هذا الجهاز' };
     const rows = slots.map(s => ({
       id: s.id, day: s.day, time: s.time,
-      subject_id: s.subjectId, lesson_ref: s.lessonRef || 'next', slot_type: s.type || 'lesson'
+      subject_id: s.subjectId, lesson_ref: s.lessonRef || 'next', slot_type: s.type || 'lesson',
+      teacher_id: s.teacherId || null
     }));
     const { error: delError } = await supabase.from('schedule_slots').delete().gte('day', 0);
     if (delError) return { ok: false, reason: delError.message };

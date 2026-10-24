@@ -139,38 +139,31 @@ export default function AnalyticsDashboard() {
     setLoading(true);
     
     try {
-      // Fetch families count
+      // أرقام حقيقية فقط من الجداول الموجودة؛ الغياب يظهر صفراً لا رقماً مختلقاً
       const { count: familiesCount } = await supabase
-        .from('families')
-        .select('*', { count: 'exact', head: true });
+        .from('parent_profiles').select('*', { count: 'exact', head: true });
+      const { data: children } = await supabase.from('children').select('id, grade');
+      const { data: streaks } = await supabase.from('child_streaks').select('current_streak, xp_total');
+      const { data: subjects } = await supabase.from('curriculum_subjects').select('key, title');
+      const { data: lessons } = await supabase.from('curriculum_lessons').select('id, subject_key');
+      const { data: records } = await supabase.from('learning_records').select('child_id, lesson_id, status, score, updated_at');
 
-      // Fetch children
-      const { data: children } = await supabase
-        .from('children')
-        .select('id, grade, current_streak, total_xp');
-
-      // Fetch subjects
-      const { data: subjects } = await supabase
-        .from('curriculum_subjects')
-        .select('id, name_ar');
-
-      // Calculate stats
       const totalChildren = children?.length || 0;
-      const activeStreaks = children?.filter(c => c.current_streak > 0).length || 0;
-      const avgXP = totalChildren > 0 
-        ? Math.round(children.reduce((sum, c) => sum + (c.total_xp || 0), 0) / totalChildren)
+      const activeStreaks = (streaks || []).filter(s => s.current_streak > 0).length;
+      const avgXP = (streaks || []).length > 0
+        ? Math.round(streaks.reduce((sum, s) => sum + (s.xp_total || 0), 0) / streaks.length)
         : 0;
+      const doneRecords = (records || []).filter(r => r.status === 'completed');
 
       setStats({
         totalFamilies: familiesCount || 0,
         totalChildren,
-        totalLessons: subjects?.length || 0,
+        totalLessons: lessons?.length || 0,
         activeStreaks,
-        completionRate: totalChildren > 0 ? Math.round((activeStreaks / totalChildren) * 100) : 0,
+        completionRate: (records || []).length > 0 ? Math.round((doneRecords.length / records.length) * 100) : 0,
         avgXP
       });
 
-      // Grade distribution
       const gradeCount = {};
       children?.forEach(c => {
         const grade = c.grade || 'غير محدد';
@@ -178,34 +171,34 @@ export default function AnalyticsDashboard() {
       });
       setGradeData(
         Object.entries(gradeCount)
-          .map(([label, value]) => ({ label: `الصف ${label}`, value }))
+          .map(([label, value]) => ({ label, value }))
           .sort((a, b) => b.value - a.value)
       );
 
-      // Subject data (mock engagement)
+      // الدروس المكتملة لكل مادة (من learning_records الفعلية)
+      const subjectOfLesson = Object.fromEntries((lessons || []).map(l => [l.id, l.subject_key]));
+      const perSubject = {};
+      doneRecords.forEach(r => {
+        const k = subjectOfLesson[r.lesson_id];
+        if (k) perSubject[k] = (perSubject[k] || 0) + 1;
+      });
       setSubjectData(
-        (subjects || []).slice(0, 5).map(s => ({
-          label: s.name_ar,
-          value: Math.floor(Math.random() * 50) + 10 // Placeholder
-        }))
+        (subjects || [])
+          .map(s => ({ label: s.title, value: perSubject[s.key] || 0 }))
+          .filter(s => s.value > 0)
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 5)
       );
 
-      // Recent activities (from lesson_progress)
-      const { data: progress } = await supabase
-        .from('lesson_progress')
-        .select('created_at, score, children(name)')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
       setActivities(
-        (progress || []).map(p => ({
-          icon: p.score >= 80 ? '⭐' : '📚',
-          text: `${p.children?.name || 'طالب'} أكمل درساً بنتيجة ${p.score}%`,
-          time: new Date(p.created_at).toLocaleDateString('ar-SA', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          })
-        }))
+        [...doneRecords]
+          .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
+          .slice(0, 10)
+          .map(p => ({
+            icon: p.score >= 80 ? '⭐' : '📚',
+            text: p.score != null ? `طالب أكمل درساً بنتيجة ${p.score}%` : 'طالب أكمل درساً',
+            time: new Date(p.updated_at).toLocaleDateString('ar-SA')
+          }))
       );
 
     } catch (err) {
