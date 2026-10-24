@@ -315,6 +315,12 @@ export default function ParentDashboard() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <button className="tag-badge" style={{ background: '#f0fdf4', color: '#166534', cursor: 'pointer' }} onClick={() => setCurrentScreen('ai-tutor')}>
+              🤖 المعلم الذكي
+            </button>
+            <button className="tag-badge" style={{ background: '#fef3c7', color: '#92400e', cursor: 'pointer' }} onClick={() => setCurrentScreen('lessons')}>
+              📹 الدروس المسجلة
+            </button>
             <button className="tag-badge info" onClick={() => setCurrentScreen('pricing')}>
               📚 الوصول التجريبي المجاني
             </button>

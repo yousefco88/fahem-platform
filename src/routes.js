@@ -8,7 +8,10 @@ export const SCREEN_PATHS = {
   exam: '/exam',
   onboarding: '/onboarding',
   pricing: '/pricing',
-  account: '/account'
+  account: '/account',
+  'ai-tutor': '/ai-tutor',
+  lessons: '/lessons',
+  analytics: '/analytics'
 };
 
 export const PATH_TO_SCREEN = Object.fromEntries(
@@ -45,5 +48,8 @@ export const SCREEN_META = {
   child: { title: 'مساحة الطفل — منصة فاهم' },
   teacher: { title: 'مساحة المعلم — منصة فاهم' },
   admin: { title: 'الإدارة — منصة فاهم' },
-  account: { title: 'حسابي — منصة فاهم' }
+  account: { title: 'حسابي — منصة فاهم' },
+  'ai-tutor': { title: 'المعلم الذكي — منصة فاهم', description: 'مساعد ذكي يساعد الطفل في فهم الدروس والإجابة على الأسئلة.' },
+  lessons: { title: 'الدروس المسجلة — منصة فاهم', description: 'مكتبة الدروس المسجلة لجميع المواد والمراحل.' },
+  analytics: { title: 'لوحة التحليلات — منصة فاهم', description: 'إحصائيات وتحليلات أداء المنصة والطلاب.' }
 };
