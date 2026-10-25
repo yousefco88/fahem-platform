@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { getNavForRole, resolveNavRole } from '../navigation/navConfig';
 
 export default function BottomNav() {
-  const { currentScreen, setCurrentScreen, setShowLiveModal } = useApp();
+  const { currentScreen, setCurrentScreen } = useApp();
   const { lang, setLang, languages } = useLanguage();
   const { isDark, toggle: toggleTheme } = useTheme();
 
@@ -20,9 +20,6 @@ export default function BottomNav() {
   const handleNavClick = (id) => {
     if (id === 'more') {
       setShowMore(!showMore);
-    } else if (id === 'live') {
-      setShowLiveModal(true);
-      setShowMore(false);
     } else {
       setCurrentScreen(id);
       setShowMore(false);

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
 import { launchConfetti } from '../utils/confetti';
 import { CURRICULUM_DATA } from '../data/curriculumData';
-import { DEFAULT_WEEKLY_SCHEDULE } from '../data/scheduleData';
+import { deviceTimezone, isValidTimezone } from '../utils/liveWindow';
 import { normalizeCurriculum } from '../utils/todayPlan';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
@@ -78,10 +78,6 @@ export function AppProvider({ children }) {
     return localStorage.getItem('fahem_country_text') || 'المملكة العربية السعودية (GMT+3)';
   });
 
-  const [liveClassTimeText, setLiveClassTimeText] = useState(() => {
-    return localStorage.getItem('fahem_live_time') || 'اليوم 7:00 م (بتوقيتك المحلي)';
-  });
-
   // Children Profiles
   const [childrenList, setChildrenList] = useState(() => {
     try {
@@ -140,40 +136,28 @@ export function AppProvider({ children }) {
     }
   });
 
-  // الجدول الأسبوعي — محلي أولاً (fahem_schedule) مع fallback للجدول الافتراضي
-  const [scheduleData, setScheduleData] = useState(() => {
-    try {
-      const saved = localStorage.getItem('fahem_schedule');
-      const parsed = saved ? JSON.parse(saved) : null;
-      return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_WEEKLY_SCHEDULE;
-    } catch {
-      return DEFAULT_WEEKLY_SCHEDULE;
-    }
+  const { user } = useAuth();
+
+  // الجدول لكل ابن (سحابي فقط): كل الخانات التي تسمح لك بها سياسات RLS
+  // ولي الأمر → خانات أبنائه، المعلم → خانات طلابه/حصصه، الإدارة → الكل. لا جدول افتراضي مشترك.
+  const [allSlots, setAllSlots] = useState([]);
+  const [slotsLoaded, setSlotsLoaded] = useState(false);
+  const mapSlotRow = (r) => ({
+    id: r.id, childId: r.child_id, day: r.day, time: r.time,
+    subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson',
+    teacherId: r.teacher_id || null, meetingUrl: r.meeting_url || null
   });
-
-  useEffect(() => {
-    try { localStorage.setItem('fahem_schedule', JSON.stringify(scheduleData)); } catch { /* تجاهل امتلاء التخزين */ }
-  }, [scheduleData]);
-
-  // المرحلة ب: قراءة الجدول من Supabase إن وُجدت صفوف (وإلا يبقى المحلي)
-  useEffect(() => {
-    if (!supabase) return;
-    let cancelled = false;
-    supabase
+  const reloadSlots = async () => {
+    if (!supabase || !user?.id) { setAllSlots([]); setSlotsLoaded(true); return; }
+    const { data, error } = await supabase
       .from('schedule_slots')
-      .select('id, day, time, subject_id, lesson_ref, slot_type, teacher_id')
+      .select('id, child_id, day, time, subject_id, lesson_ref, slot_type, teacher_id, meeting_url')
       .order('day', { ascending: true })
-      .order('time', { ascending: true })
-      .then(({ data, error }) => {
-        if (cancelled || error || !Array.isArray(data) || data.length === 0) return;
-        setScheduleData(data.map(r => ({
-          id: r.id, day: r.day, time: r.time,
-          subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson',
-          teacherId: r.teacher_id || null
-        })));
-      });
-    return () => { cancelled = true; };
-  }, []);
+      .order('time', { ascending: true });
+    if (error) { console.warn('تعذر تحميل الجدول:', error.message); setSlotsLoaded(true); return; }
+    setAllSlots((data || []).map(mapSlotRow));
+    setSlotsLoaded(true);
+  };
 
   // المرحلة ج: قراءة المنهج من Supabase (للدروس المنشورة فقط)
   useEffect(() => {
@@ -300,22 +284,41 @@ export function AppProvider({ children }) {
     return () => { cancelled = true; };
   }, []);
 
-  // حفظ الجدول إلى Supabase (يتطلب جلسة staff بحكم سياسات RLS)
-  const saveScheduleToCloud = async (slots) => {
+  // حفظ جدول طفل واحد (إدارة فقط بحكم RLS). لا نلمس meeting_url: هو للمعلم.
+  const saveScheduleToCloud = async (childId, slots) => {
     if (!supabase) return { ok: false, reason: 'Supabase غير مهيأ على هذا الجهاز' };
+    if (!childId) return { ok: false, reason: 'اختر الطفل أولاً' };
+    const dbId = (id) => (String(id).startsWith(`${childId}:`) ? String(id) : `${childId}:${id}`);
     const rows = slots.map(s => ({
-      id: s.id, day: s.day, time: s.time,
+      id: dbId(s.id), child_id: childId, day: s.day, time: s.time,
       subject_id: s.subjectId, lesson_ref: s.lessonRef || 'next', slot_type: s.type || 'lesson',
       teacher_id: s.teacherId || null
     }));
-    const { error: delError } = await supabase.from('schedule_slots').delete().gte('day', 0);
-    if (delError) return { ok: false, reason: delError.message };
     if (rows.length) {
-      const { error: insError } = await supabase.from('schedule_slots').insert(rows);
-      if (insError) return { ok: false, reason: insError.message };
+      const { error: upError } = await supabase.from('schedule_slots').upsert(rows, { onConflict: 'id' });
+      if (upError) return { ok: false, reason: upError.message };
     }
+    const { data: existing, error: selError } = await supabase.from('schedule_slots').select('id').eq('child_id', childId);
+    if (selError) return { ok: false, reason: selError.message };
+    const keep = new Set(rows.map(r => r.id));
+    const stale = (existing || []).map(r => r.id).filter(id => !keep.has(id));
+    if (stale.length) {
+      const { error: delError } = await supabase.from('schedule_slots').delete().in('id', stale);
+      if (delError) return { ok: false, reason: delError.message };
+    }
+    await reloadSlots();
     return { ok: true };
   };
+
+  // المعلم يضع رابط الاجتماع لحصته (دالة SECURITY DEFINER تتحقق من الملكية)
+  const setSlotMeetingUrl = async (slotId, url) => {
+    if (!supabase) return { ok: false, reason: 'Supabase غير مهيأ' };
+    const { error } = await supabase.rpc('set_slot_meeting_url', { p_slot_id: slotId, p_url: url || null });
+    if (error) return { ok: false, reason: error.code === '22023' ? 'الرابط يجب أن يبدأ بـ https://' : error.code === '42501' ? 'هذه الحصة غير مسندة إليك' : error.message };
+    await reloadSlots();
+    return { ok: true };
+  };
+
   const [curriculumDrafts, setCurriculumDrafts] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('fahem_curriculum_drafts') || '{}');
@@ -351,7 +354,6 @@ export function AppProvider({ children }) {
   const activeChild = childrenList.find(c => c.id === selectedChildId) || childrenList[0];
 
   // ========== المزامنة السحابية (المرحلة 3) ==========
-  const { user } = useAuth();
 
   // المنهج من قاعدة البيانات (المواد + الدروس المنشورة بترتيبها) — fallback للمحلي عند الفشل
   const [curriculumSource, setCurriculumSource] = useState('local');
@@ -440,6 +442,33 @@ export function AppProvider({ children }) {
     return () => { cancelled = true; };
   }, [user?.id]);
 
+  // تحميل الجدول عند تغيّر المستخدم
+  useEffect(() => { setSlotsLoaded(false); reloadSlots(); }, [user?.id]);
+
+  // منطقة ولي الأمر الزمنية (تُضبط من «مساحتي»؛ بدونها نستعمل منطقة الجهاز)
+  const [parentTimezone, setParentTimezoneState] = useState(null);
+  useEffect(() => {
+    if (!supabase || !user?.id) { setParentTimezoneState(null); return; }
+    supabase.from('parent_profiles').select('timezone').eq('id', user.id).maybeSingle()
+      .then(({ data }) => setParentTimezoneState(isValidTimezone(data?.timezone) ? data.timezone : null));
+  }, [user?.id]);
+  const setParentTimezone = async (tz) => {
+    if (!isValidTimezone(tz)) return { ok: false, reason: 'منطقة زمنية غير صالحة' };
+    if (!supabase || !user?.id) return { ok: false, reason: 'سجّل الدخول أولاً' };
+    const { error } = await supabase.from('parent_profiles').update({ timezone: tz }).eq('id', user.id);
+    if (error) return { ok: false, reason: error.message };
+    setParentTimezoneState(tz);
+    return { ok: true };
+  };
+  const effectiveTimezone = parentTimezone || deviceTimezone();
+
+  // جدول الطفل النشط فقط (لكل ابن على حدة)
+  const activeChildCloudIdValue = childCloudIds[activeChild?.id] || null;
+  const scheduleData = React.useMemo(
+    () => allSlots.filter(s => s.childId && s.childId === activeChildCloudIdValue),
+    [allSlots, activeChildCloudIdValue]
+  );
+
   const persistLearningRecord = (childId, lessonId, status = 'started', score = null) => {
     const cloudChildId = childCloudIds[childId];
     if (!supabase || !cloudChildId || !lessonId) return; // بدون تسجيل دخول: التقدم محلي فقط
@@ -490,8 +519,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('fahem_country', country);
     localStorage.setItem('fahem_country_text', countryText);
-    localStorage.setItem('fahem_live_time', liveClassTimeText);
-  }, [country, countryText, liveClassTimeText]);
+  }, [country, countryText]);
 
   useEffect(() => {
     localStorage.setItem('fahem_children', JSON.stringify(childrenList));
@@ -727,12 +755,12 @@ export function AppProvider({ children }) {
     grade, setGrade,
     country, setCountry,
     countryText, setCountryText,
-    liveClassTimeText, setLiveClassTimeText,
     childrenList,
     activeChild,
     activeChildCloudId: childCloudIds[activeChild?.id] || null,
     learningRecords: learningRecords[activeChild?.id] || {},
-    scheduleData, setScheduleData, saveScheduleToCloud,
+    scheduleData, allSlots, slotsLoaded, reloadSlots, saveScheduleToCloud, setSlotMeetingUrl,
+    parentTimezone, effectiveTimezone, setParentTimezone,
     curriculumSource,
     saveExamAttempt,
     studentsSeeded,

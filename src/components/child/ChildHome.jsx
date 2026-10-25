@@ -5,6 +5,7 @@ import { getTodayPlan, getContinueLesson } from '../../utils/todayPlan';
 import { getSubjectProgress } from '../../utils/childProgress';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { CHILD_SUBJECTS, CHILD_CATEGORIES, childPaths } from './childSubjects';
+import LiveJoin from '../LiveJoin';
 import StreakBadge from './StreakBadge';
 import useStreak from '../../hooks/useStreak';
 
@@ -13,7 +14,7 @@ export default function ChildHome() {
   const navigate = useNavigate();
   const {
     activeChild, activeChildCloudId, curriculumData, activeSubject, soundManager, triggerToast,
-    setShowLiveModal, setCurrentScreen, learningRecords, scheduleData
+    setCurrentScreen, learningRecords, scheduleData, effectiveTimezone, slotsLoaded
   } = useApp();
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -21,7 +22,7 @@ export default function ChildHome() {
   const streak = useStreak(activeChildCloudId);
 
   const masteredLessons = activeChild.masteredLessons || [];
-  const todayPlan = getTodayPlan({ schedule: scheduleData, curriculum: curriculumData, learningRecords, masteredLessons });
+  const todayPlan = getTodayPlan({ schedule: scheduleData, curriculum: curriculumData, learningRecords, masteredLessons, timezone: effectiveTimezone });
   const continueLesson = getContinueLesson(curriculumData, learningRecords, masteredLessons);
   const todayName = DAY_NAMES[new Date().getDay()];
   const currentSubjectObj = curriculumData[activeSubject] || curriculumData.arabic;
@@ -48,17 +49,6 @@ export default function ChildHome() {
         boxShadow: '0 20px 35px rgba(59, 130, 246, 0.25)', marginBottom: '28px'
       }}>
         <div>
-          <div style={{
-            background: 'rgba(255,255,255,0.2)', display: 'inline-flex', alignItems: 'center', gap: '8px',
-            padding: '4px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 800, marginBottom: '12px'
-          }}>
-            <span>🔴 الحصص المباشرة ستبدأ قريباً</span>
-            <button
-              style={{ background: 'white', color: 'var(--navy)', borderRadius: '50%', width: '22px', height: '22px', display: 'grid', placeItems: 'center', fontSize: '11px' }}
-              onClick={() => soundManager.speak('الحصص المباشرة ستبدأ قريباً')}
-              title="استمع للصوت"
-            >🔊</button>
-          </div>
           <h1 style={{ fontSize: '32px', marginBottom: '8px', fontWeight: 900 }}>
             جاهز نفهم ونلعب سوا يا {activeChild.name}؟ 🌟
           </h1>
@@ -66,16 +56,6 @@ export default function ChildHome() {
             كل مواد المنهج المصري (عربي، ماث، إنجليزي، ديسكفر، وأخلاق) موجودة في جزيرتك — اختر مادة وابدأ رحلتك.
           </p>
           <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <button
-              style={{
-                background: '#facc15', color: '#1e1b4b', fontSize: '18px', fontWeight: 900,
-                padding: '16px 32px', borderRadius: 'var(--radius-full)', display: 'inline-flex',
-                alignItems: 'center', gap: '12px', boxShadow: '0 10px 25px rgba(250, 204, 21, 0.4)'
-              }}
-              onClick={() => setShowLiveModal(true)}
-            >
-              <span>ادخل الحصة الحية مع المعلم</span><span>👋</span>
-            </button>
             {firstLesson && (
               <button
                 style={{
@@ -156,7 +136,9 @@ export default function ChildHome() {
         </h2>
         {todayPlan.length === 0 ? (
           <div style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '28px', textAlign: 'center', color: '#64748b', fontWeight: 700, fontSize: '15px' }}>
-            🌴 لا توجد حصص مجدولة اليوم — يوم راحة! يمكنك اختيار أي مادة بالأسفل.
+            {scheduleData.length === 0 && slotsLoaded
+              ? '📭 لم تُحدَّد خانات جدول لهذا الطفل بعد — ستضيفها الإدارة. يمكنك اختيار أي مادة بالأسفل.'
+              : '🌴 لا توجد حصص مجدولة اليوم — يوم راحة! يمكنك اختيار أي مادة بالأسفل.'}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
@@ -169,7 +151,7 @@ export default function ChildHome() {
                   borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#4338ca', background: '#e0e7ff', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.time}</span>
+                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#4338ca', background: '#e0e7ff', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.localTime || slot.time}</span>
                     <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#92400e' }}>{slotType.icon} {slotType.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -183,6 +165,7 @@ export default function ChildHome() {
                       </div>
                     </div>
                   </div>
+                  <LiveJoin slot={slot} />
                   {slot.lesson && (
                     <button
                       style={{

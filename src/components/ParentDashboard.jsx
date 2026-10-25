@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import { getChildStats } from '../utils/childProgress';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { isLessonDone } from '../utils/todayPlan';
 import { recordedSessions } from '../data/curriculumData';
 // Dynamic import for PDF (lazy load - reduces bundle)
@@ -105,7 +106,9 @@ export default function ParentDashboard() {
     }
   };
 
-  const calendarEvents = Array.isArray(curriculumData.expatExamCalendar) ? curriculumData.expatExamCalendar : [];
+  // تقويم الامتحانات من إعدادات الموقع (م4) — يحرره الطاقم من لوحة الإدارة
+  const { settings: siteSettings } = useSiteSettings();
+  const calendarEvents = Array.isArray(siteSettings.examCalendar?.events) ? siteSettings.examCalendar.events : [];
 
   return (
     <div className="parent-grid-layout">

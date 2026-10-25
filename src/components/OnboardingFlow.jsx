@@ -9,7 +9,6 @@ export default function OnboardingFlow() {
     addChild,
     country, setCountry,
     setCountryText,
-    setLiveClassTimeText,
     setCurrentScreen,
     triggerToast
   } = useApp();
@@ -85,7 +84,6 @@ export default function OnboardingFlow() {
     setGrade(formGrade);
     setCountry(formCountry);
     setCountryText(currentTz.label);
-    setLiveClassTimeText(currentTz.liveTime);
     const newChild = addChild(formChild, formGrade);
     if (!newChild) return;
 

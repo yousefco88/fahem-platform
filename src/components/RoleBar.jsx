@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getNavForRole, resolveNavRole, ROLE_LABELS } from '../navigation/navConfig';
 
 export default function RoleBar() {
-  const { currentScreen, setCurrentScreen, setShowLiveModal } = useApp();
+  const { currentScreen, setCurrentScreen } = useApp();
   const { user, role } = useAuth();
   const navRole = resolveNavRole(user, role);
   const nav = getNavForRole(navRole);
@@ -13,7 +13,7 @@ export default function RoleBar() {
     ...(nav.more.length ? [{ label: 'المزيد', items: nav.more }] : [])
   ];
   const ALL_ITEMS = NAV_GROUPS.flatMap(g => g.items);
-  const handleItem = (id) => (id === 'live' ? setShowLiveModal(true) : setCurrentScreen(id));
+  const handleItem = (id) => setCurrentScreen(id);
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('fahem_rolebar_collapsed') === '1');
 
   const toggleCollapsed = () => {
@@ -40,9 +40,6 @@ export default function RoleBar() {
         )}
 
         <div className="role-bar-actions">
-          <button className="role-pill-btn live" onClick={() => setShowLiveModal(true)}>
-            🔴 الفصل الحي
-          </button>
           <button
             className="role-bar-toggle"
             onClick={toggleCollapsed}

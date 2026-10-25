@@ -1,0 +1,27 @@
+// مناطق زمنية شائعة لأسر الجاليات — يختارها ولي الأمر من «مساحتي».
+export const TIMEZONE_OPTIONS = [
+  { id: 'Africa/Cairo', label: 'مصر — القاهرة' },
+  { id: 'Asia/Riyadh', label: 'السعودية — الرياض' },
+  { id: 'Asia/Dubai', label: 'الإمارات — دبي' },
+  { id: 'Asia/Kuwait', label: 'الكويت' },
+  { id: 'Asia/Qatar', label: 'قطر — الدوحة' },
+  { id: 'Asia/Bahrain', label: 'البحرين' },
+  { id: 'Asia/Muscat', label: 'عُمان — مسقط' },
+  { id: 'Asia/Amman', label: 'الأردن — عمّان' },
+  { id: 'Asia/Beirut', label: 'لبنان — بيروت' },
+  { id: 'Asia/Baghdad', label: 'العراق — بغداد' },
+  { id: 'Africa/Tripoli', label: 'ليبيا — طرابلس' },
+  { id: 'Africa/Tunis', label: 'تونس' },
+  { id: 'Africa/Algiers', label: 'الجزائر' },
+  { id: 'Africa/Casablanca', label: 'المغرب — الدار البيضاء' },
+  { id: 'Europe/Istanbul', label: 'تركيا — إسطنبول' },
+  { id: 'Europe/London', label: 'بريطانيا — لندن' },
+  { id: 'Europe/Paris', label: 'فرنسا — باريس' },
+  { id: 'Europe/Berlin', label: 'ألمانيا — برلين' },
+  { id: 'America/New_York', label: 'أمريكا — نيويورك' },
+  { id: 'America/Chicago', label: 'أمريكا — شيكاغو' },
+  { id: 'America/Los_Angeles', label: 'أمريكا — لوس أنجلوس' },
+  { id: 'America/Toronto', label: 'كندا — تورنتو' },
+  { id: 'Australia/Sydney', label: 'أستراليا — سيدني' },
+  { id: 'Asia/Kuala_Lumpur', label: 'ماليزيا — كوالالمبور' }
+];

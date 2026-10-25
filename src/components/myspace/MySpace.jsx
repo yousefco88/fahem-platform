@@ -4,6 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { getChildStats } from '../../utils/childProgress';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
+import { slotsForToday, timeInTz } from '../../utils/liveWindow';
+import { TIMEZONE_OPTIONS } from '../../utils/timezones';
+import LiveJoin from '../LiveJoin';
 import { ROLE_LABELS, resolveNavRole } from '../../navigation/navConfig';
 import ParentAccount from '../ParentAccount';
 import TeacherRoster from './TeacherRoster';
@@ -26,20 +29,46 @@ function Stat({ label, value }) {
 }
 
 function TodaySchedule({ slots, curriculumData }) {
-  const todayIdx = new Date().getDay();
-  const today = (slots || []).filter(s => s.day === todayIdx).sort((a, b) => a.time.localeCompare(b.time));
+  const { effectiveTimezone } = useApp();
+  const today = slotsForToday(slots || [], effectiveTimezone);
   return (
     <section style={card}>
-      <h2 style={h2}>📅 جدول اليوم — {DAY_NAMES[todayIdx]}</h2>
+      <h2 style={h2}>📅 جدول اليوم — {DAY_NAMES[new Date().getDay()]}</h2>
       {today.length === 0 ? (
-        <p style={muted}>لا توجد خانات في الجدول لهذا اليوم.</p>
+        <p style={muted}>{(slots || []).length === 0 ? 'لم تُحدَّد خانات جدول بعد.' : 'لا توجد خانات في الجدول لهذا اليوم.'}</p>
       ) : today.map(s => (
-        <div key={s.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--line)', fontSize: 14, color: 'var(--navy)' }}>
-          <strong style={{ direction: 'ltr' }}>{s.time}</strong>
-          <span>{SLOT_TYPES[s.type]?.icon} {curriculumData?.[s.subjectId]?.title || s.subjectId}</span>
-          <span style={{ ...muted, marginInlineStart: 'auto' }}>{SLOT_TYPES[s.type]?.label}</span>
+        <div key={s.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--line)', fontSize: 14, color: 'var(--navy)' }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <strong style={{ direction: 'ltr' }}>{timeInTz(s.startsAt, effectiveTimezone)}</strong>
+            <span>{SLOT_TYPES[s.type]?.icon} {curriculumData?.[s.subjectId]?.title || s.subjectId}</span>
+            <span style={{ ...muted, marginInlineStart: 'auto' }}>{SLOT_TYPES[s.type]?.label}</span>
+          </div>
+          <div style={{ marginTop: s.type === 'live' ? 6 : 0 }}><LiveJoin slot={s} /></div>
         </div>
       ))}
+    </section>
+  );
+}
+
+function TimezoneCard() {
+  const { effectiveTimezone, parentTimezone, setParentTimezone } = useApp();
+  const [msg, setMsg] = useState('');
+  const options = TIMEZONE_OPTIONS.some(o => o.id === effectiveTimezone)
+    ? TIMEZONE_OPTIONS : [{ id: effectiveTimezone, label: `${effectiveTimezone} (من جهازك)` }, ...TIMEZONE_OPTIONS];
+  const change = async (e) => {
+    const r = await setParentTimezone(e.target.value);
+    setMsg(r.ok ? 'تم الحفظ — ستُعرض الحصص بهذا التوقيت.' : `تعذر الحفظ: ${r.reason}`);
+  };
+  return (
+    <section style={card}>
+      <h2 style={h2}>🌍 منطقتي الزمنية</h2>
+      <p style={muted}>تُحسب مواعيد الحصص وزر الانضمام بناءً على هذه المنطقة. الجدول يُكتب بتوقيت القاهرة ويُحوَّل لك تلقائياً.</p>
+      <select value={effectiveTimezone} onChange={change} aria-label="المنطقة الزمنية"
+        style={{ marginTop: 8, padding: '10px 12px', borderRadius: 10, border: '1px solid var(--line)', width: '100%', maxWidth: 360, font: 'inherit' }}>
+        {options.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
+      </select>
+      {!parentTimezone && <p style={{ ...muted, marginTop: 8 }}>لم تحدد منطقتك بعد — نستخدم منطقة جهازك مؤقتاً.</p>}
+      {msg && <p role="status" style={{ ...muted, marginTop: 8 }}>{msg}</p>}
     </section>
   );
 }
@@ -60,6 +89,7 @@ function ParentSpace({ go }) {
   return (
     <>
       <TodaySchedule slots={scheduleData} curriculumData={curriculumData} />
+      <TimezoneCard />
       <section style={card}>
         <h2 style={h2}>👧 أبنائي ({childrenList.length})</h2>
         {childrenList.length === 0 && <p style={muted}>لم تُضف ملفات أبناء بعد — أضفهم من قسم «إدارة ملفات الأبناء» أدناه.</p>}
@@ -103,18 +133,16 @@ function ParentSpace({ go }) {
   );
 }
 
-function TeacherSpace({ go, setShowLiveModal }) {
-  const { scheduleData, curriculumData } = useApp();
-  const liveToday = (scheduleData || []).filter(s => s.day === new Date().getDay() && s.type === 'live').length;
+function TeacherSpace({ go }) {
+  const { allSlots, curriculumData, effectiveTimezone } = useApp();
+  const liveToday = slotsForToday((allSlots || []).filter(s => s.type === 'live'), effectiveTimezone).length;
   return (
     <>
-      <TodaySchedule slots={scheduleData} curriculumData={curriculumData} />
       <section style={card}>
         <h2 style={h2}>🛠️ أدواتك</h2>
         <p style={muted}>حصص مباشرة مجدولة اليوم: <strong>{liveToday}</strong></p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button style={btnPrimary} onClick={() => go('teacher')}>مساحة المعلم</button>
-          <button style={btn} onClick={() => setShowLiveModal(true)}>🔴 الفصل الحي</button>
           <button style={btn} onClick={() => go('lessons')}>الدروس المسجلة</button>
         </div>
       </section>
@@ -193,7 +221,7 @@ function PersonalSettings() {
 
 export default function MySpace() {
   const { user, role, profile, loading } = useAuth();
-  const { setCurrentScreen, setShowLiveModal } = useApp();
+  const { setCurrentScreen } = useApp();
   const navRole = resolveNavRole(user, role);
 
   if (loading) return <main dir="rtl" style={{ padding: 40, textAlign: 'center', color: '#475569' }}>جارٍ التحقق من الجلسة…</main>;
@@ -220,7 +248,7 @@ export default function MySpace() {
 
       {navRole === 'parent' && <ParentSpace go={setCurrentScreen} />}
       {navRole === 'parent' && <SkillsReport />}
-      {navRole === 'teacher' && <TeacherSpace go={setCurrentScreen} setShowLiveModal={setShowLiveModal} />}
+      {navRole === 'teacher' && <TeacherSpace go={setCurrentScreen} />}
       {navRole === 'teacher' && <TeacherRoster />}
       {staff && <AdminSpace go={setCurrentScreen} isAdmin={navRole === 'admin'} />}
       {navRole === 'admin' && <AssignStudents />}

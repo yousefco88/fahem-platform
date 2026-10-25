@@ -12,7 +12,9 @@ const tabBtn = (on) => ({ padding: '8px 14px', borderRadius: 10, border: '1px so
 // طلاب المعلم = من أسندهم له المسؤول فقط (teacher_students). حصصه = schedule_slots.teacher_id.
 export default function TeacherRoster() {
   const { user } = useAuth();
-  const { curriculumData } = useApp();
+  const { curriculumData, setSlotMeetingUrl } = useApp();
+  const [urlDraft, setUrlDraft] = useState({});
+  const [urlMsg, setUrlMsg] = useState({});
   const [tab, setTab] = useState('students');
   const [students, setStudents] = useState(null);
   const [slots, setSlots] = useState(null);
@@ -36,7 +38,7 @@ export default function TeacherRoster() {
         (rec.data || []).forEach(r => { if (r.status === 'completed') done[r.child_id] = (done[r.child_id] || 0) + 1; });
         setStudents(kids.map(k => ({ ...k, completed: done[k.id] || 0 })));
       }
-      const sl = await supabase.from('schedule_slots').select('id, day, time, subject_id, slot_type')
+      const sl = await supabase.from('schedule_slots').select('id, child_id, day, time, subject_id, slot_type, meeting_url, children(name)')
         .eq('teacher_id', user.id).order('day').order('time');
       setSlots(sl.error ? [] : sl.data);
     })();
@@ -67,14 +69,38 @@ export default function TeacherRoster() {
           <h2 style={h2}>حصصي</h2>
           {slots === null && <p style={muted}>جارٍ التحميل…</p>}
           {slots?.length === 0 && <p style={muted}>لا توجد حصص مسندة إليك في الجدول.</p>}
-          {slots?.map(s => (
-            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)', fontSize: 14 }}>
-              <strong>{DAY_NAMES[s.day]}</strong>
-              <span style={{ direction: 'ltr' }}>{s.time}</span>
-              <span>{curriculumData?.[s.subject_id]?.title || s.subject_id}</span>
-              <span style={{ ...muted, marginInlineStart: 'auto' }}>{SLOT_TYPES[s.slot_type]?.label}</span>
-            </div>
-          ))}
+          {slots?.length > 0 && <p style={muted}>أوقات الحصص بتوقيت القاهرة. أضف رابط الاجتماع (Zoom / Meet / Teams) لكل حصة؛ يظهر للطالب داخل درسه قبل الموعد بـ 15 دقيقة.</p>}
+          {slots?.map(s => {
+            const draft = urlDraft[s.id] ?? s.meeting_url ?? '';
+            const save = async () => {
+              setUrlMsg(m => ({ ...m, [s.id]: '…' }));
+              const r = await setSlotMeetingUrl(s.id, draft.trim());
+              setUrlMsg(m => ({ ...m, [s.id]: r.ok ? 'تم الحفظ ✓' : r.reason }));
+              if (r.ok) setSlots(list => list.map(x => x.id === s.id ? { ...x, meeting_url: draft.trim() || null } : x));
+            };
+            return (
+              <div key={s.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)', fontSize: 14 }}>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <strong>{DAY_NAMES[s.day]}</strong>
+                  <span style={{ direction: 'ltr' }}>{s.time}</span>
+                  <span>{curriculumData?.[s.subject_id]?.title || s.subject_id}</span>
+                  <span>· {s.children?.name || 'طالب'}</span>
+                  <span style={{ ...muted, marginInlineStart: 'auto' }}>{SLOT_TYPES[s.slot_type]?.label}</span>
+                </div>
+                {s.slot_type === 'live' && (
+                  <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+                    <input
+                      type="url" inputMode="url" dir="ltr" placeholder="https://…" aria-label="رابط الاجتماع"
+                      value={draft} onChange={e => setUrlDraft(d => ({ ...d, [s.id]: e.target.value }))}
+                      style={{ flex: '1 1 220px', minWidth: 0, padding: '9px 10px', borderRadius: 10, border: '1px solid var(--line)' }}
+                    />
+                    <button style={tabBtn(true)} onClick={save}>حفظ الرابط</button>
+                    {urlMsg[s.id] && <span role="status" style={muted}>{urlMsg[s.id]}</span>}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </>
       )}
     </section>

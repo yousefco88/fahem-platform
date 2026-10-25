@@ -1,3 +1,5 @@
+import { slotsForToday, timeInTz } from './liveWindow.js';
+
 // =============================================
 // منطق «جدول اليوم» — دوال نقية قابلة للاختبار
 // الربط الخلفي: الجدول يشير إلى المادة (subjectId)
@@ -43,11 +45,14 @@ export function getNextLesson(subject, learningRecords = {}, masteredLessons = [
  * خطة اليوم: خانات الجدول لليوم الحالي مرتبة زمنياً،
  * وكل خانة مُحلّلة إلى (المادة + الدرس الفعلي).
  */
-export function getTodayPlan({ schedule = [], curriculum = {}, learningRecords = {}, masteredLessons = [], now = new Date() }) {
-  const day = now.getDay();
-  return schedule
-    .filter(s => s.day === day)
-    .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')))
+export function getTodayPlan({ schedule = [], curriculum = {}, learningRecords = {}, masteredLessons = [], now = new Date(), timezone = null }) {
+  // مع timezone: «اليوم» بمنطقة ولي الأمر (الخانة تُحوَّل من توقيت المنصة)؛ وإلا يوم الجهاز
+  const base = timezone
+    ? slotsForToday(schedule, timezone, now).map(s => ({ ...s, localTime: timeInTz(s.startsAt, timezone) }))
+    : schedule
+        .filter(s => s.day === now.getDay())
+        .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+  return base
     .map(slot => {
       const subject = curriculum[slot.subjectId] || null;
       let lesson = null;

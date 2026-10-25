@@ -1,5 +1,5 @@
 // مصدر واحد للتنقل حسب الدور — يستخدمه RoleBar (ويب) و BottomNav (جوال).
-// كل id هنا شاشة موجودة فعلاً في src/routes.js (أو 'live' = نافذة البث).
+// كل id هنا شاشة موجودة فعلاً في src/routes.js.
 // لا تضف شاشة غير مسجّلة في routes.js.
 
 const ITEM = {
@@ -13,8 +13,7 @@ const ITEM = {
   aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
   teacher: { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم', variant: 'teacher' },
   admin: { id: 'admin', icon: '⚙️', label: 'الإدارة', variant: 'admin' },
-  analytics: { id: 'analytics', icon: '📊', label: 'التحليلات' },
-  live: { id: 'live', icon: '🔴', label: 'البث المباشر' }
+  analytics: { id: 'analytics', icon: '📊', label: 'التحليلات' }
 };
 
 const mySpace = (label = 'مساحتي') => ({ id: 'account', icon: '👤', label });
@@ -28,11 +27,11 @@ export const NAV_BY_ROLE = {
   },
   parent: {
     primary: [ITEM.landing, ITEM.child, ITEM.parent, mySpace()],
-    more: [ITEM.exam, ITEM.lessons, ITEM.aiTutor, ITEM.pricing, ITEM.live]
+    more: [ITEM.exam, ITEM.lessons, ITEM.aiTutor, ITEM.pricing]
   },
   teacher: {
     primary: [ITEM.landing, ITEM.teacher, ITEM.lessons, mySpace()],
-    more: [ITEM.live, ITEM.child, ITEM.aiTutor]
+    more: [ITEM.child, ITEM.aiTutor]
   },
   content_editor: {
     primary: [ITEM.landing, ITEM.admin, ITEM.lessons, mySpace()],
@@ -40,7 +39,7 @@ export const NAV_BY_ROLE = {
   },
   admin: {
     primary: [ITEM.landing, ITEM.admin, ITEM.analytics, mySpace()],
-    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.lessons, ITEM.exam, ITEM.pricing, ITEM.live]
+    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.lessons, ITEM.exam, ITEM.pricing]
   }
 };
 

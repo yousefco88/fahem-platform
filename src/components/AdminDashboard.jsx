@@ -20,10 +20,9 @@ export default function AdminDashboard() {
     setLessonFiles,
     lessonVideos,
     setLessonVideos,
-    setShowLiveModal,
     triggerToast,
-    scheduleData,
-    setScheduleData,
+    allSlots,
+    slotsLoaded,
     saveScheduleToCloud
   } = useApp();
 
@@ -56,20 +55,30 @@ export default function AdminDashboard() {
   const subjectsCount = Object.keys(curriculumData).filter(k => k !== 'expatExamCalendar').length;
 
   // ===== محرر الجدول الأسبوعي =====
+  // الجدول لكل ابن: الإدارة تختار الطفل ثم تعدّل مسودته وتحفظها
+  const [allKids, setAllKids] = useState([]);
+  const [scheduleChildId, setScheduleChildId] = useState('');
+  const [scheduleData, setScheduleData] = useState([]);
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.from('children').select('id, name, grade').order('name')
+      .then(({ data }) => setAllKids(data || []));
+  }, []);
+  useEffect(() => {
+    setScheduleData(scheduleChildId ? (allSlots || []).filter(x => x.childId === scheduleChildId) : []);
+  }, [scheduleChildId, allSlots]);
   const updateSlot = (id, field, value) =>
     setScheduleData(prev => prev.map(s => s.id === id ? { ...s, [field]: field === 'day' ? Number(value) : value } : s));
   const removeSlot = (id) => setScheduleData(prev => prev.filter(s => s.id !== id));
   const addSlot = () => setScheduleData(prev => ([...prev, {
-    id: `slot_${Date.now()}`, day: 0, time: '16:00',
+    id: `slot_${Date.now()}`, childId: scheduleChildId, day: 0, time: '16:00',
     subjectId: Object.keys(curriculumData)[0] || 'arabic', lessonRef: 'next', type: 'lesson'
   }]));
   const syncSchedule = async () => {
     setSyncingSchedule(true);
-    const res = await saveScheduleToCloud(scheduleData);
+    const res = await saveScheduleToCloud(scheduleChildId, scheduleData);
     setSyncingSchedule(false);
-    triggerToast(res.ok
-      ? 'تم حفظ الجدول على Supabase ✓'
-      : `الحفظ المحلي سارٍ، لكن تعذر الحفظ السحابي: ${res.reason}`);
+    triggerToast(res.ok ? 'تم حفظ جدول الطفل ✓' : `تعذر الحفظ: ${res.reason}`);
   };
   // المعلمون المتاحون لإسناد الحصص (الإدارة فقط تقرأ profiles)
   const [teachers, setTeachers] = useState([]);
@@ -434,15 +443,6 @@ export default function AdminDashboard() {
           >
             💾 حفظ نسخة احتياطية
           </button>
-          <button
-            style={{
-              background: 'rgba(255, 255, 255, 0.12)', color: 'white', border: '1px solid rgba(255, 255, 255, 0.25)',
-              padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: '13px', cursor: 'pointer'
-            }}
-            onClick={() => setShowLiveModal(true)}
-          >
-            👁️ معاينة الفصل التجريبي
-          </button>
         </div>
       </section>
 
@@ -775,23 +775,35 @@ export default function AdminDashboard() {
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>🗓️ الجدول الأسبوعي لمساحة الطفل</h3>
               <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px' }}>
-                خيار «تلقائي» يعرض للطفل أول درس غير مُتقن في المادة حسب الترتيب. يُحفظ محلياً فوراً، وزر الحفظ السحابي يرفعه إلى Supabase.
+                كل طفل له جدوله الخاص. اختر الطفل ثم عدّل خاناته واحفظ. خيار «تلقائي» يعرض أول درس غير مُتقن. الحصة المباشرة: يضع المعلم المُسنَد رابط الاجتماع من «مساحتي ← حصصي».
               </p>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 style={{ background: '#eef2ff', color: '#4338ca', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: '1px solid #c7d2fe', cursor: 'pointer' }}
+                disabled={!scheduleChildId}
                 onClick={addSlot}
               >+ إضافة خانة</button>
               <button
                 style={{ background: 'var(--blue)', color: 'white', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: syncingSchedule ? 'wait' : 'pointer', opacity: syncingSchedule ? 0.6 : 1 }}
-                disabled={syncingSchedule}
+                disabled={syncingSchedule || !scheduleChildId}
                 onClick={syncSchedule}
               >{syncingSchedule ? '... جارٍ الحفظ' : '☁️ حفظ على Supabase'}</button>
             </div>
           </div>
 
-          {scheduleData.length === 0 ? (
+          <select
+            value={scheduleChildId} onChange={e => setScheduleChildId(e.target.value)} aria-label="اختر الطفل"
+            style={{ marginTop: '12px', padding: '9px 12px', borderRadius: '10px', border: '1px solid var(--line)', minWidth: '240px', font: 'inherit' }}
+          >
+            <option value="">— اختر الطفل —</option>
+            {allKids.map(k => <option key={k.id} value={k.id}>{k.name}{k.grade ? ` (${k.grade})` : ''}</option>)}
+          </select>
+          {!scheduleChildId ? (
+            <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
+              اختر طفلاً لعرض جدوله وتعديله.
+            </div>
+          ) : scheduleData.length === 0 ? (
             <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
               لا توجد خانات بعد — أضف أول خانة لبناء الجدول.
             </div>

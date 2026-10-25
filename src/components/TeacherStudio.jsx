@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function TeacherStudio() {
-  const { setShowLiveModal, setShowScheduleModal, triggerToast } = useApp();
+  const { setShowScheduleModal, triggerToast } = useApp();
 
   return (
     <div style={{ maxWidth: '1350px', margin: '30px auto', padding: '0 30px', width: '100%' }}>
@@ -27,16 +27,6 @@ export default function TeacherStudio() {
             onClick={() => setShowScheduleModal(true)}
           >
             <span>+ جدولة حصة في أي مادة</span>
-          </button>
-          <button
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)', color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.3)', padding: '12px 20px',
-              borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: '14px'
-            }}
-            onClick={() => setShowLiveModal(true)}
-          >
-            <span>بدء الفصل الحي (السبورة التفاعلية) 🔴</span>
           </button>
         </div>
       </section>
@@ -117,18 +107,7 @@ export default function TeacherStudio() {
             <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><span>🗓️</span> جدول حصصي المباشرة اليوم (جميع المواد)</h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
-              <div style={{ width: '60px', height: '48px', borderRadius: '8px', background: '#64748b', display: 'grid', placeItems: 'center', color: 'white', fontWeight: 800, fontSize: '12px' }}>
-                🧪 تجربة
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>فصل توضيحي (Demo) — لمعاينة السبورة وأدوات الحصة</h5>
-                <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>لا توجد حصص مجدولة بعد · الجدولة الفعلية تبدأ مع ربط Zoom</span>
-              </div>
-              <button className="btn-accent" style={{ padding: '8px 14px', fontSize: '12px' }} onClick={() => setShowLiveModal(true)}>
-                فتح الفصل التجريبي
-              </button>
-            </div>
+            <p style={{ fontSize: '13px', color: 'var(--muted)' }}>حصصك المباشرة وروابط اجتماعاتها في «مساحتي ← حصصي».</p>
           </div>
         </div>
 

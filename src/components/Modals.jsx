@@ -5,7 +5,6 @@ import { supabase } from '../lib/supabase';
 import { loadAttachment } from '../utils/attachmentStore';
 
 // حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
-const LiveClassroomSuite = lazy(() => import('./LiveClassroomSuite'));
 
 function useLocalAttachmentUrl(metadata, storageKey) {
   const [url, setUrl] = useState(metadata?.dataUrl || '');
@@ -260,13 +259,6 @@ export default function Modals() {
 
   return (
     <>
-      {/* 1. Live Virtual Classroom Suite (Micro-Group + Video Grid + Shared Canvas + Pop Quiz) */}
-      {showLiveModal && (
-        <Suspense fallback={null}>
-          <LiveClassroomSuite onClose={() => setShowLiveModal(false)} />
-        </Suspense>
-      )}
-
       {/* Post-Class Teacher Feedback Modal */}
       {showPostClassFeedback && (
         <div className="modal-overlay">
