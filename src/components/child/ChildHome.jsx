@@ -231,7 +231,7 @@ export default function ChildHome() {
                   <div style={{ width: `${p.percent}%`, height: '100%', background: s.color, transition: 'width 0.4s' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800 }}>
-                  <span style={{ color: `color-mix(in srgb, ${s.color} 60%, var(--navy))` }}>{p.percent}%</span>
+                  <span style={{ color: 'var(--navy)' }}>{p.percent}%</span>
                   <span style={{ color: 'var(--muted)' }}>{p.done}/{p.total} درس متقن</span>
                 </div>
               </button>
