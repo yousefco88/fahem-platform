@@ -6,7 +6,6 @@ const ITEM = {
   landing: { id: 'landing', icon: '🏠', label: 'الرئيسية' },
   pricing: { id: 'pricing', icon: '💳', label: 'اشتراكي' },
   onboarding: { id: 'onboarding', icon: '📋', label: 'التسجيل' },
-  exam: { id: 'exam', icon: '🇪🇬', label: 'محاكي الامتحانات', variant: 'exam' },
   parent: { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
   child: { id: 'child', icon: '🎓', label: 'التعلّم', variant: 'child' },
   aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
@@ -21,12 +20,12 @@ const mySpace = (label = 'مساحتي') => ({ id: 'account', icon: '👤', labe
 // more    = قائمة "المزيد" في الجوال وبقية عناصر الويب
 export const NAV_BY_ROLE = {
   guest: {
-    primary: [ITEM.landing, ITEM.pricing, ITEM.exam, mySpace('دخول')],
+    primary: [ITEM.landing, ITEM.pricing, mySpace('دخول')],
     more: [ITEM.onboarding, ITEM.aiTutor]
   },
   parent: {
     primary: [ITEM.landing, ITEM.child, ITEM.parent, mySpace()],
-    more: [ITEM.exam, ITEM.aiTutor, ITEM.pricing]
+    more: [ITEM.aiTutor, ITEM.pricing]
   },
   teacher: {
     primary: [ITEM.landing, ITEM.teacher, mySpace()],
@@ -38,7 +37,7 @@ export const NAV_BY_ROLE = {
   },
   admin: {
     primary: [ITEM.landing, ITEM.admin, ITEM.analytics, mySpace()],
-    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.exam, ITEM.pricing]
+    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.pricing]
   }
 };
 
