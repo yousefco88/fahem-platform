@@ -370,7 +370,7 @@ input, select, textarea {
 
 .btn-accent {
   background: var(--yellow);
-  color: var(--navy-dark);
+  color: #0f172a; /* نص داكن ثابت: الخلفية صفراء في الوضعين */
   padding: 14px 28px;
   border-radius: var(--radius-md);
   font-weight: 800;
