@@ -10,7 +10,6 @@ export const SCREEN_PATHS = {
   pricing: '/pricing',
   account: '/account',
   'ai-tutor': '/ai-tutor',
-  lessons: '/lessons',
   analytics: '/analytics'
 };
 

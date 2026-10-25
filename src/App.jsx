@@ -23,7 +23,6 @@ const PricingPlans = lazy(() => import('./components/PricingPlans'));
 const MySpace = lazy(() => import('./components/myspace/MySpace'));
 const AITutor = lazy(() => import('./components/ai/AITutor'));
 const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDashboard'));
-const RecordedLessons = lazy(() => import('./components/RecordedLessons'));
 
 function ScreenFallback() {
   return (
@@ -81,12 +80,10 @@ function MainAppContent() {
             <Route
               path="/analytics"
               element={
-                <AuthGate roles={['teacher', 'admin']}>
-                  <AnalyticsDashboard />
-                </AuthGate>
+                <AnalyticsDashboard />
               }
             />
-            <Route path="/lessons" element={<RecordedLessons />} />
+            <Route path="/lessons" element={<Navigate to="/child" replace />} />
             <Route path="/child/*" element={<RequireChild><ChildUniverse /></RequireChild>} />
             <Route
               path="/teacher"

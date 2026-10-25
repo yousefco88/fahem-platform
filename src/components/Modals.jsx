@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { useUIState } from '../context/UIContext';
 import { supabase } from '../lib/supabase';
 import { resolveVideo, safeFileUrl } from '../utils/videoEmbed';
+import { useLessonRecordings } from '../hooks/useLessonRecordings';
 
 // حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
 
@@ -30,6 +31,7 @@ export default function Modals() {
     triggerToast
   } = useApp();
   const video = resolveVideo(activeLesson?.videoUrl);
+  const liveRecordings = useLessonRecordings(activeLesson?.id);
   const pdfUrl = safeFileUrl(activeLesson?.pdfUrl);
 
   // Whiteboard Canvas State
@@ -282,6 +284,13 @@ export default function Modals() {
                                         </div>
                                       </div>
                                     )}
+
+                  {liveRecordings.map((r, i) => (
+                    <div key={r.id} style={{ background: '#0f172a', borderRadius: '20px', padding: '10px', maxWidth: '850px', margin: '0 auto 20px' }}>
+                      <div style={{ color: 'white', fontSize: '13.5px', padding: '4px 8px 8px' }}>🎥 تسجيل الحصة المباشرة{liveRecordings.length > 1 ? ` (${i + 1})` : ''}</div>
+                      <video controls playsInline preload="metadata" src={r.url} style={{ width: '100%', maxHeight: '440px', borderRadius: '14px' }} />
+                    </div>
+                  ))}
 
                   <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
                     <strong>محطات الحصة المسجلة للقفز السريع:</strong>

@@ -144,7 +144,6 @@ function TeacherSpace({ go }) {
         <p style={muted}>حصص مباشرة مجدولة اليوم: <strong>{liveToday}</strong></p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button style={btnPrimary} onClick={() => go('teacher')}>مساحة المعلم</button>
-          <button style={btn} onClick={() => go('lessons')}>الدروس المسجلة</button>
         </div>
       </section>
     </>

@@ -984,6 +984,3 @@ export const CURRICULUM_DATA = {
   ]
 };
 
-// مكتبة الحصص المسجلة — تُملأ من تسجيلات حقيقية فقط (لا بيانات وهمية)
-// أضف الحصص هنا بعد رفع تسجيلات فعلية: { id, subjectKey, lessonId, title, teacher, duration, gradient, recordedAt }
-export const recordedSessions = [];

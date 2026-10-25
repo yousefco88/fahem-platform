@@ -1,3 +1,4 @@
+import RecordingsReview from './admin/RecordingsReview';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -295,6 +296,7 @@ export default function AdminDashboard() {
         {[
           { id: 'settings', label: '⚙️ إعدادات الموقع', icon: '⚙️' },
           { id: 'curriculum', label: '📚 إدارة المناهج (Supabase)', icon: '📚' },
+          { id: 'recordings', label: '🎥 مراجعة تسجيلات الحصص', icon: '🎥' },
           { id: 'bookings', label: '📋 حجوزات الحصص التجريبية', icon: '📋' },
           { id: 'families', label: '👨‍👩‍👧‍👦 حسابات الأسر', icon: '👨‍👩‍👧‍👦' },
           { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
@@ -350,6 +352,8 @@ export default function AdminDashboard() {
       )}
 
       {/* TAB 1: CURRICULUM CMS (محلي — قديم) */}
+      {activeAdminTab === 'recordings' && <RecordingsReview />}
+
       {activeAdminTab === 'bookings' && (
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
           <BookingsPanel />

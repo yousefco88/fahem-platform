@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
+import { uploadLessonRecording } from '../../hooks/useLessonRecordings';
 
 const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -16,6 +17,14 @@ export default function TeacherRoster() {
   const [urlDraft, setUrlDraft] = useState({});
   const [urlMsg, setUrlMsg] = useState({});
   const [tab, setTab] = useState('students');
+  const [rec, setRec] = useState({});
+  const setRecField = (id, patch) => setRec(r => ({ ...r, [id]: { ...(r[id] || {}), ...patch } }));
+  const sendRecording = async (s) => {
+    const d = rec[s.id] || {};
+    setRecField(s.id, { msg: '… جارٍ الرفع (قد يستغرق وقتاً)', busy: true });
+    const r = await uploadLessonRecording({ userId: user.id, file: d.file, lessonId: d.lessonId, slotId: s.id, confirmed: !!d.ok });
+    setRecField(s.id, { busy: false, msg: r.ok ? 'أُرسل للمراجعة؛ يظهر للطلاب بعد قبول الإدارة ✓' : r.reason, ...(r.ok ? { file: null, ok: false } : {}) });
+  };
   const [students, setStudents] = useState(null);
   const [slots, setSlots] = useState(null);
   const [err, setErr] = useState('');
@@ -97,6 +106,27 @@ export default function TeacherRoster() {
                     <button style={tabBtn(true)} onClick={save}>حفظ الرابط</button>
                     {urlMsg[s.id] && <span role="status" style={muted}>{urlMsg[s.id]}</span>}
                   </div>
+                )}
+                {s.slot_type === 'live' && (
+                  <details style={{ marginTop: 8 }}>
+                    <summary style={{ cursor: 'pointer', ...muted }}>🎥 رفع تسجيل هذه الحصة</summary>
+                    <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+                      <select aria-label="الدرس" value={rec[s.id]?.lessonId || ''} onChange={e => setRecField(s.id, { lessonId: e.target.value })}
+                        style={{ padding: '9px 10px', borderRadius: 10, border: '1px solid var(--line)' }}>
+                        <option value="">اختر الدرس الذي شُرح في الحصة</option>
+                        {(curriculumData?.[s.subject_id]?.lessons || []).map(l => <option key={l.id} value={l.id}>{l.title}</option>)}
+                      </select>
+                      <input type="file" accept="video/mp4,video/webm" aria-label="ملف التسجيل" onChange={e => setRecField(s.id, { file: e.target.files?.[0] || null })} />
+                      <label style={{ ...muted, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                        <input type="checkbox" checked={!!rec[s.id]?.ok} onChange={e => setRecField(s.id, { ok: e.target.checked })} />
+                        <span>أؤكد أن التسجيل يعرض شرحي وشاشة الدرس فقط، ولا يظهر فيه وجه أي طفل ولا صوته.</span>
+                      </label>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button style={tabBtn(true)} disabled={rec[s.id]?.busy || !rec[s.id]?.lessonId || !rec[s.id]?.file || !rec[s.id]?.ok} onClick={() => sendRecording(s)}>إرسال للمراجعة</button>
+                        {rec[s.id]?.msg && <span role="status" style={muted}>{rec[s.id].msg}</span>}
+                      </div>
+                    </div>
+                  </details>
                 )}
               </div>
             );

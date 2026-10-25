@@ -6,7 +6,6 @@ import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import { getChildStats } from '../utils/childProgress';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { isLessonDone } from '../utils/todayPlan';
-import { recordedSessions } from '../data/curriculumData';
 // Dynamic import for PDF (lazy load - reduces bundle)
 const loadPdfGenerator = () => import('./parent/WeeklyReportPDF');
 import useStreak, { getStreakMessage, getLevelTitle } from '../hooks/useStreak';
@@ -329,9 +328,6 @@ export default function ParentDashboard() {
             <button className="tag-badge" style={{ background: '#f0fdf4', color: '#166534', cursor: 'pointer' }} onClick={() => setCurrentScreen('ai-tutor')}>
               🤖 المعلم الذكي
             </button>
-            <button className="tag-badge" style={{ background: '#fef3c7', color: '#92400e', cursor: 'pointer' }} onClick={() => setCurrentScreen('lessons')}>
-              📹 الدروس المسجلة
-            </button>
             <button className="tag-badge info" onClick={() => setCurrentScreen('pricing')}>
               📚 الوصول التجريبي المجاني
             </button>
@@ -594,41 +590,6 @@ export default function ParentDashboard() {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Right: Recorded Archive across Subjects */}
-            <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>
-                <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>🎥</span> مكتبة الحصص المسجلة (متعددة المواد)
-                </h3>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {recordedSessions.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '28px 16px', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)', color: 'var(--muted)' }}>
-                    <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎥</div>
-                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginBottom: '4px' }}>لا توجد حصص مسجلة بعد</div>
-                    <div style={{ fontSize: '12px' }}>تُضاف تسجيلات الحصص الحية هنا تلقائياً بعد انعقادها</div>
-                  </div>
-                )}
-                {recordedSessions.map(session => (
-                  <div key={session.id} style={{ display: 'flex', gap: '14px', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)', background: 'white', alignItems: 'center' }}>
-                    <div style={{ width: '72px', height: '52px', borderRadius: '8px', background: session.gradient, display: 'grid', placeItems: 'center', color: 'white', fontSize: '18px', flexShrink: 0, position: 'relative' }}>
-                      ▶<small style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '9px', background: 'rgba(0,0,0,0.6)', padding: '1px 4px', borderRadius: '4px' }}>{session.duration}</small>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <h5 style={{ fontSize: '13.5px', marginBottom: '2px' }}>{session.title}</h5>
-                      <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>
-                        {session.teacher ? `${session.teacher} · ` : ''}مسجلة
-                      </span>
-                    </div>
-                    <button style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center' }} onClick={() => openLesson(session.subjectKey, session.lessonId, 'video')}>
-                      ▶
-                    </button>
-                  </div>
-                ))}
               </div>
             </div>
 

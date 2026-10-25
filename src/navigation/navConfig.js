@@ -9,7 +9,6 @@ const ITEM = {
   exam: { id: 'exam', icon: '🇪🇬', label: 'محاكي الامتحانات', variant: 'exam' },
   parent: { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
   child: { id: 'child', icon: '🎓', label: 'التعلّم', variant: 'child' },
-  lessons: { id: 'lessons', icon: '📹', label: 'الدروس المسجلة' },
   aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
   teacher: { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم', variant: 'teacher' },
   admin: { id: 'admin', icon: '⚙️', label: 'الإدارة', variant: 'admin' },
@@ -23,23 +22,23 @@ const mySpace = (label = 'مساحتي') => ({ id: 'account', icon: '👤', labe
 export const NAV_BY_ROLE = {
   guest: {
     primary: [ITEM.landing, ITEM.pricing, ITEM.exam, mySpace('دخول')],
-    more: [ITEM.onboarding, ITEM.lessons, ITEM.aiTutor]
+    more: [ITEM.onboarding, ITEM.aiTutor]
   },
   parent: {
     primary: [ITEM.landing, ITEM.child, ITEM.parent, mySpace()],
-    more: [ITEM.exam, ITEM.lessons, ITEM.aiTutor, ITEM.pricing]
+    more: [ITEM.exam, ITEM.aiTutor, ITEM.pricing]
   },
   teacher: {
-    primary: [ITEM.landing, ITEM.teacher, ITEM.lessons, mySpace()],
+    primary: [ITEM.landing, ITEM.teacher, mySpace()],
     more: [ITEM.child, ITEM.aiTutor]
   },
   content_editor: {
-    primary: [ITEM.landing, ITEM.admin, ITEM.lessons, mySpace()],
+    primary: [ITEM.landing, ITEM.admin, mySpace()],
     more: [ITEM.child]
   },
   admin: {
     primary: [ITEM.landing, ITEM.admin, ITEM.analytics, mySpace()],
-    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.lessons, ITEM.exam, ITEM.pricing]
+    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.exam, ITEM.pricing]
   }
 };
 

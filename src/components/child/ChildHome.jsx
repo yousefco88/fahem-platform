@@ -25,8 +25,6 @@ export default function ChildHome() {
   const todayPlan = getTodayPlan({ schedule: scheduleData, curriculum: curriculumData, learningRecords, masteredLessons, timezone: effectiveTimezone });
   const continueLesson = getContinueLesson(curriculumData, learningRecords, masteredLessons);
   const todayName = DAY_NAMES[new Date().getDay()];
-  const currentSubjectObj = curriculumData[activeSubject] || curriculumData.arabic;
-  const firstLesson = [...(currentSubjectObj?.lessons || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))[0];
 
   const goLesson = (id, tab = 'video') => navigate(childPaths.lesson(id, tab), { state: { fromApp: true } });
 
@@ -56,15 +54,6 @@ export default function ChildHome() {
             كل مواد المنهج المصري (عربي، ماث، إنجليزي، ديسكفر، وأخلاق) موجودة في جزيرتك — اختر مادة وابدأ رحلتك.
           </p>
           <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
-            {firstLesson && (
-              <button
-                style={{
-                  background: 'rgba(255,255,255,0.15)', color: 'white', border: '1px solid rgba(255,255,255,0.3)',
-                  borderRadius: 'var(--radius-full)', fontSize: '15px', padding: '15px 24px', fontWeight: 700
-                }}
-                onClick={() => goLesson(firstLesson.id, 'video')}
-              >🎥 راجع تسجيل آخر حصة</button>
-            )}
             <button
               style={{
                 background: 'linear-gradient(135deg, #e11d48, #be123c)', color: 'white', border: 'none',
