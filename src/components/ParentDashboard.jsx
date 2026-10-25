@@ -27,6 +27,10 @@ export default function ParentDashboard() {
   // كل الأرقام مشتقة من سجل التعلم الفعلي — لا قيم مخزنة أو مزروعة
   const childStats = getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []);
 
+  // مصفوفة الإتقان — مواد حقيقية من المنهج (المنشورة في CMS) فقط؛ لا بطاقات يدوية
+  const matrixSubjects = Object.entries(curriculumData)
+    .filter(([, s]) => s && typeof s === 'object' && !Array.isArray(s) && Array.isArray(s.lessons) && s.lessons.length > 0);
+
   // 🔥 Streak & XP data for active child
   const streak = useStreak(activeChildCloudId);
 
@@ -558,117 +562,62 @@ export default function ParentDashboard() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
             
-            {/* Left: Mastery Matrix across all official subjects */}
+            {/* Left: Mastery Matrix — مبنية من منهج CMS الحقيقي (المواد المنشورة فقط)، لا بطاقات يدوية */}
             <div id="mastery-matrix-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>🎯</span> مصفوفة إتقان المنهج الكامل لـ {activeChild.name}
+                    <span>🎯</span> مصفوفة إتقان المنهج لـ {activeChild.name}
                   </h3>
-                  <span style={{ fontSize: '12px', color: 'var(--muted)' }}>شاملة المسار العام ومسار مدارس اللغات والهوية</span>
+                  <span style={{ fontSize: '12px', color: 'var(--muted)' }}>تُبنى من المواد والدروس المنشورة في المنهج — وتقدّم {activeChild.name} الفعلي فيها</span>
                 </div>
-                <span className="tag-badge mastered" style={{ fontSize: '11px' }}>12 مادة مغطاة</span>
+                <span className="tag-badge mastered" style={{ fontSize: '11px' }}>{matrixSubjects.length} مادة منشورة</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '460px', overflowY: 'auto', paddingRight: '4px' }}>
-                {/* 1. Arabic */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', background: '#fafaf9' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px' }}>📖 اللغة العربية: حرف الباء وأصوات المد</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>التمييز السمعي والبصري للحركات الطويلة</div>
+                {matrixSubjects.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '28px 16px', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)', color: 'var(--muted)' }}>
+                    <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎯</div>
+                    <div style={{ fontSize: '13.5px', fontWeight: 700, marginBottom: '4px' }}>لا توجد مواد منشورة بعد</div>
+                    <div style={{ fontSize: '12px' }}>عند نشر المواد والدروس من لوحة إدارة المنهج ستظهر هنا تلقائياً</div>
                   </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('arabic', 'baa', 'quiz')}>
-                    {isLessonDone('baa', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن' : '↺ مراجعة'}
-                  </button>
-                </div>
-
-                {/* 2. Connect Plus for Languages */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid #ddd6fe', borderRadius: 'var(--radius-md)', background: '#f5f3ff' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#6d28d9' }}>🌟 Connect Plus (لغات): My Senses & Phonics /s/</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>Sentence Building & Speaking Fluency</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('connect_plus', 'cp_senses', 'video')}>
-                    {isLessonDone('cp_senses', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن (لغات)' : '↺ مراجعة'}
-                  </button>
-                </div>
-
-                {/* 3. Math English */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid #ccfbf1', borderRadius: 'var(--radius-md)', background: '#f0fdfa' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#0f766e' }}>📐 Math (English): Numbers 1-10 & Ten-Frame</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>Counting, Place Value & Greater/Less than</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('math_en', 'mathen_count_10', 'quiz')}>
-                    {isLessonDone('mathen_count_10', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن (لغات)' : '↺ مراجعة'}
-                  </button>
-                </div>
-
-                {/* 4. Arabic Math */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', background: '#fafaf9' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px' }}>🔢 الرياضيات: المقارنة (أكبر من وأصغر من)</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>الوحدة الأولى · رمز التمساح الجائع</div>
-                  </div>
-                  <button className="tag-badge mastered" onClick={() => openLesson('math', 'math_compare', 'guide')}>
-                    💡 دليل المذاكرة
-                  </button>
-                </div>
-
-                {/* 5. ICT & Logic */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid #e0e7ff', borderRadius: 'var(--radius-md)', background: '#eef2ff' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#4338ca' }}>💻 تكنولوجيا المعلومات: مكونات الحاسوب والأمان</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>الأمان الرقمي ومقدمة التفكير البرمجي</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('ict', 'ict_basics', 'quiz')}>
-                    {isLessonDone('ict_basics', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن بالكامل' : '↺ مراجعة'}
-                  </button>
-                </div>
-
-                {/* 6. Egyptian Heritage & Geography */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid #fee2e2', borderRadius: 'var(--radius-md)', background: '#fef2f2' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#b91c1c' }}>🇪🇬 معالم وتاريخ مصر: نهر النيل والأهرامات</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>الهوية الوطنية وخريطة مصر وألوان العلم</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('social', 'soc_nile', 'video')}>
-                    {isLessonDone('soc_nile', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن' : '🇪🇬 مسار الهوية'}
-                  </button>
-                </div>
-
-                {/* 7. Phonics & Fast Reading */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid #fce7f3', borderRadius: 'var(--radius-md)', background: '#fdf2f8' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px', color: '#be185d' }}>✍️ نور البيان: التهجي السريع وقاعدة الفتح</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>علاج ضعف القراءة لأبناء المغتربين والخط</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('phonics_arabic', 'ph_fast_reading', 'quiz')}>
-                    {isLessonDone('ph_fast_reading', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن بالكامل' : '↺ مراجعة'}
-                  </button>
-                </div>
-
-                {/* 8. Discover */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', background: '#fafaf9' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px' }}>🔬 اكتشف: الحواس الخمس والبيئة</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>من أكون؟ العلوم المتكاملة والبيئة</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('discover', 'disc_senses', 'guide')}>
-                    💡 دليل الأنشطة
-                  </button>
-                </div>
-
-                {/* 9. Islamic / Christian Religion & Ethics */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', background: '#fafaf9' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '2px' }}>🕋 التربية الإسلامية: سورة الفاتحة والآداب</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>التلاوة والتجويد وقيم بر الوالدين والصدق</div>
-                  </div>
-                  <button className="btn-secondary" style={{ padding: '5px 10px', fontSize: '11.5px' }} onClick={() => openLesson('islamic_religion', 'isl_fatiha', 'video')}>
-                    {isLessonDone('isl_fatiha', learningRecords, activeChild.masteredLessons || []) ? '✓ متقن بالكامل' : '↺ مراجعة'}
-                  </button>
-                </div>
+                )}
+                {matrixSubjects.map(([subjectKey, subject]) => {
+                  const lessons = subject.lessons;
+                  const doneCount = lessons.filter(l => isLessonDone(l.id, learningRecords, activeChild.masteredLessons || [])).length;
+                  const pct = Math.round((doneCount / lessons.length) * 100);
+                  const nextLesson = lessons.find(l => !isLessonDone(l.id, learningRecords, activeChild.masteredLessons || [])) || null;
+                  const complete = doneCount === lessons.length;
+                  return (
+                    <div key={subjectKey} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', background: 'var(--bg)' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: '13.5px', marginBottom: '4px', color: 'var(--navy)' }}>
+                          {subject.icon ? `${subject.icon} ` : ''}{subject.title || subjectKey}
+                        </div>
+                        <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginBottom: '6px' }}>
+                          {complete
+                            ? `أتقن كل الدروس (${lessons.length})`
+                            : nextLesson
+                              ? `التالي: ${nextLesson.title}`
+                              : `${lessons.length} درس`}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ flex: 1, height: '6px', borderRadius: '3px', background: 'var(--line)', overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', borderRadius: '3px', background: complete ? 'var(--green)' : 'var(--blue)', transition: 'width .3s' }} />
+                          </div>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{doneCount}/{lessons.length}</span>
+                        </div>
+                      </div>
+                      <button
+                        className={complete ? 'tag-badge mastered' : 'btn-secondary'}
+                        style={{ padding: '6px 12px', fontSize: '11.5px', whiteSpace: 'nowrap', flexShrink: 0 }}
+                        onClick={() => openLesson(subjectKey, (nextLesson || lessons[0]).id, (nextLesson || lessons[0]).type || 'video')}
+                      >
+                        {complete ? '✓ متقنة بالكامل' : doneCount > 0 ? '↺ تابع' : '▶ ابدأ'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
