@@ -66,16 +66,16 @@ export default function BookingSection() {
         </p>
 
         <div style={{
-          background: 'white', color: '#0f172a', borderRadius: '24px',
+          background: 'var(--card-bg)', color: 'var(--navy)', borderRadius: '24px',
           padding: '36px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)', textAlign: 'right'
         }}>
           {bookingSuccess ? (
             <div style={{ textAlign: 'center', padding: '20px 10px' }}>
               <div style={{ fontSize: '54px', marginBottom: '12px' }}>🎉</div>
-              <h3 style={{ fontSize: '22px', color: '#166534', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '22px', color: 'var(--green-text)', marginBottom: '8px' }}>
                 تم استلام طلبك بنجاح
               </h3>
-              <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
+              <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
                 حُفظ طلب الحصة التجريبية باسم <strong>{childName}</strong> لدى فريق فاهم، وسنتواصل معك عبر واتساب لتأكيد الموعد. (لا يُعد هذا تأكيدًا نهائيًا للموعد حتى يصلك التواصل.)
               </p>
               <button
@@ -122,7 +122,7 @@ export default function BookingSection() {
                     دولة الإقامة الحالية
                   </label>
                   <select
-                    style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '13.5px', background: 'white' }}
+                    style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '13.5px', background: 'var(--card-bg)' }}
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
                   >
@@ -156,7 +156,7 @@ export default function BookingSection() {
                     الصف الدراسي الحالي
                   </label>
                   <select
-                    style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '13.5px', background: 'white' }}
+                    style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '13.5px', background: 'var(--card-bg)' }}
                     value={selectedGrade}
                     onChange={(e) => setSelectedGrade(e.target.value)}
                   >

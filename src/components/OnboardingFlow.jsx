@@ -110,7 +110,7 @@ export default function OnboardingFlow() {
         </div>
 
         <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', background: 'var(--bg)', padding: '0 10px' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'white', border: '3px solid var(--line)', color: 'var(--muted)', display: 'grid', placeItems: 'center', fontWeight: 800, margin: '0 auto 8px' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--card-bg)', border: '3px solid var(--line)', color: 'var(--muted)', display: 'grid', placeItems: 'center', fontWeight: 800, margin: '0 auto 8px' }}>
             3
           </div>
           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--muted)' }}>3. المنطقة وتأكيد الحصة</span>
@@ -118,7 +118,7 @@ export default function OnboardingFlow() {
       </div>
 
       {/* Card Form */}
-      <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', padding: '36px', boxShadow: 'var(--shadow-md)', border: '1px solid var(--line)' }}>
+      <div style={{ background: 'var(--card-bg)', borderRadius: 'var(--radius-lg)', padding: '36px', boxShadow: 'var(--shadow-md)', border: '1px solid var(--line)' }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <h2 style={{ fontSize: '24px', color: 'var(--navy)', marginBottom: '6px' }}>أهلاً بك في منصة فاهم لأبنائنا بالخارج 🇪🇬</h2>
           <p style={{ color: 'var(--muted)', fontSize: '14px' }}>جهّز حساب طفلك لنربط مواعيد حصصه المباشرة تلقائياً مع توقيت إقامتكم.</p>
@@ -151,7 +151,7 @@ export default function OnboardingFlow() {
             <div>
               <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '8px', color: 'var(--navy)' }}>الصف الدراسي</label>
               <select
-                style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px', background: 'white' }}
+                style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px', background: 'var(--card-bg)' }}
                 value={formGrade}
                 onChange={(e) => setFormGrade(e.target.value)}
               >
@@ -167,7 +167,7 @@ export default function OnboardingFlow() {
               بلد الإقامة الحالية (لحساب المنطقة الزمنية تلقائياً)
             </label>
             <select
-              style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px', background: 'white' }}
+              style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px', background: 'var(--card-bg)' }}
               value={formCountry}
               onChange={(e) => setFormCountry(e.target.value)}
             >
@@ -190,7 +190,7 @@ export default function OnboardingFlow() {
                 <strong style={{ color: 'var(--blue)', fontSize: '14px', display: 'block' }}>توقيت الحصص التفاعلية المحسوب لك:</strong>
                 <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>{currentTz.desc}</span>
               </div>
-              <div style={{ background: 'white', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--blue)', border: '1px solid var(--line)', fontSize: '13px' }}>
+              <div style={{ background: 'var(--card-bg)', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--blue)', border: '1px solid var(--line)', fontSize: '13px' }}>
                 {currentTz.badge}
               </div>
             </div>

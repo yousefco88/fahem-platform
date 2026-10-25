@@ -154,7 +154,7 @@ export default function TeacherStudio() {
 
       {/* قائمة المتابعة — من نتائج الإتقان الفعلية */}
       <div style={{
-        background: '#fff7ed', border: '2px solid #fed7aa', borderRadius: 'var(--radius-lg)',
+        background: 'var(--orange-light)', border: '2px solid var(--line)', borderRadius: 'var(--radius-lg)',
         padding: '24px', marginBottom: '30px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
@@ -164,14 +164,14 @@ export default function TeacherStudio() {
           </div>
           <button
             className="tag-badge"
-            style={{ background: '#ffedd5', color: '#9a3412', border: '1px solid #fed7aa' }}
+            style={{ background: 'var(--orange-light)', color: '#9a3412', border: '1px solid var(--line)' }}
             onClick={() => triggerToast('الإرسال للأسر غير متصل بخدمة إشعارات بعد.')}
           >
             إرسال رسائل تشجيع لأولياء الأمور
           </button>
         </div>
 
-        <div style={{ background: 'white', border: '1px dashed #fed7aa', borderRadius: 'var(--radius-md)', padding: '24px', textAlign: 'center' }}>
+        <div style={{ background: 'var(--card-bg)', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)', padding: '24px', textAlign: 'center' }}>
           <div style={{ fontSize: '28px', marginBottom: '6px' }}>📭</div>
           <p style={{ fontSize: '13.5px', color: 'var(--muted)' }}>
             {students !== null && students.length === 0

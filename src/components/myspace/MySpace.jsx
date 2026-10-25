@@ -14,17 +14,17 @@ import SkillsReport from './SkillsReport';
 import WeeklySummaryCard from './WeeklySummaryCard';
 import AssignStudents from './AssignStudents';
 
-const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
+const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
-const muted = { color: '#475569', fontSize: 13.5 };
-const btn = { padding: '9px 14px', borderRadius: 10, border: '1px solid var(--line)', background: '#f8fafc', color: 'var(--navy)', cursor: 'pointer', font: 'inherit', fontSize: 13.5 };
-const btnPrimary = { ...btn, background: '#1d4ed8', borderColor: '#1d4ed8', color: 'white' };
+const muted = { color: 'var(--muted)', fontSize: 13.5 };
+const btn = { padding: '9px 14px', borderRadius: 10, border: '1px solid var(--line)', background: 'var(--bg)', color: 'var(--navy)', cursor: 'pointer', font: 'inherit', fontSize: 13.5 };
+const btnPrimary = { ...btn, background: 'var(--blue-dark)', borderColor: '#1d4ed8', color: 'white' };
 
 function Stat({ label, value }) {
   return (
-    <div style={{ flex: '1 1 120px', background: '#f8fafc', borderRadius: 12, padding: 12, textAlign: 'center' }}>
+    <div style={{ flex: '1 1 120px', background: 'var(--bg)', borderRadius: 12, padding: 12, textAlign: 'center' }}>
       <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--navy)' }}>{value}</div>
-      <div style={{ fontSize: 12, color: '#475569' }}>{label}</div>
+      <div style={{ fontSize: 12, color: 'var(--muted)' }}>{label}</div>
     </div>
   );
 }
@@ -224,7 +224,7 @@ export default function MySpace() {
   const { setCurrentScreen } = useApp();
   const navRole = resolveNavRole(user, role);
 
-  if (loading) return <main dir="rtl" style={{ padding: 40, textAlign: 'center', color: '#475569' }}>جارٍ التحقق من الجلسة…</main>;
+  if (loading) return <main dir="rtl" style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>جارٍ التحقق من الجلسة…</main>;
   // غير مسجّل: نموذج الدخول/التسجيل الحالي كما هو
   if (!user) return <ParentAccount />;
 
@@ -234,7 +234,7 @@ export default function MySpace() {
   return (
     <main dir="rtl" style={{ maxWidth: 760, width: 'calc(100% - 32px)', margin: '24px auto', color: 'var(--navy)' }}>
       <section style={{ ...card, display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#1d4ed8', color: 'white', display: 'grid', placeItems: 'center', fontSize: 22, fontWeight: 800 }}>
+        <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--blue-dark)', color: 'white', display: 'grid', placeItems: 'center', fontSize: 22, fontWeight: 800 }}>
           {(name || '?').trim().charAt(0)}
         </div>
         <div style={{ flex: 1 }}>

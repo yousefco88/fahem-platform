@@ -54,15 +54,15 @@ export default function TimezoneSection() {
 
   return (
     <section id="timezone" style={{
-      padding: '60px 24px', background: 'white', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0'
+      padding: '60px 24px', background: 'var(--card-bg)', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
-          <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
             {title}
           </h2>
-          <p style={{ color: '#475569', fontSize: '15px' }}>
+          <p style={{ color: 'var(--muted)', fontSize: '15px' }}>
             {subtitle}
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function TimezoneSection() {
           borderRadius: '24px', padding: '36px', boxShadow: '0 20px 40px rgba(15, 23, 42, 0.3)'
         }}>
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: 700, color: '#94a3b8', marginBottom: '10px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: 700, color: 'var(--muted)', marginBottom: '10px' }}>
               اختر بلد إقامتك الحالي:
             </label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -105,14 +105,14 @@ export default function TimezoneSection() {
             borderRadius: '18px', padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px'
           }}>
             <div>
-              <span style={{ fontSize: '12px', color: '#94a3b8' }}>توقيت الحصة في القاهرة (مصر):</span>
+              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>توقيت الحصة في القاهرة (مصر):</span>
               <div style={{ fontSize: '24px', fontWeight: 900, color: '#facc15', marginTop: '4px' }}>
                 {currentCalc.cairoTime}
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: '12px', color: '#94a3b8' }}>التوقيت المحلي في {currentCalc.country}:</span>
+              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>التوقيت المحلي في {currentCalc.country}:</span>
               <div style={{ fontSize: '24px', fontWeight: 900, color: '#38bdf8', marginTop: '4px' }}>
                 {currentCalc.localTime} ({currentCalc.diffText})
               </div>

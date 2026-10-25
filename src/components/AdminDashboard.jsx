@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h1 style={{ fontSize: '22px', fontWeight: 800 }}>لوحة الإدارة</h1>
             </div>
-            <p style={{ color: '#94a3b8', fontSize: '13.5px', marginTop: '4px' }}>
+            <p style={{ color: 'var(--muted)', fontSize: '13.5px', marginTop: '4px' }}>
               المنهج والأسر والمعلمون والجدول ومراجعة التسجيلات • الصلاحيات مفروضة من الخادم
             </p>
           </div>
@@ -330,7 +330,7 @@ export default function AdminDashboard() {
                           </select>
                         </td>
                         <td style={{ padding: '8px' }}>
-                          <button onClick={() => removeSlot(slot.id)} title="حذف الخانة" style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', fontWeight: 800 }}>🗑</button>
+                          <button onClick={() => removeSlot(slot.id)} title="حذف الخانة" style={{ background: 'var(--red-light)', color: 'var(--red-text)', border: '1px solid var(--line)', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', fontWeight: 800 }}>🗑</button>
                         </td>
                       </tr>
                     );
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
 
           {usersLoading && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ تحميل المستخدمين…</div>}
           {!usersLoading && usersError && (
-            <div style={{ padding: '16px', background: '#fef2f2', color: '#991b1b', borderRadius: '10px', fontSize: '13px' }}>تعذر تحميل المستخدمين: {usersError}</div>
+            <div style={{ padding: '16px', background: 'var(--red-light)', color: 'var(--red-text)', borderRadius: '10px', fontSize: '13px' }}>تعذر تحميل المستخدمين: {usersError}</div>
           )}
           {!usersLoading && !usersError && users.length === 0 && (
             <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)', fontWeight: 800, color: 'var(--navy)' }}>لا يوجد مستخدمون بعد</div>

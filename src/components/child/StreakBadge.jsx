@@ -39,12 +39,12 @@ export default function StreakBadge({
         title="اضغط لرؤية التفاصيل"
       >
         <span style={{ fontSize: '20px' }}>🔥</span>
-        <span style={{ fontWeight: 800, color: '#92400e', fontSize: '15px' }}>
+        <span style={{ fontWeight: 800, color: 'var(--amber-text)', fontSize: '15px' }}>
           {currentStreak} {currentStreak === 1 ? 'يوم' : 'أيام'}
         </span>
         <span style={{ 
           background: '#fbbf24', 
-          color: '#78350f', 
+          color: 'var(--amber-text)', 
           padding: '2px 8px', 
           borderRadius: '12px',
           fontSize: '12px',
@@ -94,7 +94,7 @@ export default function StreakBadge({
             <span style={{
               fontSize: '36px',
               fontWeight: 900,
-              color: '#92400e',
+              color: 'var(--amber-text)',
               lineHeight: 1
             }}>
               {currentStreak}
@@ -102,13 +102,13 @@ export default function StreakBadge({
             <span style={{
               fontSize: '16px',
               fontWeight: 700,
-              color: '#b45309'
+              color: 'var(--amber-text)'
             }}>
               {currentStreak === 1 ? 'يوم' : 'أيام متتالية'}
             </span>
           </div>
           <p style={{
-            color: '#78350f',
+            color: 'var(--amber-text)',
             fontSize: '14px',
             fontWeight: 600,
             margin: 0
@@ -148,10 +148,10 @@ export default function StreakBadge({
           textAlign: 'center'
         }}>
           <div style={{ fontSize: '20px', marginBottom: '4px' }}>🏆</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: '#92400e' }}>
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--amber-text)' }}>
             {bestStreak}
           </div>
-          <div style={{ fontSize: '11px', color: '#78350f', fontWeight: 600 }}>
+          <div style={{ fontSize: '11px', color: 'var(--amber-text)', fontWeight: 600 }}>
             أفضل سلسلة
           </div>
         </div>
@@ -164,10 +164,10 @@ export default function StreakBadge({
           textAlign: 'center'
         }}>
           <div style={{ fontSize: '20px', marginBottom: '4px' }}>⭐</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: '#92400e' }}>
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--amber-text)' }}>
             {xpTotal}
           </div>
-          <div style={{ fontSize: '11px', color: '#78350f', fontWeight: 600 }}>
+          <div style={{ fontSize: '11px', color: 'var(--amber-text)', fontWeight: 600 }}>
             نقاط XP
           </div>
         </div>
@@ -180,10 +180,10 @@ export default function StreakBadge({
           textAlign: 'center'
         }}>
           <div style={{ fontSize: '20px', marginBottom: '4px' }}>🎖️</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: '#92400e' }}>
+          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--amber-text)' }}>
             {level}
           </div>
-          <div style={{ fontSize: '11px', color: '#78350f', fontWeight: 600 }}>
+          <div style={{ fontSize: '11px', color: 'var(--amber-text)', fontWeight: 600 }}>
             {levelTitle}
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function StreakBadge({
           justifyContent: 'space-between',
           fontSize: '12px',
           fontWeight: 600,
-          color: '#78350f',
+          color: 'var(--amber-text)',
           marginBottom: '6px'
         }}>
           <span>المستوى {level} → {level + 1}</span>
@@ -227,7 +227,7 @@ export default function StreakBadge({
           borderRadius: '12px',
           fontSize: '13px',
           fontWeight: 600,
-          color: '#166534',
+          color: 'var(--green-text)',
           display: 'flex',
           alignItems: 'center',
           gap: '8px'

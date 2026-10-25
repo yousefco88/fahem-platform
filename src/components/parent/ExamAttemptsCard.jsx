@@ -29,7 +29,7 @@ export default function ExamAttemptsCard() {
 
   return (
     <section style={{
-      background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)',
+      background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)',
       padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '30px'
     }}>
       <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -40,17 +40,17 @@ export default function ExamAttemptsCard() {
       </span>
 
       <div style={{ marginTop: '14px' }}>
-        {state === 'loading' && <div style={{ color: '#64748b', fontSize: '13px', fontWeight: 700 }}>جارٍ التحميل…</div>}
+        {state === 'loading' && <div style={{ color: 'var(--muted)', fontSize: '13px', fontWeight: 700 }}>جارٍ التحميل…</div>}
         {state === 'no-session' && (
-          <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
+          <div style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 700 }}>
             سجّل الدخول لتُحفظ نتائج المحاولات تلقائياً وتظهر هنا.
           </div>
         )}
         {state === 'error' && (
-          <div style={{ fontSize: '13px', color: '#b91c1c', fontWeight: 700 }}>تعذر جلب المحاولات حالياً.</div>
+          <div style={{ fontSize: '13px', color: 'var(--red-text)', fontWeight: 700 }}>تعذر جلب المحاولات حالياً.</div>
         )}
         {state === 'ready' && attempts.length === 0 && (
-          <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
+          <div style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 700 }}>
             لا توجد محاولات محفوظة بعد — جرّب المحاكي وستظهر النتيجة هنا فور التسليم.
           </div>
         )}
@@ -59,16 +59,16 @@ export default function ExamAttemptsCard() {
             {attempts.map(a => (
               <div key={a.id} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap',
-                border: '1px solid var(--line)', borderRadius: '12px', padding: '10px 14px', background: '#f8fafc'
+                border: '1px solid var(--line)', borderRadius: '12px', padding: '10px 14px', background: 'var(--bg)'
               }}>
                 <div style={{ fontWeight: 800, fontSize: '13px', color: '#334155' }}>
                   🧒 {a.child_name || '—'}
-                  <span style={{ color: '#94a3b8', fontWeight: 600, fontSize: '11.5px', marginRight: '8px' }}>
+                  <span style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '11.5px', marginRight: '8px' }}>
                     {a.created_at ? new Date(a.created_at).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' }) : ''}
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#475569' }}>
+                  <span style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--muted)' }}>
                     {a.correct_count}/{a.total_questions} صحيحة
                   </span>
                   <span style={{

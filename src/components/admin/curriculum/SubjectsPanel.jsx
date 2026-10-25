@@ -20,7 +20,7 @@ export default function SubjectsPanel() {
   const [error, setError] = useState(null);
   const [editingKey, setEditingKey] = useState(null);
   const [form, setForm] = useState({
-    key: '', title: '', icon: '📖', color: '#2563eb', badge: '', grade_id: '', sort_order: 0
+    key: '', title: '', icon: '📖', color: 'var(--blue-text)', badge: '', grade_id: '', sort_order: 0
   });
   const [saving, setSaving] = useState(false);
 
@@ -82,7 +82,7 @@ export default function SubjectsPanel() {
       key: '',
       title: '',
       icon: '📖',
-      color: '#2563eb',
+      color: 'var(--blue-text)',
       badge: '',
       grade_id: selectedGrade || (grades[0]?.id || ''),
       sort_order: maxOrder + 1,

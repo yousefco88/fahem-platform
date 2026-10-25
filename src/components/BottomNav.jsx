@@ -1,14 +1,12 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useLanguage } from '../context/LanguageContext';
-import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { getNavForRole, resolveNavRole } from '../navigation/navConfig';
 
 export default function BottomNav() {
   const { currentScreen, setCurrentScreen } = useApp();
   const { lang, setLang, languages } = useLanguage();
-  const { isDark, toggle: toggleTheme } = useTheme();
 
   const { user, role } = useAuth();
   const nav = getNavForRole(resolveNavRole(user, role));
@@ -76,17 +74,6 @@ export default function BottomNav() {
                     </button>
                   ))}
                 </div>
-              </div>
-              
-              {/* Theme Toggle */}
-              <div className="settings-row">
-                <span className="settings-label">🎨 المظهر</span>
-                <button
-                  onClick={toggleTheme}
-                  className="settings-btn theme-toggle"
-                >
-                  {isDark ? '☀️ فاتح' : '🌙 داكن'}
-                </button>
               </div>
             </div>
           </div>

@@ -147,7 +147,7 @@ export default function Modals() {
       {/* Post-Class Teacher Feedback Modal */}
       {showPostClassFeedback && (
         <div className="modal-overlay">
-          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '480px', width: '100%' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '30px', maxWidth: '480px', width: '100%' }}>
             <div style={{ textAlign: 'center', marginBottom: '18px' }}>
               <div style={{ fontSize: '36px', marginBottom: '8px' }}>📝</div>
               <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>تقييم وملاحظة ما بعد الحصة</h3>
@@ -188,7 +188,7 @@ export default function Modals() {
       {showStudioModal && activeLesson && (
         <div className="modal-overlay">
           <div style={{
-            background: '#ffffff', width: '100%', maxWidth: '1150px',
+            background: 'var(--card-bg)', width: '100%', maxWidth: '1150px',
             borderRadius: '28px', overflow: 'hidden', maxHeight: '92vh',
             display: 'flex', flexDirection: 'column'
           }}>
@@ -287,7 +287,7 @@ export default function Modals() {
                     </div>
                   ))}
 
-                  <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
+                  <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
                     <strong>محطات الحصة المسجلة للقفز السريع:</strong>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
                       {activeLesson.videoChapters?.map((ch, idx) => (
@@ -321,7 +321,7 @@ export default function Modals() {
 
                       {/* Drop Zone Box */}
                       <div style={{
-                        minHeight: '60px', background: 'white', border: '2px dashed var(--blue)',
+                        minHeight: '60px', background: 'var(--card-bg)', border: '2px dashed var(--blue)',
                         borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                         gap: '12px', padding: '10px', marginBottom: '16px'
                       }}>
@@ -332,7 +332,7 @@ export default function Modals() {
                             <span
                               key={idx}
                               style={{
-                                background: '#dbeafe', color: 'var(--blue)', padding: '8px 18px',
+                                background: 'var(--blue-light)', color: 'var(--blue)', padding: '8px 18px',
                                 borderRadius: '10px', fontSize: '22px', fontWeight: 800, border: '1px solid var(--line)'
                               }}
                             >
@@ -369,7 +369,7 @@ export default function Modals() {
                       </div>
 
                       {builderCompleted && (
-                        <div style={{ marginTop: '14px', color: '#16a34a', fontWeight: 800, fontSize: '15px' }}>
+                        <div style={{ marginTop: '14px', color: 'var(--green)', fontWeight: 800, fontSize: '15px' }}>
                           ✓ رائع جداً! تم تركيب «{activeLesson.interactiveBuilder.targetWord}» بنجاح!
                         </div>
                       )}
@@ -425,8 +425,8 @@ export default function Modals() {
                     </div>
 
                     {quizAnswered === 'correct' && !isLastQuestion && (
-                      <div style={{ background: '#ecfdf5', border: '2px solid #86efac', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
-                        <h4 style={{ color: '#166534', fontSize: '20px', marginBottom: '6px' }}>
+                      <div style={{ background: 'var(--green-light)', border: '2px solid var(--line)', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
+                        <h4 style={{ color: 'var(--green-text)', fontSize: '20px', marginBottom: '6px' }}>
                           {currentQ.celebration || 'إجابة صحيحة! أحسنت 🌟'}
                         </h4>
                         <button className="btn-accent" style={{ background: '#16a34a', color: 'white' }} onClick={() => { setQIndex(qIndex + 1); setQuizAnswered(null); }}>
@@ -436,9 +436,9 @@ export default function Modals() {
                     )}
 
                     {quizAnswered === 'correct' && isLastQuestion && (
-                      <div style={{ background: '#ecfdf5', border: '2px solid #86efac', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
-                        <h4 style={{ color: '#166534', fontSize: '20px', marginBottom: '6px' }}>أحسنت يا بطل! أتقنت المهارة بنسبة 100% ⭐</h4>
-                        <p style={{ color: '#166534', fontSize: '14px', marginBottom: '14px' }}>
+                      <div style={{ background: 'var(--green-light)', border: '2px solid var(--line)', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
+                        <h4 style={{ color: 'var(--green-text)', fontSize: '20px', marginBottom: '6px' }}>أحسنت يا بطل! أتقنت المهارة بنسبة 100% ⭐</h4>
+                        <p style={{ color: 'var(--green-text)', fontSize: '14px', marginBottom: '14px' }}>
                           تم منحك شارة الإتقان الذهبية وإضافة 30 نقطة فهم لحسابك!
                         </p>
                         <button className="btn-accent" style={{ background: '#16a34a', color: 'white' }} onClick={() => completeLessonMastery(activeLesson.id)}>
@@ -448,7 +448,7 @@ export default function Modals() {
                     )}
 
                     {quizAnswered === 'wrong' && (
-                      <div style={{ background: '#fff7ed', border: '2px solid #fed7aa', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
+                      <div style={{ background: 'var(--orange-light)', border: '2px solid var(--line)', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
                         <h4 style={{ color: '#9a3412', fontSize: '18px', marginBottom: '6px' }}>محاولة جيدة! قرّبت جداً من الحل الصحيح 💡</h4>
                         <p style={{ color: '#9a3412', fontSize: '13.5px', marginBottom: '14px' }}>
                           راجع فيديو الحصة المسجلة ثم أعد المحاولة دون أي قلق.
@@ -483,13 +483,13 @@ export default function Modals() {
               {studioActiveTab === 'guide' && activeLesson.parentGuide && (
                 <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'right' }}>
                   <div style={{
-                    background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '16px',
+                    background: 'var(--green-light)', border: '1.5px solid var(--line)', borderRadius: '16px',
                     padding: '20px', marginBottom: '24px'
                   }}>
-                    <h4 style={{ color: '#166534', fontSize: '16px', marginBottom: '6px' }}>
+                    <h4 style={{ color: 'var(--green-text)', fontSize: '16px', marginBottom: '6px' }}>
                       💡 خلاصة الهدف التربوي لولي الأمر:
                     </h4>
-                    <p style={{ color: '#15803d', fontSize: '14px', lineHeight: 1.6 }}>
+                    <p style={{ color: 'var(--green-text)', fontSize: '14px', lineHeight: 1.6 }}>
                       {activeLesson.parentGuide.summary}
                     </p>
                   </div>
@@ -503,7 +503,7 @@ export default function Modals() {
                       <div
                         key={idx}
                         style={{
-                          background: '#f8fafc', border: '1px solid var(--line)', borderRadius: '12px',
+                          background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '12px',
                           padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px'
                         }}
                       >
@@ -527,7 +527,7 @@ export default function Modals() {
       {/* 3. Parent Gate Modal */}
       {showGateModal && (
         <div className="modal-overlay">
-          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '30px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
             <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔒</div>
             <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>بوابة ولي الأمر</h3>
             <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '16px' }}>

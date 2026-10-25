@@ -169,13 +169,13 @@ export default function ParentDashboard() {
 
           {/* Active Child Summary Card */}
           <div style={{
-            background: 'var(--blue-light)', border: '1.5px solid #bfdbfe',
+            background: 'var(--blue-light)', border: '1.5px solid var(--blue-border)',
             borderRadius: 'var(--radius-md)', padding: '14px',
             display: 'flex', alignItems: 'center', gap: '12px'
           }}>
             <div style={{
               width: '44px', height: '44px', borderRadius: '50%',
-              background: '#dbeafe', border: '2px solid var(--blue)',
+              background: 'var(--blue-light)', border: '2px solid var(--blue)',
               display: 'grid', placeItems: 'center', fontSize: '22px'
             }}>
               {activeChild.avatar}
@@ -198,10 +198,10 @@ export default function ParentDashboard() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ fontSize: '20px' }}>🔥</span>
-                  <span style={{ fontWeight: 800, color: '#92400e', fontSize: '18px' }}>
+                  <span style={{ fontWeight: 800, color: 'var(--amber-text)', fontSize: '18px' }}>
                     {streak.currentStreak}
                   </span>
-                  <span style={{ fontWeight: 600, color: '#b45309', fontSize: '12px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--amber-text)', fontSize: '12px' }}>
                     {streak.currentStreak === 1 ? 'يوم' : 'أيام'}
                   </span>
                 </div>
@@ -216,7 +216,7 @@ export default function ParentDashboard() {
                   {streak.isActiveToday ? '✅ نشط' : '⏳ لم يبدأ'}
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: '#78350f' }}>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--amber-text)' }}>
                 <span>⭐ {streak.xpTotal} XP</span>
                 <span>🎖️ Lv.{streak.level}</span>
                 <span>🏆 أفضل: {streak.bestStreak}</span>
@@ -236,7 +236,7 @@ export default function ParentDashboard() {
           <button
             style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-              borderRadius: 'var(--radius-md)', background: 'transparent', color: '#475569',
+              borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--muted)',
               fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
             }}
             onClick={() => document.getElementById('live-schedule-section')?.scrollIntoView({ behavior: 'smooth' })}
@@ -246,7 +246,7 @@ export default function ParentDashboard() {
           <button
             style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-              borderRadius: 'var(--radius-md)', background: 'transparent', color: '#475569',
+              borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--muted)',
               fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
             }}
             onClick={() => document.getElementById('mastery-matrix-section')?.scrollIntoView({ behavior: 'smooth' })}
@@ -256,7 +256,7 @@ export default function ParentDashboard() {
           <button
             style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-              borderRadius: 'var(--radius-md)', background: 'transparent', color: '#475569',
+              borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--muted)',
               fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
             }}
             onClick={() => setCurrentScreen('pricing')}
@@ -314,7 +314,7 @@ export default function ParentDashboard() {
       {/* Main Content Area */}
       <main className="main-viewport">
         <header style={{
-          height: '72px', background: '#ffffff', borderBottom: '1px solid var(--line)',
+          height: '72px', background: 'var(--card-bg)', borderBottom: '1px solid var(--line)',
           padding: '0 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
         }}>
           <div>
@@ -325,7 +325,7 @@ export default function ParentDashboard() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <button className="tag-badge" style={{ background: '#f0fdf4', color: '#166534', cursor: 'pointer' }} onClick={() => setCurrentScreen('ai-tutor')}>
+            <button className="tag-badge" style={{ background: 'var(--green-light)', color: 'var(--green-text)', cursor: 'pointer' }} onClick={() => setCurrentScreen('ai-tutor')}>
               🤖 المعلم الذكي
             </button>
             <button className="tag-badge info" onClick={() => setCurrentScreen('pricing')}>
@@ -333,7 +333,7 @@ export default function ParentDashboard() {
             </button>
             <div style={{
               width: '40px', height: '40px', borderRadius: '50%',
-              background: '#dbeafe', color: 'var(--blue)', display: 'grid',
+              background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid',
               placeItems: 'center', fontWeight: 800
             }}>أ.م</div>
           </div>
@@ -343,17 +343,17 @@ export default function ParentDashboard() {
           
           {/* Missed Class Recovery Reassurance Alert */}
           <div style={{
-            background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 'var(--radius-md)',
+            background: 'var(--green-light)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)',
             padding: '14px 20px', marginBottom: '22px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ fontSize: '24px' }}>🛡️</span>
               <div>
-                <strong style={{ color: '#166534', fontSize: '13.5px', display: 'block' }}>
+                <strong style={{ color: 'var(--green-text)', fontSize: '13.5px', display: 'block' }}>
                   تغطية المنهج المصري المتكامل لأبنائنا بالخارج:
                 </strong>
-                <span style={{ color: '#15803d', fontSize: '12.5px' }}>
+                <span style={{ color: 'var(--green-text)', fontSize: '12.5px' }}>
                   تعرض المنصة مواد ودروسًا تجريبية؛ تتم مراجعة مطابقتها للمنهج قبل اعتماد المحتوى.
                 </span>
               </div>
@@ -398,7 +398,7 @@ export default function ParentDashboard() {
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>—</h3>
                 <small style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '12px' }}>يُحتسب بعد بدء الحصص المباشرة</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#ecfdf5', color: '#10b981', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🗓</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--green-light)', color: '#10b981', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🗓</div>
             </div>
 
             <div style={{
@@ -411,7 +411,7 @@ export default function ParentDashboard() {
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.done} / {childStats.total}</h3>
                 <small style={{ color: 'var(--green)', fontWeight: 600, fontSize: '12px' }}>⭐ درس متقن من المنهج المنشور</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#fefce8', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🏆</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--yellow-light)', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🏆</div>
             </div>
 
             <div style={{
@@ -437,7 +437,7 @@ export default function ParentDashboard() {
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.points} ⭐</h3>
                 <small style={{ color: 'var(--orange)', fontWeight: 600, fontSize: '12px' }}>🔥 {childStats.badges} شارات إتقان مكتسبة</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#fff7ed', color: '#ea580c', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--orange-light)', color: '#ea580c', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
             </div>
           </section>
 
@@ -445,7 +445,7 @@ export default function ParentDashboard() {
           <ExamAttemptsCard />
 
           <section style={{
-            background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)',
+            background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)',
             padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '30px'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
@@ -474,7 +474,7 @@ export default function ParentDashboard() {
                   key={idx}
                   style={{
                     border: '1.5px solid var(--line)', borderRadius: '16px', padding: '16px',
-                    background: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
+                    background: 'var(--bg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
                   }}
                 >
                   <div>
@@ -486,7 +486,7 @@ export default function ParentDashboard() {
                     <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '10px' }}>{evt.details}</p>
                   </div>
                   {evt.officialNote && (
-                    <div style={{ background: '#f0fdf4', padding: '8px 12px', borderRadius: '10px', fontSize: '11.5px', color: '#166534' }}>
+                    <div style={{ background: 'var(--green-light)', padding: '8px 12px', borderRadius: '10px', fontSize: '11.5px', color: 'var(--green-text)' }}>
                       🛡️ {evt.officialNote}
                     </div>
                   )}
@@ -496,7 +496,7 @@ export default function ParentDashboard() {
           </section>
 
           {/* 4. Two Columns: Multi-Subject Mastery Matrix & Recorded Archive */}
-          <section style={{ background: 'white', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '24px' }}>
+          <section style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', gap: '10px', flexWrap: 'wrap' }}>
               <div>
                 <h3 style={{ fontSize: '18px', color: 'var(--navy)', margin: 0 }}>سجل تعلّم {activeChild.name}</h3>
@@ -591,7 +591,7 @@ export default function ParentDashboard() {
       {/* Modal: Add Child */}
       {showAddChildModal && (
         <div className="modal-overlay">
-          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '440px', width: '100%' }}>
+          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '30px', maxWidth: '440px', width: '100%' }}>
             <h3 style={{ fontSize: '18px', marginBottom: '14px', color: 'var(--navy)' }}>إضافة طفل جديد للحساب 👶</h3>
             <form onSubmit={handleCreateChild}>
               <div style={{ marginBottom: '16px' }}>
@@ -609,7 +609,7 @@ export default function ParentDashboard() {
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>الصف الدراسي</label>
                 <select
-                  style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'white' }}
+                  style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'var(--card-bg)' }}
                   value={newChildGrade}
                   onChange={(e) => setNewChildGrade(e.target.value)}
                 >

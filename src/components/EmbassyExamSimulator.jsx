@@ -119,9 +119,9 @@ export default function EmbassyExamSimulator() {
   // Egyptian Color Band Assessment (Edu 2.0 system)
   const getAssessmentColorBand = (score) => {
     if (score >= 85) return { title: 'أداء متميز', color: 'var(--blue)', bg: 'var(--blue-light)', tag: 'متميز' };
-    if (score >= 65) return { title: 'أداء جيد', color: '#16a34a', bg: '#f0fdf4', tag: 'جيد' };
+    if (score >= 65) return { title: 'أداء جيد', color: 'var(--green)', bg: '#f0fdf4', tag: 'جيد' };
     if (score >= 50) return { title: 'يحتاج إلى مراجعة بسيطة', color: '#ca8a04', bg: '#fefce8', tag: 'مراجعة' };
-    return { title: 'يحتاج إلى دعم ومراجعة', color: '#dc2626', bg: '#fef2f2', tag: 'دعم' };
+    return { title: 'يحتاج إلى دعم ومراجعة', color: 'var(--red)', bg: '#fef2f2', tag: 'دعم' };
   };
 
   const currentBand = getAssessmentColorBand(percentage);
@@ -155,12 +155,12 @@ export default function EmbassyExamSimulator() {
             </div>
 
             <div style={{
-              background: 'white', color: 'var(--navy)', padding: '20px', borderRadius: '20px',
+              background: 'var(--card-bg)', color: 'var(--navy)', padding: '20px', borderRadius: '20px',
               textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', minWidth: '220px'
             }}>
               <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>بيانات الطالب المتقدم:</span>
               <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue)', marginTop: '4px' }}>{examChild.name}</div>
-              <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '2px' }}>{examChild.grade}</div>
+              <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '2px' }}>{examChild.grade}</div>
               <div style={{ fontSize: '11px', background: 'var(--bg)', padding: '4px 8px', borderRadius: '6px', marginTop: '10px', color: 'var(--navy)' }}>
                 محاكاة تدريبية — ليست رقم جلوس رسمياً
               </div>
@@ -169,7 +169,7 @@ export default function EmbassyExamSimulator() {
 
           {/* Exam Rules & Instructions Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-            <div style={{ background: 'white', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>⏱️</div>
               <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>زمن الامتحان: 25 دقيقة</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
@@ -177,7 +177,7 @@ export default function EmbassyExamSimulator() {
               </p>
             </div>
 
-            <div style={{ background: 'white', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>📚</div>
               <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>10 أسئلة مجمعة وشاملة</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
@@ -185,7 +185,7 @@ export default function EmbassyExamSimulator() {
               </p>
             </div>
 
-            <div style={{ background: 'white', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>🖨️</div>
               <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>تقرير نتيجة الاختبار التدريبي</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
@@ -196,7 +196,7 @@ export default function EmbassyExamSimulator() {
 
           {/* Launch Exam CTA */}
           <div style={{
-            background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: 'var(--radius-lg)',
+            background: 'var(--bg)', border: '2px dashed var(--line)', borderRadius: 'var(--radius-lg)',
             padding: '30px', textAlign: 'center'
           }}>
             <h3 style={{ fontSize: '20px', color: 'var(--navy)', marginBottom: '10px' }}>
@@ -227,12 +227,12 @@ export default function EmbassyExamSimulator() {
         <div>
           {/* Top Sticky Official Exam Bar */}
           <div style={{
-            background: 'white', border: '2px solid #e2e8f0', borderRadius: '20px',
+            background: 'var(--card-bg)', border: '2px solid var(--line)', borderRadius: '20px',
             padding: '14px 24px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between',
             alignItems: 'center', boxShadow: '0 8px 20px rgba(0,0,0,0.06)', flexWrap: 'wrap', gap: '12px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#fef2f2', color: '#be123c', display: 'grid', placeItems: 'center', fontSize: '20px', fontWeight: 900 }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--red-light)', color: '#be123c', display: 'grid', placeItems: 'center', fontSize: '20px', fontWeight: 900 }}>
                 🇪🇬
               </div>
               <div>
@@ -270,7 +270,7 @@ export default function EmbassyExamSimulator() {
 
           {/* Questions Navigation Palette */}
           <div style={{
-            background: 'white', border: '1px solid var(--line)', borderRadius: '16px',
+            background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: '16px',
             padding: '12px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px'
           }}>
@@ -301,7 +301,7 @@ export default function EmbassyExamSimulator() {
 
           {/* Current Question Box */}
           <div style={{
-            background: 'white', border: '2px solid var(--line)', borderRadius: '24px',
+            background: 'var(--card-bg)', border: '2px solid var(--line)', borderRadius: '24px',
             padding: '32px', boxShadow: 'var(--shadow-md)', marginBottom: '24px'
           }}>
             {/* Subject Tag */}
@@ -351,7 +351,7 @@ export default function EmbassyExamSimulator() {
                     <div style={{
                       width: '24px', height: '24px', borderRadius: '50%',
                       border: isSelected ? '7px solid var(--blue)' : '2px solid #94a3b8',
-                      background: 'white'
+                      background: 'var(--card-bg)'
                     }}></div>
                     <span style={{ fontSize: '20px' }}>{opt.icon}</span>
                     <span style={{ fontSize: '16px', fontWeight: isSelected ? 800 : 600, color: isSelected ? 'var(--blue)' : 'var(--navy)' }}>
@@ -403,7 +403,7 @@ export default function EmbassyExamSimulator() {
         <div>
           {/* Official Diploma Header */}
           <div style={{
-            background: 'white', border: '4px double #d97706', borderRadius: '24px',
+            background: 'var(--card-bg)', border: '4px double #d97706', borderRadius: '24px',
             padding: '36px', boxShadow: '0 20px 50px rgba(0,0,0,0.1)', marginBottom: '30px',
             position: 'relative'
           }}>
@@ -411,7 +411,7 @@ export default function EmbassyExamSimulator() {
             <div style={{ textAlign: 'center', borderBottom: '2px solid var(--line)', paddingBottom: '20px', marginBottom: '24px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <span style={{ fontSize: '26px' }}>🦅</span>
-                <span style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.5px', color: '#1e293b' }}>
+                <span style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '0.5px', color: 'var(--navy)' }}>
                   منصة فاهم — تقرير تدريبي
                 </span>
                 <span style={{ fontSize: '26px' }}>🇪🇬</span>
@@ -429,10 +429,10 @@ export default function EmbassyExamSimulator() {
               display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
               gap: '18px', marginBottom: '26px'
             }}>
-              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+              <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>اسم الطالب:</span>
                 <strong style={{ fontSize: '17px', color: 'var(--navy)' }}>{examChild.name}</strong>
-                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>المرحلة: {examChild.grade} (المنهج المصري)</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>المرحلة: {examChild.grade} (المنهج المصري)</div>
               </div>
 
               <div style={{ background: currentBand.bg, padding: '16px', borderRadius: '12px', border: `2px solid ${currentBand.color}` }}>
@@ -443,10 +443,10 @@ export default function EmbassyExamSimulator() {
                 </div>
               </div>
 
-              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+              <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>حالة المحاولة:</span>
-                <strong style={{ fontSize: '17px', color: '#16a34a' }}>✓ أجاب عن {attemptedCount} من {totalQuestions}</strong>
-                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>ملخص تعليمي غير رسمي</div>
+                <strong style={{ fontSize: '17px', color: 'var(--green)' }}>✓ أجاب عن {attemptedCount} من {totalQuestions}</strong>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>ملخص تعليمي غير رسمي</div>
               </div>
             </div>
 
@@ -456,11 +456,11 @@ export default function EmbassyExamSimulator() {
             </h4>
             <div style={{ background: 'var(--blue-light)', border: '1px solid var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '24px' }}>
               <strong style={{ color: '#1e3a8a' }}>نتيجة المحاولة الحالية: {correctCount} من {totalQuestions} ({percentage}%)</strong>
-              <p style={{ color: '#475569', fontSize: '13px', margin: '6px 0 0' }}>يعرض التقرير نتيجة الاختبار الذي أجراه الطالب فقط.</p>
+              <p style={{ color: 'var(--muted)', fontSize: '13px', margin: '6px 0 0' }}>يعرض التقرير نتيجة الاختبار الذي أجراه الطالب فقط.</p>
             </div>
 
             {/* Official Stamp & Signatures */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '2px dashed #cbd5e1', flexWrap: 'wrap', gap: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '20px', borderTop: '2px dashed var(--line)', flexWrap: 'wrap', gap: '20px' }}>
               <div>
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>نوع التقرير:</span>
                 <div style={{

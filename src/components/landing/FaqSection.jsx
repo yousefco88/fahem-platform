@@ -7,11 +7,11 @@ export default function FaqSection() {
   const { badge, title, items: faqs } = settings.faq;
 
   return (
-    <section id="faq" style={{ padding: '70px 24px', background: 'white' }}>
+    <section id="faq" style={{ padding: '70px 24px', background: 'var(--card-bg)' }}>
       <div style={{ maxWidth: '850px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <span className="tag-badge info" style={{ marginBottom: '8px' }}>{badge}</span>
-          <h2 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a' }}>
+          <h2 style={{ fontSize: '30px', fontWeight: 900, color: 'var(--navy)' }}>
             {title}
           </h2>
         </div>
@@ -29,7 +29,7 @@ export default function FaqSection() {
                 style={{
                   width: '100%', padding: '18px 20px', background: 'none', border: 'none',
                   textAlign: 'right', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  fontWeight: 800, fontSize: '15px', color: '#0f172a', cursor: 'pointer'
+                  fontWeight: 800, fontSize: '15px', color: 'var(--navy)', cursor: 'pointer'
                 }}
                 onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
               >
@@ -37,7 +37,7 @@ export default function FaqSection() {
                 <span style={{ fontSize: '18px', color: 'var(--blue)' }}>{openFaq === i ? '−' : '+'}</span>
               </button>
               {openFaq === i && (
-                <div style={{ padding: '0 20px 18px', color: '#475569', fontSize: '14px', lineHeight: 1.6 }}>
+                <div style={{ padding: '0 20px 18px', color: 'var(--muted)', fontSize: '14px', lineHeight: 1.6 }}>
                   {faq.a}
                 </div>
               )}

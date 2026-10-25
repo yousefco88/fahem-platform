@@ -18,14 +18,14 @@ export default function HeroSection() {
 
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: '#e0e7ff', color: '#3730a3', padding: '6px 18px',
+          background: 'var(--blue-light)', color: '#3730a3', padding: '6px 18px',
           borderRadius: 'var(--radius-full)', fontSize: 'clamp(11px, 2.5vw, 13px)', fontWeight: 800, marginBottom: '24px'
         }}>
           <span>{hero.badge}</span>
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 900, color: '#0f172a', lineHeight: 1.25,
+          fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.25,
           marginBottom: '20px', letterSpacing: '-0.5px', textShadow: '0 1px 2px rgba(0,0,0,0.05)'
         }}>
           {hero.titleLine1} <br />
@@ -35,7 +35,7 @@ export default function HeroSection() {
         </h1>
 
         <p style={{
-          fontSize: 'clamp(14px, 3vw, 18px)', color: '#475569', lineHeight: 1.7, maxWidth: '780px',
+          fontSize: 'clamp(14px, 3vw, 18px)', color: 'var(--muted)', lineHeight: 1.7, maxWidth: '780px',
           margin: '0 auto 36px'
         }}>
           {hero.subtitle}
@@ -57,7 +57,7 @@ export default function HeroSection() {
 
           <button
             style={{
-              background: 'white', color: '#0f172a', border: '2px solid #cbd5e1',
+              background: 'var(--card-bg)', color: 'var(--navy)', border: '2px solid var(--line)',
               fontSize: 'clamp(13px, 2.5vw, 16px)', padding: 'clamp(12px, 3vw, 16px) clamp(16px, 4vw, 28px)', borderRadius: 'var(--radius-full)',
               fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
               boxShadow: 'var(--shadow-sm)'
@@ -72,31 +72,31 @@ export default function HeroSection() {
         {/* Product Preview — مبني من مكونات حقيقية موجودة في المنصة */}
         <div style={{
           maxWidth: '760px', margin: '0 auto 40px', borderRadius: '20px', overflow: 'hidden',
-          border: '1px solid #e2e8f0', boxShadow: '0 25px 60px -15px rgba(30, 58, 138, 0.25)',
-          background: 'white', textAlign: 'right'
+          border: '1px solid var(--line)', boxShadow: '0 25px 60px -15px rgba(30, 58, 138, 0.25)',
+          background: 'var(--card-bg)', textAlign: 'right'
         }}>
           {/* window bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 14px', background: 'var(--bg)', borderBottom: '1px solid var(--line)' }}>
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f87171' }} />
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24' }} />
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#34d399' }} />
-            <span style={{ marginRight: 'auto', fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>fahem-platform.vercel.app</span>
+            <span style={{ marginRight: 'auto', fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>fahem-platform.vercel.app</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', padding: '18px' }}>
             <div style={{ background: 'linear-gradient(135deg, #eef2ff, #e0e7ff)', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🦊</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: '#0f172a', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
-              <div style={{ fontSize: '11.5px', color: '#475569' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>📊</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: '#0f172a', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
-              <div style={{ fontSize: '11.5px', color: '#475569' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, #fef2f2, #fee2e2)', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🇪🇬</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: '#0f172a', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
-              <div style={{ fontSize: '11.5px', color: '#475569' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
+              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function HeroSection() {
         {/* Social Proof Strip - Horizontal Scroll on Mobile */}
         <div style={{
           display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'clamp(16px, 4vw, 32px)',
-          flexWrap: 'nowrap', paddingTop: '20px', borderTop: '1px solid #e2e8f0', color: '#64748b',
+          flexWrap: 'nowrap', paddingTop: '20px', borderTop: '1px solid var(--line)', color: 'var(--muted)',
           fontSize: 'clamp(11px, 2.5vw, 13.5px)', overflowX: 'auto', WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none', msOverflowStyle: 'none'
         }}>

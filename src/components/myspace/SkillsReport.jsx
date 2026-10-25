@@ -94,7 +94,7 @@ export default function SkillsReport() {
     <section style={card} dir="rtl">
       <h2 style={{ fontSize: 17, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
         🎯 تقرير المهارات
-        <span style={{ fontSize: 11, background: 'var(--yellow-light)', color: '#b45309', padding: '2px 8px', borderRadius: 8, fontWeight: 700 }}>
+        <span style={{ fontSize: 11, background: 'var(--yellow-light)', color: 'var(--amber-text)', padding: '2px 8px', borderRadius: 8, fontWeight: 700 }}>
           من المحاولات التدريبية — غير رسمي
         </span>
       </h2>
@@ -135,7 +135,7 @@ export default function SkillsReport() {
             </div>
 
             {weak.length > 0 && (
-              <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 10, padding: '8px 12px', fontSize: 12.5, color: '#9a3412', marginBottom: 10 }}>
+              <div style={{ background: 'var(--orange-light)', border: '1px solid var(--line)', borderRadius: 10, padding: '8px 12px', fontSize: 12.5, color: '#9a3412', marginBottom: 10 }}>
                 💡 تحتاج تركيزاً: {weak.map(r => r.skill).join('، ')}
               </div>
             )}

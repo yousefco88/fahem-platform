@@ -25,13 +25,13 @@
 .curriculum-header h2 {
   margin: 0;
   font-size: 1.5rem;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--navy);
 }
 
 .header-subject {
   font-size: 1rem;
   font-weight: normal;
-  color: var(--text-muted, #666);
+  color: var(--muted);
   margin-inline-start: 0.5rem;
 }
 
@@ -47,9 +47,9 @@
 
 .curriculum-table-wrapper {
   overflow-x: auto;
-  border: 1px solid var(--border, #e5e5e5);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--bg-card, #fff);
+  background: var(--card-bg);
 }
 
 .curriculum-table {
@@ -62,18 +62,18 @@
 .curriculum-table td {
   padding: 0.75rem 1rem;
   text-align: start;
-  border-bottom: 1px solid var(--border, #e5e5e5);
+  border-bottom: 1px solid var(--line);
 }
 
 .curriculum-table th {
-  background: var(--bg-muted, #f5f5f5);
+  background: var(--bg);
   font-weight: 600;
-  color: var(--text-muted, #666);
+  color: var(--muted);
   font-size: 0.85rem;
 }
 
 .curriculum-table tbody tr:hover {
-  background: var(--bg-hover, #fafafa);
+  background: var(--bg);
 }
 
 .curriculum-table tbody tr:last-child td {
@@ -81,17 +81,17 @@
 }
 
 .unpublished-row {
-  background: var(--bg-muted, #f5f5f5);
+  background: var(--bg);
   opacity: 0.7;
 }
 
 .editing-row {
-  background: var(--bg-highlight, #fffbeb) !important;
+  background: var(--yellow-light) !important;
 }
 
 .curriculum-table code {
   font-size: 0.8rem;
-  background: var(--bg-muted, #f0f0f0);
+  background: var(--bg);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
 }
@@ -116,7 +116,7 @@
    ============================================================================ */
 
 .btn-primary {
-  background: var(--accent, #2563eb);
+  background: var(--blue);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -128,7 +128,7 @@
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-hover, #1d4ed8);
+  background: var(--blue-dark);
 }
 
 .btn-primary:disabled {
@@ -147,8 +147,8 @@
 }
 
 .btn-muted {
-  background: var(--bg-muted, #e5e5e5);
-  color: var(--text-muted, #666);
+  background: var(--bg);
+  color: var(--muted);
   border: none;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
@@ -176,7 +176,7 @@
 }
 
 .btn-danger {
-  color: #dc2626;
+  color: var(--red);
 }
 
 /* ============================================================================
@@ -195,13 +195,13 @@
 }
 
 .badge-success {
-  background: #dcfce7;
-  color: #16a34a;
+  background: var(--green-light);
+  color: var(--green);
 }
 
 .badge-muted {
-  background: var(--bg-muted, #e5e5e5);
-  color: var(--text-muted, #666);
+  background: var(--bg);
+  color: var(--muted);
 }
 
 .badge:hover {
@@ -223,7 +223,7 @@
 .tab-panel select,
 .tab-panel textarea {
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--border, #d1d5db);
+  border: 1px solid var(--line);
   border-radius: 4px;
   font-size: 0.85rem;
   font-family: inherit;
@@ -250,7 +250,7 @@
 .grade-filter,
 .subject-filter {
   padding: 0.5rem 0.8rem;
-  border: 1px solid var(--border, #d1d5db);
+  border: 1px solid var(--line);
   border-radius: 6px;
   font-size: 0.9rem;
   min-width: 180px;
@@ -262,7 +262,7 @@
 
 .lessons-link,
 .lesson-title-link {
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
   text-decoration: none;
   font-weight: 500;
 }
@@ -281,12 +281,12 @@
 .empty-state {
   padding: 3rem;
   text-align: center;
-  color: var(--text-muted, #666);
+  color: var(--muted);
 }
 
 .curriculum-error {
-  color: #dc2626;
-  background: #fef2f2;
+  color: var(--red);
+  background: var(--red-light);
   border-radius: 8px;
 }
 
@@ -320,13 +320,13 @@
 }
 
 .back-link {
-  color: var(--text-muted, #666);
+  color: var(--muted);
   text-decoration: none;
   font-size: 0.9rem;
 }
 
 .back-link:hover {
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
 }
 
 .editor-title h2 {
@@ -344,7 +344,7 @@
 .editor-tabs {
   display: flex;
   gap: 0.25rem;
-  border-bottom: 2px solid var(--border, #e5e5e5);
+  border-bottom: 2px solid var(--line);
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
@@ -355,26 +355,26 @@
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   cursor: pointer;
-  color: var(--text-muted, #666);
+  color: var(--muted);
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
   transition: all 0.2s;
 }
 
 .tab-btn:hover {
-  color: var(--text-primary, #1a1a1a);
+  color: var(--navy);
 }
 
 .tab-btn.active {
-  color: var(--accent, #2563eb);
-  border-bottom-color: var(--accent, #2563eb);
+  color: var(--blue-text);
+  border-bottom-color: var(--blue);
   font-weight: 500;
 }
 
 /* Tab Panel */
 .tab-panel {
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border, #e5e5e5);
+  background: var(--card-bg);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 1.5rem;
 }
@@ -387,7 +387,7 @@
   display: block;
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--navy);
 }
 
 .form-row {
@@ -466,11 +466,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--border, #d1d5db);
+  border: 2px solid var(--line);
   border-radius: 50%;
   cursor: pointer;
   font-size: 0.8rem;
-  color: #16a34a;
+  color: var(--green);
 }
 
 .choice-radio input {
@@ -479,11 +479,11 @@
 
 .correct-choice {
   border-color: #16a34a !important;
-  background: #f0fdf4;
+  background: var(--green-light);
 }
 
 .hint {
-  color: var(--text-muted, #666);
+  color: var(--muted);
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
@@ -492,7 +492,7 @@
 .word-preview {
   margin-top: 1rem;
   padding: 1rem;
-  background: var(--bg-muted, #f5f5f5);
+  background: var(--bg);
   border-radius: 8px;
 }
 
@@ -504,7 +504,7 @@
 }
 
 .segment-chip {
-  background: var(--accent, #2563eb);
+  background: var(--blue);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -515,16 +515,16 @@
 .correct-word {
   margin-top: 0.75rem;
   font-size: 1.1rem;
-  color: #16a34a;
+  color: var(--green);
 }
 
 /* Parent Guide Sections */
 .section-editor {
-  border: 1px solid var(--border, #e5e5e5);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 0.75rem;
-  background: var(--bg-muted, #fafafa);
+  background: var(--bg);
 }
 
 .section-editor input,
@@ -548,7 +548,7 @@
 .preview-link {
   display: inline-block;
   margin-top: 0.5rem;
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
   text-decoration: none;
   font-size: 0.9rem;
 }
@@ -608,34 +608,34 @@
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   padding: 0.75rem 1rem;
-  background: var(--bg-muted, #f5f5f5);
+  background: var(--bg);
   border-radius: 8px;
   font-size: 0.9rem;
 }
 
 .curriculum-nav a {
-  color: var(--text-muted, #666);
+  color: var(--muted);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .curriculum-nav a:hover {
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
 }
 
 .curriculum-nav .nav-active {
   font-weight: 600;
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
 }
 
 .curriculum-nav .nav-arrow {
-  color: var(--text-muted, #999);
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
 /* Lessons link in tables */
 .lessons-link {
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
   text-decoration: none;
   font-size: 0.85rem;
 }
@@ -659,8 +659,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: var(--bg-success-light, #ecfdf5);
-  border: 1px solid var(--border-success, #86efac);
+  background: var(--green-light);
+  border: 1px solid var(--line);
   border-radius: 8px;
 }
 
@@ -670,7 +670,7 @@
 
 .current-file .file-link {
   flex: 1;
-  color: var(--text-success, #16a34a);
+  color: var(--green-text);
   text-decoration: none;
 }
 
@@ -679,14 +679,14 @@
 }
 
 .upload-zone {
-  border: 2px dashed var(--border, #e5e7eb);
+  border: 2px dashed var(--line);
   border-radius: 12px;
   transition: border-color 0.2s, background-color 0.2s;
 }
 
 .upload-zone:hover {
-  border-color: var(--accent, #2563eb);
-  background: var(--bg-muted, #f9fafb);
+  border-color: var(--blue);
+  background: var(--bg);
 }
 
 .upload-label {
@@ -715,34 +715,34 @@
 
 .upload-hint {
   font-size: 0.8rem;
-  color: var(--text-muted, #6b7280);
+  color: var(--muted);
 }
 
 .upload-progress {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--accent, #2563eb);
+  color: var(--blue-text);
 }
 
 .progress-bar {
   height: 4px;
-  background: var(--bg-muted, #e5e7eb);
+  background: var(--bg);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--accent, #2563eb);
+  background: var(--blue);
   transition: width 0.2s ease;
 }
 
 .upload-error {
   padding: 0.75rem 1rem;
-  background: var(--bg-danger-light, #fef2f2);
-  border: 1px solid var(--border-danger, #fecaca);
+  background: var(--red-light);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: var(--text-danger, #dc2626);
+  color: var(--red-text);
   font-size: 0.9rem;
 }
 
@@ -760,7 +760,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
-  border: 2px solid var(--border, #e5e7eb);
+  border: 2px solid var(--line);
   border-radius: 12px;
   cursor: pointer;
   font-size: 1.1rem;
@@ -768,14 +768,14 @@
 }
 
 .tf-option:hover {
-  border-color: var(--accent, #2563eb);
-  background: var(--bg-muted, #f9fafb);
+  border-color: var(--blue);
+  background: var(--bg);
 }
 
 .tf-option.selected {
-  border-color: var(--accent, #2563eb);
-  background: var(--bg-accent-light, #eff6ff);
-  color: var(--accent, #2563eb);
+  border-color: var(--blue);
+  background: var(--blue-light);
+  color: var(--blue-text);
   font-weight: 600;
 }
 
@@ -794,7 +794,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem;
-  background: var(--bg-muted, #f9fafb);
+  background: var(--bg);
   border-radius: 8px;
 }
 
@@ -804,7 +804,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent, #2563eb);
+  background: var(--blue);
   color: white;
   border-radius: 50%;
   font-weight: 600;

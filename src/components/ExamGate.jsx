@@ -55,7 +55,7 @@ export default function ExamGate({ children }) {
         </p>
         {progress.subjectTitle && (
           <div style={{ margin: '14px 0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 800, color: '#0f172a', marginBottom: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 800, color: 'var(--navy)', marginBottom: '6px' }}>
               <span>الأقرب للاكتمال: {progress.subjectTitle}</span>
               <span>{progress.done}/{progress.total} دروس</span>
             </div>
@@ -78,14 +78,14 @@ const wrap = {
   minHeight: '60vh', display: 'grid', placeItems: 'center', padding: '30px 16px'
 };
 const card = {
-  background: 'var(--card-bg, #fff)', border: '1px solid var(--line, #e2e8f0)',
+  background: 'var(--card-bg, var(--card-bg))', border: '1px solid var(--line, var(--line))',
   borderRadius: '20px', padding: '34px 28px', maxWidth: '440px', width: '100%',
   textAlign: 'center', boxShadow: '0 10px 30px rgba(15,23,42,0.08)'
 };
-const title = { fontSize: '20px', fontWeight: 900, color: 'var(--navy, #0f172a)', marginBottom: '8px' };
-const text = { fontSize: '13.5px', color: 'var(--muted, #64748b)', lineHeight: 1.8, marginBottom: '8px' };
+const title = { fontSize: '20px', fontWeight: 900, color: 'var(--navy, var(--navy))', marginBottom: '8px' };
+const text = { fontSize: '13.5px', color: 'var(--muted, var(--muted))', lineHeight: 1.8, marginBottom: '8px' };
 const btnPrimary = {
-  marginTop: '10px', border: 'none', background: '#2563eb', color: '#fff',
+  marginTop: '10px', border: 'none', background: 'var(--blue)', color: '#fff',
   borderRadius: '12px', padding: '12px 24px', fontWeight: 800, fontSize: '14px',
   cursor: 'pointer', fontFamily: 'inherit'
 };

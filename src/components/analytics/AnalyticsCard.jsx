@@ -32,7 +32,7 @@ export default function AnalyticsCard({ title, value, hint, icon, trend, color =
   const c = COLORS[color] || COLORS.blue;
   return (
     <div style={{
-      background: 'var(--card-bg, #fff)', border: '1px solid var(--line, #e2e8f0)',
+      background: 'var(--card-bg, var(--card-bg))', border: '1px solid var(--line, var(--line))',
       borderRadius: 16, padding: '16px 18px', minWidth: 0,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
@@ -42,10 +42,10 @@ export default function AnalyticsCard({ title, value, hint, icon, trend, color =
         }}>{icon}</span>
         <Sparkline trend={trend} color={c.text} />
       </div>
-      <div style={{ fontSize: 12.5, color: 'var(--muted, #64748b)', fontWeight: 700, marginBottom: 2 }}>{title}</div>
+      <div style={{ fontSize: 12.5, color: 'var(--muted, var(--muted))', fontWeight: 700, marginBottom: 2 }}>{title}</div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 26, fontWeight: 900, color: c.text }}>{value}</span>
-        {hint && <span style={{ fontSize: 11.5, color: 'var(--muted, #94a3b8)' }}>{hint}</span>}
+        {hint && <span style={{ fontSize: 11.5, color: 'var(--muted, var(--muted))' }}>{hint}</span>}
       </div>
     </div>
   );

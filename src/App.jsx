@@ -8,6 +8,7 @@ import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsCon
 import AuthGate from './components/AuthGate';
 import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
+import { ThemeToggle } from './context/ThemeContext';
 import RequireChild from './components/RequireChild';
 import ExamGate from './components/ExamGate';
 import Modals from './components/Modals';
@@ -26,7 +27,7 @@ const AnalyticsDashboard = lazy(() => import('./components/analytics/AnalyticsDa
 
 function ScreenFallback() {
   return (
-    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', color: 'var(--text-muted, #64748b)' }}>
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', color: 'var(--muted)' }}>
       جارٍ التحميل…
     </div>
   );
@@ -115,6 +116,7 @@ function MainAppContent() {
       <Modals />
 
       {/* Mobile Bottom Navigation */}
+      <ThemeToggle />
       <BottomNav />
 
       {/* Global Toast Alert */}

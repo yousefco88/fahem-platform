@@ -11,10 +11,10 @@ import { useAuth } from '../../context/AuthContext';
 import AnalyticsCard from './AnalyticsCard';
 
 const CARD = {
-  background: 'var(--card-bg, #fff)', border: '1px solid var(--line, #e2e8f0)',
+  background: 'var(--card-bg, var(--card-bg))', border: '1px solid var(--line, var(--line))',
   borderRadius: 16, padding: 20, minWidth: 0,
 };
-const H3 = { fontSize: 15.5, fontWeight: 900, color: 'var(--navy, #0f172a)', margin: '0 0 14px' };
+const H3 = { fontSize: 15.5, fontWeight: 900, color: 'var(--navy, var(--navy))', margin: '0 0 14px' };
 const MUTED = 'var(--muted, #64748b)';
 const DONUT_COLORS = ['#2563eb', '#16a34a', '#ea580c', '#9333ea', '#0d9488', '#dc2626'];
 
@@ -42,14 +42,14 @@ function BarChart({ data, title }) {
                 width: 110, fontSize: 12.5, color: MUTED, fontWeight: 700,
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 0,
               }} title={item.label}>{item.label}</span>
-              <div style={{ flex: 1, height: 26, background: 'var(--bg, #f1f5f9)', borderRadius: 8, overflow: 'hidden' }}>
+              <div style={{ flex: 1, height: 26, background: 'var(--bg, var(--bg))', borderRadius: 8, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', width: `${(item.value / max) * 100}%`,
                   background: 'linear-gradient(to left, #2563eb, #3b82f6)',
                   borderRadius: 8, transition: 'width 0.5s ease',
                 }} />
               </div>
-              <span style={{ width: 34, fontSize: 13, fontWeight: 900, color: 'var(--navy, #0f172a)', textAlign: 'left', flexShrink: 0 }}>
+              <span style={{ width: 34, fontSize: 13, fontWeight: 900, color: 'var(--navy, var(--navy))', textAlign: 'left', flexShrink: 0 }}>
                 {item.value}
               </span>
             </div>
@@ -87,7 +87,7 @@ function DonutChart({ data, title, centerLabel }) {
               position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: 'var(--navy, #0f172a)' }}>{total}</span>
+              <span style={{ fontSize: 22, fontWeight: 900, color: 'var(--navy, var(--navy))' }}>{total}</span>
               <span style={{ fontSize: 10.5, color: MUTED }}>{centerLabel}</span>
             </div>
           </div>
@@ -99,7 +99,7 @@ function DonutChart({ data, title, centerLabel }) {
                   background: DONUT_COLORS[idx % DONUT_COLORS.length],
                 }} />
                 <span style={{ flex: 1, fontSize: 12.5, color: MUTED }}>{item.label}</span>
-                <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--navy, #0f172a)' }}>{item.value}</span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--navy, var(--navy))' }}>{item.value}</span>
               </div>
             ))}
           </div>
@@ -120,11 +120,11 @@ function ActivityTimeline({ activities }) {
           {activities.map((a, idx) => (
             <div key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
               <span style={{
-                width: 32, height: 32, borderRadius: '50%', background: '#eff6ff',
+                width: 32, height: 32, borderRadius: '50%', background: 'var(--blue-light)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0,
               }}>{a.icon}</span>
               <div style={{ minWidth: 0 }}>
-                <p style={{ margin: 0, fontSize: 13, color: 'var(--navy, #0f172a)', fontWeight: 700 }}>{a.text}</p>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--navy, var(--navy))', fontWeight: 700 }}>{a.text}</p>
                 <p style={{ margin: 0, fontSize: 11.5, color: MUTED }}>{a.time}</p>
               </div>
             </div>
@@ -253,7 +253,7 @@ export default function AnalyticsDashboard() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 320, gap: 12, color: MUTED }} dir="rtl">
         <div className="spinner" style={{
-          width: 42, height: 42, border: '4px solid #e2e8f0', borderTopColor: '#2563eb',
+          width: 42, height: 42, border: '4px solid var(--line)', borderTopColor: '#2563eb',
           borderRadius: '50%', animation: 'spin 0.8s linear infinite',
         }} />
         <span style={{ fontSize: 13.5, fontWeight: 700 }}>جارٍ تحميل التحليلات…</span>
@@ -265,9 +265,9 @@ export default function AnalyticsDashboard() {
     return (
       <div dir="rtl" style={{ ...CARD, textAlign: 'center', margin: '24px auto', maxWidth: 480, padding: 32 }}>
         <div style={{ fontSize: 36, marginBottom: 8 }}>⚠️</div>
-        <p style={{ color: 'var(--navy, #0f172a)', fontWeight: 800, fontSize: 14.5, margin: '0 0 16px' }}>{error}</p>
+        <p style={{ color: 'var(--navy, var(--navy))', fontWeight: 800, fontSize: 14.5, margin: '0 0 16px' }}>{error}</p>
         <button onClick={loadAnalytics} style={{
-          border: 'none', background: '#2563eb', color: '#fff', borderRadius: 10,
+          border: 'none', background: 'var(--blue)', color: '#fff', borderRadius: 10,
           padding: '10px 22px', fontWeight: 800, fontSize: 13.5, cursor: 'pointer', fontFamily: 'inherit',
         }}>🔄 إعادة المحاولة</button>
       </div>
@@ -281,7 +281,7 @@ export default function AnalyticsDashboard() {
       {/* الترويسة + فلتر فترة فعّال */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
-          <h2 style={{ fontSize: 21, fontWeight: 900, color: 'var(--navy, #0f172a)', margin: 0 }}>📊 لوحة التحليلات</h2>
+          <h2 style={{ fontSize: 21, fontWeight: 900, color: 'var(--navy, var(--navy))', margin: 0 }}>📊 لوحة التحليلات</h2>
           {updatedAt && (
             <span style={{ fontSize: 11.5, color: MUTED }}>
               آخر تحديث: {updatedAt.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
@@ -290,7 +290,7 @@ export default function AnalyticsDashboard() {
             </span>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 4, background: 'var(--bg, #f1f5f9)', borderRadius: 12, padding: 4 }}>
+        <div style={{ display: 'flex', gap: 4, background: 'var(--bg, var(--bg))', borderRadius: 12, padding: 4 }}>
           {PERIODS.map(p => (
             <button key={p.key} onClick={() => setPeriod(p.key)} style={{
               border: 'none', borderRadius: 9, padding: '8px 16px', fontSize: 13, fontWeight: 800,

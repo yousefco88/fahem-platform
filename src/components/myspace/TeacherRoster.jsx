@@ -5,9 +5,9 @@ import { useApp } from '../../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { uploadLessonRecording } from '../../hooks/useLessonRecordings';
 
-const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
+const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
-const muted = { color: '#475569', fontSize: 13.5 };
+const muted = { color: 'var(--muted)', fontSize: 13.5 };
 const tabBtn = (on) => ({ padding: '8px 14px', borderRadius: 10, border: '1px solid var(--line)', cursor: 'pointer', font: 'inherit', fontSize: 13.5, background: on ? '#1d4ed8' : '#f8fafc', color: on ? 'white' : '#0f172a' });
 
 // طلاب المعلم = من أسندهم له المسؤول فقط (teacher_students). حصصه = schedule_slots.teacher_id.
@@ -59,7 +59,7 @@ export default function TeacherRoster() {
         <button style={tabBtn(tab === 'students')} onClick={() => setTab('students')}>👧 طلابي</button>
         <button style={tabBtn(tab === 'classes')} onClick={() => setTab('classes')}>🗓️ حصصي</button>
       </div>
-      {err && <p role="alert" style={{ ...muted, color: '#b91c1c' }}>{err}</p>}
+      {err && <p role="alert" style={{ ...muted, color: 'var(--red-text)' }}>{err}</p>}
       {tab === 'students' && (
         <>
           <h2 style={h2}>طلابي ({students?.length ?? '…'})</h2>

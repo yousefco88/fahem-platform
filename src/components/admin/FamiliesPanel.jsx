@@ -60,7 +60,7 @@ export default function FamiliesPanel() {
       {state === 'loading' && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ تحميل الأسر…</div>}
 
       {state === 'error' && (
-        <div style={{ padding: '20px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '14px', color: '#b91c1c', fontWeight: 700, fontSize: '13px' }}>
+        <div style={{ padding: '20px', background: 'var(--red-light)', border: '1px solid var(--line)', borderRadius: '14px', color: 'var(--red-text)', fontWeight: 700, fontSize: '13px' }}>
           تعذر الجلب: {errorMsg}
         </div>
       )}
@@ -92,13 +92,13 @@ export default function FamiliesPanel() {
                       💬 واتساب
                     </a>
                   )}
-                  <span style={{ fontSize: '11.5px', color: '#94a3b8' }}>
+                  <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>
                     {f.created_at ? new Date(f.created_at).toLocaleDateString('ar-EG', { dateStyle: 'medium' }) : ''}
                   </span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
-                {f.children.length === 0 && <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>لا أطفال مزامَنون بعد</span>}
+                {f.children.length === 0 && <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>لا أطفال مزامَنون بعد</span>}
                 {f.children.map(c => (
                   <span key={c.id} style={{ background: 'var(--blue-light)', color: 'var(--blue)', padding: '5px 12px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 800 }}>
                     🧒 {c.name} · {c.grade || 'بدون صف'}

@@ -18,6 +18,16 @@
   --line: #e2e8f0;
   --muted: #475569;
 
+  /* Semantic tokens (تتبدل مع الثيم) */
+  --surface-inverse: #020617;      /* سطح داكن ثابت في الوضعين (أشرطة/تلميحات) */
+  --on-inverse: #e2e8f0;
+  --blue-text: #1d4ed8;
+  --green-text: #166534;
+  --red-text: #b91c1c;
+  --amber-text: #92400e;
+  --blue-border: #bfdbfe;
+  color-scheme: light;
+
   /* Semantic Feedback Palette */
   --green: #059669;
   --green-light: #ecfdf5;
@@ -60,6 +70,14 @@
   --muted: #94a3b8;
   --navy: #f1f5f9;
   --navy-dark: #ffffff;
+  --surface-inverse: #0b1220;
+  --on-inverse: #cbd5e1;
+  --blue-text: #93c5fd;
+  --green-text: #86efac;
+  --red-text: #fca5a5;
+  --amber-text: #fcd34d;
+  --blue-border: #1e40af;
+  color-scheme: dark;
   
   /* Adjusted colors for dark mode */
   --blue-light: #1e3a5f;
@@ -130,8 +148,8 @@ input, select, textarea {
 
 /* Global Switcher Bar */
 .role-bar {
-  background: var(--navy-dark);
-  color: #94a3b8;
+  background: var(--surface-inverse);
+  color: var(--on-inverse);
   padding: 8px 24px 10px;
   display: flex;
   flex-direction: column;
@@ -295,7 +313,7 @@ input, select, textarea {
 
 .sidebar-panel {
   width: 270px;
-  background: #ffffff;
+  background: var(--card-bg);
   border-left: 1px solid var(--line);
   padding: 24px 18px;
   display: flex;
@@ -331,7 +349,7 @@ input, select, textarea {
 .btn-secondary {
   background: var(--blue-light);
   color: var(--blue);
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--blue-border);
   padding: 10px 18px;
   border-radius: var(--radius-md);
   font-weight: 700;
@@ -372,17 +390,17 @@ input, select, textarea {
 .tag-badge.mastered {
   background: var(--green-light);
   color: var(--green);
-  border: 1px solid #a7f3d0;
+  border: 1px solid var(--line);
 }
 .tag-badge.review {
   background: var(--orange-light);
   color: var(--orange);
-  border: 1px solid #fed7aa;
+  border: 1px solid var(--line);
 }
 .tag-badge.info {
   background: var(--blue-light);
   color: var(--blue);
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--blue-border);
 }
 
 /* Toast Message */
@@ -390,7 +408,7 @@ input, select, textarea {
   position: fixed;
   bottom: 24px;
   left: 24px;
-  background: var(--navy-dark);
+  background: var(--surface-inverse);
   color: white;
   padding: 14px 24px;
   border-radius: var(--radius-md);
@@ -508,7 +526,7 @@ input, select, textarea {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.98);
+  background: color-mix(in srgb, var(--card-bg) 95%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(226, 232, 240, 0.8);
@@ -609,7 +627,7 @@ input, select, textarea {
 }
 
 .bottom-nav-more-menu {
-  background: white;
+  background: var(--card-bg);
   border-radius: 24px 24px 0 0;
   width: 100%;
   max-width: 500px;
@@ -697,7 +715,7 @@ input, select, textarea {
 .more-menu-settings {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
 }
 
 .settings-row {
@@ -724,8 +742,8 @@ input, select, textarea {
   font-size: 13px;
   font-weight: 600;
   background: var(--bg);
-  border: 2px solid var(--border);
-  color: var(--text);
+  border: 2px solid var(--line);
+  color: var(--navy);
   transition: all 0.2s ease;
 }
 
@@ -739,9 +757,6 @@ input, select, textarea {
   color: white;
 }
 
-.settings-btn.theme-toggle {
-  min-width: 100px;
-}
 
 .more-menu-item.active .more-menu-label {
   color: var(--blue);
@@ -854,12 +869,11 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
     padding: 6px 8px env(safe-area-inset-bottom, 0px);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: #fff;
+    background: var(--card-bg);
     box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.06);
     transform: translateZ(0);
     contain: layout paint;
   }
-  [data-theme="dark"] .bottom-nav, .dark .bottom-nav { background: #0f172a; border-top-color: #1e293b; }
   .bottom-nav-item { flex: 1 1 0; min-width: 0; padding: 4px 2px; }
   .bottom-nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .app-container { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
@@ -922,7 +936,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   .side-nav-group-label {
     font-size: 10.5px;
     font-weight: 900;
-    color: var(--muted, #64748b);
+    color: var(--muted, var(--muted));
     padding: 0 10px 4px;
     letter-spacing: 0.3px;
   }
@@ -963,7 +977,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
     padding: 9px;
     border: 1px dashed var(--line);
     background: var(--bg);
-    color: var(--muted, #64748b);
+    color: var(--muted, var(--muted));
     border-radius: 10px;
     cursor: pointer;
     font-family: inherit;
@@ -986,3 +1000,44 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   .side-nav-sub-item.active { background: var(--blue-light); color: var(--blue); }
   .side-nav-caret { margin-inline-start: auto; font-size: 11px; opacity: .7; }
 }
+
+/* ========================================================
+   THEME FAB — تبديل نهاري/ليلي (مكوّن واحد لكل الصفحات)
+   ======================================================== */
+.theme-fab {
+  position: fixed;
+  inset-inline-start: 16px;
+  bottom: 20px;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.theme-fab:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.theme-fab:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.theme-fab-icon { font-size: 18px; line-height: 1; }
+@media (max-width: 768px) {
+  .theme-fab {
+    inset-inline-start: 12px;
+    bottom: calc(var(--bottom-nav-h, 72px) + 12px + env(safe-area-inset-bottom, 0px));
+    padding: 0;
+    width: 44px;
+    justify-content: center;
+  }
+  .theme-fab-text { display: none; }
+}
+@media print { .theme-fab { display: none; } }
+
+/* خلفيات زجاجية تتبع الثيم */
+.glass { background: color-mix(in srgb, var(--card-bg) 92%, transparent); backdrop-filter: blur(10px); }

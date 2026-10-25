@@ -89,9 +89,9 @@ export default function BookingsPanel() {
       {loading && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ تحميل الحجوزات…</div>}
 
       {!loading && loadError && (
-        <div style={{ padding: '20px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '14px', color: '#b91c1c', fontWeight: 700, fontSize: '13px' }}>
+        <div style={{ padding: '20px', background: 'var(--red-light)', border: '1px solid var(--line)', borderRadius: '14px', color: 'var(--red-text)', fontWeight: 700, fontSize: '13px' }}>
           تعذر جلب الحجوزات: {loadError}
-          <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '6px', color: '#991b1b' }}>
+          <div style={{ fontSize: '12px', fontWeight: 600, marginTop: '6px', color: 'var(--red-text)' }}>
             تأكد أنك مسجل دخول بحساب admin/staff — سياسات RLS تمنع غير الموظفين من قراءة الحجوزات.
           </div>
         </div>
@@ -116,12 +116,12 @@ export default function BookingsPanel() {
               }}>
                 <div style={{ flex: '1 1 220px', minWidth: '200px' }}>
                   <div style={{ fontWeight: 900, fontSize: '14px' }}>
-                    👨‍👩‍👧 {b.parent_name} <span style={{ color: '#94a3b8', fontWeight: 600 }}>→</span> 🧒 {b.child_name}
+                    👨‍👩‍👧 {b.parent_name} <span style={{ color: 'var(--muted)', fontWeight: 600 }}>→</span> 🧒 {b.child_name}
                   </div>
                   <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px', fontWeight: 700 }}>
                     📱 <span dir="ltr">{b.whatsapp}</span> · 🌍 {b.country_code || '—'} · 🎓 {b.grade || '—'}
                   </div>
-                  <div style={{ fontSize: '11.5px', color: '#94a3b8', marginTop: '2px' }}>
+                  <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '2px' }}>
                     {b.created_at ? new Date(b.created_at).toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' }) : ''}
                   </div>
                 </div>

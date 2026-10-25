@@ -33,14 +33,14 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
 
   return (
     <div style={{
-      background: 'white', border: '3px solid #e0e7ff', borderRadius: '36px',
+      background: 'var(--card-bg)', border: '3px solid #e0e7ff', borderRadius: '36px',
       padding: '28px 32px', boxShadow: '0 15px 30px rgba(99, 102, 241, 0.05)', marginBottom: '40px'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '22px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <button
             onClick={() => navigate(childPaths.home)}
-            style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: 'var(--radius-full)', padding: '8px 16px', fontWeight: 800, fontSize: '13px', cursor: 'pointer' }}
+            style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-full)', padding: '8px 16px', fontWeight: 800, fontSize: '13px', cursor: 'pointer' }}
           >→ كل المواد</button>
           <h2 style={{ fontSize: '21px', fontWeight: 900, color: 'var(--navy)' }}>
             خريطة مغامرة: {subject.title} {subject.icon}
@@ -50,7 +50,7 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
         <div style={{ minWidth: '220px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, marginBottom: '6px' }}>
             <span style={{ color }}>{progress.percent}% من المادة</span>
-            <span style={{ color: '#64748b' }}>{progress.done}/{progress.total} درس</span>
+            <span style={{ color: 'var(--muted)' }}>{progress.done}/{progress.total} درس</span>
           </div>
           <div style={{ height: '10px', background: '#e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
             <div style={{ width: `${progress.percent}%`, height: '100%', background: color }} />
@@ -59,7 +59,7 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
       </div>
 
       {lessons.length === 0 ? (
-        <div style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '28px', textAlign: 'center', color: '#64748b', fontWeight: 700 }}>
+        <div style={{ background: 'var(--bg)', border: '2px dashed var(--line)', borderRadius: '20px', padding: '28px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>
           لا توجد دروس منشورة في هذه المادة بعد.
         </div>
       ) : (
@@ -83,7 +83,7 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
                 <button
                   style={{
                     position: 'absolute', top: '14px', left: '14px', background: isMastered ? '#dcfce7' : '#fef08a',
-                    border: '1px solid #cbd5e1', borderRadius: '50%', width: '32px', height: '32px',
+                    border: '1px solid var(--line)', borderRadius: '50%', width: '32px', height: '32px',
                     display: 'grid', placeItems: 'center', fontSize: '14px'
                   }}
                   onClick={() => playSound(`${lesson.letter}... ${lesson.title}`)}

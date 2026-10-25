@@ -19,6 +19,7 @@ export function ThemeProvider({ children }) {
     // Apply to document
     document.documentElement.classList.toggle('dark', isDark);
     localStorage.setItem('fahem-theme', isDark ? 'dark' : 'light');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#0f172a' : '#2563eb');
   }, [isDark]);
 
   // Listen for system changes
@@ -52,29 +53,16 @@ export function useTheme() {
 }
 
 /**
- * ThemeToggle Component
+ * ThemeToggle — زر عائم واضح (نهاري/ليلي) يظهر في كل الصفحات.
+ * التنسيق في index.css (.theme-fab)
  */
-export function ThemeToggle({ className = '' }) {
+export function ThemeToggle() {
   const { isDark, toggle } = useTheme();
-  
+  const label = isDark ? 'التبديل إلى الوضع النهاري' : 'التبديل إلى الوضع الليلي';
   return (
-    <button
-      onClick={toggle}
-      className={`
-        relative w-14 h-8 rounded-full transition-colors duration-300
-        ${isDark ? 'bg-indigo-600' : 'bg-gray-300'}
-        ${className}
-      `}
-      aria-label={isDark ? 'تفعيل الوضع النهاري' : 'تفعيل الوضع الليلي'}
-    >
-      <span
-        className={`
-          absolute top-1 w-6 h-6 rounded-full transition-all duration-300 flex items-center justify-center
-          ${isDark ? 'right-1 bg-indigo-900' : 'left-1 bg-white shadow'}
-        `}
-      >
-        {isDark ? '🌙' : '☀️'}
-      </span>
+    <button type="button" className="theme-fab" onClick={toggle} aria-label={label} title={label} aria-pressed={isDark}>
+      <span className="theme-fab-icon" aria-hidden="true">{isDark ? '☀️' : '🌙'}</span>
+      <span className="theme-fab-text">{isDark ? 'نهاري' : 'ليلي'}</span>
     </button>
   );
 }

@@ -24,13 +24,13 @@ export default function LiveJoin({ slot }) {
         style={{ ...box, display: 'block', textAlign: 'center', background: '#dc2626', color: 'white', textDecoration: 'none', fontWeight: 900 }}
       >🔴 انضم للحصة الآن</a>
     ) : (
-      <div style={{ ...box, background: '#fef3c7', color: '#92400e' }}>
+      <div style={{ ...box, background: 'var(--yellow-light)', color: 'var(--amber-text)' }}>
         🔴 الحصة قريبة — لم يضف المعلم رابط الاجتماع بعد. حدّث الصفحة بعد قليل.
       </div>
     );
   }
   return (
-    <div style={{ ...box, background: '#fef2f2', color: '#991b1b' }}>
+    <div style={{ ...box, background: 'var(--red-light)', color: 'var(--red-text)' }}>
       🔴 حصة مباشرة: {formatInTz(live.start, effectiveTimezone)}
       <div style={{ fontWeight: 600, fontSize: 12, marginTop: 2 }}>يظهر زر الانضمام قبل الموعد بـ {JOIN_BEFORE_MIN} دقيقة</div>
     </div>

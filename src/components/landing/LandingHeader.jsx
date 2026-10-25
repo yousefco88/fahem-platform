@@ -32,8 +32,8 @@ export default function LandingHeader() {
 
       {/* 2. Marketing Header Navbar - Desktop Only */}
       <header className="desktop-header" style={{
-        background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid #e2e8f0', position: 'sticky', top: 0, zIndex: 50,
+        background: 'color-mix(in srgb, var(--card-bg) 95%, transparent)', backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid var(--line)', position: 'sticky', top: 0, zIndex: 50,
         padding: '14px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'
       }}>
         {/* Brand Logo */}
@@ -47,26 +47,26 @@ export default function LandingHeader() {
             ف
           </div>
           <div>
-            <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#0f172a', lineHeight: 1.1 }}>{header.brandName}</h2>
-            <span style={{ fontSize: '11px', color: '#475569', fontWeight: 700 }}>{header.tagline}</span>
+            <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', lineHeight: 1.1 }}>{header.brandName}</h2>
+            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>{header.tagline}</span>
           </div>
         </div>
 
         {/* Quick Nav Links - Hidden on Mobile */}
         <nav className="desktop-nav" style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <a href="#features" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>المميزات</a>
-          <a href="#subjects" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>المواد الـ 12</a>
-          <a href="#timezone" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>حاسبة التوقيت</a>
-          <a href="#comparison" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>مقارنة الدروس</a>
-          <a href="#testimonials" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>آراء الأسر</a>
-          <a href="#faq" style={{ textDecoration: 'none', color: '#475569', fontSize: '13.5px', fontWeight: 700 }}>الأسئلة الشائعة</a>
+          <a href="#features" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>المميزات</a>
+          <a href="#subjects" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>المواد الـ 12</a>
+          <a href="#timezone" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>حاسبة التوقيت</a>
+          <a href="#comparison" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>مقارنة الدروس</a>
+          <a href="#testimonials" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>آراء الأسر</a>
+          <a href="#faq" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>الأسئلة الشائعة</a>
         </nav>
 
         {/* CTA Buttons */}
         <div className="desktop-cta" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
             style={{
-              background: '#f1f5f9', color: '#1e293b', border: '1px solid #cbd5e1',
+              background: 'var(--bg)', color: 'var(--navy)', border: '1px solid var(--line)',
               padding: '9px 16px', borderRadius: 'var(--radius-full)', fontWeight: 700, fontSize: '13px', cursor: 'pointer'
             }}
             onClick={() => setCurrentScreen('exam')}
@@ -87,9 +87,9 @@ export default function LandingHeader() {
       {/* Mobile Header - Simplified */}
       <header className="mobile-header" style={{
         display: 'none',
-        background: 'white',
+        background: 'var(--card-bg)',
         padding: '12px 16px',
-        borderBottom: '1px solid #e2e8f0',
+        borderBottom: '1px solid var(--line)',
         position: 'sticky',
         top: 0,
         zIndex: 50
@@ -104,7 +104,7 @@ export default function LandingHeader() {
             }}>
               ف
             </div>
-            <span style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a' }}>فاهم</span>
+            <span style={{ fontSize: '18px', fontWeight: 900, color: 'var(--navy)' }}>فاهم</span>
           </div>
           <button
             className="btn-accent"

@@ -67,7 +67,7 @@ export default function SiteSettingsPanel() {
 
   const removeBtn = (onClick) => (
     <button
-      style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: '8px', padding: '4px 10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+      style={{ background: 'var(--red-light)', color: 'var(--red)', border: '1px solid var(--line)', borderRadius: '8px', padding: '4px 10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
       onClick={onClick}
     >
       🗑 حذف
@@ -76,7 +76,7 @@ export default function SiteSettingsPanel() {
 
   const addBtn = (text, onClick) => (
     <button
-      style={{ background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '8px 16px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer' }}
+      style={{ background: 'var(--green-light)', color: 'var(--green-text)', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '8px 16px', fontSize: '12.5px', fontWeight: 800, cursor: 'pointer' }}
       onClick={onClick}
     >
       + {text}
@@ -84,7 +84,7 @@ export default function SiteSettingsPanel() {
   );
 
   const err = (key) => saveState[key]?.error && (
-    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '8px' }}>⚠️ {saveState[key].error}</div>
+    <div style={{ color: 'var(--red)', fontSize: '12px', marginTop: '8px' }}>⚠️ {saveState[key].error}</div>
   );
 
   return (

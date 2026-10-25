@@ -80,7 +80,7 @@ export default function ChildHome() {
           </div>
         </div>
         <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={handleMascotSpeak} title="انقر للتحدث مع فاهم!">
-          <div style={{ background: 'white', color: 'var(--navy)', padding: '6px 12px', borderRadius: '16px', fontSize: '11px', fontWeight: 800, marginBottom: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+          <div style={{ background: 'var(--card-bg)', color: 'var(--navy)', padding: '6px 12px', borderRadius: '16px', fontSize: '11px', fontWeight: 800, marginBottom: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
             اضغط لسماعي! 💬
           </div>
           <div style={{ fontSize: '90px' }}>🦊</div>
@@ -115,13 +115,13 @@ export default function ChildHome() {
               <div style={{ fontSize: '12.5px', opacity: 0.9 }}>{continueLesson.subject?.title}</div>
               {continueLesson.progress > 0 && (
                 <div style={{ marginTop: '8px', width: '220px', height: '8px', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', overflow: 'hidden' }}>
-                  <div style={{ width: `${Math.min(100, Math.round(continueLesson.progress))}%`, height: '100%', background: 'white' }} />
+                  <div style={{ width: `${Math.min(100, Math.round(continueLesson.progress))}%`, height: '100%', background: 'var(--card-bg)' }} />
                 </div>
               )}
             </div>
           </div>
           <button
-            style={{ background: 'white', color: '#047857', fontWeight: 900, fontSize: '15px', padding: '12px 26px', borderRadius: 'var(--radius-full)', border: 'none', cursor: 'pointer' }}
+            style={{ background: 'var(--card-bg)', color: '#047857', fontWeight: 900, fontSize: '15px', padding: '12px 26px', borderRadius: 'var(--radius-full)', border: 'none', cursor: 'pointer' }}
             onClick={() => goLesson(continueLesson.lesson.id, 'video')}
           >
             أكمل الدرس ▶ {continueLesson.progress > 0 ? `(${Math.round(continueLesson.progress)}%)` : ''}
@@ -131,15 +131,15 @@ export default function ChildHome() {
 
       {/* يومك النهارده */}
       <section style={{
-        background: 'white', border: '3px solid #fde68a', borderRadius: '32px',
+        background: 'var(--card-bg)', border: '3px solid var(--line)', borderRadius: '32px',
         padding: '28px 32px', marginBottom: '28px', boxShadow: '0 15px 30px rgba(245, 158, 11, 0.07)'
       }}>
         <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
           <span>📅 يومك النهارده</span>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#92400e', background: '#fef3c7', padding: '4px 12px', borderRadius: '20px' }}>{todayName}</span>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--amber-text)', background: 'var(--yellow-light)', padding: '4px 12px', borderRadius: '20px' }}>{todayName}</span>
         </h2>
         {todayPlan.length === 0 ? (
-          <div style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '28px', textAlign: 'center', color: '#64748b', fontWeight: 700, fontSize: '15px' }}>
+          <div style={{ background: 'var(--bg)', border: '2px dashed var(--line)', borderRadius: '20px', padding: '28px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700, fontSize: '15px' }}>
             {scheduleData.length === 0 && slotsLoaded
               ? '📭 لم تُحدَّد خانات جدول لهذا الطفل بعد — ستضيفها الإدارة. يمكنك اختيار أي مادة بالأسفل.'
               : '🌴 لا توجد حصص مجدولة اليوم — يوم راحة! يمكنك اختيار أي مادة بالأسفل.'}
@@ -155,8 +155,8 @@ export default function ChildHome() {
                   borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#4338ca', background: '#e0e7ff', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.localTime || slot.time}</span>
-                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#92400e' }}>{slotType.icon} {slotType.label}</span>
+                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#4338ca', background: 'var(--blue-light)', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.localTime || slot.time}</span>
+                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--amber-text)' }}>{slotType.icon} {slotType.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '26px' }}>{slot.subject?.icon || '📚'}</span>
@@ -191,12 +191,12 @@ export default function ChildHome() {
 
       {/* المواد بتقدمها الحقيقي */}
       <section style={{
-        background: 'white', border: '3px solid #e0e7ff', borderRadius: '36px',
+        background: 'var(--card-bg)', border: '3px solid #e0e7ff', borderRadius: '36px',
         padding: '28px 32px', boxShadow: '0 15px 30px rgba(99, 102, 241, 0.05)', marginBottom: '40px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)' }}>🗺️ جزيرة المواد</h2>
-          <div style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: 'var(--radius-full)', gap: '4px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', background: 'var(--bg)', padding: '4px', borderRadius: 'var(--radius-full)', gap: '4px', flexWrap: 'wrap' }}>
             {CHILD_CATEGORIES.map(cat => (
               <button
                 key={cat.id}
@@ -232,7 +232,7 @@ export default function ChildHome() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800 }}>
                   <span style={{ color: s.color }}>{p.percent}%</span>
-                  <span style={{ color: '#64748b' }}>{p.done}/{p.total} درس متقن</span>
+                  <span style={{ color: 'var(--muted)' }}>{p.done}/{p.total} درس متقن</span>
                 </div>
               </button>
             );

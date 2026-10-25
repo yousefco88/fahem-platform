@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { getChildStats } from '../../utils/childProgress';
 
 const pill = (border, color) => ({
-  background: '#ffffff', border: `2px solid ${border}`, padding: '6px 14px',
+  background: 'var(--card-bg)', border: `2px solid ${border}`, padding: '6px 14px',
   borderRadius: 'var(--radius-full)', fontWeight: 800, fontSize: '15px', color,
   display: 'flex', alignItems: 'center', gap: '6px'
 });
@@ -15,7 +15,7 @@ export default function ChildTopBar() {
 
   return (
     <nav style={{
-      maxWidth: '1200px', margin: '0 auto 28px', background: 'rgba(255, 255, 255, 0.95)',
+      maxWidth: '1200px', margin: '0 auto 28px', background: 'color-mix(in srgb, var(--card-bg) 95%, transparent)',
       backdropFilter: 'blur(10px)', border: '2px solid #e0e7ff', borderRadius: 'var(--radius-full)',
       padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       boxShadow: '0 10px 25px rgba(99, 102, 241, 0.08)', flexWrap: 'wrap', gap: '12px'
@@ -49,7 +49,7 @@ export default function ChildTopBar() {
 
       <button
         style={{
-          background: '#f1f5f9', color: 'var(--muted)', border: '1px solid #cbd5e1',
+          background: 'var(--bg)', color: 'var(--muted)', border: '1px solid var(--line)',
           padding: '8px 16px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 700,
           display: 'flex', alignItems: 'center', gap: '6px'
         }}

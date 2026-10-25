@@ -27,10 +27,10 @@ function CustomWidget({ widget }) {
   if (!widget.title?.trim() && !widget.body?.trim()) return null;
   return (
     <section style={{ padding: '48px 20px', maxWidth: 960, margin: '0 auto' }} dir="rtl">
-      <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: 20, padding: '28px 32px', textAlign: 'center', boxShadow: '0 4px 16px rgba(15,23,42,0.05)' }}>
+      <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 20, padding: '28px 32px', textAlign: 'center', boxShadow: '0 4px 16px rgba(15,23,42,0.05)' }}>
         {widget.emoji && <div style={{ fontSize: 36, marginBottom: 10 }}>{widget.emoji}</div>}
-        {widget.title?.trim() && <h2 style={{ fontSize: 24, color: '#0f172a', margin: '0 0 10px', fontWeight: 900 }}>{widget.title}</h2>}
-        {widget.body?.trim() && <p style={{ fontSize: 15.5, color: '#475569', lineHeight: 1.9, margin: 0, whiteSpace: 'pre-line' }}>{widget.body}</p>}
+        {widget.title?.trim() && <h2 style={{ fontSize: 24, color: 'var(--navy)', margin: '0 0 10px', fontWeight: 900 }}>{widget.title}</h2>}
+        {widget.body?.trim() && <p style={{ fontSize: 15.5, color: 'var(--muted)', lineHeight: 1.9, margin: 0, whiteSpace: 'pre-line' }}>{widget.body}</p>}
       </div>
     </section>
   );
@@ -44,7 +44,7 @@ export default function PublicLandingPage() {
     : Object.keys(SECTION_COMPONENTS).map(id => ({ id, visible: true }));
 
   return (
-    <div style={{ background: '#f8fafc', color: 'var(--navy)', fontFamily: 'Cairo, sans-serif', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg)', color: 'var(--navy)', fontFamily: 'Cairo, sans-serif', minHeight: '100vh' }}>
       <LandingHeader />
       {layout.map(entry => {
         if (entry.visible === false) return null;
