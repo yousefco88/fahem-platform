@@ -227,7 +227,7 @@ export default function ChildHome() {
                   <span style={{ fontSize: '30px' }}>{s.icon}</span>
                   <span style={{ fontWeight: 900, fontSize: '14.5px', color: 'var(--navy)' }}>{s.label}</span>
                 </div>
-                <div style={{ height: '9px', background: '#e2e8f0', borderRadius: '9px', overflow: 'hidden' }}>
+                <div style={{ height: '9px', background: 'var(--line)', borderRadius: '9px', overflow: 'hidden' }}>
                   <div style={{ width: `${p.percent}%`, height: '100%', background: s.color, transition: 'width 0.4s' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800 }}>
