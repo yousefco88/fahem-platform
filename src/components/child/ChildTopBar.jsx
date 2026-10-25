@@ -35,7 +35,7 @@ export default function ChildTopBar() {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <div style={pill('#fde047', '#ca8a04')} title={`${stats.done} درس متقن × 30 نقطة`}>
+        <div style={pill('#fde047', 'var(--amber-text)')} title={`${stats.done} درس متقن × 30 نقطة`}>
           <span>⭐</span><span>{stats.points}</span><span style={{ fontSize: '12px', fontWeight: 600 }}>نقطة</span>
         </div>
         <div style={pill('#fed7aa', '#ea580c')} title="شارة لكل درس متقن">
