@@ -121,7 +121,6 @@ export default function AdminDashboard() {
 
   // Audit Log items
   // لا يوجد نظام تدقيق متصل؛ لا نعرض سجلاً مختلقاً
-  const auditLogs = [];
 
   return (
     <div style={{ maxWidth: '1400px', margin: '24px auto', padding: '0 24px', width: '100%' }}>
@@ -404,88 +403,6 @@ export default function AdminDashboard() {
               </table>
             </div>
           )}
-        </div>
-      )}
-
-      {/* TAB 3: AUDIT TRAIL & QUALITY */}
-      {activeAdminTab === 'audit' && (
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>سجل التدقيق التاريخي والرقابة التربوية (Audit Trail)</h3>
-              <p style={{ fontSize: '13px', color: 'var(--muted)' }}>لا يوجد نظام تدقيق متصل بعد.</p>
-            </div>
-            <button
-              style={{ background: '#0284c7', color: 'white', padding: '8px 16px', borderRadius: 'var(--radius-md)', border: 'none', fontWeight: 700, fontSize: '12.5px', cursor: 'pointer' }}
-              onClick={() => triggerToast('تصدير سجل التدقيق غير متاح؛ لا يوجد سجل تدقيق ليُصدَّر.')}
-            >
-              تصدير السجل (غير متاح) 📊
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {auditLogs.length === 0 && (
-              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px' }}>لا توجد سجلات تدقيق — لم يُربط نظام تدقيق بعد.</div>
-            )}
-            {auditLogs.map((log, idx) => (
-              <div
-                key={idx}
-                style={{
-                  padding: '14px 18px', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)',
-                  background: 'var(--bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                    <strong style={{ color: 'var(--navy)', fontSize: '14px' }}>{log.user}</strong>
-                    <span className="tag-badge info" style={{ fontSize: '10.5px' }}>{log.badge}</span>
-                  </div>
-                  <p style={{ fontSize: '13px', color: 'var(--navy)', margin: 0 }}>{log.action}</p>
-                </div>
-                <div style={{ textAlign: 'left', fontSize: '12px', color: 'var(--muted)' }}>
-                  <div>{log.time}</div>
-                  <small style={{ fontFamily: 'monospace' }}>IP: {log.ip}</small>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: SUBSCRIPTIONS & EXPAT DISTRIBUTION */}
-      {activeAdminTab === 'subscriptions' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-            <h3 style={{ fontSize: '17px', color: 'var(--navy)', marginBottom: '14px' }}>
-              🌍 التوزيع الجغرافي لأسر المغتربين النشطة
-            </h3>
-            <div style={{ padding: '24px', background: 'var(--bg)', borderRadius: '10px', border: '1px dashed var(--line)', textAlign: 'center' }}>
-              <div style={{ fontSize: '28px', marginBottom: '6px' }}>🗺️</div>
-              <p style={{ fontSize: '13.5px', color: 'var(--muted)', margin: 0 }}>
-                لا توجد أسر مسجلة بعد — سيُبنى التوزيع الجغرافي تلقائياً من بيانات التسجيل الفعلية.
-              </p>
-            </div>
-          </div>
-
-          <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
-            <h3 style={{ fontSize: '17px', color: 'var(--navy)', marginBottom: '14px' }}>
-              💳 مؤشرات الاشتراكات والإيرادات الشهرية
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ padding: '14px', background: '#ecfdf5', borderRadius: '10px', border: '1px solid #86efac' }}>
-                <span style={{ fontSize: '12px', color: '#166534', fontWeight: 600 }}>الإيرادات:</span>
-                <h4 style={{ fontSize: '20px', color: '#166534', margin: '4px 0 0' }}>غير متاحة — الدفع غير مفعّل</h4>
-              </div>
-              <div style={{ padding: '14px', background: 'var(--blue-light)', borderRadius: '10px', border: '1px solid var(--line)' }}>
-                <span style={{ fontSize: '12px', color: '#1e40af', fontWeight: 600 }}>خطط الاشتراك:</span>
-                <h4 style={{ fontSize: '18px', color: '#1e40af', margin: '4px 0 0' }}>قيد الدراسة — لا توجد اشتراكات فعلية</h4>
-              </div>
-              <div style={{ padding: '14px', background: '#fefce8', borderRadius: '10px', border: '1px solid #fde047' }}>
-                <span style={{ fontSize: '12px', color: '#854d0e', fontWeight: 600 }}>معدل التجديد:</span>
-                <h4 style={{ fontSize: '18px', color: '#854d0e', margin: '4px 0 0' }}>غير متاح — لا توجد بيانات تشغيلية</h4>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>

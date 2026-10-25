@@ -68,8 +68,6 @@ export const ADMIN_SECTIONS = [
   { id: 'families', icon: '👨‍👩‍👧‍👦', label: 'حسابات الأسر', roles: ['admin'] },
   { id: 'schedule', icon: '🗓️', label: 'الجدول الأسبوعي', roles: ['admin'] },
   { id: 'rbac', icon: '👥', label: 'المستخدمون والصلاحيات', roles: ['admin'] },
-  { id: 'audit', icon: '🛡️', label: 'سجل التدقيق', roles: ['admin'] },
-  { id: 'subscriptions', icon: '💳', label: 'الاشتراكات', roles: ['admin'] },
   { id: 'analytics', icon: '📊', label: 'لوحة التحليلات', roles: ['admin'], path: '/analytics' }
 ];
 
