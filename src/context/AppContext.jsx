@@ -39,7 +39,6 @@ export function AppProvider({ children }) {
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
-    setShowScheduleModal
   } = useUIActions();
 
   // Load parent & preferences
@@ -257,11 +256,11 @@ export function AppProvider({ children }) {
           const staticSubject = CURRICULUM_DATA[subject.key] || {};
           dbCurriculum[subject.key] = {
             id: subject.key,
-            title: subject.name,
-            icon: staticSubject.icon || '📚',
-            badge: staticSubject.badge || '',
-            color: staticSubject.color || '#6b7280',
-            grade: subject.grade_id,
+            title: subject.title || staticSubject.title || subject.key,
+            icon: subject.icon || staticSubject.icon || '📚',
+            badge: subject.badge || staticSubject.badge || '',
+            color: subject.color || staticSubject.color || '#6b7280',
+            grade: subject.grade || staticSubject.grade,
             lessons: subjectLessons,
           };
         });
@@ -754,7 +753,6 @@ export function AppProvider({ children }) {
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
-    setShowScheduleModal,
     triggerToast,
     soundManager
   };
