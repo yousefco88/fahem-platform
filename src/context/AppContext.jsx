@@ -368,10 +368,20 @@ export function AppProvider({ children }) {
         { id: user.id, full_name: parentName || user.email || 'ولي أمر' },
         { onConflict: 'id' }
       );
+      // سحب أبناء الحساب من السحابة: الدخول من جهاز جديد أو إضافة طفل من «حسابي» لا يترك القائمة فارغة
+      const { data: existing } = await supabase.from('children').select('id, name, grade, avatar').eq('parent_id', user.id);
+      const missing = (existing || []).filter(r => !childrenList.some(c => c.name === r.name))
+        .map(r => ({ id: r.id, name: r.name, grade: r.grade, avatar: r.avatar || '⭐', points: 0, badges: 0, baaMastered: false, masteredLessons: [], masteredSkills: 0 }));
+      if (cancelled) return;
+      if (missing.length) {
+        setChildrenList(prev => [...prev, ...missing.filter(m => !prev.some(c => c.name === m.name))]);
+        setSelectedChildId(cur => (childrenList.some(c => c.id === cur) ? cur : missing[0].id));
+      }
+      const allChildren = [...childrenList, ...missing];
       const { data: cloudChildren, error } = await supabase
         .from('children')
         .upsert(
-          childrenList.map(c => ({ parent_id: user.id, name: c.name, grade: c.grade, avatar: c.avatar || null })),
+          allChildren.map(c => ({ parent_id: user.id, name: c.name, grade: c.grade, avatar: c.avatar || null })),
           { onConflict: 'parent_id,name' }
         )
         .select('id, name');
@@ -380,7 +390,7 @@ export function AppProvider({ children }) {
         return;
       }
       const map = {};
-      childrenList.forEach(c => {
+      allChildren.forEach(c => {
         const remote = cloudChildren.find(r => r.name === c.name);
         if (remote) map[c.id] = remote.id;
       });
