@@ -6,7 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { UIProvider, useUIState } from './context/UIContext';
 import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
 import AuthGate from './components/AuthGate';
-import RoleBar from './components/RoleBar';
+import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
 import Modals from './components/Modals';
 
@@ -60,8 +60,8 @@ function MainAppContent() {
   return (
     <div className="app-container">
       <DocumentMeta />
-      {/* Top Role & View Switcher */}
-      <RoleBar />
+      {/* القائمة الجانبية الديناميكية (ويب) — الجوال يستخدم BottomNav */}
+      <SideNav />
 
       {/* Main View Router — URL هو مصدر الحقيقة */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
