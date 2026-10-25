@@ -22,7 +22,7 @@ export default function AdminDashboard() {
   } = useApp();
 
   // القسم النشط مشتق من الـ URL (لا حالة محلية): /admin/* = المناهج، وإلا ?tab=
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [searchParams] = useSearchParams();
   const adminLocation = useLocation();
   const adminNavigate = useNavigate();
@@ -91,126 +91,33 @@ export default function AdminDashboard() {
     supabase.from('profiles').select('id, full_name').eq('role', 'teacher')
       .then(({ data }) => setTeachers(data || []));
   }, []);
-  // Staff & RBAC — بيانات حقيقية من Supabase user_roles
-  const [staffMembers, setStaffMembers] = useState([]);
-  const [staffLoading, setStaffLoading] = useState(true);
-  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
-  const [newMember, setNewMember] = useState({ email: '', role: 'teacher', name: '', addType: 'invite' });
-  const [addingMember, setAddingMember] = useState(false);
-  const [pendingInvites, setPendingInvites] = useState([]);
-
-  // جلب الدعوات المعلقة
-  useEffect(() => {
-    if (!supabase) return;
-    supabase
-      .from('staff_invites')
-      .select('*')
-      .eq('status', 'pending')
-      .then(({ data }) => {
-        if (data) setPendingInvites(data);
-      });
-  }, []);
-
-  // دالة إضافة عضو جديد
-  const handleAddMember = async () => {
-    if (!newMember.email || !newMember.name) {
-      triggerToast('يرجى إدخال الاسم والبريد الإلكتروني');
-      return;
-    }
-    if (!supabase) {
-      triggerToast('Supabase غير متصل');
-      return;
-    }
-    
-    setAddingMember(true);
-    try {
-      if (newMember.addType === 'invite') {
-        // === إرسال دعوة جديدة ===
-        const { data, error } = await supabase
-          .from('staff_invites')
-          .insert({
-            email: newMember.email,
-            name: newMember.name,
-            role: newMember.role
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        setPendingInvites(prev => [...prev, data]);
-        triggerToast(`✅ تم إرسال دعوة لـ ${newMember.name}`);
-      } else {
-        // === إضافة مستخدم موجود مباشرة ===
-        // البحث عن المستخدم بالبريد
-        const { data: users, error: searchError } = await supabase
-          .from('profiles')
-          .select('id, email, full_name')
-          .eq('email', newMember.email)
-          .single();
-
-        if (searchError || !users) {
-          triggerToast('❌ لم يتم العثور على مستخدم بهذا البريد');
-          setAddingMember(false);
-          return;
-        }
-
-        // إضافة الدور
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: users.id,
-            role: newMember.role
-          });
-
-        if (roleError) throw roleError;
-
-        // إضافة للقائمة المحلية
-        setStaffMembers(prev => [...prev, {
-          id: users.id,
-          name: users.full_name || newMember.name,
-          role: newMember.role === 'admin' ? 'مدير النظام' : newMember.role === 'teacher' ? 'معلم' : 'موظف',
-          email: newMember.email,
-          status: 'نشط',
-          canEditCMS: newMember.role === 'admin',
-          canAudit: ['admin', 'staff'].includes(newMember.role),
-          canBilling: newMember.role === 'admin'
-        }]);
-
-        triggerToast(`✅ تمت إضافة ${newMember.name} بنجاح`);
-      }
-
-      setShowAddMemberModal(false);
-      setNewMember({ email: '', role: 'teacher', name: '', addType: 'invite' });
-    } catch (err) {
-      console.error('Error adding member:', err);
-      triggerToast(`❌ خطأ: ${err.message}`);
-    } finally {
-      setAddingMember(false);
-    }
+  // المستخدمون والأدوار — من profiles عبر دوال الخادم (الإدارة فقط؛ تغيير الدور لا يتم من العميل مباشرة)
+  const ROLE_OPTIONS = [
+    { id: 'parent', label: 'ولي أمر', note: 'يرى أبناءه ويحجز ويتابع حصصهم' },
+    { id: 'teacher', label: 'معلم', note: 'يرى طلابه المُسنَدين وحصصه ويرفع تسجيلاتها' },
+    { id: 'content_editor', label: 'محرر محتوى', note: 'يدير المناهج والدروس فقط' },
+    { id: 'admin', label: 'مدير النظام', note: 'كل الأقسام والصلاحيات' }
+  ];
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [usersError, setUsersError] = useState('');
+  const [savingUser, setSavingUser] = useState(null);
+  const loadUsers = async () => {
+    if (!supabase) { setUsersLoading(false); return; }
+    const { data, error } = await supabase.rpc('admin_list_users');
+    if (error) setUsersError(error.message); else { setUsers(data || []); setUsersError(''); }
+    setUsersLoading(false);
   };
-
-  useEffect(() => {
-    if (!supabase) { setStaffLoading(false); return; }
-    supabase
-      .from('user_roles')
-      .select('id, user_id, role, created_at')
-      .then(({ data, error }) => {
-        if (!error && data) {
-          setStaffMembers(data.map(r => ({
-            id: r.id,
-            name: r.role === 'admin' ? 'مدير' : r.role === 'teacher' ? 'معلم' : r.role,
-            role: r.role === 'admin' ? 'مدير النظام' : r.role === 'teacher' ? 'معلم' : r.role,
-            email: `${r.user_id.slice(0, 8)}...`,
-            status: 'نشط',
-            canEditCMS: r.role === 'admin',
-            canAudit: ['admin', 'staff'].includes(r.role),
-            canBilling: r.role === 'admin'
-          })));
-        }
-        setStaffLoading(false);
-      });
-  }, []);
+  useEffect(() => { loadUsers(); }, []);
+  const changeRole = async (u, role) => {
+    if (role === u.role) return;
+    setSavingUser(u.id);
+    const { error } = await supabase.rpc('admin_set_user_role', { p_user: u.id, p_role: role });
+    setSavingUser(null);
+    if (error) { triggerToast(`تعذر تغيير الدور: ${error.message}`); return; }
+    setUsers(list => list.map(x => x.id === u.id ? { ...x, role } : x));
+    triggerToast(`تم تغيير دور ${u.full_name || u.email} ✓`);
+  };
 
   // Audit Log items
   // لا يوجد نظام تدقيق متصل؛ لا نعرض سجلاً مختلقاً
@@ -272,9 +179,9 @@ export default function AdminDashboard() {
 
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
           <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>فريق العمل</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{staffLoading ? '...' : staffMembers.length}</h3>
+          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{usersLoading ? '...' : usersError ? '—' : users.length}</h3>
           <small style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>
-            {staffMembers.length === 0 ? 'لا يوجد أعضاء بعد' : 'من user_roles'}
+            {usersError ? 'متاح للمدير فقط' : 'مستخدم مسجّل'}
           </small>
         </div>
       </div>
@@ -436,202 +343,67 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TAB 2: RBAC & USERS */}
+      {/* TAB 2: المستخدمون والصلاحيات */}
       {activeAdminTab === 'rbac' && (
         <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>فريق العمل وصلاحيات الوصول (Role-Based Access Control)</h3>
-              <p style={{ fontSize: '13px', color: 'var(--muted)' }}>تحديد مهام المشرفين والمعلمين ومسؤولي الدعم مع حوكمة أمان البيانات</p>
-            </div>
-            <button
-              className="btn-accent"
-              style={{ padding: '8px 16px', fontSize: '13px' }}
-              onClick={() => setShowAddMemberModal(true)}
-            >
-              + إضافة عضو أو معلم جديد
-            </button>
+          <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>المستخدمون والصلاحيات</h3>
+          <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '18px' }}>
+            كل من سجّل في المنصة يظهر هنا. غيّر دوره ليرى ما يخصه فقط. لا يمكنك تغيير دورك بنفسك، ولا إزالة آخر مدير.
+          </p>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '18px' }}>
+            {ROLE_OPTIONS.map(r => (
+              <span key={r.id} style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '10px', padding: '6px 10px', fontSize: '12px' }}>
+                <strong>{r.label}</strong> — {r.note}
+              </span>
+            ))}
           </div>
 
-          {staffLoading && (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>
-              جارٍ تحميل فريق العمل من Supabase…
+          {usersLoading && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ تحميل المستخدمين…</div>}
+          {!usersLoading && usersError && (
+            <div style={{ padding: '16px', background: '#fef2f2', color: '#991b1b', borderRadius: '10px', fontSize: '13px' }}>تعذر تحميل المستخدمين: {usersError}</div>
+          )}
+          {!usersLoading && !usersError && users.length === 0 && (
+            <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)', fontWeight: 800, color: 'var(--navy)' }}>لا يوجد مستخدمون بعد</div>
+          )}
+          {!usersLoading && users.length > 0 && (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', fontSize: '13.5px' }}>
+                <thead>
+                  <tr style={{ background: 'var(--bg)', borderBottom: '2px solid var(--line)' }}>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>الاسم والبريد</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>الدور</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>آخر دخول</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id} style={{ borderBottom: '1px solid var(--line)' }}>
+                      <td style={{ padding: '14px 16px' }}>
+                        <strong style={{ display: 'block', color: 'var(--navy)' }}>{u.full_name || '—'}</strong>
+                        <span style={{ fontSize: '12px', color: 'var(--muted)', direction: 'ltr', display: 'inline-block' }}>{u.email}</span>
+                      </td>
+                      <td style={{ padding: '14px 16px' }}>
+                        <select
+                          aria-label={`دور ${u.full_name || u.email}`}
+                          value={u.role}
+                          disabled={u.id === user?.id || savingUser === u.id}
+                          title={u.id === user?.id ? 'لا يمكنك تغيير دورك بنفسك' : undefined}
+                          onChange={e => changeRole(u, e.target.value)}
+                          style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-bg)', fontSize: '13px' }}
+                        >
+                          {ROLE_OPTIONS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
+                        </select>
+                      </td>
+                      <td style={{ padding: '14px 16px', color: 'var(--muted)' }}>
+                        {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('ar-EG') : 'لم يدخل بعد'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
-
-          {!staffLoading && staffMembers.length === 0 && (
-            <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)' }}>
-              <div style={{ fontSize: '32px', marginBottom: '8px' }}>👥</div>
-              <div style={{ fontWeight: 800, color: 'var(--navy)' }}>لا يوجد أعضاء فريق بعد</div>
-              <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px' }}>
-                الصلاحيات تُدار عبر جدول user_roles في Supabase.<br/>
-                أضف صفوفاً هناك لتظهر هنا تلقائياً.
-              </div>
-            </div>
-          )}
-
-          {!staffLoading && staffMembers.length > 0 && (
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', fontSize: '13.5px' }}>
-            <thead>
-              <tr style={{ background: 'var(--bg)', borderBottom: '2px solid var(--line)' }}>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>الاسم والبريد</th>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>الدور والمسمى</th>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>الحالة</th>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>تعديل المناهج (CMS)</th>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>الرقابة والتدقيق</th>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>المالية والاشتراكات</th>
-                <th style={{ padding: '12px 16px', fontWeight: 700 }}>إجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staffMembers.map(member => (
-                <tr key={member.id} style={{ borderBottom: '1px solid var(--line)' }}>
-                  <td style={{ padding: '14px 16px' }}>
-                    <strong style={{ display: 'block', color: 'var(--navy)' }}>{member.name}</strong>
-                    <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{member.email}</span>
-                  </td>
-                  <td style={{ padding: '14px 16px', fontWeight: 600 }}>{member.role}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <span style={{ background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>
-                      {member.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 16px' }}>{member.canEditCMS ? '✅ مسموح' : '❌ محجوب'}</td>
-                  <td style={{ padding: '14px 16px' }}>{member.canAudit ? '✅ مسموح' : '❌ محجوب'}</td>
-                  <td style={{ padding: '14px 16px' }}>{member.canBilling ? '✅ مسموح' : '❌ محجوب'}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <button
-                      style={{ background: 'var(--bg)', border: '1px solid var(--line)', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
-                      onClick={() => triggerToast(`تعديل صلاحيات ${member.name}`)}
-                    >
-                      تعديل
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          )}
-        </div>
-      )}
-
-      {/* Modal: إضافة عضو جديد */}
-      {showAddMemberModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }} onClick={() => setShowAddMemberModal(false)}>
-          <div style={{
-            background: 'var(--card-bg)', borderRadius: '16px', padding: '28px', width: '90%', maxWidth: '420px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-          }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', color: 'var(--navy)', marginBottom: '20px', textAlign: 'center' }}>
-              👤 إضافة عضو أو معلم جديد
-            </h3>
-
-            {/* نوع الإضافة */}
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '8px' }}>
-              <button
-                onClick={() => setNewMember(prev => ({ ...prev, addType: 'invite' }))}
-                style={{
-                  flex: 1, padding: '10px', border: newMember.addType === 'invite' ? '2px solid #f59e0b' : '1px solid #d1d5db',
-                  borderRadius: '8px', background: newMember.addType === 'invite' ? 'var(--yellow-light)' : 'var(--card-bg)',
-                  fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: '#374151'
-                }}
-              >
-                ✉️ دعوة جديدة
-              </button>
-              <button
-                onClick={() => setNewMember(prev => ({ ...prev, addType: 'existing' }))}
-                style={{
-                  flex: 1, padding: '10px', border: newMember.addType === 'existing' ? '2px solid #f59e0b' : '1px solid #d1d5db',
-                  borderRadius: '8px', background: newMember.addType === 'existing' ? 'var(--yellow-light)' : 'var(--card-bg)',
-                  fontWeight: 600, fontSize: '13px', cursor: 'pointer', color: '#374151'
-                }}
-              >
-                👤 مستخدم موجود
-              </button>
-            </div>
-
-            {newMember.addType === 'invite' && (
-              <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#166534' }}>
-                💡 سيتم إرسال دعوة للبريد المحدد. عند تسجيل المستخدم، سيُضاف تلقائياً بالدور المحدد.
-              </div>
-            )}
-
-            {newMember.addType === 'existing' && (
-              <div style={{ background: 'var(--blue-light)', border: '1px solid #93c5fd', borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '12px', color: '#1e40af' }}>
-                🔍 أدخل بريد مستخدم مسجّل مسبقاً لإضافته للفريق مباشرة.
-              </div>
-            )}
-            
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>الاسم الكامل</label>
-              <input
-                type="text"
-                value={newMember.name}
-                onChange={e => setNewMember(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="مثال: أحمد محمد"
-                style={{
-                  width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
-                  fontSize: '14px', direction: 'rtl'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>البريد الإلكتروني</label>
-              <input
-                type="email"
-                value={newMember.email}
-                onChange={e => setNewMember(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="example@email.com"
-                style={{
-                  width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
-                  fontSize: '14px', direction: 'ltr', textAlign: 'left'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: '#374151' }}>الدور</label>
-              <select
-                value={newMember.role}
-                onChange={e => setNewMember(prev => ({ ...prev, role: e.target.value }))}
-                style={{
-                  width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px',
-                  fontSize: '14px', background: 'var(--card-bg)', cursor: 'pointer'
-                }}
-              >
-                <option value="teacher">👩‍🏫 معلم</option>
-                <option value="staff">👤 موظف دعم</option>
-                <option value="admin">🔐 مدير النظام</option>
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button
-                onClick={handleAddMember}
-                disabled={addingMember}
-                style={{
-                  flex: 1, padding: '12px', background: '#f59e0b', color: 'white', border: 'none',
-                  borderRadius: '8px', fontWeight: 700, fontSize: '14px', cursor: addingMember ? 'wait' : 'pointer',
-                  opacity: addingMember ? 0.7 : 1
-                }}
-              >
-                {addingMember ? 'جارٍ الإضافة...' : newMember.addType === 'invite' ? '✉️ إرسال الدعوة' : '✅ إضافة العضو'}
-              </button>
-              <button
-                onClick={() => setShowAddMemberModal(false)}
-                style={{
-                  padding: '12px 20px', background: 'var(--bg)', color: 'var(--muted)', border: 'none',
-                  borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer'
-                }}
-              >
-                إلغاء
-              </button>
-            </div>
-          </div>
         </div>
       )}
 
