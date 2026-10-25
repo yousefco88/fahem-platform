@@ -224,28 +224,14 @@ export default function AdminDashboard() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h1 style={{ fontSize: '22px', fontWeight: 800 }}>لوحة إدارة تجريبية محلية</h1>
-              <span style={{ background: '#0284c7', color: 'white', fontSize: '11px', padding: '3px 10px', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>
-                ليست صلاحيات فعلية
-              </span>
+              <h1 style={{ fontSize: '22px', fontWeight: 800 }}>لوحة الإدارة</h1>
             </div>
             <p style={{ color: '#94a3b8', fontSize: '13.5px', marginTop: '4px' }}>
-              إدارة محتوى محلي • نماذج واجهة للصلاحيات والتدقيق • لا يوجد مستخدمون أو خادم متصل
+              المنهج والأسر والمعلمون والجدول ومراجعة التسجيلات • الصلاحيات مفروضة من الخادم
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            style={{
-              background: '#38bdf8', color: 'var(--navy)', padding: '10px 18px',
-              borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: 'pointer'
-            }}
-            onClick={() => triggerToast('ميزة النسخ الاحتياطي غير متصلة بقاعدة بيانات بعد.')}
-          >
-            💾 حفظ نسخة احتياطية
-          </button>
-        </div>
       </section>
 
       {/* Admin KPI Ribbon — بيانات حقيقية من Supabase */}
