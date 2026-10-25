@@ -193,7 +193,7 @@ export default function Modals() {
             display: 'flex', flexDirection: 'column'
           }}>
             <header style={{
-              background: 'var(--navy-dark)', color: 'white', padding: '16px 28px',
+              background: 'var(--surface-inverse)', color: 'white', padding: '16px 28px',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>

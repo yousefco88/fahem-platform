@@ -21,6 +21,7 @@
   /* Semantic tokens (تتبدل مع الثيم) */
   --surface-inverse: #020617;      /* سطح داكن ثابت في الوضعين (أشرطة/تلميحات) */
   --on-inverse: #e2e8f0;
+  --solid: #0f172a;               /* خلفية صلبة لعناصر نشطة نصها أبيض */
   --blue-text: #1d4ed8;
   --green-text: #166534;
   --red-text: #b91c1c;
@@ -72,6 +73,7 @@
   --navy-dark: #ffffff;
   --surface-inverse: #0b1220;
   --on-inverse: #cbd5e1;
+  --solid: #2563eb;
   --blue-text: #93c5fd;
   --green-text: #86efac;
   --red-text: #fca5a5;
@@ -960,7 +962,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   }
   .side-nav-item:hover { background: var(--bg); }
   .side-nav-item.active {
-    background: var(--navy);
+    background: var(--solid);
     color: #fff;
   }
   .side-nav-icon { font-size: 17px; width: 24px; text-align: center; flex-shrink: 0; }
