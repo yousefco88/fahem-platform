@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import LiveJoin from './LiveJoin';
+import { slotsForToday, timeInTz } from '../utils/liveWindow';
 import { useApp } from '../context/AppContext';
 import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import { getChildStats } from '../utils/childProgress';
@@ -20,11 +22,12 @@ export default function ParentDashboard() {
     curriculumData,
     openLesson,
     countryText,
-    liveClassTimeText,
+    scheduleData,
+    effectiveTimezone,
     setCurrentScreen,
-    setShowLiveModal,
     triggerToast
   } = useApp();
+  const todayLive = slotsForToday((scheduleData || []).filter(x => x.type === 'live'), effectiveTimezone);
   // كل الأرقام مشتقة من سجل التعلم الفعلي — لا قيم مخزنة أو مزروعة
   const childStats = getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []);
 
@@ -368,51 +371,21 @@ export default function ParentDashboard() {
             </button>
           </div>
 
-          {/* 1. Live Hero Session Card */}
-          <section id="live-schedule-section" style={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%)',
-            color: 'white', borderRadius: 'var(--radius-lg)', padding: '28px 32px',
-            position: 'relative', overflow: 'hidden', boxShadow: '0 20px 40px -10px rgba(30, 58, 138, 0.4)',
-            marginBottom: '30px'
-          }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)',
-              color: '#fca5a5', padding: '6px 14px', borderRadius: 'var(--radius-full)',
-              fontSize: '12px', fontWeight: 700, marginBottom: '16px'
-            }}>
-              <span style={{
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: '#ef4444', display: 'inline-block'
-              }}></span>
-              <span>نموذج عرض لحصة مباشرة</span>
-            </div>
-
-            <h1 style={{ fontSize: '26px', marginBottom: '8px', fontWeight: 800 }}>
-              اللغة العربية: أصوات حرف الباء الممدودة وتكوين الكلمات
-            </h1>
-            <p style={{ color: '#cbd5e1', maxWidth: '650px', fontSize: '14.5px', marginBottom: '22px' }}>
-              معاينة تجريبية لفصل تفاعلي. البث متعدد المستخدمين وجدولة الحصص غير متصلين بخادم بعد.
-            </p>
-
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <button className="btn-accent" onClick={() => { triggerToast('ستفتح معاينة الفصل. الكاميرا اختيارية ولا يوجد بث مع طلاب آخرين.'); setShowLiveModal(true); }}>
-                <span>فتح معاينة الفصل التفاعلية</span>
-                <span>🔴</span>
-              </button>
-              <button
-                style={{
-                  background: 'rgba(255, 255, 255, 0.12)', color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.25)', padding: '12px 20px',
-                  borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '14px'
-                }}
-                onClick={() => triggerToast('إرسال تذكيرات واتساب غير متاح قبل ربط خدمة الرسائل.')}
-              >
-                💬 إرسال تذكير واتساب
-              </button>
-              <span style={{ fontSize: '13px', opacity: 0.85 }}>{liveClassTimeText}</span>
-            </div>
-          </section>
+          {/* حصة مباشرة اليوم لهذا الطفل (تظهر فقط إن وُجدت في جدوله) */}
+          {todayLive.length > 0 && (
+            <section id="live-schedule-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '18px', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '10px' }}>🔴 حصة مباشرة اليوم</h3>
+              {todayLive.map(x => (
+                <div key={x.id} style={{ marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '6px', fontSize: '14px', color: 'var(--navy)' }}>
+                    <strong style={{ direction: 'ltr' }}>{timeInTz(x.startsAt, effectiveTimezone)}</strong>
+                    <span>{curriculumData[x.subjectId]?.title || x.subjectId}</span>
+                  </div>
+                  <LiveJoin slot={x} />
+                </div>
+              ))}
+            </section>
+          )}
 
           {/* 2. Reassurance Metrics Grid */}
           <section style={{

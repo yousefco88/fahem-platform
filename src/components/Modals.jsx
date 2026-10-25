@@ -29,14 +29,12 @@ function useLocalAttachmentUrl(metadata, storageKey) {
 
 export default function Modals() {
   const {
-    showLiveModal,
     showGateModal,
     showStudioModal,
     studioActiveTab,
     showScheduleModal
   } = useUIState();
   const {
-    setShowLiveModal,
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
@@ -60,10 +58,6 @@ export default function Modals() {
   const pdfUrl = useLocalAttachmentUrl(lessonFiles[pdfKey], `pdf:${pdfKey}`);
 
   // Whiteboard Canvas State
-  const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [brushColor, setBrushColor] = useState('#facc15');
-  const [brushSize, setBrushSize] = useState(4);
 
   // Lesson Studio State
   const [quizAnswered, setQuizAnswered] = useState(null); // 'correct' | 'wrong' | null
@@ -99,87 +93,6 @@ export default function Modals() {
     setBuiltSyllables([]);
     setBuilderCompleted(false);
   }, [activeLesson?.id]);
-
-  // Setup Whiteboard Canvas
-  useEffect(() => {
-    if (showLiveModal && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      // Set resolution
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-
-      // Dark background with initial template
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw faint guidelines
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 1;
-      for (let y = 60; y < canvas.height; y += 60) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-
-      // Teacher sample text
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 36px Cairo, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('سبورة الفصل التفاعلي — اكتب الحرف هنا ✏️', canvas.width / 2, 70);
-    }
-  }, [showLiveModal]);
-
-  // Canvas drawing handlers
-  const startDrawing = (e) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    setIsDrawing(true);
-  };
-
-  const draw = (e) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = brushColor;
-    ctx.lineWidth = brushSize;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-  };
-
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    triggerToast('تم مسح السبورة');
-  };
-
-  // Live modal handlers
-  const handleEndLiveSession = () => {
-    setShowLiveModal(false);
-    setShowPostClassFeedback(true);
-  };
 
   const handleFinishTeacherFeedback = (e) => {
     e.preventDefault();

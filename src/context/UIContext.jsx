@@ -6,7 +6,6 @@ const UIStateContext = createContext(null);
 const UIActionsContext = createContext(null);
 
 export function UIProvider({ children }) {
-  const [showLiveModal, setShowLiveModal] = useState(false);
   const [showGateModal, setShowGateModal] = useState(false);
   const [showStudioModal, setShowStudioModal] = useState(false);
   const [studioActiveTab, setStudioActiveTab] = useState('video');
@@ -22,7 +21,6 @@ export function UIProvider({ children }) {
 
   // مرجع ثابت — لا يتغير طوال عمر التطبيق
   const actions = useMemo(() => ({
-    setShowLiveModal,
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
@@ -31,7 +29,6 @@ export function UIProvider({ children }) {
   }), [triggerToast]);
 
   const state = {
-    showLiveModal,
     showGateModal,
     showStudioModal,
     studioActiveTab,

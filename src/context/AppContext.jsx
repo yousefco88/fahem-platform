@@ -50,7 +50,6 @@ export function AppProvider({ children }) {
   // أفعال الواجهة (toast/نوافذ) من UIContext — مرجع ثابت لا يسبب إعادة تصيير
   const {
     triggerToast,
-    setShowLiveModal,
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
@@ -785,7 +784,6 @@ export function AppProvider({ children }) {
     recordLessonOpened,
     recordVideoProgress,
     // Modals — أفعال فقط (مراجع ثابتة من UIContext)؛ الحالة تُقرأ عبر useUIState
-    setShowLiveModal,
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
