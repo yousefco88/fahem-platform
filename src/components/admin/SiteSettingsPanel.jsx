@@ -503,6 +503,112 @@ export default function SiteSettingsPanel() {
         <SaveButton {...saveState.pricing} onClick={() => save('pricing', draft.pricing)} />
         {err('pricing')}
       </div>
+
+      {/* م4: ترتيب أقسام الرئيسية + ويدجات مخصصة */}
+      <div style={card}>
+        <h3 style={sectionTitle}>🧩 أقسام الصفحة الرئيسية والويدجات</h3>
+        <p style={hint}>
+          رتّب الأقسام بالأسهم، أخفِ أي قسم بإلغاء التحديد، وأضف ويدجات نصية مخصصة بينها.
+          الهيدر والفوتر ثابتان دائماً.
+        </p>
+        {(draft.landingLayout?.sections || []).map((sec, idx, arr) => {
+          const builtinLabels = {
+            hero: '🦸 الهيرو', timezone: '⏰ حاسبة فروق التوقيت', comparison: '⚖️ المقارنة',
+            subjects: '📚 المواد والمسارات', testimonials: '💬 آراء الأسر', booking: '📋 نموذج الحجز', faq: '❓ الأسئلة الشائعة',
+          };
+          const moveSec = (dir) => setDraft(d => {
+            const list = [...d.landingLayout.sections];
+            const j = idx + dir;
+            if (j < 0 || j >= list.length) return d;
+            [list[idx], list[j]] = [list[j], list[idx]];
+            return { ...d, landingLayout: { ...d.landingLayout, sections: list } };
+          });
+          const setSec = (field, value) => setDraft(d => {
+            const list = d.landingLayout.sections.map((s, i) => (i === idx ? { ...s, [field]: value } : s));
+            return { ...d, landingLayout: { ...d.landingLayout, sections: list } };
+          });
+          const removeSec = () => setDraft(d => ({
+            ...d,
+            landingLayout: { ...d.landingLayout, sections: d.landingLayout.sections.filter((_, i) => i !== idx) },
+          }));
+          const isCustom = sec.type === 'custom';
+          return (
+            <div key={sec.id} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '12px 14px', marginBottom: '10px', background: 'var(--bg)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button type="button" onClick={() => moveSec(-1)} disabled={idx === 0} style={{ border: '1px solid var(--line)', background: 'var(--card-bg)', borderRadius: '6px', cursor: idx === 0 ? 'default' : 'pointer', padding: '2px 8px' }}>↑</button>
+                  <button type="button" onClick={() => moveSec(1)} disabled={idx === arr.length - 1} style={{ border: '1px solid var(--line)', background: 'var(--card-bg)', borderRadius: '6px', cursor: idx === arr.length - 1 ? 'default' : 'pointer', padding: '2px 8px' }}>↓</button>
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, fontSize: '13px', color: 'var(--navy)', flex: 1, cursor: 'pointer' }}>
+                  <input type="checkbox" checked={sec.visible !== false} onChange={e => setSec('visible', e.target.checked)} />
+                  {isCustom ? `🧩 ويدجت مخصصة: ${sec.title || 'بلا عنوان'}` : (builtinLabels[sec.id] || sec.id)}
+                </label>
+                {isCustom && removeBtn(removeSec)}
+              </div>
+              {isCustom && (
+                <div style={{ display: 'grid', gap: '8px', marginTop: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: '8px' }}>
+                    <input style={input} value={sec.emoji || ''} onChange={e => setSec('emoji', e.target.value)} placeholder="🎉" />
+                    <input style={input} value={sec.title || ''} onChange={e => setSec('title', e.target.value)} placeholder="عنوان الويدجت" />
+                  </div>
+                  <textarea style={{ ...input, minHeight: '70px' }} value={sec.body || ''} onChange={e => setSec('body', e.target.value)} placeholder="نص الويدجت (يدعم أسطراً متعددة)" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setDraft(d => ({
+            ...d,
+            landingLayout: {
+              ...d.landingLayout,
+              sections: [...(d.landingLayout?.sections || []), { id: `custom-${Date.now()}`, type: 'custom', emoji: '✨', title: '', body: '', visible: true }],
+            },
+          }))}
+          style={{ border: '1px dashed var(--line)', background: 'var(--bg)', borderRadius: '10px', padding: '8px 16px', cursor: 'pointer', fontWeight: 800, fontSize: '13px', color: 'var(--navy)', marginBottom: '14px' }}
+        >
+          + إضافة ويدجت مخصصة
+        </button>
+        <div>
+          <SaveButton {...saveState.landingLayout} onClick={() => save('landingLayout', draft.landingLayout)} />
+          {err('landingLayout')}
+        </div>
+      </div>
+
+      {/* م4: تقويم امتحانات المغتربين — كان ثابتاً في الكود، الآن يُدار من هنا */}
+      <div style={card}>
+        <h3 style={sectionTitle}>🗓 تقويم امتحانات المغتربين</h3>
+        <p style={hint}>المحطات الرسمية التي تظهر في لوحة ولي الأمر — حدّث المواعيد مع كل عام دراسي.</p>
+        {(draft.examCalendar?.events || []).map((ev, idx) => (
+          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>محطة #{idx + 1}</span>
+              {removeBtn(() => removeListItem('examCalendar', 'events', idx))}
+            </div>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '8px' }}>
+                <input style={input} value={ev.stage || ''} onChange={e => setListItem('examCalendar', 'events', idx, 'stage', e.target.value)} placeholder="اسم المحطة" />
+                <input style={input} value={ev.period || ''} onChange={e => setListItem('examCalendar', 'events', idx, 'period', e.target.value)} placeholder="الفترة (مثال: يناير 2027)" />
+                <input style={input} value={ev.status || ''} onChange={e => setListItem('examCalendar', 'events', idx, 'status', e.target.value)} placeholder="الحالة (مجدول/قريباً)" />
+              </div>
+              <textarea style={{ ...input, minHeight: '55px' }} value={ev.details || ''} onChange={e => setListItem('examCalendar', 'events', idx, 'details', e.target.value)} placeholder="التفاصيل" />
+              <input style={input} value={ev.officialNote || ''} onChange={e => setListItem('examCalendar', 'events', idx, 'officialNote', e.target.value)} placeholder="ملاحظة فاهم (اختياري)" />
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={() => addListItem('examCalendar', 'events', { stage: '', period: '', status: 'مجدول', details: '', officialNote: '' })}
+          style={{ border: '1px dashed var(--line)', background: 'var(--bg)', borderRadius: '10px', padding: '8px 16px', cursor: 'pointer', fontWeight: 800, fontSize: '13px', color: 'var(--navy)', marginBottom: '14px' }}
+        >
+          + إضافة محطة
+        </button>
+        <div>
+          <SaveButton {...saveState.examCalendar} onClick={() => save('examCalendar', draft.examCalendar)} />
+          {err('examCalendar')}
+        </div>
+      </div>
     </div>
   );
 }
