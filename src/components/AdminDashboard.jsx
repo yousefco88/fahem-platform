@@ -102,6 +102,18 @@ export default function AdminDashboard() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState('');
   const [savingUser, setSavingUser] = useState(null);
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [teacherEmail, setTeacherEmail] = useState('');
+  const addTeacher = async () => {
+    const email = teacherEmail.trim().toLowerCase();
+    if (!email) return;
+    const u = users.find(x => (x.email || '').toLowerCase() === email);
+    if (!u) { triggerToast('هذا البريد غير مسجّل بعد. اطلب من المعلم إنشاء حساب من صفحة الدخول أولاً ثم أضِفه هنا'); return; }
+    if (u.role === 'teacher') { triggerToast('هذا الحساب معلم بالفعل'); return; }
+    if (u.id === user?.id) { triggerToast('لا يمكنك تغيير دورك بنفسك'); return; }
+    await changeRole(u, 'teacher');
+    setTeacherEmail('');
+  };
   const loadUsers = async () => {
     if (!supabase) { setUsersLoading(false); return; }
     const { data, error } = await supabase.rpc('admin_list_users');
@@ -350,6 +362,31 @@ export default function AdminDashboard() {
             كل من سجّل في المنصة يظهر هنا. غيّر دوره ليرى ما يخصه فقط. لا يمكنك تغيير دورك بنفسك، ولا إزالة آخر مدير.
           </p>
 
+          <div className="u-1" style={{ marginBottom: '18px' }}>
+            <strong style={{ color: 'var(--navy)' }}>👩‍🏫 إضافة / تفعيل معلم</strong>
+            <p className="u-4">اكتب بريد حساب مسجّل في المنصة ليصبح معلماً ويرى طلابه وحصصه. المعلم الجديد يسجّل أولاً من صفحة الدخول.</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+              <input type="email" dir="ltr" aria-label="بريد المعلم" placeholder="teacher@example.com" value={teacherEmail}
+                onChange={e => setTeacherEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTeacher()}
+                list="registered-emails"
+                style={{ flex: '1 1 220px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--line)', background: 'var(--card-bg)', color: 'var(--navy)' }} />
+              <datalist id="registered-emails">
+                {users.filter(x => x.role !== 'teacher').map(x => <option key={x.id} value={x.email} />)}
+              </datalist>
+              <button type="button" className="btn-primary" onClick={addTeacher} disabled={!teacherEmail.trim() || !!savingUser}>تفعيل كمعلم</button>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
+            {[{ id: 'all', label: 'الكل' }, ...ROLE_OPTIONS].map(r => (
+              <button key={r.id} type="button" onClick={() => setRoleFilter(r.id)} aria-pressed={roleFilter === r.id}
+                style={{ padding: '6px 12px', borderRadius: '20px', fontSize: '12.5px', fontWeight: 700, border: '1px solid var(--line)',
+                  background: roleFilter === r.id ? 'var(--solid)' : 'var(--card-bg)', color: roleFilter === r.id ? '#fff' : 'var(--navy)' }}>
+                {r.label} ({r.id === 'all' ? users.length : users.filter(x => x.role === r.id).length})
+              </button>
+            ))}
+          </div>
+
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '18px' }}>
             {ROLE_OPTIONS.map(r => (
               <span key={r.id} style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '10px', padding: '6px 10px', fontSize: '12px' }}>
@@ -376,7 +413,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map(u => (
+                  {users.filter(u => roleFilter === 'all' || u.role === roleFilter).map(u => (
                     <tr key={u.id} style={{ borderBottom: '1px solid var(--line)' }}>
                       <td style={{ padding: '14px 16px' }}>
                         <strong style={{ display: 'block', color: 'var(--navy)' }}>{u.full_name || '—'}</strong>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * ⚙️ إعدادات الموقع — تعديل محتوى الموقع العام من لوحة الإدارة:
@@ -40,6 +41,10 @@ function useSectionSaver(saveSection) {
 
 export default function SiteSettingsPanel() {
   const { settings, tableMissing, saveSection } = useSiteSettings();
+  // محرر المحتوى يرى ويحفظ أجندة الامتحانات فقط؛ بقية الأقسام للأدمن وحده
+  // (الخادم يفرض ذلك فعلياً: RLS تسمح لمحرر المحتوى بمفتاح examCalendar حصراً)
+  const { role } = useAuth();
+  const isAdmin = role === 'admin';
   const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(settings)));
   const [saveState, save] = useSectionSaver(saveSection);
 
@@ -97,6 +102,7 @@ export default function SiteSettingsPanel() {
         </div>
       )}
 
+      {isAdmin && (<>
       {/* الشريط العلوي */}
       <div style={card}>
         <h3 style={sectionTitle}>📣 الشريط العلوي (البانر التسويقي)</h3>
@@ -575,8 +581,9 @@ export default function SiteSettingsPanel() {
           {err('landingLayout')}
         </div>
       </div>
+      </>)}
 
-      {/* م4: تقويم امتحانات المغتربين — كان ثابتاً في الكود، الآن يُدار من هنا */}
+      {/* م4: تقويم امتحانات المغتربين — كان ثابتاً في الكود، الآن يُدار من هنا (أدمن + محرر محتوى) */}
       <div style={card}>
         <h3 style={sectionTitle}>🗓 تقويم امتحانات المغتربين</h3>
         <p style={hint}>المحطات الرسمية التي تظهر في لوحة ولي الأمر — حدّث المواعيد مع كل عام دراسي.</p>
