@@ -1,82 +1,51 @@
 /**
- * AnalyticsCard.jsx
- * بطاقة إحصائية مع رسم بياني صغير
+ * AnalyticsCard.jsx — بطاقة مؤشر بأسلوب المشروع (بلا Tailwind)
+ * trend (إن مُرّر) يجب أن يكون سلسلة حقيقية محسوبة من البيانات — لا أرقام مزروعة.
  */
 import React from 'react';
 
-export default function AnalyticsCard({ 
-  title, 
-  value, 
-  change, 
-  changeType = 'neutral', // positive, negative, neutral
-  icon,
-  trend = [], // array of numbers for sparkline
-  color = 'blue'
-}) {
-  const colors = {
-    blue: { bg: 'bg-blue-50', text: 'text-blue-600', accent: '#2563eb' },
-    green: { bg: 'bg-green-50', text: 'text-green-600', accent: '#16a34a' },
-    orange: { bg: 'bg-orange-50', text: 'text-orange-600', accent: '#ea580c' },
-    purple: { bg: 'bg-purple-50', text: 'text-purple-600', accent: '#9333ea' },
-    teal: { bg: 'bg-teal-50', text: 'text-teal-600', accent: '#0d9488' },
-  };
+const COLORS = {
+  blue:   { bg: '#eff6ff', text: '#2563eb' },
+  green:  { bg: '#f0fdf4', text: '#16a34a' },
+  orange: { bg: '#fff7ed', text: '#ea580c' },
+  purple: { bg: '#faf5ff', text: '#9333ea' },
+  teal:   { bg: '#f0fdfa', text: '#0d9488' },
+};
 
-  const c = colors[color] || colors.blue;
-
-  // Simple sparkline SVG
-  const renderSparkline = () => {
-    if (!trend.length) return null;
-    
-    const max = Math.max(...trend);
-    const min = Math.min(...trend);
-    const range = max - min || 1;
-    const width = 80;
-    const height = 30;
-    const padding = 2;
-    
-    const points = trend.map((val, i) => {
-      const x = padding + (i / (trend.length - 1)) * (width - padding * 2);
-      const y = height - padding - ((val - min) / range) * (height - padding * 2);
-      return `${x},${y}`;
-    }).join(' ');
-
-    return (
-      <svg width={width} height={height} className="opacity-60">
-        <polyline
-          fill="none"
-          stroke={c.accent}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points={points}
-        />
-      </svg>
-    );
-  };
-
+function Sparkline({ trend, color }) {
+  if (!trend || trend.length < 2) return null;
+  const max = Math.max(...trend);
+  const min = Math.min(...trend);
+  const range = max - min || 1;
+  const W = 80, H = 30, P = 2;
+  const points = trend
+    .map((v, i) => `${P + (i / (trend.length - 1)) * (W - P * 2)},${H - P - ((v - min) / range) * (H - P * 2)}`)
+    .join(' ');
   return (
-    <div className={`${c.bg} rounded-2xl p-5 transition-all hover:shadow-md`}>
-      <div className="flex justify-between items-start mb-3">
-        <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center text-xl`}>
-          {icon}
-        </div>
-        {renderSparkline()}
+    <svg width={W} height={H} style={{ opacity: 0.6, flexShrink: 0 }} aria-hidden="true">
+      <polyline fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={points} />
+    </svg>
+  );
+}
+
+export default function AnalyticsCard({ title, value, hint, icon, trend, color = 'blue' }) {
+  const c = COLORS[color] || COLORS.blue;
+  return (
+    <div style={{
+      background: 'var(--card-bg, #fff)', border: '1px solid var(--line, #e2e8f0)',
+      borderRadius: 16, padding: '16px 18px', minWidth: 0,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+        <span style={{
+          width: 40, height: 40, borderRadius: 12, background: c.bg,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+        }}>{icon}</span>
+        <Sparkline trend={trend} color={c.text} />
       </div>
-      
-      <h3 className="text-gray-600 text-sm mb-1">{title}</h3>
-      <div className="flex items-end gap-3">
-        <span className={`text-3xl font-bold ${c.text}`}>{value}</span>
-        {change !== undefined && (
-          <span className={`text-sm font-medium ${
-            changeType === 'positive' ? 'text-green-600' :
-            changeType === 'negative' ? 'text-red-600' :
-            'text-gray-500'
-          }`}>
-            {changeType === 'positive' && '↑'}
-            {changeType === 'negative' && '↓'}
-            {change}
-          </span>
-        )}
+      <div style={{ fontSize: 12.5, color: 'var(--muted, #64748b)', fontWeight: 700, marginBottom: 2 }}>{title}</div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 26, fontWeight: 900, color: c.text }}>{value}</span>
+        {hint && <span style={{ fontSize: 11.5, color: 'var(--muted, #94a3b8)' }}>{hint}</span>}
       </div>
     </div>
   );

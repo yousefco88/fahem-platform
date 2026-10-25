@@ -973,3 +973,6 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   }
   .side-nav-toggle:hover { color: var(--navy); }
 }
+
+/* دوّار التحميل (لوحة التحليلات وغيرها) */
+@keyframes spin { to { transform: rotate(360deg); } }
