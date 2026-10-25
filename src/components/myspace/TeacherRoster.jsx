@@ -74,8 +74,8 @@ export default function TeacherRoster() {
                 style={{
                   border: '1px solid var(--line)', borderRadius: 999, padding: '5px 12px', fontSize: 12,
                   fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit',
-                  background: s.exam_unlocked ? '#dcfce7' : '#f1f5f9',
-                  color: s.exam_unlocked ? '#166534' : '#475569'
+                  background: s.exam_unlocked ? 'var(--green-light)' : 'var(--bg)',
+                  color: s.exam_unlocked ? 'var(--green-text)' : 'var(--muted)'
                 }}
                 onClick={async () => {
                   const next = !s.exam_unlocked;

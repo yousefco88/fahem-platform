@@ -151,7 +151,7 @@ export default function ChildHome() {
               return (
                 <div key={slot.id} style={{
                   border: slot.done ? '2px solid #86efac' : '2px solid #e0e7ff',
-                  background: slot.done ? '#f0fdf4' : '#fafaff',
+                  background: slot.done ? 'var(--green-light)' : 'var(--bg)',
                   borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -173,7 +173,7 @@ export default function ChildHome() {
                   {slot.lesson && (
                     <button
                       style={{
-                        background: slot.done ? '#dcfce7' : 'var(--blue)', color: slot.done ? '#166534' : 'white',
+                        background: slot.done ? 'var(--green-light)' : 'var(--blue)', color: slot.done ? 'var(--green-text)' : 'white',
                         padding: '9px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px',
                         border: 'none', cursor: 'pointer', width: '100%'
                       }}
@@ -203,7 +203,7 @@ export default function ChildHome() {
                 style={{
                   padding: '6px 12px', borderRadius: 'var(--radius-full)', fontWeight: 700, fontSize: '11.5px',
                   background: activeCategory === cat.id ? 'var(--blue)' : 'transparent',
-                  color: activeCategory === cat.id ? 'white' : '#64748b', border: 'none', cursor: 'pointer'
+                  color: activeCategory === cat.id ? 'white' : 'var(--muted)', border: 'none', cursor: 'pointer'
                 }}
                 onClick={() => setActiveCategory(cat.id)}
               >{cat.label}</button>

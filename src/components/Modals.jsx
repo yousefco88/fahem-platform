@@ -348,8 +348,8 @@ export default function Modals() {
                           <button
                             key={i}
                             style={{
-                              background: builtSyllables.includes(syl) ? '#e2e8f0' : 'white',
-                              color: builtSyllables.includes(syl) ? '#94a3b8' : 'var(--navy)',
+                              background: builtSyllables.includes(syl) ? 'var(--line)' : 'var(--card-bg)',
+                              color: builtSyllables.includes(syl) ? 'var(--muted)' : 'var(--navy)',
                               border: '2px solid var(--line)', padding: '10px 20px',
                               borderRadius: '12px', fontSize: '20px', fontWeight: 800,
                               cursor: builtSyllables.includes(syl) ? 'not-allowed' : 'pointer'

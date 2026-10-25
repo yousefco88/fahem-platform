@@ -77,7 +77,7 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
               }}>
                 <span style={{
                   position: 'absolute', top: '14px', right: '14px',
-                  background: isCurrent ? '#4f46e5' : '#e2e8f0', color: isCurrent ? 'white' : '#475569',
+                  background: isCurrent ? '#4f46e5' : 'var(--line)', color: isCurrent ? 'white' : 'var(--muted)',
                   borderRadius: '12px', padding: '2px 10px', fontSize: '11px', fontWeight: 800
                 }}>محطة {lesson.order}</span>
                 <button

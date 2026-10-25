@@ -83,8 +83,8 @@ export default function AssignStudents() {
             style={{
               border: '1px solid var(--line)', borderRadius: 999, padding: '4px 12px', fontSize: 12,
               fontWeight: 800, cursor: 'pointer', font: 'inherit',
-              background: k.exam_unlocked ? '#dcfce7' : '#f1f5f9',
-              color: k.exam_unlocked ? '#166534' : '#475569'
+              background: k.exam_unlocked ? 'var(--green-light)' : 'var(--bg)',
+              color: k.exam_unlocked ? 'var(--green-text)' : 'var(--muted)'
             }}
           >{k.exam_unlocked ? '🔓 مفتوح' : '🔒 فتح المحاكي'}</button>
         </div>

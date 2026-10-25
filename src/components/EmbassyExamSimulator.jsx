@@ -247,12 +247,12 @@ export default function EmbassyExamSimulator() {
 
             {/* Countdown Timer */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: '8px', background: timeLeft < 300 ? '#fef2f2' : '#f0fdf4',
+              display: 'flex', alignItems: 'center', gap: '8px', background: timeLeft < 300 ? 'var(--red-light)' : 'var(--green-light)',
               border: timeLeft < 300 ? '2px solid #ef4444' : '2px solid #86efac',
               padding: '8px 18px', borderRadius: 'var(--radius-full)'
             }}>
               <span style={{ fontSize: '18px' }}>⏰</span>
-              <span style={{ fontSize: '16px', fontWeight: 900, color: timeLeft < 300 ? '#dc2626' : '#166534', fontFamily: 'monospace' }}>
+              <span style={{ fontSize: '16px', fontWeight: 900, color: timeLeft < 300 ? '#dc2626' : 'var(--green-text)', fontFamily: 'monospace' }}>
                 الوقت المتبقي: {formatTimer(timeLeft)}
               </span>
             </div>
@@ -286,8 +286,8 @@ export default function EmbassyExamSimulator() {
                     style={{
                       width: '34px', height: '34px', borderRadius: '50%', fontWeight: 800, fontSize: '13px',
                       border: isCurrent ? '2.5px solid var(--blue)' : '1px solid var(--line)',
-                      background: isCurrent ? 'var(--blue)' : isAnswered ? '#dcfce7' : '#f8fafc',
-                      color: isCurrent ? 'white' : isAnswered ? '#166534' : '#475569',
+                      background: isCurrent ? 'var(--blue)' : isAnswered ? 'var(--green-light)' : 'var(--bg)',
+                      color: isCurrent ? 'white' : isAnswered ? 'var(--green-text)' : 'var(--muted)',
                       cursor: 'pointer'
                     }}
                     onClick={() => setCurrentQuestionIdx(idx)}

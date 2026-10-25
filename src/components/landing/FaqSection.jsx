@@ -22,7 +22,7 @@ export default function FaqSection() {
               key={i}
               style={{
                 border: '1.5px solid var(--line)', borderRadius: '16px',
-                background: openFaq === i ? '#f8fafc' : '#ffffff', overflow: 'hidden'
+                background: openFaq === i ? 'var(--bg)' : 'var(--card-bg)', overflow: 'hidden'
               }}
             >
               <button
