@@ -7,12 +7,27 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
-import { getNavForRole, resolveNavRole, ROLE_LABELS } from '../navigation/navConfig';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { getNavForRole, resolveNavRole, ROLE_LABELS, adminSectionsForRole, adminSectionPath } from '../navigation/navConfig';
 
 export default function SideNav() {
   const { currentScreen, setCurrentScreen } = useApp();
   const { user, role } = useAuth();
   const navRole = resolveNavRole(user, role);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const adminSections = adminSectionsForRole(navRole);
+  const [adminOpen, setAdminOpen] = useState(false);
+  const onAdmin = currentScreen === 'admin';
+  const activeSectionId = onAdmin
+    ? (location.pathname.replace(/\/+$/, '') !== '/admin' ? 'curriculum' : (searchParams.get('tab') || 'curriculum'))
+    : null;
+  // «الإدارة»: من خارجها تفتح اللوحة والقائمة، وداخلها كل ضغطة تُظهر القائمة أو تخفيها
+  const clickAdmin = () => {
+    if (!onAdmin) { navigate('/admin'); setAdminOpen(true); return; }
+    setAdminOpen(o => !o);
+  };
   const nav = getNavForRole(navRole);
 
   const NAV_GROUPS = [
@@ -54,7 +69,32 @@ export default function SideNav() {
         {NAV_GROUPS.map(group => (
           <div className="side-nav-group" key={group.label}>
             {!collapsed && <span className="side-nav-group-label">{group.label}</span>}
-            {group.items.map(item => (
+            {group.items.map(item => item.id === 'admin' && adminSections.length ? (
+              <React.Fragment key={item.id}>
+                <button
+                  className={`side-nav-item ${item.variant || ''} ${onAdmin ? 'active' : ''}`}
+                  onClick={clickAdmin}
+                  aria-expanded={!collapsed && onAdmin && adminOpen}
+                  aria-current={onAdmin ? 'page' : undefined}
+                  title={collapsed ? item.label : undefined}
+                >
+                  <span className="side-nav-icon" aria-hidden="true">{item.icon}</span>
+                  {!collapsed && <span className="side-nav-label">{item.label}</span>}
+                  {!collapsed && <span className="side-nav-caret" aria-hidden="true">{onAdmin && adminOpen ? '▴' : '▾'}</span>}
+                </button>
+                {!collapsed && onAdmin && adminOpen && (
+                  <div className="side-nav-sub" role="menu" aria-label="أقسام الإدارة">
+                    {adminSections.map(sec => (
+                      <button key={sec.id} role="menuitem"
+                        className={`side-nav-sub-item ${activeSectionId === sec.id ? 'active' : ''}`}
+                        onClick={() => navigate(adminSectionPath(sec))}>
+                        <span aria-hidden="true">{sec.icon}</span><span>{sec.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </React.Fragment>
+            ) : (
               <button
                 key={item.id}
                 className={`side-nav-item ${item.variant || ''} ${currentScreen === item.id ? 'active' : ''}`}

@@ -59,3 +59,23 @@ export function resolveNavRole(user, role) {
 export function getNavForRole(navRole) {
   return NAV_BY_ROLE[navRole] || NAV_BY_ROLE.guest;
 }
+
+// أقسام لوحة الإدارة — تظهر في القائمة الجانبية (ويب) وقائمة الأقسام (جوال).
+// roles = من يحق له رؤية القسم؛ ما لم يُذكر دوره لا يراه (الخادم يفرض الصلاحيات فعلياً عبر RLS).
+export const ADMIN_SECTIONS = [
+  { id: 'curriculum', icon: '📚', label: 'إدارة المناهج', roles: ['admin', 'content_editor'] },
+  { id: 'settings', icon: '⚙️', label: 'إعدادات الموقع', roles: ['admin'] },
+  { id: 'recordings', icon: '🎥', label: 'مراجعة تسجيلات الحصص', roles: ['admin'] },
+  { id: 'bookings', icon: '📋', label: 'حجوزات الحصص التجريبية', roles: ['admin'] },
+  { id: 'families', icon: '👨‍👩‍👧‍👦', label: 'حسابات الأسر', roles: ['admin'] },
+  { id: 'schedule', icon: '🗓️', label: 'الجدول الأسبوعي', roles: ['admin'] },
+  { id: 'rbac', icon: '👥', label: 'المستخدمون والصلاحيات', roles: ['admin'] },
+  { id: 'audit', icon: '🛡️', label: 'سجل التدقيق', roles: ['admin'] },
+  { id: 'subscriptions', icon: '💳', label: 'الاشتراكات', roles: ['admin'] },
+  { id: 'analytics', icon: '📊', label: 'لوحة التحليلات', roles: ['admin'], path: '/analytics' }
+];
+
+export const adminSectionsForRole = (role) => ADMIN_SECTIONS.filter(s => s.roles.includes(role));
+
+export const adminSectionPath = (s) =>
+  s.path || (s.id === 'curriculum' ? '/admin' : `/admin?tab=${s.id}`);

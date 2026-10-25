@@ -1,7 +1,9 @@
 import RecordingsReview from './admin/RecordingsReview';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { adminSectionsForRole, adminSectionPath } from '../navigation/navConfig';
 import { useApp } from '../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
@@ -19,7 +21,16 @@ export default function AdminDashboard() {
     saveScheduleToCloud
   } = useApp();
 
-  const [activeAdminTab, setActiveAdminTab] = useState('curriculum');
+  // القسم النشط مشتق من الـ URL (لا حالة محلية): /admin/* = المناهج، وإلا ?tab=
+  const { role } = useAuth();
+  const [searchParams] = useSearchParams();
+  const adminLocation = useLocation();
+  const adminNavigate = useNavigate();
+  const sections = adminSectionsForRole(role).filter(x => !x.path);
+  const subPath = adminLocation.pathname.replace(/^\/admin\/?/, '');
+  const wanted = subPath ? 'curriculum' : (searchParams.get('tab') || 'curriculum');
+  const activeAdminTab = sections.some(x => x.id === wanted) ? wanted : (sections[0]?.id || 'curriculum');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [syncingSchedule, setSyncingSchedule] = useState(false);
 
   // ===== KPI ديناميكي من Supabase =====
@@ -274,51 +285,26 @@ export default function AdminDashboard() {
         </span>
       </section>
 
-      {/* Admin Tabs */}
-      <div style={{
-        display: 'flex', gap: '8px', borderBottom: '2px solid var(--line)',
-        marginBottom: '24px', overflowX: 'auto', paddingBottom: '2px'
-      }}>
-        {[
-          { id: 'settings', label: '⚙️ إعدادات الموقع', icon: '⚙️' },
-          { id: 'curriculum', label: '📚 إدارة المناهج (Supabase)', icon: '📚' },
-          { id: 'recordings', label: '🎥 مراجعة تسجيلات الحصص', icon: '🎥' },
-          { id: 'bookings', label: '📋 حجوزات الحصص التجريبية', icon: '📋' },
-          { id: 'families', label: '👨‍👩‍👧‍👦 حسابات الأسر', icon: '👨‍👩‍👧‍👦' },
-          { id: 'schedule', label: '🗓️ الجدول الأسبوعي', icon: '🗓️' },
-          { id: 'rbac', label: '👥 المستخدمين والصلاحيات (RBAC)', icon: '👥' },
-          { id: 'audit', label: '🛡️ سجل التدقيق والرقابة (Audit Trail)', icon: '🛡️' },
-          { id: 'subscriptions', label: '💳 الاشتراكات وتوزيع المغتربين', icon: '💳' },
-          { id: 'analytics', label: '📊 لوحة التحليلات', icon: '📊', link: '/analytics' }
-        ].map(tab => (
-          tab.link ? (
-            <a
-              key={tab.id}
-              href={tab.link}
-              style={{
-                padding: '12px 20px', borderRadius: '12px 12px 0 0', fontWeight: 800, fontSize: '13.5px',
-                border: 'none', cursor: 'pointer', transition: 'all 0.2s', textDecoration: 'none',
-                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-                color: 'white', display: 'flex', alignItems: 'center', gap: '6px'
-              }}
-            >
-              📊 لوحة التحليلات ↗
-            </a>
-          ) : (
-          <button
-            key={tab.id}
-            style={{
-              padding: '12px 20px', borderRadius: '12px 12px 0 0', fontWeight: 800, fontSize: '13.5px',
-              border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-              background: activeAdminTab === tab.id ? 'var(--blue)' : 'transparent',
-              color: activeAdminTab === tab.id ? 'white' : 'var(--muted)'
-            }}
-            onClick={() => setActiveAdminTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-          )
-        ))}
+      {/* قائمة الأقسام للجوال فقط — على الويب تظهر منبثقة من «الإدارة» في القائمة الجانبية */}
+      <div className="admin-mobile-menu" style={{ marginBottom: '20px', position: 'relative' }}>
+        <button
+          onClick={() => setMobileMenuOpen(o => !o)}
+          aria-expanded={mobileMenuOpen}
+          style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--line)', background: 'var(--card-bg)', fontWeight: 800, fontSize: '14px', cursor: 'pointer', textAlign: 'right', color: 'var(--navy)' }}
+        >
+          {(sections.find(x => x.id === activeAdminTab)?.icon || '⚙️')} {sections.find(x => x.id === activeAdminTab)?.label || 'الأقسام'} {mobileMenuOpen ? '▴' : '▾'}
+        </button>
+        {mobileMenuOpen && (
+          <div style={{ position: 'absolute', insetInline: 0, top: '100%', marginTop: '6px', background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', zIndex: 20, overflow: 'hidden' }}>
+            {adminSectionsForRole(role).map(x => (
+              <button key={x.id}
+                onClick={() => { setMobileMenuOpen(false); adminNavigate(adminSectionPath(x)); }}
+                style={{ display: 'block', width: '100%', padding: '12px 16px', border: 'none', borderBottom: '1px solid var(--line)', background: x.id === activeAdminTab ? 'var(--blue-light)' : 'transparent', textAlign: 'right', cursor: 'pointer', fontSize: '14px', fontWeight: 700, color: 'var(--navy)' }}>
+                {x.icon} {x.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* TAB: SITE SETTINGS */}

@@ -976,3 +976,13 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
 
 /* دوّار التحميل (لوحة التحليلات وغيرها) */
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* قائمة أقسام الإدارة: للجوال فقط، وعلى الويب تحل محلها قائمة «الإدارة» المنبثقة في SideNav */
+@media (min-width: 769px) {
+  .admin-mobile-menu { display: none; }
+  .side-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 14px 6px 0; padding-right: 10px; border-right: 2px solid var(--line); }
+  .side-nav-sub-item { display: flex; align-items: center; gap: 8px; width: 100%; border: none; background: transparent; color: var(--navy); font-family: inherit; font-size: 12.5px; font-weight: 700; padding: 7px 8px; border-radius: 8px; cursor: pointer; text-align: right; white-space: nowrap; }
+  .side-nav-sub-item:hover { background: var(--bg); }
+  .side-nav-sub-item.active { background: var(--blue-light); color: var(--blue); }
+  .side-nav-caret { margin-inline-start: auto; font-size: 11px; opacity: .7; }
+}
