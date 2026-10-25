@@ -832,3 +832,36 @@ input, select, textarea {
   }
 }
 
+
+
+/* ========================================================
+   MOBILE STABILITY & SPACING (موحّد)
+   ======================================================== */
+:root { --page-x: 16px; --card-gap: 12px; }
+
+html {
+  overflow-x: clip;
+  max-width: 100%;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
+}
+body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
+.app-container { min-height: 100vh; min-height: 100dvh; max-width: 100%; }
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 6px 8px env(safe-area-inset-bottom, 0px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: #fff;
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.06);
+    transform: translateZ(0);
+    contain: layout paint;
+  }
+  [data-theme="dark"] .bottom-nav, .dark .bottom-nav { background: #0f172a; border-top-color: #1e293b; }
+  .bottom-nav-item { flex: 1 1 0; min-width: 0; padding: 4px 2px; }
+  .bottom-nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .app-container { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  img, video, svg, canvas { max-width: 100%; }
+}
