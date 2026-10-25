@@ -16,6 +16,13 @@ const AppContext = createContext();
 // التسجيل/الحساب فقط، وغياب الملف يُعرض كحالة صريحة (RequireChild)
 const DEFAULT_CHILDREN = [];
 
+// تنظيف الأسماء الافتراضية القديمة قبل قراءة أي حالة (وإلا أعادت effects كتابتها)
+if (typeof window !== 'undefined' && localStorage.getItem('fahem_names_clean_v2') !== '1') {
+  localStorage.setItem('fahem_names_clean_v2', '1');
+  if (localStorage.getItem('fahem_parent_name') === 'أحمد محمد') localStorage.removeItem('fahem_parent_name');
+  if (localStorage.getItem('fahem_child_name') === 'أحمد') localStorage.removeItem('fahem_child_name');
+}
+
 export function AppProvider({ children }) {
   // الشاشة الحالية مشتقة من الـ URL (React Router) — والـ setter يتنقل فعلياً،
   // فيبقى كل الكود القديم المستخدم لـ setCurrentScreen يعمل كما هو.
@@ -61,6 +68,22 @@ export function AppProvider({ children }) {
     try {
       const saved = JSON.parse(localStorage.getItem('fahem_children') || 'null');
       if (!Array.isArray(saved) || !saved.length) return DEFAULT_CHILDREN;
+      // تنظيف v2 لمرة واحدة: إزالة الطفلين التجريبيين القديمين (أحمد/مريم)
+      // من أجهزة الزوار السابقين — فقط إذا لم يكن عليهما أي سجل تعلم فعلي.
+      // أي ملف عليه نشاط حقيقي يُعتبر بيانات أسرة ولا يُمس.
+      if (localStorage.getItem('fahem_children_clean_v2') !== '1') {
+        localStorage.setItem('fahem_children_clean_v2', '1');
+        let records = {};
+        try { records = JSON.parse(localStorage.getItem('fahem_learning_records') || '{}'); } catch { /* تجاهل */ }
+        const isLegacyDemo = c =>
+          ((c.id === 'child_1' && c.name === 'أحمد') || (c.id === 'child_2' && c.name === 'مريم')) &&
+          !Object.keys(records[c.id] || {}).length &&
+          !(c.masteredLessons || []).length && !c.points && !c.badges;
+        const cleaned = saved.filter(c => !isLegacyDemo(c));
+        localStorage.setItem('fahem_children', JSON.stringify(cleaned));
+        if (!cleaned.length) return DEFAULT_CHILDREN;
+        return cleaned;
+      }
       // تنظيف لمرة واحدة: إزالة الأرقام المزروعة القديمة من التخزين المحلي —
       // التقدم الحقيقي يُعاد بناؤه من سجل التعلم والمزامنة السحابية
       if (localStorage.getItem("fahem_children_clean_v") !== "1") {
