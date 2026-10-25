@@ -13,12 +13,6 @@ import './admin/curriculum/CurriculumAdmin.css';
 export default function AdminDashboard() {
   const {
     curriculumData,
-    curriculumDrafts,
-    setCurriculumDrafts,
-    lessonFiles,
-    setLessonFiles,
-    lessonVideos,
-    setLessonVideos,
     triggerToast,
     allSlots,
     slotsLoaded,
