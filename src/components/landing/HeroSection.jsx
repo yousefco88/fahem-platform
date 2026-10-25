@@ -10,7 +10,7 @@ export default function HeroSection() {
 
   return (
     <section style={{
-      background: 'radial-gradient(circle at 10% 20%, #eff6ff 0%, #ffffff 80%)',
+      background: 'radial-gradient(circle at 10% 20%, var(--blue-light) 0%, var(--card-bg) 80%)',
       padding: 'clamp(40px, 8vw, 70px) clamp(16px, 4vw, 24px) clamp(40px, 6vw, 60px)',
       textAlign: 'center', position: 'relative', overflow: 'hidden'
     }}>
@@ -83,17 +83,17 @@ export default function HeroSection() {
             <span style={{ marginRight: 'auto', fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>fahem-platform.vercel.app</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', padding: '18px' }}>
-            <div style={{ background: 'linear-gradient(135deg, #eef2ff, #e0e7ff)', borderRadius: '14px', padding: '16px' }}>
+            <div style={{ background: 'linear-gradient(135deg, var(--blue-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🦊</div>
               <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
             </div>
-            <div style={{ background: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)', borderRadius: '14px', padding: '16px' }}>
+            <div style={{ background: 'linear-gradient(135deg, var(--green-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>📊</div>
               <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
             </div>
-            <div style={{ background: 'linear-gradient(135deg, #fef2f2, #fee2e2)', borderRadius: '14px', padding: '16px' }}>
+            <div style={{ background: 'linear-gradient(135deg, var(--red-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🇪🇬</div>
               <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>تدريب مجاني بنمط الامتحان الرسمي</div>

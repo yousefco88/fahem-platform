@@ -14,7 +14,7 @@ function ChildFallback() {
 export default function ChildUniverse() {
   return (
     <div style={{
-      background: 'radial-gradient(circle at 10% 20%, #eff6ff 0%, #f0fdf4 90%)',
+      background: 'radial-gradient(circle at 10% 20%, var(--blue-light) 0%, var(--green-light) 90%)',
       padding: '24px', minHeight: 'calc(100vh - 46px)'
     }}>
       <ChildTopBar />

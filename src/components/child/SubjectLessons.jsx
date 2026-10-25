@@ -71,7 +71,7 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
               <div key={lesson.id} style={{
                 border: isMastered ? '2px solid #86efac' : isCurrent ? '3px solid #4f46e5' : '2px solid var(--yellow)',
                 borderRadius: '24px', padding: '24px 18px', textAlign: 'center',
-                background: isMastered ? 'linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%)' : isCurrent ? '#eef2ff' : '#fffbeb',
+                background: isMastered ? 'linear-gradient(180deg, var(--green-light) 0%, var(--card-bg) 100%)' : isCurrent ? 'var(--blue-light)' : 'var(--yellow-light)',
                 boxShadow: isMastered ? 'none' : isCurrent ? '0 0 0 5px #c7d2fe' : '0 0 0 4px #fef08a',
                 position: 'relative', opacity: !isMastered && !isCurrent ? 0.78 : 1
               }}>
