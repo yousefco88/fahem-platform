@@ -1015,7 +1015,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
    ======================================================== */
 .theme-fab {
   position: fixed;
-  inset-inline-start: 16px;
+  inset-inline-end: 16px;   /* الشريط الجانبي على جهة البداية فنبقى بعيداً عنه */
   bottom: 20px;
   z-index: 90;
   display: inline-flex;
@@ -1038,6 +1038,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
 .theme-fab-icon { font-size: 18px; line-height: 1; }
 @media (max-width: 768px) {
   .theme-fab {
+    inset-inline-end: auto;
     inset-inline-start: 12px;
     bottom: calc(var(--bottom-nav-h, 72px) + 12px + env(safe-area-inset-bottom, 0px));
     padding: 0;

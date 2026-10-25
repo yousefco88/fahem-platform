@@ -72,7 +72,7 @@ export default function TimezoneSection() {
           borderRadius: '24px', padding: '36px', boxShadow: '0 20px 40px rgba(15, 23, 42, 0.3)'
         }}>
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: 700, color: 'var(--muted)', marginBottom: '10px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: 700, color: 'var(--on-inverse)', marginBottom: '10px' }}>
               اختر بلد إقامتك الحالي:
             </label>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -105,14 +105,14 @@ export default function TimezoneSection() {
             borderRadius: '18px', padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px'
           }}>
             <div>
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>توقيت الحصة في القاهرة (مصر):</span>
+              <span style={{ fontSize: '12px', color: 'var(--on-inverse)' }}>توقيت الحصة في القاهرة (مصر):</span>
               <div style={{ fontSize: '24px', fontWeight: 900, color: '#facc15', marginTop: '4px' }}>
                 {currentCalc.cairoTime}
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>التوقيت المحلي في {currentCalc.country}:</span>
+              <span style={{ fontSize: '12px', color: 'var(--on-inverse)' }}>التوقيت المحلي في {currentCalc.country}:</span>
               <div style={{ fontSize: '24px', fontWeight: 900, color: '#38bdf8', marginTop: '4px' }}>
                 {currentCalc.localTime} ({currentCalc.diffText})
               </div>

@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h1 style={{ fontSize: '22px', fontWeight: 800 }}>لوحة الإدارة</h1>
             </div>
-            <p style={{ color: 'var(--muted)', fontSize: '13.5px', marginTop: '4px' }}>
+            <p style={{ color: 'var(--on-inverse)', fontSize: '13.5px', marginTop: '4px' }}>
               المنهج والأسر والمعلمون والجدول ومراجعة التسجيلات • الصلاحيات مفروضة من الخادم
             </p>
           </div>
