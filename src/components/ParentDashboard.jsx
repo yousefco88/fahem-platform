@@ -206,7 +206,7 @@ export default function ParentDashboard() {
                   </span>
                 </div>
                 <span style={{
-                  background: streak.isActiveToday ? '#22c55e' : '#94a3b8',
+                  background: streak.isActiveToday ? '#16a34a' : '#475569',
                   color: 'white',
                   padding: '3px 8px',
                   borderRadius: '10px',

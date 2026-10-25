@@ -119,7 +119,7 @@ export default function StreakBadge({
 
         {/* Today's status */}
         <div style={{
-          background: isActiveToday ? '#22c55e' : '#94a3b8',
+          background: isActiveToday ? '#16a34a' : '#475569',
           color: 'white',
           padding: '6px 14px',
           borderRadius: '16px',
