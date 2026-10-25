@@ -20,8 +20,9 @@ export default function SideNav() {
   const adminSections = adminSectionsForRole(navRole);
   const [adminOpen, setAdminOpen] = useState(false);
   const onAdmin = currentScreen === 'admin';
+  const wantedSection = location.pathname.replace(/\/+$/, '') !== '/admin' ? 'curriculum' : (searchParams.get('tab') || 'curriculum');
   const activeSectionId = onAdmin
-    ? (location.pathname.replace(/\/+$/, '') !== '/admin' ? 'curriculum' : (searchParams.get('tab') || 'curriculum'))
+    ? (adminSections.some(x => x.id === wantedSection) ? wantedSection : adminSections[0]?.id)
     : null;
   // «الإدارة»: من خارجها تفتح اللوحة والقائمة، وداخلها كل ضغطة تُظهر القائمة أو تخفيها
   const clickAdmin = () => {
