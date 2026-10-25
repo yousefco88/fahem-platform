@@ -7,6 +7,7 @@ import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { ROLE_LABELS, resolveNavRole } from '../../navigation/navConfig';
 import ParentAccount from '../ParentAccount';
 import TeacherRoster from './TeacherRoster';
+import SkillsReport from './SkillsReport';
 import AssignStudents from './AssignStudents';
 
 const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
@@ -218,6 +219,7 @@ export default function MySpace() {
       </section>
 
       {navRole === 'parent' && <ParentSpace go={setCurrentScreen} />}
+      {navRole === 'parent' && <SkillsReport />}
       {navRole === 'teacher' && <TeacherSpace go={setCurrentScreen} setShowLiveModal={setShowLiveModal} />}
       {navRole === 'teacher' && <TeacherRoster />}
       {staff && <AdminSpace go={setCurrentScreen} isAdmin={navRole === 'admin'} />}
