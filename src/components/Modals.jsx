@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useApp } from '../context/AppContext';
 import { useUIState } from '../context/UIContext';
+import { supabase } from '../lib/supabase';
 import { loadAttachment } from '../utils/attachmentStore';
 
 // حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
@@ -213,6 +214,21 @@ export default function Modals() {
       soundManager.speak('محاولة جيدة! استمع للشرح وجرب مرة ثانية.');
     }
     recordQuizAttempt(activeLesson.id, isCorrect);
+    // تسجيل محاولة سؤال البنك في القاعدة (لتقرير مهارات ولي الأمر)
+    // يفشل بصمت لغير المسجلين — RLS يرفض والدرس يستمر طبيعياً
+    if (bankQuestions && currentQ?.id && supabase) {
+      supabase.from('lesson_question_attempts').insert({
+        question_id: currentQ.id,
+        lesson_id: String(activeLesson.id),
+        child_key: activeChild?.id != null ? String(activeChild.id) : null,
+        child_name: activeChild?.name || null,
+        is_correct: !!isCorrect,
+        skill: currentQ.skill || null,
+        quiz_type: currentQ.quizType || null,
+      }).then(({ error }) => {
+        if (error) console.warn('lesson question attempt not saved:', error.message);
+      });
+    }
   };
 
   // Syllable Builder Tap/Drag handler

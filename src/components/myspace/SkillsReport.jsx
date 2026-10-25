@@ -48,12 +48,20 @@ export default function SkillsReport() {
     let cancelled = false;
     (async () => {
       if (!supabase || !user?.id) { setLoading(false); return; }
-      const { data, error: e } = await supabase
-        .from('exam_attempts')
-        .select('child_key, child_name, total_questions, percentage, answers, created_at')
-        .order('created_at', { ascending: false })
-        .limit(40);
+      const [examRes, bankRes] = await Promise.all([
+        supabase
+          .from('exam_attempts')
+          .select('child_key, child_name, total_questions, percentage, answers, created_at')
+          .order('created_at', { ascending: false })
+          .limit(40),
+        supabase
+          .from('lesson_question_attempts')
+          .select('child_name, is_correct, skill, created_at')
+          .order('created_at', { ascending: false })
+          .limit(300),
+      ]);
       if (cancelled) return;
+      const { data, error: e } = examRes;
       if (e) { setError(e.message); setLoading(false); return; }
       const grouped = {};
       (data || []).forEach(a => {
@@ -64,13 +72,23 @@ export default function SkillsReport() {
         grouped[name].attempts++;
         mergeSkills(grouped[name].skills, skills);
       });
+      // محاولات أسئلة بنك الدروس — كل صف إجابة واحدة على سؤال
+      (bankRes.data || []).forEach(a => {
+        const name = a.child_name || 'طفل غير مسمى';
+        if (!grouped[name]) grouped[name] = { skills: {}, attempts: 0, lastAt: a.created_at };
+        const key = a.skill || 'أسئلة بلا وسم مهارة';
+        mergeSkills(grouped[name].skills, {
+          [key]: { correct: a.is_correct ? 1 : 0, total: 1, subject: 'بنك أسئلة الدروس' },
+        });
+        grouped[name].bankAnswers = (grouped[name].bankAnswers || 0) + 1;
+      });
       setByChild(grouped);
       setLoading(false);
     })();
     return () => { cancelled = true; };
   }, [user?.id]);
 
-  const children = byChild ? Object.entries(byChild).filter(([, v]) => v.attempts > 0) : [];
+  const children = byChild ? Object.entries(byChild).filter(([, v]) => v.attempts > 0 || v.bankAnswers > 0) : [];
 
   return (
     <section style={card} dir="rtl">
@@ -111,7 +129,9 @@ export default function SkillsReport() {
           <div key={childName} style={{ marginBottom: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <strong style={{ fontSize: 14.5 }}>👧 {childName}</strong>
-              <span style={{ fontSize: 11.5, color: 'var(--muted)' }}>({info.attempts} محاولة محللة)</span>
+              <span style={{ fontSize: 11.5, color: 'var(--muted)' }}>
+                ({info.attempts > 0 ? `${info.attempts} محاولة اختبار` : ''}{info.attempts > 0 && info.bankAnswers > 0 ? ' + ' : ''}{info.bankAnswers > 0 ? `${info.bankAnswers} إجابة أسئلة دروس` : ''})
+              </span>
             </div>
 
             {weak.length > 0 && (
