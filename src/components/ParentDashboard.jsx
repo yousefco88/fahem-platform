@@ -441,9 +441,10 @@ export default function ParentDashboard() {
             </div>
           </section>
 
-          {/* 3. Official Expat Exam Calendar Section */}
-          <ExamAttemptsCard />
+          {/* آخر محاولات محاكي الامتحان (بيانات حقيقية من exam_attempts) */}
+          <ExamAttemptsCard activeChildName={activeChild?.name} />
 
+          {/* 3. أجندة امتحانات المغتربين الرسمية — تُدار بالكامل من لوحة الإدارة (site_settings.examCalendar) */}
           <section style={{
             background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)',
             padding: '24px', boxShadow: 'var(--shadow-sm)', marginBottom: '30px'
@@ -454,10 +455,20 @@ export default function ParentDashboard() {
                   <span>📅</span> أجندة امتحانات «أبنائنا في الخارج» — وزارة التربية والتعليم المصرية
                 </h3>
                 <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>
-                  شاملة جميع المواد الخمس المقررة للصف الأول الابتدائي بالسفارات والقنصليات
+                  {siteSettings.examCalendar?.subtitle || 'المحطات الرسمية لامتحانات الطلبة المصريين بالخارج'}
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {siteSettings.examCalendar?.officialUrl && (
+                  <a
+                    className="tag-badge mastered"
+                    href={siteSettings.examCalendar.officialUrl}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{ cursor: 'pointer', textDecoration: 'none' }}
+                  >
+                    🔗 {siteSettings.examCalendar.officialUrlLabel || 'بوابة التسجيل الرسمية'}
+                  </a>
+                )}
                 <button
                   className="tag-badge info"
                   style={{ cursor: 'pointer' }}
@@ -469,9 +480,9 @@ export default function ParentDashboard() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
-              {calendarEvents.map((evt, idx) => (
+              {calendarEvents.map((evt) => (
                 <div
-                  key={idx}
+                  key={`${evt.stage}-${evt.period}`}
                   style={{
                     border: '1.5px solid var(--line)', borderRadius: '16px', padding: '16px',
                     background: 'var(--bg)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
@@ -480,7 +491,8 @@ export default function ParentDashboard() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <span className="tag-badge info" style={{ fontSize: '11px' }}>{evt.period}</span>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--blue-text)' }}>{evt.status}</span>
+                      {/* لون الحالة حسب قيمتها: مجدول أزرق، قريباً برتقالي، منتهٍ/مكتمل أخضر */}
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: evt.status === 'قريباً' ? 'var(--orange-text)' : (evt.status || '').match(/منته|مكتمل|تم/) ? 'var(--green-text)' : 'var(--blue-text)' }}>{evt.status}</span>
                     </div>
                     <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '6px' }}>{evt.stage}</h4>
                     <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '10px' }}>{evt.details}</p>

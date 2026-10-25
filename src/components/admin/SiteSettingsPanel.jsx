@@ -580,6 +580,13 @@ export default function SiteSettingsPanel() {
       <div style={card}>
         <h3 style={sectionTitle}>🗓 تقويم امتحانات المغتربين</h3>
         <p style={hint}>المحطات الرسمية التي تظهر في لوحة ولي الأمر — حدّث المواعيد مع كل عام دراسي.</p>
+        <div style={{ display: 'grid', gap: '10px', marginBottom: '14px' }}>
+          <input style={input} value={draft.examCalendar?.subtitle || ''} onChange={e => set('examCalendar', 'subtitle', e.target.value)} placeholder="العنوان الفرعي تحت عنوان الأجندة" />
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '8px' }}>
+            <input style={input} dir="ltr" value={draft.examCalendar?.officialUrl || ''} onChange={e => set('examCalendar', 'officialUrl', e.target.value)} placeholder="رابط بوابة التسجيل الرسمية (https://...)" />
+            <input style={input} value={draft.examCalendar?.officialUrlLabel || ''} onChange={e => set('examCalendar', 'officialUrlLabel', e.target.value)} placeholder="نص زر الرابط" />
+          </div>
+        </div>
         {(draft.examCalendar?.events || []).map((ev, idx) => (
           <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>

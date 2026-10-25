@@ -3,7 +3,8 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 
 // آخر محاولات محاكي امتحانات السفارة — بيانات حقيقية من exam_attempts (حساب ولي الأمر)
-export default function ExamAttemptsCard() {
+// activeChildName اختياري: عند تمريره تُعرض محاولات الطفل النشط فقط (اتساقاً مع بقية اللوحة)
+export default function ExamAttemptsCard({ activeChildName }) {
   const { user } = useAuth();
   const [attempts, setAttempts] = useState([]);
   const [state, setState] = useState('loading'); // loading | ready | error | no-session
@@ -12,18 +13,20 @@ export default function ExamAttemptsCard() {
     if (!supabase || !user?.id) { setState('no-session'); return; }
     let cancelled = false;
     (async () => {
-      const { data, error } = await supabase
+      let q = supabase
         .from('exam_attempts')
         .select('id, child_name, correct_count, attempted_count, total_questions, percentage, band, created_at')
         .order('created_at', { ascending: false })
         .limit(5);
+      if (activeChildName) q = q.eq('child_name', activeChildName);
+      const { data, error } = await q;
       if (cancelled) return;
       if (error) { setState('error'); return; }
       setAttempts(data || []);
       setState('ready');
     })();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [user?.id, activeChildName]);
 
   const bandColor = (pct) => (pct >= 85 ? '#2563eb' : pct >= 65 ? '#16a34a' : pct >= 50 ? '#ca8a04' : '#dc2626');
 
