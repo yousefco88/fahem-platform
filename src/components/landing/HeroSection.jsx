@@ -18,7 +18,7 @@ export default function HeroSection() {
 
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'var(--blue-light)', color: '#3730a3', padding: '6px 18px',
+          background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '6px 18px',
           borderRadius: 'var(--radius-full)', fontSize: 'clamp(11px, 2.5vw, 13px)', fontWeight: 800, marginBottom: '24px'
         }}>
           <span>{hero.badge}</span>
@@ -29,7 +29,7 @@ export default function HeroSection() {
           marginBottom: '20px', letterSpacing: '-0.5px', textShadow: '0 1px 2px rgba(0,0,0,0.05)'
         }}>
           {hero.titleLine1} <br />
-          <span style={{ background: 'linear-gradient(135deg, #1d4ed8, #0891b2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <span style={{ background: 'linear-gradient(135deg, var(--blue-text), var(--green-text))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             {hero.titleHighlight}
           </span>
         </h1>

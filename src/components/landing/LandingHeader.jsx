@@ -107,8 +107,7 @@ export default function LandingHeader() {
             <span style={{ fontSize: '18px', fontWeight: 900, color: 'var(--navy)' }}>فاهم</span>
           </div>
           <button
-            className="btn-accent"
-            style={{ padding: '8px 14px', fontSize: '12px', borderRadius: '20px' }}
+            className="btn-accent btn-compact"
             onClick={scrollToBooking}
           >
             احجز مجاناً 🎁

@@ -374,6 +374,7 @@ input, select, textarea {
   gap: 10px;
   box-shadow: 0 8px 16px rgba(250, 204, 21, 0.3);
 }
+.btn-accent.btn-compact { padding: 8px 14px; font-size: 12px; border-radius: 20px; white-space: nowrap; }
 .btn-accent:hover {
   background: #fde047;
   transform: translateY(-2px);
@@ -817,8 +818,8 @@ input, select, textarea {
   }
 
   /* Buttons */
-  .btn-accent,
-  .btn-primary {
+  .btn-accent:not(.btn-compact),
+  .btn-primary:not(.btn-compact) {
     width: 100%;
     justify-content: center;
     padding: 14px 20px !important;
