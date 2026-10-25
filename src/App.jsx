@@ -19,7 +19,6 @@ const ChildUniverse = lazy(() => import('./components/ChildUniverse'));
 const TeacherStudio = lazy(() => import('./components/TeacherStudio'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulator'));
-const OnboardingFlow = lazy(() => import('./components/OnboardingFlow'));
 const PricingPlans = lazy(() => import('./components/PricingPlans'));
 const MySpace = lazy(() => import('./components/myspace/MySpace'));
 const AITutor = lazy(() => import('./components/ai/AITutor'));
@@ -103,7 +102,8 @@ function MainAppContent() {
               }
             />
             <Route path="/exam" element={<ExamGate><EmbassyExamSimulator /></ExamGate>} />
-            <Route path="/onboarding" element={<OnboardingFlow />} />
+            {/* التسجيل الحقيقي موحّد في /account (حساب Supabase) — المعالج المحلي القديم أُلغي */}
+            <Route path="/onboarding" element={<Navigate to="/account" replace />} />
             <Route path="/pricing" element={<PricingPlans />} />
             <Route path="/account" element={<MySpace />} />
             <Route path="*" element={<Navigate to="/" replace />} />

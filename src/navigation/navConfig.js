@@ -5,7 +5,6 @@
 const ITEM = {
   landing: { id: 'landing', icon: '🏠', label: 'الرئيسية' },
   pricing: { id: 'pricing', icon: '💳', label: 'اشتراكي' },
-  onboarding: { id: 'onboarding', icon: '📋', label: 'التسجيل' },
   parent: { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
   child: { id: 'child', icon: '🎓', label: 'التعلّم', variant: 'child' },
   aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
@@ -21,7 +20,7 @@ const mySpace = (label = 'مساحتي') => ({ id: 'account', icon: '👤', labe
 export const NAV_BY_ROLE = {
   guest: {
     primary: [ITEM.landing, ITEM.pricing, mySpace('دخول')],
-    more: [ITEM.onboarding, ITEM.aiTutor]
+    more: [ITEM.aiTutor]
   },
   parent: {
     primary: [ITEM.landing, ITEM.child, ITEM.parent, mySpace()],
