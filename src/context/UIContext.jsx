@@ -9,7 +9,6 @@ export function UIProvider({ children }) {
   const [showGateModal, setShowGateModal] = useState(false);
   const [showStudioModal, setShowStudioModal] = useState(false);
   const [studioActiveTab, setStudioActiveTab] = useState('video');
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const toastTimer = useRef(null);
 
@@ -24,7 +23,6 @@ export function UIProvider({ children }) {
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
-    setShowScheduleModal,
     triggerToast
   }), [triggerToast]);
 
@@ -32,7 +30,6 @@ export function UIProvider({ children }) {
     showGateModal,
     showStudioModal,
     studioActiveTab,
-    showScheduleModal,
     toastMessage
   };
 

@@ -11,14 +11,12 @@ export default function Modals() {
   const {
     showGateModal,
     showStudioModal,
-    studioActiveTab,
-    showScheduleModal
+    studioActiveTab
   } = useUIState();
   const {
     setShowGateModal,
     setShowStudioModal,
     setStudioActiveTab,
-    setShowScheduleModal,
     activeChild,
     activeLesson,
     activeSubject,
@@ -55,9 +53,6 @@ export default function Modals() {
   const [gateNum1] = useState(5);
   const [gateNum2] = useState(4);
   const [gateInput, setGateInput] = useState('');
-
-  // Schedule class form state
-  const [schedTitle, setSchedTitle] = useState('حرف التاء وكتابة الكلمات الثلاثية');
 
   // Teacher Post-Class Feedback Modal State
   const [showPostClassFeedback, setShowPostClassFeedback] = useState(false);
@@ -570,58 +565,6 @@ export default function Modals() {
         </div>
       )}
 
-      {/* 4. Teacher Schedule Modal */}
-      {showScheduleModal && (
-        <div className="modal-overlay">
-          <div style={{ background: 'white', borderRadius: '24px', padding: '30px', maxWidth: '500px', width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>جدولة حصة حية جديدة</h3>
-              <button style={{ background: 'none', fontSize: '20px' }} onClick={() => setShowScheduleModal(false)}>✕</button>
-            </div>
-            <form onSubmit={handleSaveSchedule}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '6px' }}>عنوان الحصة والمهارة</label>
-                <input
-                  type="text"
-                  style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px' }}
-                  value={schedTitle}
-                  onChange={(e) => setSchedTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '6px' }}>المادة المقررة</label>
-                  <select style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'white', fontSize: '13px' }}>
-                    <option>📖 اللغة العربية</option>
-                    <option>🌟 Connect Plus (لغات)</option>
-                    <option>📐 Math (English — لغات)</option>
-                    <option>🔢 الرياضيات (عربي)</option>
-                    <option>🔤 Connect الإنجليزية</option>
-                    <option>🔬 اكتشف (Discover)</option>
-                    <option>💻 تكنولوجيا المعلومات (ICT)</option>
-                    <option>🇪🇬 معالم وتاريخ مصر (الهوية)</option>
-                    <option>🛠️ المهارات الحياتية والمهنية</option>
-                    <option>✍️ نور البيان والخط العربي</option>
-                    <option>🕋 التربية الإسلامية والقرآن</option>
-                    <option>✝️ التربية المسيحية</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '6px' }}>المجموعة</label>
-                  <select style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'white' }}>
-                    <option>المجموعة أ (4 طلاب)</option>
-                    <option>المجموعة ب (4 طلاب)</option>
-                  </select>
-                </div>
-              </div>
-              <button className="btn-accent" style={{ width: '100%', justifyContent: 'center' }} type="submit">
-                تأكيد ونشر الحصة في جداول الطلاب 📢
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
 }
