@@ -459,16 +459,6 @@ export default function ParentDashboard() {
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <button
-                  style={{
-                    background: 'linear-gradient(135deg, #be123c, #9f1239)', color: 'white',
-                    border: 'none', padding: '6px 14px', borderRadius: 'var(--radius-full)',
-                    fontSize: '12px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
-                  }}
-                  onClick={() => setCurrentScreen('exam')}
-                >
-                  <span>🇪🇬 تجربة محاكي امتحانات السفارة</span>
-                </button>
-                <button
                   className="tag-badge info"
                   style={{ cursor: 'pointer' }}
                   onClick={() => triggerToast('المحتوى الحالي تجريبي وقيد المراجعة الأكاديمية.')}

@@ -368,9 +368,9 @@ export function AppProvider({ children }) {
         { onConflict: 'id' }
       );
       // سحب أبناء الحساب من السحابة: الدخول من جهاز جديد أو إضافة طفل من «حسابي» لا يترك القائمة فارغة
-      const { data: existing } = await supabase.from('children').select('id, name, grade, avatar').eq('parent_id', user.id);
+      const { data: existing } = await supabase.from('children').select('id, name, grade, avatar, exam_unlocked').eq('parent_id', user.id);
       const missing = (existing || []).filter(r => !childrenList.some(c => c.name === r.name))
-        .map(r => ({ id: r.id, name: r.name, grade: r.grade, avatar: r.avatar || '⭐', points: 0, badges: 0, baaMastered: false, masteredLessons: [], masteredSkills: 0 }));
+        .map(r => ({ id: r.id, name: r.name, grade: r.grade, avatar: r.avatar || '⭐', points: 0, badges: 0, baaMastered: false, masteredLessons: [], masteredSkills: 0, examUnlocked: !!r.exam_unlocked }));
       if (cancelled) return;
       if (missing.length) {
         setChildrenList(prev => [...prev, ...missing.filter(m => !prev.some(c => c.name === m.name))]);
@@ -394,6 +394,12 @@ export function AppProvider({ children }) {
         if (remote) map[c.id] = remote.id;
       });
       setChildCloudIds(map);
+
+      // علم فتح المحاكي اليدوي (يضبطه المعلم/الأدمن عبر RPC) — يُقرأ من السحابة
+      setChildrenList(prev => prev.map(c => {
+        const row = (existing || []).find(r => r.name === c.name);
+        return row ? { ...c, examUnlocked: !!row.exam_unlocked } : c;
+      }));
 
       // تحميل التقدم المحفوظ سحابياً ودمجه (السحابة لا تمسح تقدماً محلياً)
       const uuids = Object.values(map);

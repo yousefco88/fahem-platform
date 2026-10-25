@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getTodayPlan, getContinueLesson } from '../../utils/todayPlan';
-import { getSubjectProgress } from '../../utils/childProgress';
+import { getSubjectProgress, getExamUnlockProgress } from '../../utils/childProgress';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { CHILD_SUBJECTS, CHILD_CATEGORIES, childPaths } from './childSubjects';
 import LiveJoin from '../LiveJoin';
@@ -54,14 +54,29 @@ export default function ChildHome() {
             كل مواد المنهج المصري (عربي، ماث، إنجليزي، ديسكفر، وأخلاق) موجودة في جزيرتك — اختر مادة وابدأ رحلتك.
           </p>
           <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <button
-              style={{
-                background: 'linear-gradient(135deg, #e11d48, #be123c)', color: 'white', border: 'none',
-                borderRadius: 'var(--radius-full)', fontSize: '15px', padding: '15px 24px', fontWeight: 800,
-                boxShadow: '0 8px 20px rgba(190, 18, 60, 0.35)', cursor: 'pointer'
-              }}
-              onClick={() => setCurrentScreen('exam')}
-            >🇪🇬 محاكي امتحانات السفارة</button>
+            {(() => {
+              // المحاكي يُفتح بإكمال أي مادة كاملة أو بفتح يدوي من المعلم/الأدمن
+              const unlock = getExamUnlockProgress(curriculumData, learningRecords?.[activeChild.id] || {}, activeChild.masteredLessons || []);
+              const examOpen = activeChild.examUnlocked || unlock.unlocked;
+              return examOpen ? (
+                <button
+                  style={{
+                    background: 'linear-gradient(135deg, #e11d48, #be123c)', color: 'white', border: 'none',
+                    borderRadius: 'var(--radius-full)', fontSize: '15px', padding: '15px 24px', fontWeight: 800,
+                    boxShadow: '0 8px 20px rgba(190, 18, 60, 0.35)', cursor: 'pointer'
+                  }}
+                  onClick={() => setCurrentScreen('exam')}
+                >🇪🇬 محاكي امتحانات السفارة</button>
+              ) : (
+                <div
+                  title={unlock.subjectTitle ? `الأقرب: ${unlock.subjectTitle} (${unlock.done}/${unlock.total} دروس)` : ''}
+                  style={{
+                    background: 'rgba(255,255,255,0.14)', color: 'white', border: '1px dashed rgba(255,255,255,0.5)',
+                    borderRadius: 'var(--radius-full)', fontSize: '13.5px', padding: '13px 22px', fontWeight: 800
+                  }}
+                >🔒 محاكي السفارة — يُفتح بإكمال مادة كاملة{unlock.subjectTitle ? ` (${unlock.subjectTitle}: ${unlock.done}/${unlock.total})` : ''}</div>
+              );
+            })()}
           </div>
         </div>
         <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={handleMascotSpeak} title="انقر للتحدث مع فاهم!">

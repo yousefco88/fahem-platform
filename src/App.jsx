@@ -9,6 +9,7 @@ import AuthGate from './components/AuthGate';
 import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
 import RequireChild from './components/RequireChild';
+import ExamGate from './components/ExamGate';
 import Modals from './components/Modals';
 
 // تقسيم الكود: كل شاشة في حزمة مستقلة تُحمَّل عند الطلب
@@ -101,7 +102,7 @@ function MainAppContent() {
                 </AuthGate>
               }
             />
-            <Route path="/exam" element={<EmbassyExamSimulator />} />
+            <Route path="/exam" element={<ExamGate><EmbassyExamSimulator /></ExamGate>} />
             <Route path="/onboarding" element={<OnboardingFlow />} />
             <Route path="/pricing" element={<PricingPlans />} />
             <Route path="/account" element={<MySpace />} />

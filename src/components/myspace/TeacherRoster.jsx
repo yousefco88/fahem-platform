@@ -33,7 +33,7 @@ export default function TeacherRoster() {
     if (!supabase || !user) return;
     (async () => {
       const st = await supabase.from('teacher_students')
-        .select('child_id, children(id, name, grade, avatar)').eq('teacher_id', user.id);
+        .select('child_id, children(id, name, grade, avatar, exam_unlocked)').eq('teacher_id', user.id);
       if (st.error) {
         setErr('تعذر تحميل الطلاب (هل طُبّقت migration الإسناد؟): ' + st.error.message);
         setStudents([]);
@@ -65,10 +65,25 @@ export default function TeacherRoster() {
           <h2 style={h2}>طلابي ({students?.length ?? '…'})</h2>
           {students?.length === 0 && !err && <p style={muted}>لم يُسنَد إليك أي طالب بعد. يُسنِد المسؤول الطلاب من «مساحتي».</p>}
           {students?.map(s => (
-            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)' }}>
+            <div key={s.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)', alignItems: 'center', flexWrap: 'wrap' }}>
               <span style={{ fontSize: 22 }}>{s.avatar || '🧒'}</span>
               <div style={{ flex: 1 }}><strong>{s.name}</strong><div style={muted}>{s.grade}</div></div>
               <span style={muted}>دروس مكتملة: <strong>{s.completed}</strong></span>
+              <button
+                title="فتح/قفل محاكي السفارة يدوياً لهذا الطالب (يُفتح تلقائياً أيضاً بإكمال مادة كاملة)"
+                style={{
+                  border: '1px solid var(--line)', borderRadius: 999, padding: '5px 12px', fontSize: 12,
+                  fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit',
+                  background: s.exam_unlocked ? '#dcfce7' : '#f1f5f9',
+                  color: s.exam_unlocked ? '#166534' : '#475569'
+                }}
+                onClick={async () => {
+                  const next = !s.exam_unlocked;
+                  const r = await supabase.rpc('set_exam_unlocked', { p_child_id: s.id, p_unlocked: next });
+                  if (r.error) { setErr('تعذر تغيير حالة المحاكي: ' + r.error.message); return; }
+                  setStudents(list => list.map(x => x.id === s.id ? { ...x, exam_unlocked: next } : x));
+                }}
+              >{s.exam_unlocked ? '🔓 المحاكي مفتوح' : '🔒 فتح المحاكي'}</button>
             </div>
           ))}
         </>
