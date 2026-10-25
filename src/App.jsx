@@ -8,6 +8,7 @@ import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsCon
 import AuthGate from './components/AuthGate';
 import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
+import RequireChild from './components/RequireChild';
 import Modals from './components/Modals';
 
 // تقسيم الكود: كل شاشة في حزمة مستقلة تُحمَّل عند الطلب
@@ -72,7 +73,7 @@ function MainAppContent() {
               path="/parent"
               element={
                 <AuthGate roles={['parent', 'admin']}>
-                  <ParentDashboard />
+                  <RequireChild><ParentDashboard /></RequireChild>
                 </AuthGate>
               }
             />
@@ -86,7 +87,7 @@ function MainAppContent() {
               }
             />
             <Route path="/lessons" element={<RecordedLessons />} />
-            <Route path="/child/*" element={<ChildUniverse />} />
+            <Route path="/child/*" element={<RequireChild><ChildUniverse /></RequireChild>} />
             <Route
               path="/teacher"
               element={

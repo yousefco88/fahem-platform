@@ -12,6 +12,10 @@ export default function EmbassyExamSimulator() {
     saveExamAttempt
   } = useApp();
 
+  // المحاكي عام للزوار: لا طفل حقيقي → تسمية «زائر» الصادقة (لا طفل وهمي)،
+  // والمحاولة لا تُحفظ سحابياً إلا لحساب مسجل أصلاً (saveExamAttempt/RLS)
+  const examChild = activeChild || { id: null, name: 'زائر', grade: 'الصف الأول الابتدائي' };
+
   // Exam States: 'lobby' | 'testing' | 'result'
   const [examState, setExamState] = useState('lobby');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -66,7 +70,7 @@ export default function EmbassyExamSimulator() {
     setExamState('result');
     launchConfetti();
     soundManager.playSuccess();
-    soundManager.speak(`أحسنت يا ${activeChild.name}! أتممت الاختبار التدريبي.`);
+    soundManager.speak(`أحسنت يا ${examChild.name}! أتممت الاختبار التدريبي.`);
     triggerToast(`انتهى الاختبار التدريبي: أجبت عن ${Object.keys(selectedAnswers).length} من ${examQuestions.length} أسئلة. التقرير غير رسمي.`);
 
     // حفظ المحاولة سحابياً (إن كان ولي الأمر مسجلاً دخوله)
@@ -86,8 +90,8 @@ export default function EmbassyExamSimulator() {
       if (chosen !== undefined && q.options[chosen]?.correct) skillBreakdown[key].correct++;
     });
     saveExamAttempt({
-      childKey: activeChild?.id,
-      childName: activeChild?.name,
+      childKey: examChild.id,
+      childName: examChild.name,
       totalQuestions: examQuestions.length,
       attemptedCount: Object.keys(selectedAnswers).length,
       correctCount: correct,
@@ -155,8 +159,8 @@ export default function EmbassyExamSimulator() {
               textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', minWidth: '220px'
             }}>
               <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>بيانات الطالب المتقدم:</span>
-              <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue)', marginTop: '4px' }}>{activeChild.name}</div>
-              <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '2px' }}>{activeChild.grade}</div>
+              <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue)', marginTop: '4px' }}>{examChild.name}</div>
+              <div style={{ fontSize: '12.5px', color: '#64748b', marginTop: '2px' }}>{examChild.grade}</div>
               <div style={{ fontSize: '11px', background: 'var(--bg)', padding: '4px 8px', borderRadius: '6px', marginTop: '10px', color: 'var(--navy)' }}>
                 محاكاة تدريبية — ليست رقم جلوس رسمياً
               </div>
@@ -196,7 +200,7 @@ export default function EmbassyExamSimulator() {
             padding: '30px', textAlign: 'center'
           }}>
             <h3 style={{ fontSize: '20px', color: 'var(--navy)', marginBottom: '10px' }}>
-              جاهز لخوض الاختبار التجريبي الآن يا {activeChild.name}؟ 🚀
+              جاهز لخوض الاختبار التجريبي الآن يا {examChild.name}؟ 🚀
             </h3>
             <p style={{ fontSize: '14px', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto 20px' }}>
               تذكر: فلسفة «فاهم» تضمن لك الإعادة والتصحيح دون خوف. هدفنا هو الفهم التام والإتقان بنسبة 100%.
@@ -236,7 +240,7 @@ export default function EmbassyExamSimulator() {
                   امتحان «أبنائنا بالخارج» — نصف العام الدراسي
                 </strong>
                 <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
-                  الطالب: {activeChild.name} • السؤال {currentQuestionIdx + 1} من {totalQuestions}
+                  الطالب: {examChild.name} • السؤال {currentQuestionIdx + 1} من {totalQuestions}
                 </span>
               </div>
             </div>
@@ -427,8 +431,8 @@ export default function EmbassyExamSimulator() {
             }}>
               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>اسم الطالب:</span>
-                <strong style={{ fontSize: '17px', color: 'var(--navy)' }}>{activeChild.name}</strong>
-                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>المرحلة: {activeChild.grade} (المنهج المصري)</div>
+                <strong style={{ fontSize: '17px', color: 'var(--navy)' }}>{examChild.name}</strong>
+                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>المرحلة: {examChild.grade} (المنهج المصري)</div>
               </div>
 
               <div style={{ background: currentBand.bg, padding: '16px', borderRadius: '12px', border: `2px solid ${currentBand.color}` }}>
