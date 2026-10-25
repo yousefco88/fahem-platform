@@ -12,30 +12,9 @@ import { SCREEN_PATHS, screenFromPath } from '../routes';
 
 const AppContext = createContext();
 
-const DEFAULT_CHILDREN = [
-  {
-    id: 'child_1',
-    name: 'أحمد',
-    grade: 'الصف الأول الابتدائي',
-    avatar: '🦁',
-    points: 0,
-    badges: 0,
-    baaMastered: false,
-    masteredLessons: [],
-    masteredSkills: 0
-  },
-  {
-    id: 'child_2',
-    name: 'مريم',
-    grade: 'الصف الثالث الابتدائي',
-    avatar: '🌸',
-    points: 0,
-    badges: 0,
-    baaMastered: false,
-    masteredLessons: [],
-    masteredSkills: 0
-  }
-];
+// لا أطفال افتراضيين — سياسة «لا بيانات وهمية»: ملف الطفل يُنشأ من
+// التسجيل/الحساب فقط، وغياب الملف يُعرض كحالة صريحة (RequireChild)
+const DEFAULT_CHILDREN = [];
 
 export function AppProvider({ children }) {
   // الشاشة الحالية مشتقة من الـ URL (React Router) — والـ setter يتنقل فعلياً،
@@ -58,11 +37,11 @@ export function AppProvider({ children }) {
 
   // Load parent & preferences
   const [parentName, setParentName] = useState(() => {
-    return localStorage.getItem('fahem_parent_name') || 'أحمد محمد';
+    return localStorage.getItem('fahem_parent_name') || '';
   });
 
   const [childName, setChildName] = useState(() => {
-    return localStorage.getItem('fahem_child_name') || 'أحمد';
+    return localStorage.getItem('fahem_child_name') || '';
   });
 
   const [grade, setGrade] = useState(() => {
@@ -318,30 +297,6 @@ export function AppProvider({ children }) {
     return { ok: true };
   };
 
-  const [curriculumDrafts, setCurriculumDrafts] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('fahem_curriculum_drafts') || '{}');
-      return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
-    } catch {
-      return {};
-    }
-  });
-  const [lessonFiles, setLessonFiles] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('fahem_lesson_files') || '{}');
-      return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
-    } catch {
-      return {};
-    }
-  });
-  const [lessonVideos, setLessonVideos] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('fahem_lesson_videos') || '{}');
-      return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
-    } catch {
-      return {};
-    }
-  });
   const [activeSubject, setActiveSubject] = useState('arabic');
   const [selectedLessonId, setSelectedLessonId] = useState('baa');
   useEffect(() => {
@@ -540,25 +495,10 @@ export function AppProvider({ children }) {
     }
   }, [curriculumData]);
 
+  // تنظيف مخزن المحرر المحلي القديم (لم يعد مستخدماً؛ المحتوى من Supabase)
   useEffect(() => {
-    localStorage.setItem('fahem_curriculum_drafts', JSON.stringify(curriculumDrafts));
-  }, [curriculumDrafts]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('fahem_lesson_files', JSON.stringify(lessonFiles));
-    } catch {
-      triggerToast('الملف كبير على التخزين المحلي. استخدم ملفًا أصغر أو نحتاج إلى تخزين خادم.');
-    }
-  }, [lessonFiles]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('fahem_lesson_videos', JSON.stringify(lessonVideos));
-    } catch {
-      triggerToast('تعذر حفظ الفيديو محليًا. جرّب ملفًا أصغر أو استخدم تخزين الخادم لاحقًا.');
-    }
-  }, [lessonVideos]);
+    ['fahem_curriculum_drafts', 'fahem_lesson_files', 'fahem_lesson_videos'].forEach(k => localStorage.removeItem(k));
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('fahem_sample_students', JSON.stringify(sampleStudents));
@@ -769,12 +709,6 @@ export function AppProvider({ children }) {
     // Curriculum & Active Lesson
     curriculumData,
     setCurriculumData,
-    curriculumDrafts,
-    setCurriculumDrafts,
-    lessonFiles,
-    setLessonFiles,
-    lessonVideos,
-    setLessonVideos,
     activeSubject, setActiveSubject,
     selectedLessonId, setSelectedLessonId,
     activeLesson,

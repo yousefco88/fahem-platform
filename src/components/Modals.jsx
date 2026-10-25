@@ -2,30 +2,9 @@ import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useApp } from '../context/AppContext';
 import { useUIState } from '../context/UIContext';
 import { supabase } from '../lib/supabase';
-import { loadAttachment } from '../utils/attachmentStore';
+import { resolveVideo, safeFileUrl } from '../utils/videoEmbed';
 
 // حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
-
-function useLocalAttachmentUrl(metadata, storageKey) {
-  const [url, setUrl] = useState(metadata?.dataUrl || '');
-  useEffect(() => {
-    let objectUrl;
-    let cancelled = false;
-    setUrl(metadata?.dataUrl || '');
-    if (metadata?.storage === 'indexeddb') {
-      loadAttachment(storageKey).then(blob => {
-        if (!blob || cancelled) return;
-        objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      }).catch(() => setUrl(''));
-    }
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [metadata, storageKey]);
-  return url;
-}
 
 export default function Modals() {
   const {
@@ -42,8 +21,6 @@ export default function Modals() {
     activeChild,
     activeLesson,
     activeSubject,
-    lessonFiles,
-    lessonVideos,
     learningRecords,
     recordVideoProgress,
     completeLessonMastery,
@@ -52,10 +29,8 @@ export default function Modals() {
     setCurrentScreen,
     triggerToast
   } = useApp();
-  const videoKey = `${activeSubject}:${activeLesson?.id}`;
-  const pdfKey = `${activeSubject}:${activeLesson?.id}`;
-  const videoUrl = useLocalAttachmentUrl(lessonVideos[videoKey], `video:${videoKey}`);
-  const pdfUrl = useLocalAttachmentUrl(lessonFiles[pdfKey], `pdf:${pdfKey}`);
+  const video = resolveVideo(activeLesson?.videoUrl);
+  const pdfUrl = safeFileUrl(activeLesson?.pdfUrl);
 
   // Whiteboard Canvas State
 
@@ -180,7 +155,7 @@ export default function Modals() {
               <div style={{ fontSize: '36px', marginBottom: '8px' }}>📝</div>
               <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>تقييم وملاحظة ما بعد الحصة</h3>
               <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
-                اكتملت الحصة وأُرشفت بنجاح! شارك ولي أمر الطالب <strong>{activeChild.name}</strong> بملاحظتك لترسل له فوراً:
+                اكتملت الحصة وأُرشفت بنجاح! شارك ولي أمر الطالب <strong>{activeChild?.name || 'الطالب'}</strong> بملاحظتك لترسل له فوراً:
               </p>
             </div>
 
@@ -264,21 +239,29 @@ export default function Modals() {
               {/* Tab 1: Video */}
               {studioActiveTab === 'video' && (
                 <div>
-                  {lessonVideos[`${activeSubject}:${activeLesson.id}`] ? (
+                  {video ? (
                     <div style={{ background: '#0f172a', borderRadius: '20px', padding: '10px', maxWidth: '850px', margin: '0 auto 20px' }}>
-                      <video
-                        controls
-                        playsInline
-                        preload="metadata"
-                        src={videoUrl}
-                        style={{ width: '100%', maxHeight: '440px', borderRadius: '14px' }}
-                        onLoadedMetadata={event => {
-                          const savedPercent = learningRecords[activeLesson.id]?.videoProgress || 0;
-                          if (savedPercent > 0 && event.currentTarget.duration) event.currentTarget.currentTime = event.currentTarget.duration * savedPercent / 100;
-                        }}
-                        onTimeUpdate={event => recordVideoProgress(activeLesson.id, event.currentTarget.currentTime, event.currentTarget.duration, activeSubject)}
-                      />
-                      <div style={{ color: '#e2e8f0', fontSize: '12px', padding: '8px' }}>{lessonVideos[`${activeSubject}:${activeLesson.id}`].name} · مقطع محفوظ محليًا</div>
+                      {video.kind === 'iframe' ? (
+                        <iframe
+                          src={video.src} title={activeLesson.title} loading="lazy" allowFullScreen
+                          allow="accelerometer; encrypted-media; picture-in-picture; fullscreen"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          style={{ width: '100%', aspectRatio: '16 / 9', border: 0, borderRadius: '14px' }}
+                        />
+                      ) : (
+                        <video
+                          controls
+                          playsInline
+                          preload="metadata"
+                          src={video.src}
+                          style={{ width: '100%', maxHeight: '440px', borderRadius: '14px' }}
+                          onLoadedMetadata={event => {
+                            const savedPercent = learningRecords[activeLesson.id]?.videoProgress || 0;
+                            if (savedPercent > 0 && event.currentTarget.duration) event.currentTarget.currentTime = event.currentTarget.duration * savedPercent / 100;
+                          }}
+                          onTimeUpdate={event => recordVideoProgress(activeLesson.id, event.currentTarget.currentTime, event.currentTarget.duration, activeSubject)}
+                        />
+                      )}
                     </div>
                   ) : (
                                       <div style={{
@@ -481,13 +464,13 @@ export default function Modals() {
               {studioActiveTab === 'pdf' && (
                 <div style={{ textAlign: 'center', padding: '40px' }}>
                   <div style={{ fontSize: '56px', marginBottom: '12px' }}>📄</div>
-                  <h3 style={{ fontSize: '20px', marginBottom: '6px' }}>{lessonFiles[`${activeSubject}:${activeLesson.id}`]?.name || activeLesson.pdfTitle || 'ورقة العمل'}</h3>
-                  {lessonFiles[`${activeSubject}:${activeLesson.id}`] && pdfUrl ? (
+                  <h3 style={{ fontSize: '20px', marginBottom: '6px' }}>{activeLesson.pdfTitle || 'ورقة العمل'}</h3>
+                  {pdfUrl ? (
                     <a className="btn-accent" href={pdfUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', textDecoration: 'none', marginTop: '16px' }}>
                       فتح ملف PDF المرتبط
                     </a>
                   ) : (
-                    <p style={{ color: 'var(--muted)', marginBottom: '20px' }}>لا يوجد ملف PDF مرفق بهذا الدرس على هذا المتصفح.</p>
+                    <p style={{ color: 'var(--muted)', marginBottom: '20px' }}>لا يوجد ملف PDF مرفق بهذا الدرس بعد.</p>
                   )}
                 </div>
               )}

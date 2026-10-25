@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { saveAttachment } from '../utils/attachmentStore';
 import { useApp } from '../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
