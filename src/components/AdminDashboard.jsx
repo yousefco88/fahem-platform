@@ -257,7 +257,7 @@ export default function AdminDashboard() {
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
-                style={{ background: '#eef2ff', color: '#4338ca', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: '1px solid #c7d2fe', cursor: 'pointer' }}
+                style={{ background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: '1px solid #c7d2fe', cursor: 'pointer' }}
                 disabled={!scheduleChildId}
                 onClick={addSlot}
               >+ إضافة خانة</button>

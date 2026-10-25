@@ -188,7 +188,7 @@ export default function StreakBadge({
           <span>{xpInLevel}/{xpForNext} XP</span>
         </div>
         <div style={{
-          background: 'rgba(255,255,255,0.5)',
+          background: 'var(--line)',
           borderRadius: '10px',
           height: '12px',
           overflow: 'hidden'

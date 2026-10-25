@@ -155,7 +155,7 @@ export default function ChildHome() {
                   borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, fontSize: '13px', color: '#4338ca', background: 'var(--blue-light)', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.localTime || slot.time}</span>
+                    <span style={{ fontWeight: 800, fontSize: '13px', color: 'var(--blue-text)', background: 'var(--blue-light)', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.localTime || slot.time}</span>
                     <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--amber-text)' }}>{slotType.icon} {slotType.label}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -219,7 +219,7 @@ export default function ChildHome() {
                 key={s.id}
                 onClick={() => navigate(childPaths.subject(s.id))}
                 style={{
-                  textAlign: 'right', background: '#fafaff', border: `2px solid ${s.color}33`, borderRadius: '22px',
+                  textAlign: 'right', background: 'var(--card-bg)', border: `2px solid ${s.color}33`, borderRadius: '22px',
                   padding: '18px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '10px'
                 }}
               >

@@ -1189,7 +1189,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   margin-bottom: 10px;
 }
 .u-22 {
-  background: rgba(255,255,255,0.6);
+  background: color-mix(in srgb, var(--card-bg) 70%, transparent);
   padding: 12px;
   border-radius: 16px;
   text-align: center;

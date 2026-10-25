@@ -30,7 +30,7 @@ export default function ChildTopBar() {
         </div>
         <div>
           <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>البطل {activeChild.name}</h3>
-          <span style={{ fontSize: '12px', color: '#4338ca', fontWeight: 700 }}>{activeChild.grade} 🚀</span>
+          <span style={{ fontSize: '12px', color: 'var(--blue-text)', fontWeight: 700 }}>{activeChild.grade} 🚀</span>
         </div>
       </div>
 

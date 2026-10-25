@@ -5,11 +5,11 @@
 import React from 'react';
 
 const COLORS = {
-  blue:   { bg: '#eff6ff', text: '#2563eb' },
-  green:  { bg: '#f0fdf4', text: '#16a34a' },
-  orange: { bg: '#fff7ed', text: '#ea580c' },
-  purple: { bg: '#faf5ff', text: '#9333ea' },
-  teal:   { bg: '#f0fdfa', text: '#0d9488' },
+  blue:   { bg: 'var(--blue-light)', text: 'var(--blue-text)' },
+  green:  { bg: 'var(--green-light)', text: 'var(--green-text)' },
+  orange: { bg: 'var(--orange-light)', text: 'var(--orange-text)' },
+  purple: { bg: 'var(--purple-light)', text: 'var(--purple-text)' },
+  teal:   { bg: 'var(--teal-light)', text: 'var(--teal-text)' },
 };
 
 function Sparkline({ trend, color }) {
