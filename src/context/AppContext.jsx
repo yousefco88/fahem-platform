@@ -203,6 +203,24 @@ export function AppProvider({ children }) {
 
         if (cancelled || lessonsError) return;
 
+        // بنك الأسئلة: جلب أسئلة الدروس المنشورة وتجميعها حسب الدرس
+        const lessonIds = (lessons || []).map(l => l.id);
+        const questionsByLesson = {};
+        if (lessonIds.length) {
+          const { data: bankQs, error: bankError } = await supabase
+            .from('lesson_questions')
+            .select('*')
+            .in('lesson_id', lessonIds)
+            .eq('is_published', true)
+            .order('sort_order');
+          if (!bankError && Array.isArray(bankQs)) {
+            bankQs.forEach(q => {
+              (questionsByLesson[q.lesson_id] = questionsByLesson[q.lesson_id] || []).push(q);
+            });
+          }
+        }
+        if (cancelled) return;
+
         // دمج مع البيانات الثابتة
         const dbCurriculum = {};
         subjects.forEach(subject => {
@@ -226,6 +244,23 @@ export function AppProvider({ children }) {
                 options: (content.choices || []).map((text, i) => ({
                   text, correct: i === content.answer, icon: ''
                 })),
+                // بنك الأسئلة (يتقدم على السؤال القديم المفرد في المشغل عند وجوده)
+                // نوع arrange مخزن لكنه غير مدعوم في المشغل بعد — يُستبعد هنا
+                questions: (questionsByLesson[l.id] || [])
+                  .filter(q => q.quiz_type !== 'arrange')
+                  .map(q => ({
+                    id: q.id,
+                    quizType: q.quiz_type,
+                    question: q.question,
+                    skill: q.skill || null,
+                    celebration: q.celebration || '',
+                    options: q.quiz_type === 'truefalse'
+                      ? [
+                          { text: '✓ صح', correct: q.answer === true, icon: '' },
+                          { text: '✕ خطأ', correct: q.answer === false, icon: '' },
+                        ]
+                      : (q.choices || []).map((text, i) => ({ text, correct: i === q.answer, icon: '' })),
+                  })),
                 parentGuide: content.parentGuide || null,
                 interactiveBuilder: content.wordBuilder || null,
                 celebration: content.celebration || '',

@@ -67,8 +67,18 @@ export default function Modals() {
 
   // Lesson Studio State
   const [quizAnswered, setQuizAnswered] = useState(null); // 'correct' | 'wrong' | null
+  const [qIndex, setQIndex] = useState(0); // مؤشر السؤال الحالي من بنك الأسئلة
   const [builtSyllables, setBuiltSyllables] = useState([]);
   const [builderCompleted, setBuilderCompleted] = useState(false);
+
+  // بنك الأسئلة يتقدم على السؤال القديم المفرد؛ السؤال القديم يبقى احتياطاً للدروس التي لم تُنقل بعد
+  const bankQuestions = activeLesson?.questions?.length ? activeLesson.questions : null;
+  const currentQ = bankQuestions
+    ? bankQuestions[Math.min(qIndex, bankQuestions.length - 1)]
+    : (activeLesson?.question
+        ? { question: activeLesson.question, options: activeLesson.options || [], celebration: activeLesson.celebration || '' }
+        : null);
+  const isLastQuestion = !bankQuestions || qIndex >= bankQuestions.length - 1;
 
   // Parent Gate math
   const [gateNum1] = useState(5);
@@ -85,6 +95,7 @@ export default function Modals() {
   // Reset quiz/builder state when activeLesson changes
   useEffect(() => {
     setQuizAnswered(null);
+    setQIndex(0);
     setBuiltSyllables([]);
     setBuilderCompleted(false);
   }, [activeLesson?.id]);
@@ -457,21 +468,30 @@ export default function Modals() {
                     </div>
                   )}
 
-                  {/* Part 2: Multiple Choice Challenge */}
+                  {/* Part 2: أسئلة الإتقان — من بنك الأسئلة إن وُجد، وإلا السؤال القديم المفرد */}
+                  {!currentQ ? (
+                    <div style={{ textAlign: 'center', padding: '28px 16px', border: '1px dashed var(--line)', borderRadius: '18px', color: 'var(--muted)' }}>
+                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>❓</div>
+                      <div style={{ fontWeight: 700, marginBottom: '4px' }}>لا توجد أسئلة لهذا الدرس بعد</div>
+                      <div style={{ fontSize: '13px' }}>سيضيف المعلم أسئلة الإتقان قريباً من لوحة المنهج</div>
+                    </div>
+                  ) : (
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '14px', flexWrap: 'wrap' }}>
                       <div style={{
                         display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue)',
                         padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px'
                       }}>
-                        سؤال الإتقان (إعادة الاختبار متاحة حتى 100%)
+                        {bankQuestions
+                          ? `سؤال ${qIndex + 1} من ${bankQuestions.length}`
+                          : 'سؤال الإتقان (إعادة الاختبار متاحة حتى 100%)'}
                       </div>
                       <button
                         style={{
                           background: '#fef08a', border: '1px solid #facc15', borderRadius: 'var(--radius-full)',
                           padding: '4px 12px', fontSize: '12px', fontWeight: 800, color: '#713f12', display: 'flex', alignItems: 'center', gap: '6px'
                         }}
-                        onClick={() => soundManager.speak(activeLesson.question)}
+                        onClick={() => soundManager.speak(currentQ.question)}
                         title="استمع للسؤال بصوت ناطق"
                       >
                         <span>🔊</span>
@@ -479,15 +499,15 @@ export default function Modals() {
                       </button>
                     </div>
 
-                    <h3 style={{ fontSize: '22px', marginBottom: '8px' }}>{activeLesson.question}</h3>
+                    <h3 style={{ fontSize: '22px', marginBottom: '8px' }}>{currentQ.question}</h3>
                     <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '24px' }}>
                       استمع وتذكر شرح المعلمة في الحصة المسجلة
                     </p>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '20px 0' }}>
-                      {activeLesson.options?.map((opt, i) => (
+                      {currentQ.options?.map((opt, i) => (
                         <div
-                          key={i}
+                          key={`${qIndex}-${i}`}
                           className={`quiz-option-card ${quizAnswered === 'correct' && opt.correct ? 'correct' : ''} ${quizAnswered === 'wrong' && !opt.correct ? 'wrong' : ''}`}
                           onClick={() => handleEvalQuiz(opt.correct)}
                         >
@@ -496,7 +516,18 @@ export default function Modals() {
                       ))}
                     </div>
 
-                    {quizAnswered === 'correct' && (
+                    {quizAnswered === 'correct' && !isLastQuestion && (
+                      <div style={{ background: '#ecfdf5', border: '2px solid #86efac', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
+                        <h4 style={{ color: '#166534', fontSize: '20px', marginBottom: '6px' }}>
+                          {currentQ.celebration || 'إجابة صحيحة! أحسنت 🌟'}
+                        </h4>
+                        <button className="btn-accent" style={{ background: '#16a34a', color: 'white' }} onClick={() => { setQIndex(qIndex + 1); setQuizAnswered(null); }}>
+                          السؤال التالي ←
+                        </button>
+                      </div>
+                    )}
+
+                    {quizAnswered === 'correct' && isLastQuestion && (
                       <div style={{ background: '#ecfdf5', border: '2px solid #86efac', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
                         <h4 style={{ color: '#166534', fontSize: '20px', marginBottom: '6px' }}>أحسنت يا بطل! أتقنت المهارة بنسبة 100% ⭐</h4>
                         <p style={{ color: '#166534', fontSize: '14px', marginBottom: '14px' }}>
@@ -520,6 +551,7 @@ export default function Modals() {
                       </div>
                     )}
                   </div>
+                  )}
 
                 </div>
               )}

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
+import { logActivity } from '../../../lib/activityLog';
 import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
 
@@ -203,7 +204,7 @@ export default function LessonEditor() {
           <PdfTab form={form} updateForm={updateForm} lessonId={id} />
         )}
         {activeTab === 'quiz' && (
-          <QuizTab form={form} updateForm={updateForm} />
+          <QuestionBankTab lessonId={id} form={form} updateForm={updateForm} />
         )}
         {activeTab === 'wordBuilder' && (
           <WordBuilderTab form={form} updateForm={updateForm} />
@@ -450,6 +451,275 @@ function PdfTab({ form, updateForm, lessonId }) {
           />
         </div>
       )}
+    </div>
+  );
+}
+
+// ============================================================================
+// بنك الأسئلة — أسئلة متعددة لكل درس تُدار من هنا (معلم/إدارة حسب RLS)
+// ============================================================================
+
+const QUIZ_TYPE_LABELS = { choice: '🔤 اختيار', truefalse: '✓✗ صح/خطأ', arrange: '🔀 ترتيب' };
+const DIFFICULTY_LABELS = { easy: 'سهل', normal: 'متوسط', hard: 'صعب' };
+const emptyDraft = () => ({ quiz_type: 'choice', question: '', choices: ['', '', '', ''], answer: 0, skill: '', difficulty: 'normal', celebration: '' });
+
+function QuestionBankTab({ lessonId, form, updateForm }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [draft, setDraft] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    if (!supabase || !lessonId) { setLoading(false); return; }
+    setLoading(true);
+    const { data, error: e } = await supabase
+      .from('lesson_questions')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .order('sort_order');
+    if (e) setError(e.message); else setItems(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [lessonId]);
+
+  const updateDraft = (k, v) => setDraft(d => ({ ...d, [k]: v }));
+  const updateDraftChoice = (i, v) => setDraft(d => {
+    const choices = [...d.choices]; choices[i] = v; return { ...d, choices };
+  });
+
+  const startEdit = (q) => setDraft({
+    id: q.id,
+    quiz_type: q.quiz_type,
+    question: q.question,
+    choices: q.quiz_type === 'truefalse' ? [] : (Array.isArray(q.choices) && q.choices.length ? [...q.choices] : ['', '', '', '']),
+    answer: q.answer,
+    skill: q.skill || '',
+    difficulty: q.difficulty || 'normal',
+    celebration: q.celebration || '',
+  });
+
+  const validateDraft = () => {
+    if (!draft.question.trim()) return 'اكتب نص السؤال أولاً';
+    if (draft.quiz_type === 'choice') {
+      const filled = draft.choices.filter(c => c.trim());
+      if (filled.length < 2) return 'أدخل خيارين على الأقل';
+      if (typeof draft.answer !== 'number' || !draft.choices[draft.answer]?.trim()) return 'حدد الإجابة الصحيحة من الخيارات المعبأة';
+    }
+    if (draft.quiz_type === 'truefalse' && typeof draft.answer !== 'boolean') return 'حدد الإجابة: صح أم خطأ';
+    if (draft.quiz_type === 'arrange' && draft.choices.filter(c => c.trim()).length < 2) return 'أدخل عنصرين على الأقل للترتيب';
+    return '';
+  };
+
+  const saveDraft = async () => {
+    const problem = validateDraft();
+    if (problem) { setError(problem); return; }
+    setSaving(true); setError('');
+    const payload = {
+      lesson_id: lessonId,
+      quiz_type: draft.quiz_type,
+      question: draft.question.trim(),
+      choices: draft.quiz_type === 'truefalse' ? [] : draft.choices.map(c => c.trim()).filter(Boolean),
+      answer: draft.answer,
+      skill: draft.skill.trim() || null,
+      difficulty: draft.difficulty,
+      celebration: draft.celebration.trim() || null,
+    };
+    let result;
+    if (draft.id) {
+      result = await supabase.from('lesson_questions').update(payload).eq('id', draft.id).select().single();
+    } else {
+      result = await supabase.from('lesson_questions').insert({ ...payload, sort_order: items.length }).select().single();
+    }
+    setSaving(false);
+    if (result.error) { setError(result.error.message); return; }
+    logActivity(draft.id ? 'question.update' : 'question.create', 'lesson_question', result.data.id, {
+      lesson_id: lessonId, question: payload.question.slice(0, 80),
+    });
+    setDraft(null);
+    load();
+  };
+
+  const removeQuestion = async (q) => {
+    if (!window.confirm(`حذف السؤال نهائياً؟\n«${q.question.slice(0, 60)}»`)) return;
+    const { error: e } = await supabase.from('lesson_questions').delete().eq('id', q.id);
+    if (e) { setError(e.message); return; }
+    logActivity('question.delete', 'lesson_question', q.id, { lesson_id: lessonId, question: q.question.slice(0, 80) });
+    load();
+  };
+
+  const copyLegacyToBank = async () => {
+    if (!form.question?.trim()) return;
+    setSaving(true); setError('');
+    const { data, error: e } = await supabase.from('lesson_questions').insert({
+      lesson_id: lessonId,
+      quiz_type: form.quizType || 'choice',
+      question: form.question.trim(),
+      choices: (form.quizType || 'choice') === 'truefalse' ? [] : (form.choices || []).map(c => (c || '').trim()).filter(Boolean),
+      answer: form.answer,
+      sort_order: items.length,
+    }).select().single();
+    setSaving(false);
+    if (e) { setError(e.message); return; }
+    logActivity('question.create', 'lesson_question', data.id, { lesson_id: lessonId, question: form.question.slice(0, 80), source: 'legacy_copy' });
+    load();
+  };
+
+  const chip = { fontSize: '11px', padding: '2px 8px', borderRadius: '10px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 700, whiteSpace: 'nowrap' };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+        <div>
+          <h4 style={{ margin: 0, color: 'var(--navy)' }}>🏦 بنك أسئلة الدرس ({items.length})</h4>
+          <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
+            تظهر الأسئلة للطالب بالترتيب في تبويب الأسئلة — وحقل «المهارة» يبني تقرير نقاط الضعف لولي الأمر
+          </span>
+        </div>
+        {!draft && (
+          <button className="btn-secondary" style={{ padding: '7px 14px', fontSize: '13px' }} onClick={() => setDraft(emptyDraft())}>
+            + إضافة سؤال
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div style={{ background: 'var(--yellow-light)', border: '1px solid var(--yellow)', borderRadius: '8px', padding: '8px 12px', fontSize: '12.5px', marginBottom: '10px' }}>
+          ⚠️ {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{ color: 'var(--muted)', fontSize: '13px', padding: '16px' }}>جارٍ تحميل الأسئلة...</div>
+      ) : items.length === 0 && !draft ? (
+        <div style={{ textAlign: 'center', padding: '24px', border: '1px dashed var(--line)', borderRadius: '12px', color: 'var(--muted)', marginBottom: '12px' }}>
+          <div style={{ fontSize: '24px', marginBottom: '6px' }}>❓</div>
+          <div style={{ fontSize: '13px' }}>لا توجد أسئلة في البنك بعد — أضف أول سؤال</div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+          {items.map((q, idx) => (
+            <div key={q.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', border: '1px solid var(--line)', borderRadius: '10px', background: 'var(--bg)' }}>
+              <span style={{ fontWeight: 800, color: 'var(--muted)', fontSize: '12px', flexShrink: 0 }}>{idx + 1}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--navy)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.question}</div>
+                <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
+                  <span style={chip}>{QUIZ_TYPE_LABELS[q.quiz_type] || q.quiz_type}</span>
+                  <span style={chip}>{DIFFICULTY_LABELS[q.difficulty] || q.difficulty}</span>
+                  {q.skill && <span style={{ ...chip, background: 'var(--yellow-light)', color: 'var(--orange)' }}>🎯 {q.skill}</span>}
+                </div>
+              </div>
+              <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '12px', flexShrink: 0 }} onClick={() => startEdit(q)}>✏️ تعديل</button>
+              <button style={{ padding: '4px 10px', fontSize: '12px', flexShrink: 0, background: 'transparent', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--muted)', cursor: 'pointer' }} onClick={() => removeQuestion(q)}>🗑</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {draft && (
+        <div style={{ border: '2px solid var(--blue)', borderRadius: '12px', padding: '16px', marginBottom: '14px', background: 'var(--card-bg)' }}>
+          <h5 style={{ margin: '0 0 12px', color: 'var(--navy)' }}>{draft.id ? '✏️ تعديل السؤال' : '➕ سؤال جديد'}</h5>
+
+          <div className="form-group">
+            <label>نوع السؤال</label>
+            <select className="input-md" value={draft.quiz_type} onChange={e => {
+              const t = e.target.value;
+              setDraft(d => ({ ...d, quiz_type: t, answer: t === 'truefalse' ? true : t === 'choice' ? 0 : (d.choices || []), choices: t === 'truefalse' ? [] : (d.choices?.length ? d.choices : ['', '', '', '']) }));
+            }}>
+              <option value="choice">اختيار من متعدد</option>
+              <option value="truefalse">صح / خطأ</option>
+              <option value="arrange">ترتيب عناصر</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>نص السؤال *</label>
+            <textarea className="input-md" rows={2} value={draft.question} onChange={e => updateDraft('question', e.target.value)} placeholder="مثال: ما الحرف الأول في كلمة «باب»؟" />
+          </div>
+
+          {draft.quiz_type === 'choice' && (
+            <div className="form-group">
+              <label>الخيارات (حدد الصحيح ✓)</label>
+              {draft.choices.map((c, i) => (
+                <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
+                  <input type="radio" name="bank-correct" checked={draft.answer === i} onChange={() => updateDraft('answer', i)} />
+                  <input className="input-md" style={{ flex: 1 }} value={c} onChange={e => updateDraftChoice(i, e.target.value)} placeholder={`الخيار ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {draft.quiz_type === 'truefalse' && (
+            <div className="form-group">
+              <label>الإجابة الصحيحة</label>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <label style={{ display: 'flex', gap: '6px', alignItems: 'center', cursor: 'pointer' }}>
+                  <input type="radio" name="bank-tf" checked={draft.answer === true} onChange={() => updateDraft('answer', true)} /> ✓ صح
+                </label>
+                <label style={{ display: 'flex', gap: '6px', alignItems: 'center', cursor: 'pointer' }}>
+                  <input type="radio" name="bank-tf" checked={draft.answer === false} onChange={() => updateDraft('answer', false)} /> ✕ خطأ
+                </label>
+              </div>
+            </div>
+          )}
+
+          {draft.quiz_type === 'arrange' && (
+            <div className="form-group">
+              <label>العناصر بالترتيب الصحيح (سطر لكل عنصر)</label>
+              <textarea className="input-md" rows={4} value={draft.choices.join('\n')} onChange={e => updateDraft('choices', e.target.value.split('\n'))} placeholder={'الأول\nالثاني\nالثالث'} />
+              <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>⚠️ أسئلة الترتيب تُحفظ في البنك لكنها لا تُعرض في مشغّل الطفل بعد</span>
+            </div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div className="form-group">
+              <label>المهارة (لتقرير ولي الأمر)</label>
+              <input className="input-md" value={draft.skill} onChange={e => updateDraft('skill', e.target.value)} placeholder="مثال: التمييز الصوتي" />
+            </div>
+            <div className="form-group">
+              <label>الصعوبة</label>
+              <select className="input-md" value={draft.difficulty} onChange={e => updateDraft('difficulty', e.target.value)}>
+                <option value="easy">سهل</option>
+                <option value="normal">متوسط</option>
+                <option value="hard">صعب</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>رسالة التشجيع عند الإجابة الصحيحة (اختياري)</label>
+            <input className="input-md" value={draft.celebration} onChange={e => updateDraft('celebration', e.target.value)} placeholder="ممتاز! لاحظت الفرق بسرعة 🌟" />
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <button className="btn-secondary" style={{ padding: '8px 18px', fontWeight: 700 }} disabled={saving} onClick={saveDraft}>
+              {saving ? 'جارٍ الحفظ...' : draft.id ? 'حفظ التعديل ✓' : 'إضافة للبنك ✓'}
+            </button>
+            <button style={{ padding: '8px 14px', background: 'transparent', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--muted)', cursor: 'pointer' }} onClick={() => { setDraft(null); setError(''); }}>
+              إلغاء
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* النظام القديم: سؤال واحد داخل بيانات الدرس — يبقى احتياطاً حتى يمتلئ البنك */}
+      <details style={{ border: '1px solid var(--line)', borderRadius: '10px', padding: '10px 14px' }}>
+        <summary style={{ cursor: 'pointer', fontSize: '13px', fontWeight: 700, color: 'var(--muted)' }}>
+          📜 السؤال القديم (نظام السؤال الواحد){form.question?.trim() ? ' — يوجد سؤال محفوظ' : ' — فارغ'}
+        </summary>
+        <div style={{ marginTop: '10px' }}>
+          <p style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '10px' }}>
+            يظهر هذا السؤال للطالب فقط إذا كان البنك فارغاً. عند وجود أسئلة في البنك يتجاهله المشغّل.
+          </p>
+          {form.question?.trim() && (
+            <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: '12px', marginBottom: '10px' }} disabled={saving} onClick={copyLegacyToBank}>
+              ⬆ انسخه إلى البنك
+            </button>
+          )}
+          <QuizTab form={form} updateForm={updateForm} />
+        </div>
+      </details>
     </div>
   );
 }
