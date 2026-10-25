@@ -54,12 +54,12 @@ export default function LandingHeader() {
 
         {/* Quick Nav Links - Hidden on Mobile */}
         <nav className="desktop-nav" style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <a href="#features" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>المميزات</a>
-          <a href="#subjects" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>المواد الـ 12</a>
-          <a href="#timezone" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>حاسبة التوقيت</a>
-          <a href="#comparison" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>مقارنة الدروس</a>
-          <a href="#testimonials" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>آراء الأسر</a>
-          <a href="#faq" style={{ textDecoration: 'none', color: 'var(--muted)', fontSize: '13.5px', fontWeight: 700 }}>الأسئلة الشائعة</a>
+          <a href="#features" className="u-28">المميزات</a>
+          <a href="#subjects" className="u-28">المواد الـ 12</a>
+          <a href="#timezone" className="u-28">حاسبة التوقيت</a>
+          <a href="#comparison" className="u-28">مقارنة الدروس</a>
+          <a href="#testimonials" className="u-28">آراء الأسر</a>
+          <a href="#faq" className="u-28">الأسئلة الشائعة</a>
         </nav>
 
         {/* CTA Buttons */}

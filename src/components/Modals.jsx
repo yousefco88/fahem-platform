@@ -158,7 +158,7 @@ export default function Modals() {
 
             <form onSubmit={handleFinishTeacherFeedback}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>مستوى تفاعل الطالب</label>
+                <label className="u-9">مستوى تفاعل الطالب</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>ممتاز ⭐</button>
                   <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>جيد جداً 👍</button>
@@ -167,7 +167,7 @@ export default function Modals() {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>ملاحظة المعلمة لولي الأمر</label>
+                <label className="u-9">ملاحظة المعلمة لولي الأمر</label>
                 <textarea
                   rows="3"
                   style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', fontSize: '14px', resize: 'vertical' }}

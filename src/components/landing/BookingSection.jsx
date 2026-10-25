@@ -89,13 +89,13 @@ export default function BookingSection() {
           ) : (
             <form onSubmit={handleBookingSubmit}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>
+                <label className="u-9">
                   اسم ولي الأمر الكريم
                 </label>
                 <input
                   type="text"
                   placeholder="مثال: أحمد الشافعي"
-                  style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '14px' }}
+                  className="u-25"
                   value={parentName}
                   onChange={(e) => setParentName(e.target.value)}
                   required
@@ -104,13 +104,13 @@ export default function BookingSection() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>
+                  <label className="u-9">
                     رقم الواتساب (مع مفتاح الدولة)
                   </label>
                   <input
                     type="tel"
                     placeholder="مثال: +966 50 123 4567"
-                    style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '14px' }}
+                    className="u-25"
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
                     required
@@ -118,7 +118,7 @@ export default function BookingSection() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>
+                  <label className="u-9">
                     دولة الإقامة الحالية
                   </label>
                   <select
@@ -138,13 +138,13 @@ export default function BookingSection() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '22px' }}>
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>
+                  <label className="u-9">
                     اسم الطفل (البطل)
                   </label>
                   <input
                     type="text"
                     placeholder="مثال: عمر"
-                    style={{ width: '100%', padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: '10px', fontSize: '14px' }}
+                    className="u-25"
                     value={childName}
                     onChange={(e) => setChildName(e.target.value)}
                     required
@@ -152,7 +152,7 @@ export default function BookingSection() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>
+                  <label className="u-9">
                     الصف الدراسي الحالي
                   </label>
                   <select

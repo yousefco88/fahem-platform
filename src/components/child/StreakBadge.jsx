@@ -141,49 +141,34 @@ export default function StreakBadge({
         marginBottom: '16px'
       }}>
         {/* Best Streak */}
-        <div style={{
-          background: 'rgba(255,255,255,0.6)',
-          padding: '12px',
-          borderRadius: '16px',
-          textAlign: 'center'
-        }}>
+        <div className="u-22">
           <div style={{ fontSize: '20px', marginBottom: '4px' }}>🏆</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--amber-text)' }}>
+          <div className="u-23">
             {bestStreak}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--amber-text)', fontWeight: 600 }}>
+          <div className="u-24">
             أفضل سلسلة
           </div>
         </div>
 
         {/* Total XP */}
-        <div style={{
-          background: 'rgba(255,255,255,0.6)',
-          padding: '12px',
-          borderRadius: '16px',
-          textAlign: 'center'
-        }}>
+        <div className="u-22">
           <div style={{ fontSize: '20px', marginBottom: '4px' }}>⭐</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--amber-text)' }}>
+          <div className="u-23">
             {xpTotal}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--amber-text)', fontWeight: 600 }}>
+          <div className="u-24">
             نقاط XP
           </div>
         </div>
 
         {/* Level */}
-        <div style={{
-          background: 'rgba(255,255,255,0.6)',
-          padding: '12px',
-          borderRadius: '16px',
-          textAlign: 'center'
-        }}>
+        <div className="u-22">
           <div style={{ fontSize: '20px', marginBottom: '4px' }}>🎖️</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--amber-text)' }}>
+          <div className="u-23">
             {level}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--amber-text)', fontWeight: 600 }}>
+          <div className="u-24">
             {levelTitle}
           </div>
         </div>

@@ -28,11 +28,11 @@ export default function SubjectsSection() {
               }}
             >
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <div className="u-21">
                   <span style={{ fontSize: '32px' }}>{s.icon}</span>
                   <span className="tag-badge info" style={{ fontSize: '11px' }}>{s.badge}</span>
                 </div>
-                <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>{s.title}</h3>
+                <h3 className="u-8">{s.title}</h3>
                 <p style={{ fontSize: '12.5px', color: 'var(--muted)', lineHeight: 1.5 }}>{s.desc}</p>
               </div>
             </div>

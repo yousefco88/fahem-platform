@@ -156,28 +156,28 @@ export default function AdminDashboard() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: '16px', marginBottom: '26px'
       }}>
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>الأسر المسجلة</span>
+        <div className="u-1">
+          <span className="u-2">الأسر المسجلة</span>
           <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{kpiLoading ? '...' : kpiStats.families}</h3>
           <small style={{ color: 'var(--green-text)', fontWeight: 700, fontSize: '11.5px' }}>{kpiStats.children} طفل مسجّل</small>
         </div>
 
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>حجوزات الحصص التجريبية</span>
+        <div className="u-1">
+          <span className="u-2">حجوزات الحصص التجريبية</span>
           <h3 style={{ fontSize: '26px', color: 'var(--blue-text)' }}>{kpiLoading ? '...' : kpiStats.bookings}</h3>
           <small style={{ color: kpiStats.newBookings > 0 ? 'var(--red-text)' : 'var(--blue-text)', fontWeight: 700, fontSize: '11.5px' }}>
             {kpiStats.newBookings > 0 ? `🔴 ${kpiStats.newBookings} جديد` : 'لا يوجد جديد'}
           </small>
         </div>
 
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>المواد والمسارات النشطة</span>
+        <div className="u-1">
+          <span className="u-2">المواد والمسارات النشطة</span>
           <h3 style={{ fontSize: '26px', color: 'var(--purple-text)' }}>{subjectsCount} مادة</h3>
           <small style={{ color: 'var(--purple-text)', fontWeight: 700, fontSize: '11.5px' }}>شاملة Connect Plus والماث</small>
         </div>
 
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '18px', boxShadow: 'var(--shadow-sm)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginBottom: '4px' }}>فريق العمل</span>
+        <div className="u-1">
+          <span className="u-2">فريق العمل</span>
           <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{usersLoading ? '...' : usersError ? '—' : users.length}</h3>
           <small style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>
             {usersError ? 'متاح للمدير فقط' : 'مستخدم مسجّل'}
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
 
       {/* TAB: CURRICULUM CMS (Supabase) */}
       {activeAdminTab === 'curriculum' && (
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-3">
           <Routes>
             <Route index element={<GradesPanel />} />
             <Route path="grades" element={<GradesPanel />} />
@@ -233,25 +233,25 @@ export default function AdminDashboard() {
       {activeAdminTab === 'recordings' && <RecordingsReview />}
 
       {activeAdminTab === 'bookings' && (
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-3">
           <BookingsPanel />
         </div>
       )}
 
       {/* TAB: FAMILIES (real data) */}
       {activeAdminTab === 'families' && (
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-3">
           <FamiliesPanel />
         </div>
       )}
 
       {/* TAB: WEEKLY SCHEDULE */}
       {activeAdminTab === 'schedule' && (
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-3">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>🗓️ الجدول الأسبوعي لمساحة الطفل</h3>
-              <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px' }}>
+              <p className="u-4">
                 كل طفل له جدوله الخاص. اختر الطفل ثم عدّل خاناته واحفظ. خيار «تلقائي» يعرض أول درس غير مُتقن. الحصة المباشرة: يضع المعلم المُسنَد رابط الاجتماع من «مساحتي ← حصصي».
               </p>
             </div>
@@ -344,7 +344,7 @@ export default function AdminDashboard() {
 
       {/* TAB 2: المستخدمون والصلاحيات */}
       {activeAdminTab === 'rbac' && (
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '26px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-3">
           <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>المستخدمون والصلاحيات</h3>
           <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '18px' }}>
             كل من سجّل في المنصة يظهر هنا. غيّر دوره ليرى ما يخصه فقط. لا يمكنك تغيير دورك بنفسك، ولا إزالة آخر مدير.
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
             ))}
           </div>
 
-          {usersLoading && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ تحميل المستخدمين…</div>}
+          {usersLoading && <div className="u-6">جارٍ تحميل المستخدمين…</div>}
           {!usersLoading && usersError && (
             <div style={{ padding: '16px', background: 'var(--red-light)', color: 'var(--red-text)', borderRadius: '10px', fontSize: '13px' }}>تعذر تحميل المستخدمين: {usersError}</div>
           )}

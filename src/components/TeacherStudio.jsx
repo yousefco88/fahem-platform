@@ -111,8 +111,8 @@ export default function TeacherStudio() {
       }}>
         <div style={cardStyle}>
           <div>
-            <span style={{ fontSize: '13px', color: 'var(--muted)', display: 'block', marginBottom: '6px' }}>حصصي المجدولة أسبوعياً</span>
-            <h3 style={{ fontSize: '28px', color: 'var(--navy)', marginBottom: '6px' }}>{slotsLoaded ? mySlots.length : '…'}</h3>
+            <span className="u-17">حصصي المجدولة أسبوعياً</span>
+            <h3 className="u-18">{slotsLoaded ? mySlots.length : '…'}</h3>
             <small style={{ color: 'var(--muted)', fontWeight: 600 }}>
               {slotsLoaded && mySlots.length === 0 ? 'لم تُسند لك حصص بعد — الجدولة عبر الإدارة' : 'من جدول الحصص الفعلي'}
             </small>
@@ -122,8 +122,8 @@ export default function TeacherStudio() {
 
         <div style={cardStyle}>
           <div>
-            <span style={{ fontSize: '13px', color: 'var(--muted)', display: 'block', marginBottom: '6px' }}>طلابي المسندون إليّ</span>
-            <h3 style={{ fontSize: '28px', color: 'var(--navy)', marginBottom: '6px' }}>{students === null ? '…' : students.length}</h3>
+            <span className="u-17">طلابي المسندون إليّ</span>
+            <h3 className="u-18">{students === null ? '…' : students.length}</h3>
             <small style={{ color: 'var(--muted)', fontWeight: 600 }}>
               {students !== null && students.length === 0 ? '👥 لم يُسند لك طلاب بعد (يتم الإسناد من الإدارة)' : 'من سجل الإسناد الفعلي'}
             </small>
@@ -133,8 +133,8 @@ export default function TeacherStudio() {
 
         <div style={cardStyle}>
           <div>
-            <span style={{ fontSize: '13px', color: 'var(--muted)', display: 'block', marginBottom: '6px' }}>نسبة إتقان طلابي</span>
-            <h3 style={{ fontSize: '28px', color: 'var(--navy)', marginBottom: '6px' }}>{masteryLabel}</h3>
+            <span className="u-17">نسبة إتقان طلابي</span>
+            <h3 className="u-18">{masteryLabel}</h3>
             <small style={{ color: 'var(--muted)', fontWeight: 600 }}>
               {masteryLabel === '—' ? 'تُحتسب من نتائج الطلاب الفعلية' : `${mastery.done} درس مكتمل من ${mastery.total} سجل`}
             </small>
@@ -144,7 +144,7 @@ export default function TeacherStudio() {
 
         <div style={cardStyle}>
           <div>
-            <span style={{ fontSize: '13px', color: 'var(--muted)', display: 'block', marginBottom: '6px' }}>المواد المتاحة بالمنصة</span>
+            <span className="u-17">المواد المتاحة بالمنصة</span>
             <h3 style={{ fontSize: '28px', color: '#0284c7', marginBottom: '6px' }}>{subjectsCount ? `${subjectsCount} مادة` : '…'}</h3>
             <small style={{ color: '#0284c7', fontWeight: 600 }}>من المنهج المنشور فعلياً</small>
           </div>
@@ -183,7 +183,7 @@ export default function TeacherStudio() {
 
       {/* Two Column Section */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-16">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>
             <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><span>🗓️</span> جدول حصصي اليوم — {DAY_NAMES[today]}</h3>
           </div>
@@ -213,7 +213,7 @@ export default function TeacherStudio() {
           )}
         </div>
 
-        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+        <div className="u-16">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>
             <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><span>📄</span> رفع وتجهيز أوراق عمل الدروس (PDF)</h3>
           </div>

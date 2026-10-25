@@ -57,7 +57,7 @@ export default function FamiliesPanel() {
         </div>
       </div>
 
-      {state === 'loading' && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ تحميل الأسر…</div>}
+      {state === 'loading' && <div className="u-6">جارٍ تحميل الأسر…</div>}
 
       {state === 'error' && (
         <div style={{ padding: '20px', background: 'var(--red-light)', border: '1px solid var(--line)', borderRadius: '14px', color: 'var(--red-text)', fontWeight: 700, fontSize: '13px' }}>
@@ -69,7 +69,7 @@ export default function FamiliesPanel() {
         <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)' }}>
           <div style={{ fontSize: '32px', marginBottom: '8px' }}>📭</div>
           <div style={{ fontWeight: 800, color: 'var(--navy)' }}>{query ? 'لا نتائج لبحثك' : 'لا توجد أسر مسجلة بعد'}</div>
-          <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '4px' }}>كل أسرة تسجّل حساباً وتزامن أطفالها ستظهر هنا.</div>
+          <div className="u-4">كل أسرة تسجّل حساباً وتزامن أطفالها ستظهر هنا.</div>
         </div>
       )}
 

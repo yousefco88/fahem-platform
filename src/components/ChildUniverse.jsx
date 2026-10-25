@@ -8,7 +8,7 @@ const SubjectLessons = lazy(() => import('./child/SubjectLessons'));
 const ChildLessonRoute = lazy(() => import('./child/ChildLessonRoute'));
 
 function ChildFallback() {
-  return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700 }}>جارٍ التحميل… 🚀</div>;
+  return <div className="u-6">جارٍ التحميل… 🚀</div>;
 }
 
 export default function ChildUniverse() {

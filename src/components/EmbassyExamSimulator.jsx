@@ -169,25 +169,25 @@ export default function EmbassyExamSimulator() {
 
           {/* Exam Rules & Instructions Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="u-7">
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>⏱️</div>
-              <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>زمن الامتحان: 25 دقيقة</h4>
+              <h4 className="u-8">زمن الامتحان: 25 دقيقة</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
                 مؤقت تنازلي يحاكي زمن المنصة الوزارية لتعويد الطفل على إنجاز الإجابات بهدوء وتركيز.
               </p>
             </div>
 
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="u-7">
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>📚</div>
-              <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>10 أسئلة مجمعة وشاملة</h4>
+              <h4 className="u-8">10 أسئلة مجمعة وشاملة</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
                 تغطي: العربية، الرياضيات، Connect، Connect Plus، اكتشف، تكنولوجيا المعلومات، والهوية الوطنية.
               </p>
             </div>
 
-            <div style={{ background: 'var(--card-bg)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+            <div className="u-7">
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>🖨️</div>
-              <h4 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '6px' }}>تقرير نتيجة الاختبار التدريبي</h4>
+              <h4 className="u-8">تقرير نتيجة الاختبار التدريبي</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
                 ملخص تدريبي لنتيجة الطالب، ولا يمثل شهادة أو مستندًا رسميًا.
               </p>

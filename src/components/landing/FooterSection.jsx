@@ -26,10 +26,10 @@ export default function FooterSection() {
         <div>
           <h4 style={{ fontSize: '15px', marginBottom: '14px', color: '#f8fafc' }}>روابط سريعة</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-            <button style={{ background: 'none', border: 'none', color: 'var(--on-inverse)', textAlign: 'right', cursor: 'pointer' }} onClick={() => setCurrentScreen('parent')}>لوحة ولي الأمر</button>
-            <button style={{ background: 'none', border: 'none', color: 'var(--on-inverse)', textAlign: 'right', cursor: 'pointer' }} onClick={() => setCurrentScreen('child')}>مساحة الطفل التفاعلية</button>
-            <button style={{ background: 'none', border: 'none', color: 'var(--on-inverse)', textAlign: 'right', cursor: 'pointer' }} onClick={() => setCurrentScreen('exam')}>محاكي امتحانات السفارة</button>
-            <button style={{ background: 'none', border: 'none', color: 'var(--on-inverse)', textAlign: 'right', cursor: 'pointer' }} onClick={() => setCurrentScreen('pricing')}>باقات الاشتراك والأسعار</button>
+            <button className="u-26" onClick={() => setCurrentScreen('parent')}>لوحة ولي الأمر</button>
+            <button className="u-26" onClick={() => setCurrentScreen('child')}>مساحة الطفل التفاعلية</button>
+            <button className="u-26" onClick={() => setCurrentScreen('exam')}>محاكي امتحانات السفارة</button>
+            <button className="u-26" onClick={() => setCurrentScreen('pricing')}>باقات الاشتراك والأسعار</button>
           </div>
         </div>
 

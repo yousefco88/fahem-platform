@@ -95,21 +95,21 @@ export default function OnboardingFlow() {
     <div style={{ maxWidth: '860px', margin: '40px auto', padding: '0 20px', width: '100%' }}>
       {/* Stepper Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', marginBottom: '36px' }}>
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', background: 'var(--bg)', padding: '0 10px' }}>
+        <div className="u-10">
           <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--green)', border: '3px solid var(--green)', color: 'white', display: 'grid', placeItems: 'center', fontWeight: 800, margin: '0 auto 8px' }}>
             ✓
           </div>
           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--navy)' }}>1. حساب ولي الأمر</span>
         </div>
 
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', background: 'var(--bg)', padding: '0 10px' }}>
+        <div className="u-10">
           <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--blue)', border: '3px solid var(--blue)', color: 'white', display: 'grid', placeItems: 'center', fontWeight: 800, margin: '0 auto 8px', boxShadow: '0 0 16px rgba(37,99,235,0.4)' }}>
             2
           </div>
           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--navy)' }}>2. إضافة الطفل والصف</span>
         </div>
 
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', background: 'var(--bg)', padding: '0 10px' }}>
+        <div className="u-10">
           <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--card-bg)', border: '3px solid var(--line)', color: 'var(--muted)', display: 'grid', placeItems: 'center', fontWeight: 800, margin: '0 auto 8px' }}>
             3
           </div>
@@ -126,7 +126,7 @@ export default function OnboardingFlow() {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '22px' }}>
-            <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '8px', color: 'var(--navy)' }}>اسم ولي الأمر</label>
+            <label className="u-11">اسم ولي الأمر</label>
             <input
               type="text"
               style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px' }}
@@ -138,7 +138,7 @@ export default function OnboardingFlow() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '22px' }}>
             <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '8px', color: 'var(--navy)' }}>اسم الطفل (الطالب)</label>
+              <label className="u-11">اسم الطفل (الطالب)</label>
               <input
                 type="text"
                 style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px' }}
@@ -149,7 +149,7 @@ export default function OnboardingFlow() {
             </div>
 
             <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '8px', color: 'var(--navy)' }}>الصف الدراسي</label>
+              <label className="u-11">الصف الدراسي</label>
               <select
                 style={{ width: '100%', padding: '14px 18px', border: '2px solid var(--line)', borderRadius: 'var(--radius-md)', fontSize: '15px', background: 'var(--card-bg)' }}
                 value={formGrade}
@@ -163,7 +163,7 @@ export default function OnboardingFlow() {
           </div>
 
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontWeight: 700, fontSize: '14px', marginBottom: '8px', color: 'var(--navy)' }}>
+            <label className="u-11">
               بلد الإقامة الحالية (لحساب المنطقة الزمنية تلقائياً)
             </label>
             <select

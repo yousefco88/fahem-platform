@@ -123,7 +123,7 @@ export default function SiteSettingsPanel() {
       <div style={card}>
         <h3 style={sectionTitle}>🔝 الهيدر</h3>
         <p style={hint}>اسم العلامة والسطر التعريفي وزر الحجز (سطح المكتب).</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+        <div className="u-19">
           <div>
             <label style={label}>اسم العلامة</label>
             <input style={input} value={draft.header.brandName} onChange={e => set('header', 'brandName', e.target.value)} />
@@ -162,7 +162,7 @@ export default function SiteSettingsPanel() {
             <label style={label}>النص التعريفي</label>
             <textarea style={textarea} value={draft.hero.subtitle} onChange={e => set('hero', 'subtitle', e.target.value)} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+          <div className="u-19">
             <div>
               <label style={label}>الزر الأساسي 🎁</label>
               <input style={input} value={draft.hero.ctaPrimary} onChange={e => set('hero', 'ctaPrimary', e.target.value)} />
@@ -248,7 +248,7 @@ export default function SiteSettingsPanel() {
         <h3 style={sectionTitle}>⚖️ قسم المقارنة (فاهم مقابل الدروس الخصوصية)</h3>
         <p style={hint}>الترويسة ورؤوس الأعمدة وكل صفوف الجدول.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+          <div className="u-19">
             <div>
               <label style={label}>الشارة</label>
               <input style={input} value={draft.comparison.badge} onChange={e => set('comparison', 'badge', e.target.value)} />
@@ -272,8 +272,8 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.comparison.rows || []).map((row, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div key={idx} className="u-20">
+            <div className="u-21">
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>صف #{idx + 1}</span>
               {removeBtn(() => removeListItem('comparison', 'rows', idx))}
             </div>
@@ -303,7 +303,7 @@ export default function SiteSettingsPanel() {
         <h3 style={sectionTitle}>📚 قسم المواد والمسارات (الرئيسية)</h3>
         <p style={hint}>العداد في العنوان يُحسب تلقائياً من عدد البطاقات. هذا عرض تسويقي — المناهج الفعلية تُدار من تبويب إدارة المناهج.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+          <div className="u-19">
             <div>
               <label style={label}>الشارة</label>
               <input style={input} value={draft.subjects.badge} onChange={e => set('subjects', 'badge', e.target.value)} />
@@ -319,8 +319,8 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.subjects.items || []).map((s, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div key={idx} className="u-20">
+            <div className="u-21">
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>{s.icon} {s.title || `مادة #${idx + 1}`}</span>
               {removeBtn(() => removeListItem('subjects', 'items', idx))}
             </div>
@@ -412,8 +412,8 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.faq.items || []).map((f, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div key={idx} className="u-20">
+            <div className="u-21">
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>سؤال #{idx + 1}</span>
               {removeBtn(() => removeListItem('faq', 'items', idx))}
             </div>
@@ -588,8 +588,8 @@ export default function SiteSettingsPanel() {
           </div>
         </div>
         {(draft.examCalendar?.events || []).map((ev, idx) => (
-          <div key={idx} style={{ border: '1px dashed var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '12px', background: 'var(--bg)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div key={idx} className="u-20">
+            <div className="u-21">
               <span style={{ fontWeight: 900, fontSize: '12.5px', color: 'var(--navy)' }}>محطة #{idx + 1}</span>
               {removeBtn(() => removeListItem('examCalendar', 'events', idx))}
             </div>

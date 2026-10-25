@@ -85,17 +85,17 @@ export default function HeroSection() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', padding: '18px' }}>
             <div style={{ background: 'linear-gradient(135deg, var(--blue-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🦊</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>مساحة الطفل التفاعلية</div>
+              <div className="u-27">مساحة الطفل التفاعلية</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, var(--green-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>📊</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>لوحة متابعة ولي الأمر</div>
+              <div className="u-27">لوحة متابعة ولي الأمر</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, var(--red-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '26px', marginBottom: '6px' }}>🇪🇬</div>
-              <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '2px' }}>محاكي امتحانات السفارة</div>
+              <div className="u-27">محاكي امتحانات السفارة</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
             </div>
           </div>

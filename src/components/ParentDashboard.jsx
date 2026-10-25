@@ -234,31 +234,19 @@ export default function ParentDashboard() {
             <span>⌂</span> لوحة المتابعة الشاملة
           </button>
           <button
-            style={{
-              display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-              borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--muted)',
-              fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
-            }}
+            className="u-12"
             onClick={() => document.getElementById('live-schedule-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span>🗓</span> جدول الحصص الحية
           </button>
           <button
-            style={{
-              display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-              borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--muted)',
-              fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
-            }}
+            className="u-12"
             onClick={() => document.getElementById('mastery-matrix-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span>🎯</span> مصفوفة إتقان المهارات (5 مواد)
           </button>
           <button
-            style={{
-              display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-              borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--muted)',
-              fontWeight: 600, fontSize: '14px', width: '100%', textAlign: 'right'
-            }}
+            className="u-12"
             onClick={() => setCurrentScreen('pricing')}
           >
             <span>💳</span> باقة الاشتراك النشطة
@@ -388,53 +376,37 @@ export default function ParentDashboard() {
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '18px', marginBottom: '30px'
           }}>
-            <div style={{
-              background: 'var(--card-bg)', border: '1px solid var(--line)',
-              borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
-            }}>
+            <div className="u-13">
               <div>
-                <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>حضور الحصص الحية</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>—</h3>
+                <span className="u-14">حضور الحصص الحية</span>
+                <h3 className="u-15">—</h3>
                 <small style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '12px' }}>يُحتسب بعد بدء الحصص المباشرة</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--green-light)', color: '#10b981', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🗓</div>
             </div>
 
-            <div style={{
-              background: 'var(--card-bg)', border: '1px solid var(--line)',
-              borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
-            }}>
+            <div className="u-13">
               <div>
-                <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>المهارات المتقنة بنجاح</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.done} / {childStats.total}</h3>
+                <span className="u-14">المهارات المتقنة بنجاح</span>
+                <h3 className="u-15">{childStats.done} / {childStats.total}</h3>
                 <small style={{ color: 'var(--green-text)', fontWeight: 600, fontSize: '12px' }}>⭐ درس متقن من المنهج المنشور</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--yellow-light)', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🏆</div>
             </div>
 
-            <div style={{
-              background: 'var(--card-bg)', border: '1px solid var(--line)',
-              borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
-            }}>
+            <div className="u-13">
               <div>
-                <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>مواد ومسارات تجريبية</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{Object.values(curriculumData || {}).filter(v => Array.isArray(v?.lessons)).length} مسارًا</h3>
+                <span className="u-14">مواد ومسارات تجريبية</span>
+                <h3 className="u-15">{Object.values(curriculumData || {}).filter(v => Array.isArray(v?.lessons)).length} مسارًا</h3>
                 <small style={{ color: 'var(--blue-text)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
             </div>
 
-            <div style={{
-              background: 'var(--card-bg)', border: '1px solid var(--line)',
-              borderRadius: 'var(--radius-md)', padding: '20px', boxShadow: 'var(--shadow-sm)',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
-            }}>
+            <div className="u-13">
               <div>
-                <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>نقاط الفهم والشارات</span>
-                <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.points} ⭐</h3>
+                <span className="u-14">نقاط الفهم والشارات</span>
+                <h3 className="u-15">{childStats.points} ⭐</h3>
                 <small style={{ color: 'var(--orange-text)', fontWeight: 600, fontSize: '12px' }}>🔥 {childStats.badges} شارات إتقان مكتسبة</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--orange-light)', color: 'var(--orange-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
@@ -537,7 +509,7 @@ export default function ParentDashboard() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
             
             {/* Left: Mastery Matrix — مبنية من منهج CMS الحقيقي (المواد المنشورة فقط)، لا بطاقات يدوية */}
-            <div id="mastery-matrix-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '24px', boxShadow: 'var(--shadow-sm)' }}>
+            <div id="mastery-matrix-section" className="u-16">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -607,7 +579,7 @@ export default function ParentDashboard() {
             <h3 style={{ fontSize: '18px', marginBottom: '14px', color: 'var(--navy)' }}>إضافة طفل جديد للحساب 👶</h3>
             <form onSubmit={handleCreateChild}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>اسم الطفل</label>
+                <label className="u-9">اسم الطفل</label>
                 <input
                   type="text"
                   style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px' }}
@@ -619,7 +591,7 @@ export default function ParentDashboard() {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>الصف الدراسي</label>
+                <label className="u-9">الصف الدراسي</label>
                 <select
                   style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', background: 'var(--card-bg)' }}
                   value={newChildGrade}
