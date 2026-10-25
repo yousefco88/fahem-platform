@@ -210,7 +210,7 @@ export default function Modals() {
                 className={`studio-tab-btn ${studioActiveTab === 'video' ? 'active' : ''}`}
                 onClick={() => setStudioActiveTab('video')}
               >
-                🎥 تسجيل الحصة المباشرة
+                🎥 فيديو الدرس
               </button>
               <button
                 className={`studio-tab-btn ${studioActiveTab === 'quiz' ? 'active' : ''}`}
