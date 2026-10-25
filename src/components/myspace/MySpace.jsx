@@ -11,6 +11,7 @@ import { ROLE_LABELS, resolveNavRole } from '../../navigation/navConfig';
 import ParentAccount from '../ParentAccount';
 import TeacherRoster from './TeacherRoster';
 import SkillsReport from './SkillsReport';
+import WeeklySummaryCard from './WeeklySummaryCard';
 import AssignStudents from './AssignStudents';
 
 const card = { background: 'white', border: '1px solid #e2e8f0', borderRadius: 16, padding: 18, marginBottom: 16 };
@@ -248,6 +249,7 @@ export default function MySpace() {
 
       {navRole === 'parent' && <ParentSpace go={setCurrentScreen} />}
       {navRole === 'parent' && <SkillsReport />}
+      {navRole === 'parent' && <WeeklySummaryCard />}
       {navRole === 'teacher' && <TeacherSpace go={setCurrentScreen} />}
       {navRole === 'teacher' && <TeacherRoster />}
       {staff && <AdminSpace go={setCurrentScreen} isAdmin={navRole === 'admin'} />}
