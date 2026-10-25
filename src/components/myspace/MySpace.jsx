@@ -241,7 +241,7 @@ export default function MySpace() {
           <h1 style={{ fontSize: 20, margin: 0 }}>مرحباً، {name}</h1>
           <div style={muted}>{user.email}</div>
         </div>
-        <span style={{ background: 'var(--blue-light)', color: 'var(--blue)', borderRadius: 999, padding: '4px 12px', fontSize: 12.5, fontWeight: 700 }}>
+        <span style={{ background: 'var(--blue-light)', color: 'var(--blue-text)', borderRadius: 999, padding: '4px 12px', fontSize: 12.5, fontWeight: 700 }}>
           {ROLE_LABELS[navRole]}
         </span>
       </section>

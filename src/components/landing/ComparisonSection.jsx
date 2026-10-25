@@ -23,7 +23,7 @@ export default function ComparisonSection() {
             <thead>
               <tr style={{ background: 'var(--bg)', borderBottom: '2px solid var(--line)' }}>
                 <th style={{ padding: '16px 20px', fontWeight: 800, color: 'var(--navy)' }}>وجه المقارنة</th>
-                <th style={{ padding: '16px 20px', fontWeight: 900, color: 'var(--blue)', background: 'var(--blue-light)' }}>{fahemColumn}</th>
+                <th style={{ padding: '16px 20px', fontWeight: 900, color: 'var(--blue-text)', background: 'var(--blue-light)' }}>{fahemColumn}</th>
                 <th style={{ padding: '16px 20px', fontWeight: 700, color: 'var(--muted)' }}>{otherColumn}</th>
               </tr>
             </thead>

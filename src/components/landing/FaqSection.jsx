@@ -34,7 +34,7 @@ export default function FaqSection() {
                 onClick={() => setOpenFaq(openFaq === i ? -1 : i)}
               >
                 <span>{faq.q}</span>
-                <span style={{ fontSize: '18px', color: 'var(--blue)' }}>{openFaq === i ? '−' : '+'}</span>
+                <span style={{ fontSize: '18px', color: 'var(--blue-text)' }}>{openFaq === i ? '−' : '+'}</span>
               </button>
               {openFaq === i && (
                 <div style={{ padding: '0 20px 18px', color: 'var(--muted)', fontSize: '14px', lineHeight: 1.6 }}>

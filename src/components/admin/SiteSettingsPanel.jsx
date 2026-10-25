@@ -67,7 +67,7 @@ export default function SiteSettingsPanel() {
 
   const removeBtn = (onClick) => (
     <button
-      style={{ background: 'var(--red-light)', color: 'var(--red)', border: '1px solid var(--line)', borderRadius: '8px', padding: '4px 10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+      style={{ background: 'var(--red-light)', color: 'var(--red-text)', border: '1px solid var(--line)', borderRadius: '8px', padding: '4px 10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
       onClick={onClick}
     >
       🗑 حذف
@@ -84,13 +84,13 @@ export default function SiteSettingsPanel() {
   );
 
   const err = (key) => saveState[key]?.error && (
-    <div style={{ color: 'var(--red)', fontSize: '12px', marginTop: '8px' }}>⚠️ {saveState[key].error}</div>
+    <div style={{ color: 'var(--red-text)', fontSize: '12px', marginTop: '8px' }}>⚠️ {saveState[key].error}</div>
   );
 
   return (
     <div>
       {tableMissing && (
-        <div style={{ background: 'var(--yellow-light)', border: '1px solid var(--yellow)', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', fontSize: '13px', color: 'var(--orange)', fontWeight: 700 }}>
+        <div style={{ background: 'var(--yellow-light)', border: '1px solid var(--yellow)', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', fontSize: '13px', color: 'var(--orange-text)', fontWeight: 700 }}>
           ⚠️ جدول site_settings غير موجود بعد في Supabase — طبّق الـ migration:
           <code style={{ display: 'block', marginTop: '6px', direction: 'ltr', textAlign: 'left', fontSize: '12px' }}>supabase/migrations/20261024210000_site_settings.sql</code>
           حتى ذلك الحين يعرض الموقع القيم الافتراضية ولن يُحفظ أي تعديل.

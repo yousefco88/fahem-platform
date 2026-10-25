@@ -44,7 +44,7 @@
   background: none; font-size: 14px; font-weight: 700; color: var(--muted);
 }
 .acct-tab.active {
-  background: var(--card-bg); color: var(--blue);
+  background: var(--card-bg); color: var(--blue-text);
   box-shadow: var(--shadow-sm); border: 1px solid var(--line);
 }
 
@@ -90,8 +90,8 @@
   padding: 12px 14px; border-radius: var(--radius-sm);
   font-size: 13.5px; margin-bottom: 14px; line-height: 1.5;
 }
-.acct-alert.error { background: var(--red-light); color: var(--red); border: 1px solid color-mix(in srgb, var(--red) 25%, transparent); }
-.acct-alert.ok { background: var(--green-light); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 25%, transparent); }
+.acct-alert.error { background: var(--red-light); color: var(--red-text); border: 1px solid color-mix(in srgb, var(--red) 25%, transparent); }
+.acct-alert.ok { background: var(--green-light); color: var(--green-text); border: 1px solid color-mix(in srgb, var(--green) 25%, transparent); }
 
 /* الأزرار */
 .acct-submit {
@@ -103,7 +103,7 @@
 .acct-submit:hover:not(:disabled) { filter: brightness(1.08); }
 .acct-submit:disabled { opacity: 0.6; cursor: wait; }
 .acct-link {
-  background: none; color: var(--blue); font-size: 13px; font-weight: 600;
+  background: none; color: var(--blue-text); font-size: 13px; font-weight: 600;
   padding: 4px 6px; border-radius: 6px;
 }
 .acct-link:hover { background: var(--blue-light); }
@@ -128,7 +128,7 @@
   background: var(--card-bg); border: 1px solid var(--line); color: var(--muted);
   font-size: 12.5px; font-weight: 700; padding: 8px 14px; border-radius: var(--radius-full);
 }
-.fam-out:hover { color: var(--red); border-color: var(--red); }
+.fam-out:hover { color: var(--red-text); border-color: var(--red); }
 
 .fam-sec-title { font-size: 15px; color: var(--navy); margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
 
@@ -144,7 +144,7 @@
   background: none; color: var(--muted); font-size: 12px; font-weight: 700;
   padding: 6px 10px; border-radius: 8px;
 }
-.fam-del:hover { color: var(--red); background: var(--red-light); }
+.fam-del:hover { color: var(--red-text); background: var(--red-light); }
 .fam-confirm { display: flex; gap: 6px; }
 .fam-confirm .yes { background: var(--red); color: #fff; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; }
 .fam-confirm .no { background: var(--bg); border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; }

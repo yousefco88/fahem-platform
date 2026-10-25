@@ -52,7 +52,7 @@ export default function ChildLessonRoute() {
       <div style={{ background: 'var(--card-bg)', border: '2px dashed var(--line)', borderRadius: '28px', padding: '40px', textAlign: 'center' }}>
         <div style={{ fontSize: '40px', marginBottom: '8px' }}>🔍</div>
         <div style={{ fontWeight: 900, color: 'var(--navy)', marginBottom: '6px' }}>هذا الدرس غير موجود في المنهج</div>
-        <Link to={childPaths.home} style={{ color: 'var(--blue)', fontWeight: 800 }}>ارجع إلى مساحتك</Link>
+        <Link to={childPaths.home} style={{ color: 'var(--blue-text)', fontWeight: 800 }}>ارجع إلى مساحتك</Link>
       </div>
     );
   }

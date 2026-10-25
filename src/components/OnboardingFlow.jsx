@@ -187,10 +187,10 @@ export default function OnboardingFlow() {
               justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px'
             }}>
               <div>
-                <strong style={{ color: 'var(--blue)', fontSize: '14px', display: 'block' }}>توقيت الحصص التفاعلية المحسوب لك:</strong>
+                <strong style={{ color: 'var(--blue-text)', fontSize: '14px', display: 'block' }}>توقيت الحصص التفاعلية المحسوب لك:</strong>
                 <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>{currentTz.desc}</span>
               </div>
-              <div style={{ background: 'var(--card-bg)', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--blue)', border: '1px solid var(--line)', fontSize: '13px' }}>
+              <div style={{ background: 'var(--card-bg)', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--blue-text)', border: '1px solid var(--line)', fontSize: '13px' }}>
                 {currentTz.badge}
               </div>
             </div>

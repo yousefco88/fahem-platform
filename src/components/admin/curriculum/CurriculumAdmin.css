@@ -176,7 +176,7 @@
 }
 
 .btn-danger {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 /* ============================================================================
@@ -196,7 +196,7 @@
 
 .badge-success {
   background: var(--green-light);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .badge-muted {
@@ -285,7 +285,7 @@
 }
 
 .curriculum-error {
-  color: var(--red);
+  color: var(--red-text);
   background: var(--red-light);
   border-radius: 8px;
 }
@@ -470,7 +470,7 @@
   border-radius: 50%;
   cursor: pointer;
   font-size: 0.8rem;
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .choice-radio input {
@@ -515,7 +515,7 @@
 .correct-word {
   margin-top: 0.75rem;
   font-size: 1.1rem;
-  color: var(--green);
+  color: var(--green-text);
 }
 
 /* Parent Guide Sections */
@@ -540,7 +540,7 @@
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  color: var(--blue);
+  color: var(--blue-text);
   font-size: 0.9rem;
 }
 

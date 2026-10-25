@@ -134,7 +134,7 @@ export default function ParentDashboard() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>الأبناء المسجلون:</span>
             <button
-              style={{ background: 'none', color: 'var(--blue)', fontSize: '11px', fontWeight: 800 }}
+              style={{ background: 'none', color: 'var(--blue-text)', fontSize: '11px', fontWeight: 800 }}
               onClick={() => setShowAddChildModal(true)}
             >
               + إضافة طفل
@@ -151,7 +151,7 @@ export default function ParentDashboard() {
                   borderRadius: 'var(--radius-md)',
                   border: child.id === activeChild.id ? '2px solid var(--blue)' : '1px solid var(--line)',
                   background: child.id === activeChild.id ? 'var(--blue-light)' : '#ffffff',
-                  color: child.id === activeChild.id ? 'var(--blue)' : 'var(--navy)',
+                  color: child.id === activeChild.id ? 'var(--blue-text)' : 'var(--navy)',
                   fontWeight: child.id === activeChild.id ? 800 : 600,
                   fontSize: '12px',
                   display: 'flex',
@@ -228,7 +228,7 @@ export default function ParentDashboard() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <button style={{
             display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-            borderRadius: 'var(--radius-md)', background: 'var(--blue-light)', color: 'var(--blue)',
+            borderRadius: 'var(--radius-md)', background: 'var(--blue-light)', color: 'var(--blue-text)',
             fontWeight: 700, fontSize: '14px', width: '100%', textAlign: 'right'
           }}>
             <span>⌂</span> لوحة المتابعة الشاملة
@@ -333,7 +333,7 @@ export default function ParentDashboard() {
             </button>
             <div style={{
               width: '40px', height: '40px', borderRadius: '50%',
-              background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid',
+              background: 'var(--blue-light)', color: 'var(--blue-text)', display: 'grid',
               placeItems: 'center', fontWeight: 800
             }}>أ.م</div>
           </div>
@@ -409,7 +409,7 @@ export default function ParentDashboard() {
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>المهارات المتقنة بنجاح</span>
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.done} / {childStats.total}</h3>
-                <small style={{ color: 'var(--green)', fontWeight: 600, fontSize: '12px' }}>⭐ درس متقن من المنهج المنشور</small>
+                <small style={{ color: 'var(--green-text)', fontWeight: 600, fontSize: '12px' }}>⭐ درس متقن من المنهج المنشور</small>
               </div>
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--yellow-light)', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🏆</div>
             </div>
@@ -422,9 +422,9 @@ export default function ParentDashboard() {
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>مواد ومسارات تجريبية</span>
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{Object.values(curriculumData || {}).filter(v => Array.isArray(v?.lessons)).length} مسارًا</h3>
-                <small style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
+                <small style={{ color: 'var(--blue-text)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
             </div>
 
             <div style={{
@@ -435,9 +435,9 @@ export default function ParentDashboard() {
               <div>
                 <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 500, display: 'block', marginBottom: '6px' }}>نقاط الفهم والشارات</span>
                 <h3 style={{ fontSize: '28px', color: 'var(--navy)', lineHeight: 1, marginBottom: '6px' }}>{childStats.points} ⭐</h3>
-                <small style={{ color: 'var(--orange)', fontWeight: 600, fontSize: '12px' }}>🔥 {childStats.badges} شارات إتقان مكتسبة</small>
+                <small style={{ color: 'var(--orange-text)', fontWeight: 600, fontSize: '12px' }}>🔥 {childStats.badges} شارات إتقان مكتسبة</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--orange-light)', color: '#ea580c', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--orange-light)', color: 'var(--orange-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
             </div>
           </section>
 
@@ -480,7 +480,7 @@ export default function ParentDashboard() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <span className="tag-badge info" style={{ fontSize: '11px' }}>{evt.period}</span>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--blue)' }}>{evt.status}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--blue-text)' }}>{evt.status}</span>
                     </div>
                     <h4 style={{ fontSize: '15px', color: 'var(--navy)', marginBottom: '6px' }}>{evt.stage}</h4>
                     <p style={{ fontSize: '12.5px', color: 'var(--muted)', marginBottom: '10px' }}>{evt.details}</p>

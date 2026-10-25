@@ -27,6 +27,9 @@
   --red-text: #b91c1c;
   --amber-text: #92400e;
   --blue-border: #bfdbfe;
+  --purple-text: #6d28d9;
+  --orange-text: #c2410c;
+  --teal-text: #0f766e;
   color-scheme: light;
 
   /* Semantic Feedback Palette */
@@ -79,6 +82,9 @@
   --red-text: #fca5a5;
   --amber-text: #fcd34d;
   --blue-border: #1e40af;
+  --purple-text: #c4b5fd;
+  --orange-text: #fdba74;
+  --teal-text: #5eead4;
   color-scheme: dark;
   
   /* Adjusted colors for dark mode */
@@ -121,7 +127,7 @@ h1, h2, h3, h4, h5, .brand-heading {
 }
 
 a {
-  color: var(--blue);
+  color: var(--blue-text);
   text-decoration: none;
 }
 
@@ -350,7 +356,7 @@ input, select, textarea {
 
 .btn-secondary {
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   border: 1px solid var(--blue-border);
   padding: 10px 18px;
   border-radius: var(--radius-md);
@@ -392,17 +398,17 @@ input, select, textarea {
 }
 .tag-badge.mastered {
   background: var(--green-light);
-  color: var(--green);
+  color: var(--green-text);
   border: 1px solid var(--line);
 }
 .tag-badge.review {
   background: var(--orange-light);
-  color: var(--orange);
+  color: var(--orange-text);
   border: 1px solid var(--line);
 }
 .tag-badge.info {
   background: var(--blue-light);
-  color: var(--blue);
+  color: var(--blue-text);
   border: 1px solid var(--blue-border);
 }
 
@@ -601,7 +607,7 @@ input, select, textarea {
 }
 
 .bottom-nav-item.active .bottom-nav-label {
-  color: var(--blue);
+  color: var(--blue-text);
   font-weight: 800;
 }
 
@@ -762,7 +768,7 @@ input, select, textarea {
 
 
 .more-menu-item.active .more-menu-label {
-  color: var(--blue);
+  color: var(--blue-text);
 }
 
 /* ========================================================
@@ -1000,7 +1006,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   .side-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 14px 6px 0; padding-right: 10px; border-right: 2px solid var(--line); }
   .side-nav-sub-item { display: flex; align-items: center; gap: 8px; width: 100%; border: none; background: transparent; color: var(--navy); font-family: inherit; font-size: 12.5px; font-weight: 700; padding: 7px 8px; border-radius: 8px; cursor: pointer; text-align: right; white-space: nowrap; }
   .side-nav-sub-item:hover { background: var(--bg); }
-  .side-nav-sub-item.active { background: var(--blue-light); color: var(--blue); }
+  .side-nav-sub-item.active { background: var(--blue-light); color: var(--blue-text); }
   .side-nav-caret { margin-inline-start: auto; font-size: 11px; opacity: .7; }
 }
 

@@ -296,7 +296,7 @@ export default function AnalyticsDashboard() {
               border: 'none', borderRadius: 9, padding: '8px 16px', fontSize: 13, fontWeight: 800,
               fontFamily: 'inherit', cursor: 'pointer', transition: 'all 0.15s ease',
               background: period === p.key ? 'var(--card-bg, #fff)' : 'transparent',
-              color: period === p.key ? '#2563eb' : MUTED,
+              color: period === p.key ? 'var(--blue-text)' : MUTED,
               boxShadow: period === p.key ? '0 1px 4px rgba(15,23,42,0.12)' : 'none',
             }}>{p.label}</button>
           ))}

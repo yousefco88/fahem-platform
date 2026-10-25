@@ -566,7 +566,7 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
     load();
   };
 
-  const chip = { fontSize: '11px', padding: '2px 8px', borderRadius: '10px', background: 'var(--blue-light)', color: 'var(--blue)', fontWeight: 700, whiteSpace: 'nowrap' };
+  const chip = { fontSize: '11px', padding: '2px 8px', borderRadius: '10px', background: 'var(--blue-light)', color: 'var(--blue-text)', fontWeight: 700, whiteSpace: 'nowrap' };
 
   return (
     <div>
@@ -607,7 +607,7 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
                 <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
                   <span style={chip}>{QUIZ_TYPE_LABELS[q.quiz_type] || q.quiz_type}</span>
                   <span style={chip}>{DIFFICULTY_LABELS[q.difficulty] || q.difficulty}</span>
-                  {q.skill && <span style={{ ...chip, background: 'var(--yellow-light)', color: 'var(--orange)' }}>🎯 {q.skill}</span>}
+                  {q.skill && <span style={{ ...chip, background: 'var(--yellow-light)', color: 'var(--orange-text)' }}>🎯 {q.skill}</span>}
                 </div>
               </div>
               <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: '12px', flexShrink: 0 }} onClick={() => startEdit(q)}>✏️ تعديل</button>

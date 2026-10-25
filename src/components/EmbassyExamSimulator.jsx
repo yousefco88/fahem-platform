@@ -118,10 +118,10 @@ export default function EmbassyExamSimulator() {
 
   // Egyptian Color Band Assessment (Edu 2.0 system)
   const getAssessmentColorBand = (score) => {
-    if (score >= 85) return { title: 'أداء متميز', color: 'var(--blue)', bg: 'var(--blue-light)', tag: 'متميز' };
-    if (score >= 65) return { title: 'أداء جيد', color: 'var(--green)', bg: '#f0fdf4', tag: 'جيد' };
+    if (score >= 85) return { title: 'أداء متميز', color: 'var(--blue-text)', bg: 'var(--blue-light)', tag: 'متميز' };
+    if (score >= 65) return { title: 'أداء جيد', color: 'var(--green-text)', bg: '#f0fdf4', tag: 'جيد' };
     if (score >= 50) return { title: 'يحتاج إلى مراجعة بسيطة', color: '#ca8a04', bg: '#fefce8', tag: 'مراجعة' };
-    return { title: 'يحتاج إلى دعم ومراجعة', color: 'var(--red)', bg: '#fef2f2', tag: 'دعم' };
+    return { title: 'يحتاج إلى دعم ومراجعة', color: 'var(--red-text)', bg: '#fef2f2', tag: 'دعم' };
   };
 
   const currentBand = getAssessmentColorBand(percentage);
@@ -159,7 +159,7 @@ export default function EmbassyExamSimulator() {
               textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', minWidth: '220px'
             }}>
               <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>بيانات الطالب المتقدم:</span>
-              <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue)', marginTop: '4px' }}>{examChild.name}</div>
+              <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--blue-text)', marginTop: '4px' }}>{examChild.name}</div>
               <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '2px' }}>{examChild.grade}</div>
               <div style={{ fontSize: '11px', background: 'var(--bg)', padding: '4px 8px', borderRadius: '6px', marginTop: '10px', color: 'var(--navy)' }}>
                 محاكاة تدريبية — ليست رقم جلوس رسمياً
@@ -252,7 +252,7 @@ export default function EmbassyExamSimulator() {
               padding: '8px 18px', borderRadius: 'var(--radius-full)'
             }}>
               <span style={{ fontSize: '18px' }}>⏰</span>
-              <span style={{ fontSize: '16px', fontWeight: 900, color: timeLeft < 300 ? '#dc2626' : 'var(--green-text)', fontFamily: 'monospace' }}>
+              <span style={{ fontSize: '16px', fontWeight: 900, color: timeLeft < 300 ? 'var(--red-text)' : 'var(--green-text)', fontFamily: 'monospace' }}>
                 الوقت المتبقي: {formatTimer(timeLeft)}
               </span>
             </div>
@@ -319,7 +319,7 @@ export default function EmbassyExamSimulator() {
               </span>
 
               <button
-                style={{ background: 'none', border: 'none', color: 'var(--blue)', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--blue-text)', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                 onClick={() => soundManager.speak(currentQ.question)}
               >
                 <span>🔊 استمع للسؤال بصوت واضح</span>
@@ -354,7 +354,7 @@ export default function EmbassyExamSimulator() {
                       background: 'var(--card-bg)'
                     }}></div>
                     <span style={{ fontSize: '20px' }}>{opt.icon}</span>
-                    <span style={{ fontSize: '16px', fontWeight: isSelected ? 800 : 600, color: isSelected ? 'var(--blue)' : 'var(--navy)' }}>
+                    <span style={{ fontSize: '16px', fontWeight: isSelected ? 800 : 600, color: isSelected ? 'var(--blue-text)' : 'var(--navy)' }}>
                       {opt.text}
                     </span>
                   </div>
@@ -445,7 +445,7 @@ export default function EmbassyExamSimulator() {
 
               <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>حالة المحاولة:</span>
-                <strong style={{ fontSize: '17px', color: 'var(--green)' }}>✓ أجاب عن {attemptedCount} من {totalQuestions}</strong>
+                <strong style={{ fontSize: '17px', color: 'var(--green-text)' }}>✓ أجاب عن {attemptedCount} من {totalQuestions}</strong>
                 <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>ملخص تعليمي غير رسمي</div>
               </div>
             </div>
@@ -455,7 +455,7 @@ export default function EmbassyExamSimulator() {
               ملخص الأداء التدريبي:
             </h4>
             <div style={{ background: 'var(--blue-light)', border: '1px solid var(--line)', borderRadius: '12px', padding: '14px', marginBottom: '24px' }}>
-              <strong style={{ color: '#1e3a8a' }}>نتيجة المحاولة الحالية: {correctCount} من {totalQuestions} ({percentage}%)</strong>
+              <strong style={{ color: 'var(--blue-text)' }}>نتيجة المحاولة الحالية: {correctCount} من {totalQuestions} ({percentage}%)</strong>
               <p style={{ color: 'var(--muted)', fontSize: '13px', margin: '6px 0 0' }}>يعرض التقرير نتيجة الاختبار الذي أجراه الطالب فقط.</p>
             </div>
 
@@ -465,7 +465,7 @@ export default function EmbassyExamSimulator() {
                 <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block' }}>نوع التقرير:</span>
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px', border: '2px solid #2563eb',
-                  color: 'var(--blue)', padding: '6px 14px', borderRadius: '8px', fontWeight: 900, fontSize: '12px', marginTop: '6px'
+                  color: 'var(--blue-text)', padding: '6px 14px', borderRadius: '8px', fontWeight: 900, fontSize: '12px', marginTop: '6px'
                 }}>
                   <span>★</span> نتيجة اختبار تدريبي من فاهم <span>★</span>
                 </div>

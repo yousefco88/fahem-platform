@@ -203,7 +203,7 @@ export default function TeacherStudio() {
                     {SLOT_TYPES?.[s.type]?.icon || '📖'} {curriculumData?.[s.subjectId]?.title || s.subjectId}
                   </span>
                   {s.meetingUrl ? (
-                    <a href={s.meetingUrl} target="_blank" rel="noreferrer" style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--blue)' }}>🎥 رابط الحصة</a>
+                    <a href={s.meetingUrl} target="_blank" rel="noreferrer" style={{ fontSize: '12.5px', fontWeight: 800, color: 'var(--blue-text)' }}>🎥 رابط الحصة</a>
                   ) : (
                     <span style={{ fontSize: '12px', color: 'var(--muted)' }}>بلا رابط — أضفه من «حصصي»</span>
                   )}

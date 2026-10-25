@@ -3,11 +3,11 @@ import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 
 const STATUS_OPTIONS = [
-  { value: 'new', label: '🆕 جديد', color: 'var(--blue)', bg: 'var(--blue-light)' },
+  { value: 'new', label: '🆕 جديد', color: 'var(--blue-text)', bg: 'var(--blue-light)' },
   { value: 'contacted', label: '📞 تم التواصل', color: 'var(--yellow)', bg: 'var(--yellow-light)' },
-  { value: 'scheduled', label: '🗓️ حصة مجدولة', color: 'var(--purple)', bg: 'var(--purple-light)' },
-  { value: 'completed', label: '✅ مكتمل', color: 'var(--green)', bg: 'var(--green-light)' },
-  { value: 'cancelled', label: '❌ ملغي', color: 'var(--red)', bg: 'var(--red-light)' }
+  { value: 'scheduled', label: '🗓️ حصة مجدولة', color: 'var(--purple-text)', bg: 'var(--purple-light)' },
+  { value: 'completed', label: '✅ مكتمل', color: 'var(--green-text)', bg: 'var(--green-light)' },
+  { value: 'cancelled', label: '❌ ملغي', color: 'var(--red-text)', bg: 'var(--red-light)' }
 ];
 
 const statusOf = (v) => STATUS_OPTIONS.find(s => s.value === v) || STATUS_OPTIONS[0];

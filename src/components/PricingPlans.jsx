@@ -18,7 +18,7 @@ export default function PricingPlans() {
     <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 24px', textAlign: 'center' }}>
       <div style={{ marginBottom: '36px' }}>
         <div style={{
-          display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue)',
+          display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue-text)',
           fontWeight: 800, fontSize: '13px', padding: '6px 16px', borderRadius: 'var(--radius-full)', marginBottom: '12px'
         }}>
           {pricing.badge}
@@ -67,7 +67,7 @@ export default function PricingPlans() {
             <ul style={{ listStyle: 'none', margin: '28px 0', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
               {(plan.features || []).map((feature, i) => (
                 <li key={i} style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: 'var(--green)', fontWeight: 900 }}>✓</span> {feature}
+                  <span style={{ color: 'var(--green-text)', fontWeight: 900 }}>✓</span> {feature}
                 </li>
               ))}
             </ul>

@@ -56,7 +56,7 @@ export default function AdminActivityLog() {
       <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         📋 سجل النشاطات
         {rows.length > 0 && (
-          <span style={{ fontSize: '11px', background: 'var(--blue-light)', color: 'var(--blue)', padding: '3px 8px', borderRadius: '8px', fontWeight: 600 }}>
+          <span style={{ fontSize: '11px', background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '3px 8px', borderRadius: '8px', fontWeight: 600 }}>
             آخر {rows.length} حدث
           </span>
         )}
@@ -96,7 +96,7 @@ export default function AdminActivityLog() {
                 <span style={{ flex: 1, color: 'var(--muted)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {meta.icon} {meta.text}{detail}
                 </span>
-                <span style={{ background: 'var(--blue-light)', color: 'var(--blue)', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                <span style={{ background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 600, whiteSpace: 'nowrap' }}>
                   {meta.badge}
                 </span>
               </div>

@@ -312,7 +312,7 @@ export default function Modals() {
                   {/* Part 1: Interactive Syllable Puzzle / Word Builder */}
                   {activeLesson.interactiveBuilder && (
                     <div style={{ background: 'var(--blue-light)', border: '2px solid var(--line)', borderRadius: '20px', padding: '22px', marginBottom: '28px' }}>
-                      <h4 style={{ color: 'var(--blue)', fontSize: '18px', marginBottom: '6px' }}>
+                      <h4 style={{ color: 'var(--blue-text)', fontSize: '18px', marginBottom: '6px' }}>
                         🧩 نشاط تركيبي: اضغط على المقاطع لبناء: «{activeLesson.interactiveBuilder.targetWord}»
                       </h4>
                       <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '16px' }}>
@@ -332,7 +332,7 @@ export default function Modals() {
                             <span
                               key={idx}
                               style={{
-                                background: 'var(--blue-light)', color: 'var(--blue)', padding: '8px 18px',
+                                background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '8px 18px',
                                 borderRadius: '10px', fontSize: '22px', fontWeight: 800, border: '1px solid var(--line)'
                               }}
                             >
@@ -369,7 +369,7 @@ export default function Modals() {
                       </div>
 
                       {builderCompleted && (
-                        <div style={{ marginTop: '14px', color: 'var(--green)', fontWeight: 800, fontSize: '15px' }}>
+                        <div style={{ marginTop: '14px', color: 'var(--green-text)', fontWeight: 800, fontSize: '15px' }}>
                           ✓ رائع جداً! تم تركيب «{activeLesson.interactiveBuilder.targetWord}» بنجاح!
                         </div>
                       )}
@@ -387,7 +387,7 @@ export default function Modals() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '14px', flexWrap: 'wrap' }}>
                       <div style={{
-                        display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue)',
+                        display: 'inline-block', background: 'var(--blue-light)', color: 'var(--blue-text)',
                         padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px'
                       }}>
                         {bankQuestions
@@ -534,7 +534,7 @@ export default function Modals() {
               لحماية الطفل، يُرجى حل المسألة الرياضية للعودة:
             </p>
             <div style={{
-              fontSize: '24px', fontWeight: 800, color: 'var(--blue)', background: 'var(--blue-light)',
+              fontSize: '24px', fontWeight: 800, color: 'var(--blue-text)', background: 'var(--blue-light)',
               padding: '12px', borderRadius: '12px', marginBottom: '16px'
             }}>
               كم حاصل: {gateNum1} + {gateNum2} ؟
