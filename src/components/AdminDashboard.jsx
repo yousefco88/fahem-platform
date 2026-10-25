@@ -108,11 +108,29 @@ export default function AdminDashboard() {
     const email = teacherEmail.trim().toLowerCase();
     if (!email) return;
     const u = users.find(x => (x.email || '').toLowerCase() === email);
-    if (!u) { triggerToast('هذا البريد غير مسجّل بعد. اطلب من المعلم إنشاء حساب من صفحة الدخول أولاً ثم أضِفه هنا'); return; }
+    if (!u) {
+      setSavingUser('invite');
+      const { error } = await supabase.rpc('admin_invite_staff', { p_email: email, p_role: 'teacher' });
+      setSavingUser(null);
+      if (error) { triggerToast(`تعذر إنشاء الدعوة: ${error.message}`); return; }
+      triggerToast('تم إنشاء الدعوة ✓ أبلغ المعلم أن يسجّل بهذا البريد وسيصبح معلماً تلقائياً');
+      setTeacherEmail(''); loadInvites(); return;
+    }
     if (u.role === 'teacher') { triggerToast('هذا الحساب معلم بالفعل'); return; }
     if (u.id === user?.id) { triggerToast('لا يمكنك تغيير دورك بنفسك'); return; }
     await changeRole(u, 'teacher');
     setTeacherEmail('');
+  };
+  const [invites, setInvites] = useState([]);
+  const loadInvites = async () => {
+    if (!supabase) return;
+    const { data } = await supabase.rpc('admin_list_invites');
+    setInvites(data || []);
+  };
+  const cancelInvite = async (inv) => {
+    const { error } = await supabase.rpc('admin_cancel_invite', { p_id: inv.id });
+    if (error) { triggerToast(`تعذر الإلغاء: ${error.message}`); return; }
+    setInvites(l => l.filter(x => x.id !== inv.id));
   };
   const loadUsers = async () => {
     if (!supabase) { setUsersLoading(false); return; }
@@ -120,7 +138,7 @@ export default function AdminDashboard() {
     if (error) setUsersError(error.message); else { setUsers(data || []); setUsersError(''); }
     setUsersLoading(false);
   };
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => { loadUsers(); loadInvites(); }, []);
   const changeRole = async (u, role) => {
     if (role === u.role) return;
     setSavingUser(u.id);
@@ -364,7 +382,7 @@ export default function AdminDashboard() {
 
           <div className="u-1" style={{ marginBottom: '18px' }}>
             <strong style={{ color: 'var(--navy)' }}>👩‍🏫 إضافة / تفعيل معلم</strong>
-            <p className="u-4">اكتب بريد حساب مسجّل في المنصة ليصبح معلماً ويرى طلابه وحصصه. المعلم الجديد يسجّل أولاً من صفحة الدخول.</p>
+            <p className="u-4">اكتب بريد المعلم: إن كان مسجّلاً يُفعَّل فوراً، وإن لم يكن تُنشأ دعوة تُطبَّق تلقائياً عند تسجيله بنفس البريد.</p>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
               <input type="email" dir="ltr" aria-label="بريد المعلم" placeholder="teacher@example.com" value={teacherEmail}
                 onChange={e => setTeacherEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTeacher()}
@@ -373,8 +391,20 @@ export default function AdminDashboard() {
               <datalist id="registered-emails">
                 {users.filter(x => x.role !== 'teacher').map(x => <option key={x.id} value={x.email} />)}
               </datalist>
-              <button type="button" className="btn-primary" onClick={addTeacher} disabled={!teacherEmail.trim() || !!savingUser}>تفعيل كمعلم</button>
+              <button type="button" className="btn-primary" onClick={addTeacher} disabled={!teacherEmail.trim() || !!savingUser}>تفعيل / دعوة كمعلم</button>
             </div>
+            {invites.length > 0 && (
+              <div style={{ marginTop: '12px' }}>
+                <div className="u-4">دعوات معلّقة ({invites.length})</div>
+                {invites.map(inv => (
+                  <div key={inv.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderTop: '1px solid var(--line)', fontSize: '13px' }}>
+                    <span dir="ltr">{inv.email}</span>
+                    <span style={{ color: 'var(--muted)' }}>تنتهي {new Date(inv.expires_at).toLocaleDateString('ar-SA')}</span>
+                    <button type="button" onClick={() => cancelInvite(inv)} style={{ color: 'var(--red-text)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700 }}>إلغاء</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
