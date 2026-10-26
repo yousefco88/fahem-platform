@@ -1256,3 +1256,10 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   .teacher-metrics small { font-size: 11px; }
   .teacher-metrics > div > div:last-child { width: 36px !important; height: 36px !important; font-size: 18px !important; }
 }
+
+/* الهبوط: المراسي لا يغطيها الهيدر + احترام تقليل الحركة */
+section[id] { scroll-margin-top: 72px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

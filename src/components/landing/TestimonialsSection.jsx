@@ -5,6 +5,9 @@ export default function TestimonialsSection() {
   const { settings } = useSiteSettings();
   const { badge, title, subtitle } = settings.testimonials;
 
+  // لا توجد شهادات حقيقية بعد — لا نعرض قسماً فارغاً
+  return null;
+  // eslint-disable-next-line no-unreachable
   return (
     <section id="testimonials" style={{ padding: '70px 24px', background: 'var(--bg)' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>

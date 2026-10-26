@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 export const scrollToBooking = () => {
-  document.getElementById('booking-section')?.scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('booking-section')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 };
 
 export default function LandingHeader() {
@@ -58,7 +58,6 @@ export default function LandingHeader() {
           <a href="#subjects" className="u-28">المواد الـ 12</a>
           <a href="#timezone" className="u-28">حاسبة التوقيت</a>
           <a href="#comparison" className="u-28">مقارنة الدروس</a>
-          <a href="#testimonials" className="u-28">آراء الأسر</a>
           <a href="#faq" className="u-28">الأسئلة الشائعة</a>
         </nav>
 
