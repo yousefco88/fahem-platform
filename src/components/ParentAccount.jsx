@@ -46,8 +46,8 @@ export default function ParentAccount({ embedded = false }) {
         {!embedded && (
           <header className="acct-head">
             <div className="acct-logo" aria-hidden="true">🎓</div>
-            <h1>حساب الأسرة في فاهم</h1>
-            <p>حساب واحد لولي الأمر يجمع ملفات كل أبنائك — بأمان وخصوصية كاملة.</p>
+            <h1>حسابك في فاهم</h1>
+            <p>دخول واحد يناسب الجميع — بأمان وخصوصية كاملة.</p>
           </header>
         )}
 

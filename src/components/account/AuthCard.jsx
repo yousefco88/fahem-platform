@@ -47,17 +47,14 @@ export default function AuthCard() {
             ? 'تم استلام طلبك كمعلم ✅ — حسابك قيد المراجعة، وسيفعّله المشرف قريباً.'
             : 'تم استلام طلبك كمعلم ✅ — أكّد بريدك من الرسالة التي أرسلناها، وبعدها يراجع المشرف طلبك ويفعّل حسابك.');
         } else if (data.session && data.user) {
-          // جلسة فورية (تأكيد البريد معطّل): أنشئ الملفات مباشرة
+          // جلسة فورية (تأكيد البريد معطّل): أنشئ ملف ولي الأمر — يُضاف الطفل لاحقاً من لوحة العائلة
           const { error: pe } = await supabase.from('parent_profiles')
             .upsert({ id: data.user.id, full_name: form.name.trim() });
           if (pe) throw pe;
-          const { error: ce } = await supabase.from('children')
-            .insert({ parent_id: data.user.id, name: form.child.trim(), grade: form.grade });
-          if (ce) throw ce;
           // onAuthStateChange سيحدّث الواجهة تلقائياً
         } else {
           // تأكيد البريد مفعّل: لا جلسة بعد — أرشده بوضوح
-          setNotice('تم إنشاء الحساب ✅ — أرسلنا رابط تأكيد إلى بريدك. بعد التأكيد سجّل الدخول وأضف ملف طفلك من لوحة العائلة.');
+          setNotice('تم إنشاء الحساب ✅ — أرسلنا رابط تأكيد إلى بريدك. بعد التأكيد سجّل الدخول وأكمل ملفك من لوحة حسابك.');
         }
       } else {
         const { error: se } = await supabase.auth.signInWithPassword({
@@ -104,16 +101,9 @@ export default function AuthCard() {
         </button>
       </div>
 
-      {mode === 'register' && (
+      {mode === 'register' && isTeacher && (
         <div className="acct-tabs" role="tablist" aria-label="نوع الحساب" style={{ marginBottom: 12 }}>
-          <button type="button" role="tab" aria-selected={who === 'parent'}
-            className={`acct-tab${who === 'parent' ? ' active' : ''}`} onClick={() => setWho('parent')}>
-            👨‍👩‍👧 ولي أمر
-          </button>
-          <button type="button" role="tab" aria-selected={who === 'teacher'}
-            className={`acct-tab${who === 'teacher' ? ' active' : ''}`} onClick={() => setWho('teacher')}>
-            🎓 معلم
-          </button>
+          <span className="acct-tab active" role="tab" aria-selected="true" style={{ cursor: 'default' }}>🎓 تسجيل معلم</span>
         </div>
       )}
 
@@ -126,42 +116,23 @@ export default function AuthCard() {
         {mode === 'register' && isTeacher && (
           <>
             <Field
-              label="اسم المعلم" required value={form.name} onChange={set('name')}
-              placeholder="الاسم الكامل" autoComplete="name"
+              label="الاسم الكامل" required value={form.name} onChange={set('name')}
+              placeholder="مثال: أحمد محمد" autoComplete="name"
             />
             <Field
-              label="المادة أو المواد" required value={form.subjects} onChange={set('subjects')}
+              label="المادة التي تدرّسها (اختياري)" value={form.subjects} onChange={set('subjects')}
               placeholder="مثال: رياضيات، علوم" autoComplete="off"
             />
-            <Field
-              label="المرحلة / الصفوف" required value={form.stage} onChange={set('stage')}
-              placeholder="مثال: الصفوف الرابع إلى السادس" autoComplete="off"
-            />
-            <Field
-              label="رقم الجوال (اختياري)" type="tel" value={form.phone} onChange={set('phone')}
-              placeholder="+20 ..." autoComplete="tel" dir="ltr"
-            />
             <div className="acct-alert ok" style={{ marginBottom: 12 }}>
-              ℹ️ <span>يُنشأ حسابك أولاً كحساب عادي، ولا تظهر لك أدوات المعلم إلا بعد مراجعة المشرف وموافقته.</span>
+              ℹ️ <span>يُنشأ حسابك أولاً كحساب عادي، وتظهر لك أدوات المعلم بعد موافقة المشرف.</span>
             </div>
           </>
         )}
         {mode === 'register' && !isTeacher && (
-          <>
-            <Field
-              label="اسم ولي الأمر" required value={form.name} onChange={set('name')}
-              placeholder="مثال: أحمد محمد" autoComplete="name"
-            />
-            <Field
-              label="اسم الطفل" required value={form.child} onChange={set('child')}
-              placeholder="مثال: جويرية" autoComplete="off"
-            />
-            <Field label="الصف الدراسي">
-              <select value={form.grade} onChange={set('grade')}>
-                {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
-              </select>
-            </Field>
-          </>
+          <Field
+            label="الاسم الكامل" required value={form.name} onChange={set('name')}
+            placeholder="مثال: أحمد محمد" autoComplete="name"
+          />
         )}
 
         <Field
@@ -179,9 +150,17 @@ export default function AuthCard() {
         {mode === 'register' && <PasswordStrength value={form.password} />}
 
         <button type="submit" className="acct-submit" disabled={busy}>
-          {busy ? '⏳ لحظات...' : mode === 'register' ? (isTeacher ? 'إرسال طلب الانضمام كمعلم' : 'إنشاء حساب الأسرة') : 'دخول'}
+          {busy ? '⏳ لحظات...' : mode === 'register' ? (isTeacher ? 'إرسال طلب الانضمام كمعلم' : 'إنشاء الحساب') : 'دخول'}
         </button>
       </form>
+
+      {mode === 'register' && (
+        <div className="acct-foot" style={{ marginTop: 0, marginBottom: 10 }}>
+          <button type="button" className="acct-link" onClick={() => setWho(w => w === 'parent' ? 'teacher' : 'parent')}>
+            {who === 'parent' ? '🎓 معلم؟ سجّل من هنا' : '👨‍👩‍👧 ولي أمر؟ سجّل من هنا'}
+          </button>
+        </div>
+      )}
 
       {mode === 'login' && (
         <div className="acct-foot">
