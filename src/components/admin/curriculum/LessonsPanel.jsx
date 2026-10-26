@@ -35,7 +35,7 @@ export default function LessonsPanel() {
   async function fetchSubjects() {
     const { data } = await supabase
       .from('curriculum_subjects')
-      .select('key, title, icon')
+      .select('key, title, icon, grade')
       .order('sort_order');
     setSubjects(data || []);
   }
@@ -84,6 +84,7 @@ export default function LessonsPanel() {
         .insert([{
           id: form.id.trim(),
           subject_key: selectedSubject,
+          grade: currentSubject?.grade,
           title: form.title.trim(),
           sort_order: form.sort_order,
           published: false,  // يبدأ كمسودة
