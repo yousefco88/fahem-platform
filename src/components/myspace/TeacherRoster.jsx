@@ -8,7 +8,7 @@ import { uploadLessonRecording } from '../../hooks/useLessonRecordings';
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
 const muted = { color: 'var(--muted)', fontSize: 13.5 };
-const tabBtn = (on) => ({ padding: '8px 14px', borderRadius: 10, border: '1px solid var(--line)', cursor: 'pointer', font: 'inherit', fontSize: 13.5, background: on ? '#1d4ed8' : '#f8fafc', color: on ? 'white' : '#0f172a' });
+const tabBtn = (on) => ({ padding: '8px 14px', borderRadius: 10, border: '1px solid var(--line)', cursor: 'pointer', font: 'inherit', fontSize: 13.5, background: on ? 'var(--blue)' : 'var(--bg)', color: on ? 'white' : 'var(--navy)' });
 
 // طلاب المعلم = من أسندهم له المسؤول فقط (teacher_students). حصصه = schedule_slots.teacher_id.
 export default function TeacherRoster() {
