@@ -17,6 +17,7 @@ const TABS = [
   { id: 'quiz', label: '❓ أسئلة', icon: '❓' },
   { id: 'wordBuilder', label: '🔤 بناء الكلمة', icon: '🔤' },
   { id: 'parentGuide', label: '👨‍👩‍👧 دليل الأهل', icon: '👨‍👩‍👧' },
+  { id: 'references', label: '📚 المراجع', icon: '📚' },
 ];
 
 export default function LessonEditor() {
@@ -83,6 +84,8 @@ export default function LessonEditor() {
         wordBuilder: content.wordBuilder || null,
         // Parent Guide
         parentGuide: content.parentGuide || { title: '', sections: [] },
+        // المراجع (كتب رسمية/مصادر الدرس)
+        references: content.references || [],
         // Objective
         objective: content.objective || '',
       });
@@ -112,6 +115,7 @@ export default function LessonEditor() {
       celebration: form.celebration,
       wordBuilder: form.wordBuilder,
       parentGuide: form.parentGuide,
+      references: form.references,
     };
     
     const { error } = await supabase
@@ -211,6 +215,9 @@ export default function LessonEditor() {
         )}
         {activeTab === 'parentGuide' && (
           <ParentGuideTab form={form} updateForm={updateForm} />
+        )}
+        {activeTab === 'references' && (
+          <ReferencesTab form={form} updateForm={updateForm} />
         )}
       </div>
     </div>
@@ -964,6 +971,71 @@ function ParentGuideTab({ form, updateForm }) {
           + إضافة قسم
         </button>
       </div>
+    </div>
+  );
+}
+
+function ReferencesTab({ form, updateForm }) {
+  const refs = form.references || [];
+
+  function updateRefs(next) {
+    updateForm('references', next);
+  }
+
+  function updateRef(index, field, value) {
+    const updated = [...refs];
+    updated[index] = { ...updated[index], [field]: value };
+    updateRefs(updated);
+  }
+
+  return (
+    <div className="tab-panel">
+      <div className="info-box">
+        📚 مراجع الدرس: الكتاب الرسمي أو المصدر الذي يستند إليه الدرس — تظهر لولي الأمر في تبويب دليل الأهل.
+        لا تضف إلا مصادر حقيقية نملك حق الربط إليها (كتب الوزارة الرسمية).
+      </div>
+
+      {refs.map((r, i) => (
+        <div key={i} className="section-editor">
+          <input
+            type="text"
+            value={r.title || ''}
+            onChange={e => updateRef(i, 'title', e.target.value)}
+            placeholder="اسم المرجع (مثال: كتاب الوزارة — لغة عربية، الصف الأول، ترم أول)"
+            className="input-lg"
+          />
+          <div className="form-row">
+            <input
+              type="text"
+              value={r.source || ''}
+              onChange={e => updateRef(i, 'source', e.target.value)}
+              placeholder="الجهة (مثال: وزارة التربية والتعليم المصرية)"
+              className="input-md"
+            />
+            <input
+              type="url"
+              dir="ltr"
+              value={r.url || ''}
+              onChange={e => updateRef(i, 'url', e.target.value)}
+              placeholder="https://رابط المصدر الرسمي (اختياري)"
+              className="input-md"
+            />
+          </div>
+          <input
+            type="text"
+            value={r.note || ''}
+            onChange={e => updateRef(i, 'note', e.target.value)}
+            placeholder="ملاحظة (مثال: طبعة العام الدراسي 2025/2026)"
+            className="input-lg"
+          />
+          <button className="btn-icon btn-danger" onClick={() => updateRefs(refs.filter((_, idx) => idx !== i))}>
+            🗑️ حذف المرجع
+          </button>
+        </div>
+      ))}
+      <button className="btn-muted btn-sm" onClick={() => updateRefs([...refs, { title: '', source: '', url: '', note: '' }])}>
+        + إضافة مرجع
+      </button>
     </div>
   );
 }

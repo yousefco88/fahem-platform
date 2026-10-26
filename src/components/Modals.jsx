@@ -519,6 +519,36 @@ export default function Modals() {
                   </div>
                 </div>
               )}
+
+              {/* مراجع الدرس (كتب رسمية) — تظهر في تبويب دليل الأهل */}
+              {studioActiveTab === 'guide' && (activeLesson.references || []).length > 0 && (
+                <div style={{ maxWidth: '800px', margin: '16px auto 0', textAlign: 'right' }}>
+                  <h4 style={{ fontSize: '15px', marginBottom: '10px', color: 'var(--navy)' }}>
+                    📚 مراجع هذا الدرس:
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {activeLesson.references.map((ref, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '12px',
+                          padding: '12px 16px'
+                        }}
+                      >
+                        <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--navy)' }}>{ref.title}</div>
+                        {ref.source && (
+                          <div style={{ fontSize: '12.5px', color: 'var(--muted)', marginTop: '2px' }}>{ref.source}{ref.note ? ` — ${ref.note}` : ''}</div>
+                        )}
+                        {ref.url && (
+                          <a href={ref.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12.5px', color: 'var(--blue-text)', fontWeight: 700 }}>
+                            فتح المصدر الرسمي ↗
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -48,6 +48,7 @@ function transformLesson(dbLesson) {
     
     // Parent Guide
     parentGuide: content.parentGuide || null,
+    references: content.references || [],
     
     // Word Builder
     interactiveBuilder: content.wordBuilder || null,
