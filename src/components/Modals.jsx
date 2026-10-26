@@ -54,22 +54,51 @@ export default function Modals() {
   const [gateNum2] = useState(4);
   const [gateInput, setGateInput] = useState('');
 
-  // Teacher Post-Class Feedback Modal State
-  const [showPostClassFeedback, setShowPostClassFeedback] = useState(false);
-  const [feedbackNote, setFeedbackNote] = useState(`أحمد شارك بنشاط ونطق الحرف بشكل رائع اليوم.`);
+  // قفز محطات الفيديو: للإطار المضمّن (YouTube) نعيد تحميله من اللحظة المطلوبة
+  const videoElRef = useRef(null);
+  const [iframeStart, setIframeStart] = useState(null);
 
-  // Reset quiz/builder state when activeLesson changes
+  // Reset quiz/builder state when the lesson changes or the studio reopens
   useEffect(() => {
     setQuizAnswered(null);
     setQIndex(0);
     setBuiltSyllables([]);
     setBuilderCompleted(false);
-  }, [activeLesson?.id]);
+    setIframeStart(null);
+  }, [activeLesson?.id, showStudioModal]);
 
-  const handleFinishTeacherFeedback = (e) => {
-    e.preventDefault();
-    setShowPostClassFeedback(false);
-    triggerToast('تم إنهاء الحصة التجريبية. إرسال التقرير وأرشفة التسجيل غير متصلين بخادم بعد.');
+  // إغلاق المشغل: يوقف القراءة الصوتية الجارية دائماً
+  const handleCloseStudio = () => {
+    soundManager.stopSpeak();
+    setShowStudioModal(false);
+  };
+
+  // إغلاق بمفتاح Escape أثناء فتح المشغل
+  useEffect(() => {
+    if (!showStudioModal) return;
+    const onKeyDown = (e) => { if (e.key === 'Escape') handleCloseStudio(); };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [showStudioModal]);
+
+  // تحويل "mm:ss" أو "hh:mm:ss" إلى ثوانٍ
+  const chapterTimeToSeconds = (t) => {
+    const parts = String(t || '').split(':').map(n => parseInt(n, 10) || 0);
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    return parts[0] || 0;
+  };
+
+  // قفز حقيقي إلى محطة في الفيديو
+  const handleChapterJump = (ch) => {
+    const secs = chapterTimeToSeconds(ch.time);
+    if (video?.kind === 'iframe') {
+      setIframeStart(secs); // يعاد تحميل الإطار بادئاً من المحطة
+      triggerToast(`⏱ تشغيل من ${ch.time} — ${ch.label}`);
+    } else if (videoElRef.current) {
+      videoElRef.current.currentTime = secs;
+      videoElRef.current.play?.();
+    }
   };
 
   // Parent Gate handler
@@ -144,50 +173,12 @@ export default function Modals() {
 
   return (
     <>
-      {/* Post-Class Teacher Feedback Modal */}
-      {showPostClassFeedback && (
-        <div className="modal-overlay">
-          <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '30px', maxWidth: '480px', width: '100%' }}>
-            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
-              <div style={{ fontSize: '36px', marginBottom: '8px' }}>📝</div>
-              <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>تقييم وملاحظة ما بعد الحصة</h3>
-              <p style={{ color: 'var(--muted)', fontSize: '13px' }}>
-                اكتملت الحصة وأُرشفت بنجاح! شارك ولي أمر الطالب <strong>{activeChild?.name || 'الطالب'}</strong> بملاحظتك لترسل له فوراً:
-              </p>
-            </div>
-
-            <form onSubmit={handleFinishTeacherFeedback}>
-              <div style={{ marginBottom: '16px' }}>
-                <label className="u-9">مستوى تفاعل الطالب</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>ممتاز ⭐</button>
-                  <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>جيد جداً 👍</button>
-                  <button type="button" className="btn-secondary" style={{ flex: 1, padding: '8px' }}>يحتاج متابعة 💡</button>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '20px' }}>
-                <label className="u-9">ملاحظة المعلمة لولي الأمر</label>
-                <textarea
-                  rows="3"
-                  style={{ width: '100%', padding: '12px', border: '2px solid var(--line)', borderRadius: '10px', fontSize: '14px', resize: 'vertical' }}
-                  value={feedbackNote}
-                  onChange={(e) => setFeedbackNote(e.target.value)}
-                />
-              </div>
-
-              <button className="btn-accent" style={{ width: '100%', justifyContent: 'center' }} type="submit">
-                إرسال لولي الأمر وحفظ الأرشيف ✓
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* 2. Interactive Lesson Studio Modal */}
       {showStudioModal && activeLesson && (
-        <div className="modal-overlay">
-          <div style={{
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) handleCloseStudio(); }}>
+          <div
+            role="dialog" aria-modal="true" aria-label={activeLesson.title}
+            style={{
             background: 'var(--card-bg)', width: '100%', maxWidth: '1150px',
             borderRadius: '28px', overflow: 'hidden', maxHeight: '92vh',
             display: 'flex', flexDirection: 'column'
@@ -197,10 +188,10 @@ export default function Modals() {
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span className="tag-badge mastered" style={{ fontSize: '12px' }}>{activeLesson.letter}</span>
+                {activeLesson.letter && <span className="tag-badge mastered" style={{ fontSize: '12px' }}>{activeLesson.letter}</span>}
                 <span>{activeLesson.title}</span>
               </h3>
-              <button style={{ background: 'none', color: 'white', fontSize: '22px' }} onClick={() => setShowStudioModal(false)}>
+              <button aria-label="إغلاق الدرس" style={{ background: 'none', color: 'white', fontSize: '22px' }} onClick={handleCloseStudio}>
                 ✕
               </button>
             </header>
@@ -240,13 +231,16 @@ export default function Modals() {
                     <div style={{ background: '#0f172a', borderRadius: '20px', padding: '10px', maxWidth: '850px', margin: '0 auto 20px' }}>
                       {video.kind === 'iframe' ? (
                         <iframe
-                          src={video.src} title={activeLesson.title} loading="lazy" allowFullScreen
-                          allow="accelerometer; encrypted-media; picture-in-picture; fullscreen"
+                          key={iframeStart ?? 'start'}
+                          src={iframeStart != null ? `${video.src}${video.src.includes('?') ? '&' : '?'}start=${iframeStart}&autoplay=1` : video.src}
+                          title={activeLesson.title} loading="lazy" allowFullScreen
+                          allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"
                           referrerPolicy="strict-origin-when-cross-origin"
                           style={{ width: '100%', aspectRatio: '16 / 9', border: 0, borderRadius: '14px' }}
                         />
                       ) : (
                         <video
+                          ref={videoElRef}
                           controls
                           playsInline
                           preload="metadata"
@@ -287,21 +281,24 @@ export default function Modals() {
                     </div>
                   ))}
 
-                  <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
-                    <strong>محطات الحصة المسجلة للقفز السريع:</strong>
-                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
-                      {activeLesson.videoChapters?.map((ch, idx) => (
-                        <span
-                          key={idx}
-                          className="tag-badge info"
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => triggerToast(`القفز إلى الدقيقة ${ch.time}: ${ch.label}`)}
-                        >
-                          ⏱ {ch.time} {ch.label}
-                        </span>
-                      ))}
+                  {/* محطات القفز السريع — تظهر فقط عند وجود فيديو فعلي ومحطات */}
+                  {video && activeLesson.videoChapters?.length > 0 && (
+                    <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
+                      <strong>محطات الدرس للقفز السريع:</strong>
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
+                        {activeLesson.videoChapters.map((ch, idx) => (
+                          <button
+                            key={idx}
+                            className="tag-badge info"
+                            style={{ cursor: 'pointer', border: 'none' }}
+                            onClick={() => handleChapterJump(ch)}
+                          >
+                            ⏱ {ch.time} {ch.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
@@ -480,6 +477,13 @@ export default function Modals() {
               )}
 
               {/* Tab 4: Parent Companion Guide */}
+              {studioActiveTab === 'guide' && !activeLesson.parentGuide && !(activeLesson.references || []).length && (
+                <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--muted)' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '12px' }}>💡</div>
+                  <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--navy)' }}>لا يوجد دليل مذاكرة لهذا الدرس بعد</div>
+                  <div style={{ fontSize: '13.5px' }}>سيضيفه المعلم قريباً من لوحة المنهج</div>
+                </div>
+              )}
               {studioActiveTab === 'guide' && activeLesson.parentGuide && (
                 <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'right' }}>
                   <div style={{

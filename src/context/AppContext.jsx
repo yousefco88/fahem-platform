@@ -215,19 +215,29 @@ export function AppProvider({ children }) {
               return {
                 id: l.id,
                 title: content.title || l.title,
+                letter: content.letter || '',
+                duration: content.duration || '',
                 objective: content.objective || '',
                 order: l.sort_order,
-                videoUrl: l.video_url,
-                videoType: l.video_type,
+                videoUrl: l.video_url || content.videoUrl || '',
+                videoType: l.video_type || content.videoType || '',
                 videoChapters: content.videoChapters || [],
-                pdfUrl: l.pdf_url,
-                pdfType: l.pdf_type,
+                pdfUrl: l.pdf_url || content.pdfUrl || '',
+                pdfType: l.pdf_type || content.pdfType || '',
                 pdfTitle: content.pdfTitle || '',
                 quizType: content.quizType || 'choice',
                 question: content.question || '',
-                options: (content.choices || []).map((text, i) => ({
-                  text, correct: i === content.answer, icon: ''
-                })),
+                // متسامح مع شكلي التخزين: options ككائنات {text, correct, icon}
+                // (بيانات البذر) أو choices/answer (محرر المنهج)
+                options: Array.isArray(content.options) && content.options.length
+                  ? content.options.map(o => (typeof o === 'string'
+                      ? { text: o, correct: false, icon: '' }
+                      : { text: o.text ?? '', correct: !!o.correct, icon: o.icon || '' }))
+                  : (content.choices || []).map((text, i) => ({
+                      text, correct: i === content.answer, icon: ''
+                    })),
+                // مراجع الدرس (كتب الوزارة الرسمية) — تظهر في تبويب دليل الأهل
+                references: Array.isArray(content.references) ? content.references : [],
                 // بنك الأسئلة (يتقدم على السؤال القديم المفرد في المشغل عند وجوده)
                 // نوع arrange مخزن لكنه غير مدعوم في المشغل بعد — يُستبعد هنا
                 questions: (questionsByLesson[l.id] || [])
@@ -246,7 +256,8 @@ export function AppProvider({ children }) {
                       : (q.choices || []).map((text, i) => ({ text, correct: i === q.answer, icon: '' })),
                   })),
                 parentGuide: content.parentGuide || null,
-                interactiveBuilder: content.wordBuilder || null,
+                // متسامح مع الاسمين: interactiveBuilder (بيانات البذر) أو wordBuilder (المحرر)
+                interactiveBuilder: content.interactiveBuilder || content.wordBuilder || null,
                 celebration: content.celebration || '',
               };
             })
@@ -266,6 +277,7 @@ export function AppProvider({ children }) {
         });
 
         // دمج: البيانات من قاعدة البيانات تأخذ الأولوية
+        // نُبقي المفاتيح غير المادية (مثل expatExamCalendar) من النسخة المحلية
         setCurriculumData(prev => {
           const merged = { ...prev };
           Object.entries(dbCurriculum).forEach(([key, value]) => {
@@ -273,8 +285,9 @@ export function AppProvider({ children }) {
               merged[key] = { ...merged[key], ...value };
             }
           });
-          return merged;
+          return normalizeCurriculum(merged);
         });
+        setCurriculumSource('db');
       } catch (err) {
         console.error('Error fetching curriculum from DB:', err);
       }
@@ -331,30 +344,9 @@ export function AppProvider({ children }) {
 
   // ========== المزامنة السحابية (المرحلة 3) ==========
 
-  // المنهج من قاعدة البيانات (المواد + الدروس المنشورة بترتيبها) — fallback للمحلي عند الفشل
+  // المنهج من قاعدة البيانات: الجلب موحّد في fetchCurriculumFromDB أعلاه
+  // (كان هنا جلب ثانٍ متسابق يطمس شكل البيانات — أُزيل وتوحّد المصدر)
   const [curriculumSource, setCurriculumSource] = useState('local');
-  useEffect(() => {
-    if (!supabase) return;
-    let cancelled = false;
-    (async () => {
-      const [subsRes, lesRes] = await Promise.all([
-        supabase.from('curriculum_subjects').select('key, title, icon, color, badge, grade, sort_order').eq('published', true).order('sort_order'),
-        supabase.from('curriculum_lessons').select('id, subject_key, sort_order, content').eq('published', true).order('sort_order')
-      ]);
-      if (cancelled || subsRes.error || lesRes.error || !subsRes.data?.length || !lesRes.data?.length) return;
-      const db = {};
-      subsRes.data.forEach(s => {
-        db[s.key] = { id: s.key, title: s.title, icon: s.icon, badge: s.badge, color: s.color, grade: s.grade, lessons: [] };
-      });
-      lesRes.data.forEach(l => {
-        if (db[l.subject_key]) db[l.subject_key].lessons.push({ ...(l.content || {}), id: l.id });
-      });
-      // نُبقي المفاتيح غير المادية (مثل expatExamCalendar) من النسخة المحلية
-      setCurriculumData(prev => normalizeCurriculum({ ...prev, ...db }));
-      setCurriculumSource('db');
-    })();
-    return () => { cancelled = true; };
-  }, []);
 
   // ربط أطفال الحساب محلياً بسجلات children السحابية (uuid) وتحميل تقدمهم المحفوظ
   const [childCloudIds, setChildCloudIds] = useState({}); // localChildId -> uuid

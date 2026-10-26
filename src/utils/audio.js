@@ -201,6 +201,16 @@ class SoundEffects {
       // Fallback
     }
   }
+
+  // إيقاف أي قراءة صوتية جارية (يُستدعى عند إغلاق مشغل الدرس)
+  stopSpeak() {
+    if (!('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      // Fallback
+    }
+  }
 }
 
 export const soundManager = new SoundEffects();
