@@ -11,6 +11,26 @@ import { useAuth } from '../../../context/AuthContext';
 import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
 
+// يحذف الخيارات الفارغة ويعيد حساب رقم الإجابة الصحيحة ليشير لنفس الخيار بعد الحذف
+function compactChoices(choices, answer) {
+  const kept = [];
+  let newAnswer = null;
+  (choices || []).forEach((c, i) => {
+    const v = (c || '').trim();
+    if (!v) return;
+    if (i === answer) newAnswer = kept.length;
+    kept.push(v);
+  });
+  return { choices: kept, answer: newAnswer };
+}
+
+// يجهّز الخيارات والإجابة حسب نوع السؤال: الاختيار يعاد ترقيمه، الترتيب يحتفظ بإجابته كما هي
+function normalizeQuestion(type, choices, answer) {
+  if (type === 'truefalse') return { choices: [], answer };
+  if (type === 'choice') return compactChoices(choices, answer);
+  return { choices: (choices || []).map(c => (c || '').trim()).filter(Boolean), answer };
+}
+
 const REVIEW_LABELS = { draft: '○ مسودة', submitted: '⏳ بانتظار المراجعة', approved: '✓ معتمد', rejected: '✕ مرفوض' };
 
 const TABS = [
@@ -570,13 +590,15 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
   const saveDraft = async () => {
     const problem = validateDraft();
     if (problem) { setError(problem); return; }
+    if (draft.quiz_type === 'choice' && compactChoices(draft.choices, draft.answer).answer === null) {
+      setError('الإجابة الصحيحة المحددة خيار فارغ — اختر خياراً مكتوباً.'); return;
+    }
     setSaving(true); setError('');
     const payload = {
       lesson_id: lessonId,
       quiz_type: draft.quiz_type,
       question: draft.question.trim(),
-      choices: draft.quiz_type === 'truefalse' ? [] : draft.choices.map(c => c.trim()).filter(Boolean),
-      answer: draft.answer,
+      ...normalizeQuestion(draft.quiz_type, draft.choices, draft.answer),
       skill: draft.skill.trim() || null,
       difficulty: draft.difficulty,
       celebration: draft.celebration.trim() || null,
@@ -606,13 +628,20 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
 
   const copyLegacyToBank = async () => {
     if (!form.question?.trim()) return;
+    const legacyType = form.quizType || 'choice';
+    const legacy = normalizeQuestion(legacyType, form.choices, form.answer);
+    if (legacyType === 'choice' && (legacy.choices.length < 2 || legacy.answer === null)) {
+      setError('السؤال القديم يحتاج خيارين مكتوبين على الأقل وإجابة صحيحة محددة قبل نسخه.'); return;
+    }
+    if (legacyType === 'truefalse' && typeof form.answer !== 'boolean') {
+      setError('حدد إجابة السؤال القديم (صح أم خطأ) قبل نسخه.'); return;
+    }
     setSaving(true); setError('');
     const { data, error: e } = await supabase.from('lesson_questions').insert({
       lesson_id: lessonId,
-      quiz_type: form.quizType || 'choice',
+      quiz_type: legacyType,
       question: form.question.trim(),
-      choices: (form.quizType || 'choice') === 'truefalse' ? [] : (form.choices || []).map(c => (c || '').trim()).filter(Boolean),
-      answer: form.answer,
+      ...legacy,
       sort_order: items.length,
     }).select().single();
     setSaving(false);

@@ -7,7 +7,7 @@ const ITEM = {
   pricing: { id: 'pricing', icon: '💳', label: 'اشتراكي' },
   parent: { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
   child: { id: 'child', icon: '🎓', label: 'التعلّم', variant: 'child' },
-  aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'المعلم الذكي' },
+  aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'مساعد التدريب' },
   teacher: { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم', variant: 'teacher' },
   admin: { id: 'admin', icon: '⚙️', label: 'الإدارة', variant: 'admin' },
   analytics: { id: 'analytics', icon: '📊', label: 'التحليلات' }

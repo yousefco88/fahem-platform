@@ -45,7 +45,7 @@ function MyLessons() {
     if (!supabase || !user) return;
     setLoading(true);
     const [subs, less] = await Promise.all([
-      supabase.from('teacher_subjects').select('subject_key, curriculum_subjects(key, title, icon, grade)').eq('teacher_id', user.id),
+      supabase.from('teacher_subjects').select('subject_key, curriculum_subjects(key, title, icon, grade, grade_id, grades(title))').eq('teacher_id', user.id),
       supabase.from('curriculum_lessons').select('id, title, subject_key, review_status, review_note, updated_at')
         .eq('created_by', user.id).eq('archived', false).order('updated_at', { ascending: false }),
     ]);
@@ -82,10 +82,19 @@ function MyLessons() {
   async function addLesson(e) {
     e.preventDefault();
     if (!title.trim() || !subject) return;
+    const currentSubject = subjectOf(subject);
+    // Do not reuse stale legacy text when the linked grade is unavailable.
+    const grade = (currentSubject?.grade_id
+      ? currentSubject.grades?.title
+      : currentSubject?.grade)?.trim();
+    if (!grade) {
+      triggerToast('تعذر تحديد صف المادة. اطلب من الإدارة تحديد صف صحيح للمادة قبل إضافة درس.');
+      return;
+    }
     setSaving(true);
     const id = `t-${user.id.slice(0, 8)}-${Date.now().toString(36)}`;
     const { error: err } = await supabase.from('curriculum_lessons').insert([{
-      id, subject_key: subject, grade: subjects.find(s => s.key === subject)?.grade, title: title.trim(), content: {},
+      id, subject_key: subject, grade, title: title.trim(), content: {},
       created_by: user.id, review_status: 'draft', published: false,
     }]);
     setSaving(false);

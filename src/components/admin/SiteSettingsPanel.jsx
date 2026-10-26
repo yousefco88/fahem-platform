@@ -39,7 +39,20 @@ function useSectionSaver(saveSection) {
   return [state, save];
 }
 
+// لا تُبنى المسودة قبل اكتمال تحميل الإعدادات — وإلا يكتب «حفظ» الافتراضيات فوق بيانات الإنتاج
 export default function SiteSettingsPanel() {
+  const { loading, loaded, loadError, reload } = useSiteSettings();
+  if (loading) return <div role="status" style={{ padding: 24, color: 'var(--muted)' }}>جارٍ تحميل الإعدادات…</div>;
+  if (loadError || !loaded) return (
+    <div role="alert" style={{ padding: 24, color: 'var(--red-text)' }}>
+      <p>{loadError || 'لم يتم تحميل الإعدادات المحفوظة بعد.'}</p>
+      <button type="button" className="btn-outline" onClick={reload}>إعادة المحاولة</button>
+    </div>
+  );
+  return <SiteSettingsEditor />;
+}
+
+function SiteSettingsEditor() {
   const { settings, tableMissing, saveSection } = useSiteSettings();
   // محرر المحتوى يرى ويحفظ أجندة الامتحانات فقط؛ بقية الأقسام للأدمن وحده
   // (الخادم يفرض ذلك فعلياً: RLS تسمح لمحرر المحتوى بمفتاح examCalendar حصراً)

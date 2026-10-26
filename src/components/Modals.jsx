@@ -115,6 +115,30 @@ export default function Modals() {
   };
 
   // Quiz evaluation
+  const [quizChecking, setQuizChecking] = useState(false);
+  const [pickedIdx, setPickedIdx] = useState(null);
+  const handlePickOption = async (opt, i) => {
+    if (quizAnswered !== null || quizChecking) return;
+    setPickedIdx(i);
+    // أسئلة البنك: التصحيح على الخادم (الإجابة غير مرسلة للمتصفح)
+    if (bankQuestions && currentQ?.id && 'value' in opt) {
+      if (!supabase) { triggerToast('تعذر التحقق من الإجابة الآن'); setPickedIdx(null); return; }
+      setQuizChecking(true);
+      const { data, error } = await supabase.rpc('check_lesson_question_answer', {
+        p_question_id: currentQ.id, p_selected: opt.value,
+      });
+      setQuizChecking(false);
+      // خطأ الشبكة ليس إجابة خاطئة: نطلب المحاولة مجدداً بلا تسجيل
+      if (error || typeof data !== 'boolean') {
+        triggerToast('تعذر التحقق من الإجابة، حاول مرة أخرى');
+        setPickedIdx(null);
+        return;
+      }
+      handleEvalQuiz(data);
+      return;
+    }
+    handleEvalQuiz(!!opt.correct);
+  };
   const handleEvalQuiz = (isCorrect) => {
     if (quizAnswered !== null) return;
     if (isCorrect) {
@@ -413,8 +437,9 @@ export default function Modals() {
                       {currentQ.options?.map((opt, i) => (
                         <div
                           key={`${qIndex}-${i}`}
-                          className={`quiz-option-card ${quizAnswered === 'correct' && opt.correct ? 'correct' : ''} ${quizAnswered === 'wrong' && !opt.correct ? 'wrong' : ''}`}
-                          onClick={() => handleEvalQuiz(opt.correct)}
+                          className={`quiz-option-card ${quizAnswered === 'correct' && pickedIdx === i ? 'correct' : ''} ${quizAnswered === 'wrong' && pickedIdx === i ? 'wrong' : ''}`}
+                          style={quizChecking ? { opacity: 0.6, pointerEvents: 'none' } : undefined}
+                          onClick={() => handlePickOption(opt, i)}
                         >
                           <span>{opt.icon}</span> {opt.text}
                         </div>

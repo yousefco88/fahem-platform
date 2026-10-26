@@ -35,7 +35,7 @@ export default function LessonsPanel() {
   async function fetchSubjects() {
     const { data } = await supabase
       .from('curriculum_subjects')
-      .select('key, title, icon, grade')
+      .select('key, title, icon, grade, grade_id, grades(title)')
       .order('sort_order');
     setSubjects(data || []);
   }
@@ -76,6 +76,15 @@ export default function LessonsPanel() {
       return;
     }
 
+    // A linked grade is authoritative; only unlinked legacy subjects use grade.
+    const grade = (currentSubject?.grade_id
+      ? currentSubject.grades?.title
+      : currentSubject?.grade)?.trim();
+    if (!grade) {
+      alert('تعذر تحديد صف المادة. حدّد صفاً صحيحاً للمادة قبل إضافة درس.');
+      return;
+    }
+
     setSaving(true);
     
     if (editingId === '__new__') {
@@ -84,7 +93,7 @@ export default function LessonsPanel() {
         .insert([{
           id: form.id.trim(),
           subject_key: selectedSubject,
-          grade: currentSubject?.grade,
+          grade,
           title: form.title.trim(),
           sort_order: form.sort_order,
           published: false,  // يبدأ كمسودة
@@ -107,8 +116,8 @@ export default function LessonsPanel() {
       .from('curriculum_lessons')
       .update({ published: !lesson.published })
       .eq('id', lesson.id);
-    
-    if (!error) {
+    if (error) { alert('تعذر تغيير حالة النشر: ' + error.message); return; }
+    {
       setLessons(lessons.map(l => 
         l.id === lesson.id ? { ...l, published: !l.published } : l
       ));

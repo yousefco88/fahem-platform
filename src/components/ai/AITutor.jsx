@@ -8,7 +8,7 @@ import React, { useState, useRef, useEffect } from 'react';
 // 🤖 ردود محلية ذكية
 const LOCAL_RESPONSES = {
   greetings: [
-    'أهلاً! أنا فاهم، مساعدك الذكي 🤖 كيف أقدر أساعدك اليوم؟',
+    'أهلاً! أنا فاهم، مساعد التدريب 🤖 كيف أقدر أساعدك اليوم؟',
     'مرحباً صديقي! جاهز نتعلم سوا؟ 📚',
     'هلا وغلا! عندك سؤال؟ أنا هنا عشان أساعدك 🌟'
   ],
@@ -89,7 +89,7 @@ function randomFrom(arr) {
 
 export default function AITutor({ childName = 'صديقي', subject = null }) {
   const [messages, setMessages] = useState([
-    { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعدك الذكي. اسألني أي سؤال وهساعدك! 🌟` }
+    { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعد التدريب (ردود تشجيعية جاهزة). اسألني وسأوجّهك! 🌟` }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);

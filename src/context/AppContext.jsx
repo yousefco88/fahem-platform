@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { resolveLocalOwner, LOCAL_OWNER_KEY } from '../lib/localDataOwner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
 import { launchConfetti } from '../utils/confetti';
@@ -194,7 +195,8 @@ export function AppProvider({ children }) {
         if (lessonIds.length) {
           const { data: bankQs, error: bankError } = await supabase
             .from('lesson_questions')
-            .select('*')
+            // أعمدة آمنة فقط: الإجابة لا تُرسل للمتصفح، والتصحيح عبر check_lesson_question_answer
+            .select('id, lesson_id, quiz_type, question, choices, skill, difficulty, celebration, sort_order, is_published')
             .in('lesson_id', lessonIds)
             .eq('is_published', true)
             .order('sort_order');
@@ -249,12 +251,13 @@ export function AppProvider({ children }) {
                     question: q.question,
                     skill: q.skill || null,
                     celebration: q.celebration || '',
+                    // value: ما يُرسل للخادم للتصحيح (لا نعرف الإجابة في المتصفح)
                     options: q.quiz_type === 'truefalse'
                       ? [
-                          { text: '✓ صح', correct: q.answer === true, icon: '' },
-                          { text: '✕ خطأ', correct: q.answer === false, icon: '' },
+                          { text: '✓ صح', value: true, icon: '' },
+                          { text: '✕ خطأ', value: false, icon: '' },
                         ]
-                      : (q.choices || []).map((text, i) => ({ text, correct: i === q.answer, icon: '' })),
+                      : (q.choices || []).map((text, i) => ({ text, value: i, icon: '' })),
                   })),
                 parentGuide: content.parentGuide || null,
                 // متسامح مع الاسمين: interactiveBuilder (بيانات البذر) أو wordBuilder (المحرر)
@@ -351,9 +354,21 @@ export function AppProvider({ children }) {
 
   // ربط أطفال الحساب محلياً بسجلات children السحابية (uuid) وتحميل تقدمهم المحفوظ
   const [childCloudIds, setChildCloudIds] = useState({}); // localChildId -> uuid
+  const currentUserIdRef = useRef(user?.id || null);
+  currentUserIdRef.current = user?.id || null;
   useEffect(() => {
     if (!supabase || !user?.id) { setChildCloudIds({}); return; }
     let cancelled = false;
+    // حساب مختلف عن مالك البيانات المحلية: نبدأ نظيفاً بدل رفع أطفال الحساب السابق
+    let localChildren = childrenList;
+    if (resolveLocalOwner(localStorage.getItem(LOCAL_OWNER_KEY), user.id) === 'reset') {
+      localChildren = DEFAULT_CHILDREN;
+      setChildrenList(DEFAULT_CHILDREN);
+      setLearningRecords({});
+      setSelectedChildId('');
+      ['fahem_children', 'fahem_learning_records', 'fahem_active_child_id', 'fahem_child_name'].forEach(k => localStorage.removeItem(k));
+    }
+    localStorage.setItem(LOCAL_OWNER_KEY, user.id);
     (async () => {
       // parent_profiles row لازم لوجود children (fk)
       await supabase.from('parent_profiles').upsert(
@@ -362,14 +377,14 @@ export function AppProvider({ children }) {
       );
       // سحب أبناء الحساب من السحابة: الدخول من جهاز جديد أو إضافة طفل من «حسابي» لا يترك القائمة فارغة
       const { data: existing } = await supabase.from('children').select('id, name, grade, avatar, exam_unlocked').eq('parent_id', user.id);
-      const missing = (existing || []).filter(r => !childrenList.some(c => c.name === r.name))
+      const missing = (existing || []).filter(r => !localChildren.some(c => c.name === r.name))
         .map(r => ({ id: r.id, name: r.name, grade: r.grade, avatar: r.avatar || '⭐', points: 0, badges: 0, baaMastered: false, masteredLessons: [], masteredSkills: 0, examUnlocked: !!r.exam_unlocked }));
       if (cancelled) return;
       if (missing.length) {
         setChildrenList(prev => [...prev, ...missing.filter(m => !prev.some(c => c.name === m.name))]);
-        setSelectedChildId(cur => (childrenList.some(c => c.id === cur) ? cur : missing[0].id));
+        setSelectedChildId(cur => (localChildren.some(c => c.id === cur) ? cur : missing[0].id));
       }
-      const allChildren = [...childrenList, ...missing];
+      const allChildren = [...localChildren, ...missing];
       const { data: cloudChildren, error } = await supabase
         .from('children')
         .upsert(
@@ -457,7 +472,9 @@ export function AppProvider({ children }) {
   const persistLearningRecord = (childId, lessonId, status = 'started', score = null) => {
     const cloudChildId = childCloudIds[childId];
     if (!supabase || !cloudChildId || !lessonId) return; // بدون تسجيل دخول: التقدم محلي فقط
-    supabase.from('learning_records').upsert({ child_id: cloudChildId, lesson_id: lessonId, status, score, updated_at: new Date().toISOString() }, { onConflict: 'child_id,lesson_id' }).then(({ error }) => {
+    // «started» لا يكتب فوق «completed»: يُدرج فقط إن لم يوجد سجل (ignoreDuplicates)
+    const row = { child_id: cloudChildId, lesson_id: lessonId, status, score, updated_at: new Date().toISOString() };
+    supabase.from('learning_records').upsert(row, { onConflict: 'child_id,lesson_id', ignoreDuplicates: status !== 'completed' }).then(({ error }) => {
       if (error) console.warn('تعذر مزامنة سجل التعلم:', error.message);
     });
   };
@@ -570,6 +587,19 @@ export function AppProvider({ children }) {
       masteredSkills: 0
     };
     setChildrenList(prev => [...prev, newChild]);
+    // ربط الطفل الجديد بالسحابة فوراً (لا ينتظر إعادة تحميل الصفحة)
+    if (supabase && user?.id) {
+      const ownerId = user.id;
+      supabase.from('children')
+        .upsert({ parent_id: ownerId, name: newChild.name, grade: newChild.grade, avatar: newChild.avatar }, { onConflict: 'parent_id,name' })
+        .select('id').single()
+        .then(({ data, error }) => {
+          // تبدّل الحساب قبل وصول الرد: لا نكتب ربط الحساب السابق في الحساب الجديد
+          if (currentUserIdRef.current !== ownerId) return;
+          if (error || !data) { console.warn('تعذر ربط الطفل بالسحابة:', error?.message); return; }
+          setChildCloudIds(prev => ({ ...prev, [newChild.id]: data.id }));
+        });
+    }
     setSelectedChildId(newChild.id);
     setChildName(newChild.name);
     setGrade(newChild.grade);

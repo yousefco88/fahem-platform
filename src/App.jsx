@@ -84,7 +84,9 @@ function MainAppContent() {
             <Route
               path="/analytics"
               element={
-                <AnalyticsDashboard />
+                <AuthGate roles={['teacher', 'admin']}>
+                  <AnalyticsDashboard />
+                </AuthGate>
               }
             />
             <Route path="/lessons" element={<Navigate to="/child" replace />} />

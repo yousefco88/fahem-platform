@@ -150,7 +150,7 @@ export default function EmbassyExamSimulator() {
                 اختبار تدريبي لأبناء المصريين بالخارج
               </h1>
               <p style={{ fontSize: '15px', color: '#ffe4e6', maxWidth: '650px', lineHeight: 1.6 }}>
-                النموذج الإلكتروني المتطابق مع المنصة الوزارية لتقييمات الصف الأول الابتدائي بالسفارات والقنصليات المصرية. يشمل جميع المواد الأساسية واللغات والهوية وفق نظام التقييم بالألوان Edu 2.0.
+                نموذج تدريبي غير رسمي يحاكي نمط تقييمات الصف الأول الابتدائي بالسفارات والقنصليات المصرية. يشمل جميع المواد الأساسية واللغات والهوية وفق نظام التقييم بالألوان Edu 2.0.
               </p>
             </div>
 
@@ -173,7 +173,7 @@ export default function EmbassyExamSimulator() {
               <div style={{ fontSize: '24px', marginBottom: '10px' }}>⏱️</div>
               <h4 className="u-8">زمن الامتحان: 25 دقيقة</h4>
               <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5 }}>
-                مؤقت تنازلي يحاكي زمن المنصة الوزارية لتعويد الطفل على إنجاز الإجابات بهدوء وتركيز.
+                مؤقت تنازلي تدريبي لتعويد الطفل على إنجاز الإجابات بهدوء وتركيز.
               </p>
             </div>
 
@@ -203,7 +203,7 @@ export default function EmbassyExamSimulator() {
               جاهز لخوض الاختبار التجريبي الآن يا {examChild.name}؟ 🚀
             </h3>
             <p style={{ fontSize: '14px', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto 20px' }}>
-              تذكر: فلسفة «فاهم» تضمن لك الإعادة والتصحيح دون خوف. هدفنا هو الفهم التام والإتقان بنسبة 100%.
+              تذكر: فلسفة «فاهم» تضمن لك الإعادة والتصحيح دون خوف. هدفنا هو الفهم الحقيقي وإتقان المهارة.
             </p>
             <div style={{ display: 'flex', gap: '14px', justifyContent: 'center' }}>
               <button
@@ -341,12 +341,16 @@ export default function EmbassyExamSimulator() {
                     key={oIdx}
                     style={{
                       border: isSelected ? '2.5px solid var(--blue)' : '1.5px solid var(--line)',
-                      background: isSelected ? 'var(--blue-light)' : '#ffffff',
+                      background: isSelected ? 'var(--blue-light)' : 'var(--card-bg)', color: 'var(--navy)',
                       borderRadius: '16px', padding: '16px 20px', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: '16px', transition: 'all 0.2s',
                       boxShadow: isSelected ? '0 4px 12px rgba(37,99,235,0.15)' : 'none'
                     }}
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={0}
                     onClick={() => handleSelectOption(currentQuestionIdx, oIdx)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectOption(currentQuestionIdx, oIdx); } }}
                   >
                     <div style={{
                       width: '24px', height: '24px', borderRadius: '50%',

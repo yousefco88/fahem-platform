@@ -9,7 +9,7 @@ export default function HeroSection() {
   const { hero } = settings;
 
   return (
-    <section style={{
+    <section id="features" style={{
       background: 'radial-gradient(circle at 10% 20%, var(--blue-light) 0%, var(--card-bg) 80%)',
       padding: 'clamp(40px, 8vw, 70px) clamp(16px, 4vw, 24px) clamp(40px, 6vw, 60px)',
       textAlign: 'center', position: 'relative', overflow: 'hidden'
@@ -109,13 +109,13 @@ export default function HeroSection() {
           scrollbarWidth: 'none', msOverflowStyle: 'none'
         }}>
           <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>🇪🇬 المنهج الوزاري الرسمي</strong>
+            <strong>🇪🇬 مبني على المنهج الوزاري</strong>
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>👩‍🏫 مجموعات مصغرة (4 طلاب)</strong>
+            <strong>👩‍🏫 مجموعات مصغرة</strong>
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>📼 أرشفة ذكية لكل حصة</strong>
+            <strong>📼 تسجيلات للحصص المراجَعة</strong>
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
             <strong>🕐 مواعيد تناسب الخليج وأوروبا</strong>

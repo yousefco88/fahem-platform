@@ -4,6 +4,16 @@ import { launchConfetti } from '../../utils/confetti';
 import { supabase } from '../../lib/supabase';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 
+// رمز الدولة (ISO) يُحفظ في country_code بدل نص الخيار
+const COUNTRY_CODES = {
+  '🇸🇦 المملكة العربية السعودية': 'SA',
+  '🇦🇪 دولة الإمارات العربية المتحدة': 'AE',
+  '🇰🇼 دولة الكويت': 'KW',
+  '🇶🇦 دولة قطر': 'QA',
+  '🇬🇧 المملكة المتحدة وأوروبا': 'EU',
+  '🇺🇸 الولايات المتحدة وكندا': 'US',
+};
+
 export default function BookingSection() {
   const { setCurrentScreen, triggerToast, soundManager } = useApp();
   const { settings } = useSiteSettings();
@@ -12,8 +22,8 @@ export default function BookingSection() {
   const [parentName, setParentName] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [childName, setChildName] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState('الصف الأول الابتدائي');
-  const [selectedCountry, setSelectedCountry] = useState('السعودية');
+  const [selectedGrade, setSelectedGrade] = useState('الصف الأول الابتدائي (المنهج العام)');
+  const [selectedCountry, setSelectedCountry] = useState('🇸🇦 المملكة العربية السعودية');
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const handleBookingSubmit = async (e) => {
@@ -32,7 +42,7 @@ export default function BookingSection() {
       whatsapp: whatsappNumber.trim(),
       child_name: childName.trim(),
       grade: selectedGrade,
-      country_code: selectedCountry
+      country_code: COUNTRY_CODES[selectedCountry] || null
     });
     if (error) {
       triggerToast('تعذر حفظ الطلب. حاول مرة أخرى.');
