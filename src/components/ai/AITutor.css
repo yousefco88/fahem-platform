@@ -49,3 +49,5 @@
 @media (max-width: 600px) {
   .ait-wrap { margin: 0; border-radius: 0; border-inline: none; height: calc(100dvh - 150px); }
 }
+
+.ait-lesson { margin: 0 0 8px; align-self: stretch; justify-content: center; }

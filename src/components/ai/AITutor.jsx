@@ -4,6 +4,10 @@
  * يستخدم ردود محلية مع إمكانية ربط API لاحقاً
  */
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useApp } from '../../context/AppContext';
+import { getContinueLesson } from '../../utils/todayPlan';
+import { childPaths } from '../child/childSubjects';
 import './AITutor.css';
 
 // 🤖 ردود محلية ذكية
@@ -86,7 +90,11 @@ function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export default function AITutor({ childName = 'صديقي', subject = null }) {
+export default function AITutor({ childName: childNameProp, subject = null }) {
+  const navigate = useNavigate();
+  const { activeChild, curriculumData, learningRecords } = useApp();
+  const childName = childNameProp || activeChild?.name || 'صديقي';
+  const continueLesson = getContinueLesson(curriculumData, learningRecords, activeChild?.masteredLessons || []);
   const [messages, setMessages] = useState([
     { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعد التدريب (ردود تشجيعية جاهزة). اسألني عن الرياضيات أو العربي أو العلوم 🌟` }
   ]);
@@ -149,6 +157,17 @@ export default function AITutor({ childName = 'صديقي', subject = null }) {
           <p className="ait-sub">ردود تشجيعية جاهزة وليس ذكاءً اصطناعياً — للإجابات الدقيقة اسأل معلمك</p>
         </div>
       </div>
+
+      {continueLesson && (
+        <button
+          type="button"
+          className="ait-chip ait-lesson"
+          onClick={() => navigate(childPaths.lesson(continueLesson.lesson.id, 'video'), { state: { fromApp: true } })}
+        >
+          <span aria-hidden="true">▶️</span>
+          <span>كمّل درسك: {continueLesson.lesson.title}</span>
+        </button>
+      )}
 
       <div className="ait-messages" aria-live="polite">
         {messages.map((msg, idx) => (
