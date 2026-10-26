@@ -3,7 +3,7 @@
 // التحقق: JWT -> ai_tutor_reserve (ملكية + موافقة + حد يومي + سقف شهري) -> NVIDIA -> ai_tutor_record.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const DEFAULT_MODEL = 'meta/llama-3.1-70b-instruct'; // غير مُتحقَّق من توفره/جودته بالعربية؛ جرّب قبل الإطلاق
+const DEFAULT_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b'; // مُختبر فعليًا بتاريخ التطوير؛ llama-3.1-70b أُوقف (410)
 const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const MAX_INPUT_CHARS = 500;
 const MAX_OUTPUT_TOKENS = 400;
@@ -29,6 +29,7 @@ const SYSTEM_PROMPT = `أنت «فاهم»، مساعد تدريب لطفل في
 - لا تطلب ولا تقبل أي بيانات شخصية (اسم كامل، عنوان، هاتف، صور).
 - لا تعطِ الحل النهائي مباشرة؛ ساعد الطفل بخطوات وأسئلة موجِّهة.
 - إن لم تكن متأكدًا أو كان السؤال خارج المنهج أو غير مناسب لطفل، قل بلطف: اسأل معلمك.
+- اكتب بالعربية فقط، بدون أي حروف صينية أو يابانية أو كورية.
 - لا تتحدث عن مواضيع طبية أو دينية أو سياسية أو مخيفة؛ أعد الطفل للدرس.`;
 
 function json(body: unknown, status = 200) {
@@ -69,6 +70,7 @@ Deno.serve(async (req) => {
       model: Deno.env.get('NVIDIA_MODEL') ?? DEFAULT_MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
       temperature: 0.4,
+      chat_template_kwargs: { enable_thinking: false },
       messages: [
         { role: 'system', content: SYSTEM_PROMPT + lessonCtx },
         { role: 'user', content: message },
@@ -78,7 +80,9 @@ Deno.serve(async (req) => {
   if (!resp.ok) return json({ error: 'upstream_failed', message: 'تعذر الرد الآن. جرّب بعد قليل.' }, 502);
 
   const out = await resp.json();
-  const reply: string = (out.choices?.[0]?.message?.content ?? '').toString().trim();
+  let reply: string = (out.choices?.[0]?.message?.content ?? '').toString().trim();
+  // النموذج قد يسرّب أحرفًا غير عربية (لوحظ صيني في الاختبار): نحذفها، وإن لم يبقَ نص نرفض
+  reply = reply.replace(/[　-鿿가-힯＀-￯]+/g, '').replace(/ {2,}/g, ' ').trim();
   if (!reply) return json({ error: 'empty_reply', message: 'لم أستطع الرد. اسأل معلمك 👨‍🏫' }, 502);
   const cost = COST_MICRO;
 
