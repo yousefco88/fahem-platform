@@ -10,6 +10,9 @@ export default function LandingHeader() {
   const { setCurrentScreen } = useApp();
   const { settings } = useSiteSettings();
   const { banner, header } = settings;
+  // الروابط تتبع أقسام الصفحة الظاهرة فعلاً (الإدارة قد تخفي أقساماً) — لا روابط ميتة
+  const sections = settings.landingLayout?.sections;
+  const shown = (id) => !Array.isArray(sections) || !sections.length || sections.some(x => x.id === id && x.visible !== false);
 
   return (
     <>
@@ -55,10 +58,10 @@ export default function LandingHeader() {
         {/* Quick Nav Links - Hidden on Mobile */}
         <nav className="desktop-nav" style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
           <a href="#features" className="u-28">المميزات</a>
-          <a href="#subjects" className="u-28">المواد الـ 12</a>
-          <a href="#timezone" className="u-28">حاسبة التوقيت</a>
-          <a href="#comparison" className="u-28">مقارنة الدروس</a>
-          <a href="#faq" className="u-28">الأسئلة الشائعة</a>
+          {shown(\'subjects\') && <a href="#subjects" className="u-28">المواد الـ 12</a>}
+          {shown(\'timezone\') && <a href="#timezone" className="u-28">حاسبة التوقيت</a>}
+          {shown(\'comparison\') && <a href="#comparison" className="u-28">مقارنة الدروس</a>}
+          {shown(\'faq\') && <a href="#faq" className="u-28">الأسئلة الشائعة</a>}
         </nav>
 
         {/* CTA Buttons */}
