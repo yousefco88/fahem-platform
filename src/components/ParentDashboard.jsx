@@ -3,6 +3,7 @@ import LiveJoin from './LiveJoin';
 import { slotsForToday, timeInTz } from '../utils/liveWindow';
 import { useApp } from '../context/AppContext';
 import ExamAttemptsCard from './parent/ExamAttemptsCard';
+import AiTutorConsentCard from './parent/AiTutorConsentCard';
 import { getChildStats } from '../utils/childProgress';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { isLessonDone } from '../utils/todayPlan';
@@ -185,6 +186,8 @@ export default function ParentDashboard() {
               <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{activeChild.grade}</span>
             </div>
           </div>
+
+          <AiTutorConsentCard />
 
           {/* 🔥 Child Streak Mini Card */}
           {!streak.loading && (

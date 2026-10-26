@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getContinueLesson } from '../../utils/todayPlan';
 import { childPaths } from '../child/childSubjects';
+import { supabase } from '../../lib/supabase';
+import useAiTutorConsent from '../../hooks/useAiTutorConsent';
 import './AITutor.css';
 
 // 🤖 ردود محلية ذكية
@@ -98,9 +100,30 @@ function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+async function askRealAi(message, childId, lesson) {
+  try {
+    const { data, error } = await supabase.functions.invoke('ai-tutor-chat', {
+      body: {
+        childId,
+        message,
+        lesson: lesson ? { title: lesson.title, objective: lesson.objective } : undefined
+      }
+    });
+    if (!error && data?.reply) return data.reply;
+    let msg = data?.message;
+    if (!msg && error?.context?.json) {
+      try { msg = (await error.context.json())?.message; } catch { /* ignore */ }
+    }
+    return msg || 'تعذر الرد الآن. اسأل معلمك 👨‍🏫';
+  } catch {
+    return 'تعذر الاتصال الآن. جرّب بعد قليل أو اسأل معلمك 👨‍🏫';
+  }
+}
+
 export default function AITutor({ childName: childNameProp, subject = null }) {
   const navigate = useNavigate();
-  const { activeChild, curriculumData, learningRecords } = useApp();
+  const { activeChild, activeChildCloudId, curriculumData, learningRecords } = useApp();
+  const { enabled: aiOn } = useAiTutorConsent(activeChildCloudId);
   const childName = childNameProp || activeChild?.name || 'صديقي';
   const continueLesson = getContinueLesson(curriculumData, learningRecords, activeChild?.masteredLessons || []);
   const [messages, setMessages] = useState([
@@ -130,12 +153,15 @@ export default function AITutor({ childName: childNameProp, subject = null }) {
     // Add user message
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     
-    // Simulate AI typing
     setIsTyping(true);
-    await new Promise(r => setTimeout(r, 800 + Math.random() * 700));
-    
-    // Get AI response
-    const aiResponse = analyzeAndRespond(userMessage, continueLesson?.lesson);
+    let aiResponse;
+    if (aiOn && supabase && activeChildCloudId) {
+      // ذكاء اصطناعي حقيقي عبر Edge Function — الخادم يتحقق من الموافقة والحد اليومي
+      aiResponse = await askRealAi(userMessage, activeChildCloudId, continueLesson?.lesson);
+    } else {
+      await new Promise(r => setTimeout(r, 800 + Math.random() * 700));
+      aiResponse = analyzeAndRespond(userMessage, continueLesson?.lesson);
+    }
     
     setIsTyping(false);
     setMessages(prev => [...prev, { role: 'ai', content: aiResponse }]);
@@ -162,7 +188,11 @@ export default function AITutor({ childName: childNameProp, subject = null }) {
         <div className="ait-avatar">🤖</div>
         <div>
           <h2 className="ait-title">فاهم - مساعد التدريب</h2>
-          <p className="ait-sub">ردود تشجيعية جاهزة وليس ذكاءً اصطناعياً — للإجابات الدقيقة اسأل معلمك</p>
+          <p className="ait-sub">
+            {aiOn
+              ? 'ذكاء اصطناعي (نموذج خارجي) فعّله ولي الأمر — قد يخطئ، وللتأكد اسأل معلمك'
+              : 'ردود تشجيعية جاهزة وليس ذكاءً اصطناعياً — للإجابات الدقيقة اسأل معلمك'}
+          </p>
         </div>
       </div>
 
