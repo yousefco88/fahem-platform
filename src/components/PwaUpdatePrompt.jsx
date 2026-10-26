@@ -23,8 +23,9 @@ export default function PwaUpdatePrompt() {
       role="alert" dir="rtl"
       style={{
         position: 'fixed', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 72px)',
-        insetInlineStart: '50%', transform: 'translateX(50%)',
+        left: '50%', transform: 'translateX(-50%)',
         zIndex: 1000, display: 'flex', alignItems: 'center', gap: 10,
+        whiteSpace: 'nowrap',
         background: 'var(--card-bg)', color: 'inherit',
         border: '1px solid var(--line)', borderRadius: 12,
         padding: '10px 14px', boxShadow: '0 6px 24px rgba(0,0,0,0.25)',
