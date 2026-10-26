@@ -12,6 +12,7 @@ import { ThemeToggle } from './context/ThemeContext';
 import RequireChild from './components/RequireChild';
 import ExamGate from './components/ExamGate';
 import Modals from './components/Modals';
+import PwaUpdatePrompt from './components/PwaUpdatePrompt';
 
 // تقسيم الكود: كل شاشة في حزمة مستقلة تُحمَّل عند الطلب
 const PublicLandingPage = lazy(() => import('./components/PublicLandingPage'));
@@ -62,6 +63,7 @@ function MainAppContent() {
   return (
     <div className="app-container">
       <DocumentMeta />
+      <PwaUpdatePrompt />
       {/* القائمة الجانبية الديناميكية (ويب) — الجوال يستخدم BottomNav */}
       <SideNav />
 
