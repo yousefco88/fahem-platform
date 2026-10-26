@@ -29,7 +29,7 @@ export default function WeeklySummaryCard() {
       const sinceIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const [examRes, bankRes] = await Promise.all([
         supabase.from('exam_attempts')
-          .select('child_name, percentage, created_at')
+          .select('child_key, child_name, percentage, created_at')
           .gte('created_at', sinceIso),
         supabase.from('lesson_question_attempts')
           .select('child_name, is_correct, skill, created_at')
@@ -48,7 +48,8 @@ export default function WeeklySummaryCard() {
 
   const summary = useMemo(() => {
     if (!activeChild) return null;
-    const byName = r => !r.child_name || r.child_name === activeChild.name;
+    // المعرّف أولاً (child_key)؛ الاسم احتياطي لسجلات قديمة أو بنك الأسئلة الذي لا يحمل معرّفاً
+    const byName = r => (r.child_key ? r.child_key === activeChild.id : (!r.child_name || r.child_name === activeChild.name));
     return buildWeeklySummary({
       childName: activeChild.name,
       grade: activeChild.grade || grade || '',

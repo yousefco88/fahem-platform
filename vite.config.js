@@ -30,6 +30,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'],
+        // مولّد تقرير PDF (~1.25MB) يُحمَّل عند الطلب فقط، لا ضمن التخزين المسبق
+        globIgnores: ['**/WeeklyReportPDF-*.js'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [

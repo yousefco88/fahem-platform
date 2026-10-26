@@ -125,6 +125,14 @@ export default function LessonEditor() {
   }
 
   async function saveLesson() {
+    // تحقق السؤال القديم قبل الحفظ: خيارات فارغة تُحذف وفهرس الإجابة يعاد ترقيمه
+    const legacyQ = form.question?.trim()
+      ? normalizeQuestion(form.quizType, form.choices, form.answer)
+      : { choices: form.choices, answer: form.answer };
+    if (form.question?.trim() && form.quizType === 'choice' && (legacyQ.choices.length < 2 || legacyQ.answer === null || legacyQ.answer === undefined)) {
+      alert('السؤال يحتاج خيارين على الأقل وإجابة صحيحة من بين الخيارات غير الفارغة.');
+      return false;
+    }
     setSaving(true);
     
     // Build content JSON
@@ -135,8 +143,8 @@ export default function LessonEditor() {
       pdfTitle: form.pdfTitle,
       quizType: form.quizType,
       question: form.question,
-      choices: form.choices,
-      answer: form.answer,
+      choices: legacyQ.choices,
+      answer: legacyQ.answer,
       arrangeItems: form.arrangeItems,
       celebration: form.celebration,
       wordBuilder: form.wordBuilder,
@@ -161,12 +169,15 @@ export default function LessonEditor() {
     
     if (error) {
       alert('خطأ في الحفظ: ' + error.message);
+      setSaving(false);
+      return false;
     } else {
       setHasChanges(false);
       alert('✓ تم الحفظ بنجاح');
     }
     
     setSaving(false);
+    return true;
   }
 
   // المعلم يعدّل مسوداته/المرفوضة فقط؛ بعد الإرسال أو الاعتماد يُقفل الدرس
@@ -174,7 +185,7 @@ export default function LessonEditor() {
 
   async function submitForReview() {
     if (!confirm('إرسال الدرس للمراجعة؟ لن تستطيع تعديله حتى تردّ الإدارة.')) return;
-    if (hasChanges) await saveLesson();
+    if (hasChanges && !(await saveLesson())) return; // لا إرسال لنسخة لم تُحفظ
     const { error } = await supabase.from('curriculum_lessons').update({ review_status: 'submitted' }).eq('id', id);
     if (error) { alert('تعذر الإرسال: ' + error.message); return; }
     fetchLesson();

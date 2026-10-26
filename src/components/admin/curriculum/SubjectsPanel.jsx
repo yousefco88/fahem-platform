@@ -152,7 +152,14 @@ export default function SubjectsPanel() {
   }
 
   async function deleteSubject(subject) {
-    if (!confirm(`حذف "${subject.title}"؟ سيحذف جميع الدروس المرتبطة.`)) return;
+    // لا يوجد FK بين الدروس والمادة: الحذف كان يترك دروساً يتيمة. نمنعه ما دامت هناك دروس.
+    const { count, error: countError } = await supabase
+      .from('curriculum_lessons')
+      .select('id', { count: 'exact', head: true })
+      .eq('subject_key', subject.key);
+    if (countError) { alert('تعذر التحقق من الدروس المرتبطة: ' + countError.message); return; }
+    if (count > 0) { alert(`لا يمكن حذف "${subject.title}": مرتبط بها ${count} درس. انقل الدروس أو أرشفها أولاً.`); return; }
+    if (!confirm(`حذف "${subject.title}"؟ لا توجد دروس مرتبطة بها.`)) return;
     
     const { error } = await supabase
       .from('curriculum_subjects')

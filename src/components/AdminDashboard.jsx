@@ -152,6 +152,7 @@ export default function AdminDashboard() {
   useEffect(() => { loadUsers(); loadInvites(); }, []);
   const changeRole = async (u, role) => {
     if (role === u.role) return;
+    if (!window.confirm(`تغيير دور ${u.full_name || u.email} من «${u.role || 'بدون'}» إلى «${role}»؟`)) { setUsers(list => [...list]); return; }
     setSavingUser(u.id);
     const { error } = await supabase.rpc('admin_set_user_role', { p_user: u.id, p_role: role });
     setSavingUser(null);

@@ -35,7 +35,7 @@ export default function EmbassyExamSimulator() {
         setTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (timeLeft === 0 && isTimerRunning) {
-      handleSubmitExam();
+      handleSubmitExam({ auto: true });
     }
     return () => clearInterval(interval);
   }, [isTimerRunning, timeLeft]);
@@ -65,12 +65,24 @@ export default function EmbassyExamSimulator() {
     soundManager.playSuccess();
   };
 
-  const handleSubmitExam = () => {
+  const handleSubmitExam = ({ auto = false } = {}) => {
+    const answeredCount = Object.keys(selectedAnswers).length;
+    // التسليم اليدوي يحتاج تأكيداً (انتهاء الوقت يسلّم تلقائياً)
+    if (!auto) {
+      const left = examQuestions.length - answeredCount;
+      const msg = left > 0
+        ? `بقي ${left} سؤال بدون إجابة. هل تريد التسليم وإنهاء المحاولة؟`
+        : 'هل تريد التسليم وإنهاء المحاولة؟';
+      if (!window.confirm(msg)) return;
+    }
     setIsTimerRunning(false);
     setExamState('result');
-    launchConfetti();
-    soundManager.playSuccess();
-    soundManager.speak(`أحسنت يا ${examChild.name}! أتممت الاختبار التدريبي.`);
+    // لا احتفال بمحاولة بلا إجابات
+    if (answeredCount > 0) {
+      launchConfetti();
+      soundManager.playSuccess();
+      soundManager.speak(`أحسنت يا ${examChild.name}! أتممت الاختبار التدريبي.`);
+    }
     triggerToast(`انتهى الاختبار التدريبي: أجبت عن ${Object.keys(selectedAnswers).length} من ${examQuestions.length} أسئلة. التقرير غير رسمي.`);
 
     // حفظ المحاولة سحابياً (إن كان ولي الأمر مسجلاً دخوله)
@@ -99,8 +111,9 @@ export default function EmbassyExamSimulator() {
       band: pct >= 85 ? 'متميز' : pct >= 65 ? 'جيد' : pct >= 50 ? 'مراجعة' : 'دعم',
       answers: { choices: selectedAnswers, skills: skillBreakdown }
     }).then(res => {
-      if (res.saved) triggerToast('💾 حُفظت نتيجة المحاولة في حساب ولي الأمر');
-    });
+      if (res?.saved) triggerToast('💾 حُفظت نتيجة المحاولة في حساب ولي الأمر');
+      else if (res?.reason !== 'no-session') triggerToast('⚠️ تعذر حفظ نتيجة المحاولة في الحساب — النتيجة معروضة هنا فقط.');
+    }).catch(() => triggerToast('⚠️ تعذر حفظ نتيجة المحاولة في الحساب — النتيجة معروضة هنا فقط.'));
   };
 
   // Calculate scores
@@ -262,7 +275,7 @@ export default function EmbassyExamSimulator() {
                 background: '#be123c', color: 'white', border: 'none', padding: '9px 18px',
                 borderRadius: 'var(--radius-full)', fontWeight: 800, fontSize: '12.5px', cursor: 'pointer'
               }}
-              onClick={handleSubmitExam}
+              onClick={() => handleSubmitExam()}
             >
               تسليم الامتحان وإنهاء المحاولة 📤
             </button>
@@ -354,7 +367,7 @@ export default function EmbassyExamSimulator() {
                   >
                     <div style={{
                       width: '24px', height: '24px', borderRadius: '50%',
-                      border: isSelected ? '7px solid var(--blue)' : '2px solid #94a3b8',
+                      border: isSelected ? '7px solid var(--blue)' : '2px solid var(--muted, #94a3b8)',
                       background: 'var(--card-bg)'
                     }}></div>
                     <span style={{ fontSize: '20px' }}>{opt.icon}</span>
@@ -391,8 +404,8 @@ export default function EmbassyExamSimulator() {
               ) : (
                 <button
                   className="btn-accent"
-                  style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
-                  onClick={handleSubmitExam}
+                  style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)', color: '#ffffff' }}
+                  onClick={() => handleSubmitExam()}
                 >
                   مراجعة وتسليم الامتحان 🏁
                 </button>
