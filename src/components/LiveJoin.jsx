@@ -19,10 +19,13 @@ export default function LiveJoin({ slot }) {
 
   if (live.state === 'open') {
     return slot.meetingUrl ? (
-      <a
-        href={slot.meetingUrl} target="_blank" rel="noopener noreferrer"
-        style={{ ...box, display: 'block', textAlign: 'center', background: '#dc2626', color: 'white', textDecoration: 'none', fontWeight: 900 }}
-      >🔴 انضم للحصة الآن</a>
+      <div>
+        <a
+          href={slot.meetingUrl} target="_blank" rel="noopener noreferrer"
+          style={{ ...box, display: 'block', textAlign: 'center', background: '#dc2626', color: 'white', textDecoration: 'none', fontWeight: 900 }}
+        >🔴 انضم للحصة الآن</a>
+        {slot.teacherName && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 4, textAlign: 'center', color: 'var(--muted)' }}>مع المعلم {slot.teacherName}</div>}
+      </div>
     ) : (
       <div style={{ ...box, background: 'var(--yellow-light)', color: 'var(--amber-text)' }}>
         🔴 الحصة قريبة — لم يضف المعلم رابط الاجتماع بعد. حدّث الصفحة بعد قليل.
