@@ -8,6 +8,7 @@ import { CHILD_SUBJECTS, CHILD_CATEGORIES, childPaths } from './childSubjects';
 import LiveJoin from '../LiveJoin';
 import StreakBadge from './StreakBadge';
 import useStreak from '../../hooks/useStreak';
+import './ChildHome.css';
 
 // /child — الرئيسية: التحية + تابِع من حيث توقفت + يومك النهارده + المواد بتقدمها الحقيقي
 export default function ChildHome() {
@@ -40,50 +41,33 @@ export default function ChildHome() {
   return (
     <>
       {/* Hero */}
-      <section style={{
-        background: 'linear-gradient(135deg, #4338ca, #3b82f6 60%, #06b6d4)',
-        color: 'white', borderRadius: '32px', padding: '32px 40px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px',
-        boxShadow: '0 20px 35px rgba(59, 130, 246, 0.25)', marginBottom: '28px'
-      }}>
+      <section className="ch-hero">
         <div>
-          <h1 style={{ fontSize: '32px', marginBottom: '8px', fontWeight: 900 }}>
-            جاهز نفهم ونلعب سوا يا {activeChild.name}؟ 🌟
-          </h1>
-          <p style={{ fontSize: '16px', color: '#e0e7ff', maxWidth: '580px', marginBottom: '20px' }}>
+          <h1 className="ch-hero-title">جاهز نفهم ونلعب سوا يا {activeChild.name}؟ 🌟</h1>
+          <p className="ch-hero-sub">
             كل مواد المنهج المصري (عربي، ماث، إنجليزي، ديسكفر، وأخلاق) موجودة في جزيرتك — اختر مادة وابدأ رحلتك.
           </p>
-          <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="ch-hero-actions">
             {(() => {
               // المحاكي يُفتح بإكمال أي مادة كاملة أو بفتح يدوي من المعلم/الأدمن
               const unlock = getExamUnlockProgress(curriculumData, learningRecords?.[activeChild.id] || {}, activeChild.masteredLessons || []);
               const examOpen = activeChild.examUnlocked || unlock.unlocked;
               return examOpen ? (
-                <button
-                  style={{
-                    background: 'linear-gradient(135deg, #e11d48, #be123c)', color: 'white', border: 'none',
-                    borderRadius: 'var(--radius-full)', fontSize: '15px', padding: '15px 24px', fontWeight: 800,
-                    boxShadow: '0 8px 20px rgba(190, 18, 60, 0.35)', cursor: 'pointer'
-                  }}
-                  onClick={() => setCurrentScreen('exam')}
-                >🇪🇬 محاكي امتحانات السفارة</button>
+                <button className="ch-exam-btn" onClick={() => setCurrentScreen('exam')}>
+                  🇪🇬 محاكي امتحانات السفارة
+                </button>
               ) : (
                 <div
+                  className="ch-exam-locked"
                   title={unlock.subjectTitle ? `الأقرب: ${unlock.subjectTitle} (${unlock.done}/${unlock.total} دروس)` : ''}
-                  style={{
-                    background: 'rgba(255,255,255,0.14)', color: 'white', border: '1px dashed rgba(255,255,255,0.5)',
-                    borderRadius: 'var(--radius-full)', fontSize: '13.5px', padding: '13px 22px', fontWeight: 800
-                  }}
                 >🔒 محاكي السفارة — يُفتح بإكمال مادة كاملة{unlock.subjectTitle ? ` (${unlock.subjectTitle}: ${unlock.done}/${unlock.total})` : ''}</div>
               );
             })()}
           </div>
         </div>
-        <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={handleMascotSpeak} title="انقر للتحدث مع فاهم!">
-          <div style={{ background: 'var(--card-bg)', color: 'var(--navy)', padding: '6px 12px', borderRadius: '16px', fontSize: '11px', fontWeight: 800, marginBottom: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
-            اضغط لسماعي! 💬
-          </div>
-          <div style={{ fontSize: '90px' }}>🦊</div>
+        <div className="ch-mascot" onClick={handleMascotSpeak} title="انقر للتحدث مع فاهم!">
+          <div className="ch-mascot-bubble">اضغط لسماعي! 💬</div>
+          <div className="ch-mascot-emoji">🦊</div>
         </div>
       </section>
 
@@ -102,67 +86,53 @@ export default function ChildHome() {
 
       {/* تابِع من حيث توقفت — بطاقة بارزة من آخر درس فُتح فعلياً */}
       {continueLesson && (
-        <section style={{
-          background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', borderRadius: '28px',
-          padding: '22px 28px', marginBottom: '28px', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', boxShadow: '0 14px 28px rgba(5, 150, 105, 0.25)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ fontSize: '42px' }}>{continueLesson.subject?.icon || '📚'}</div>
+        <section className="ch-continue">
+          <div className="ch-continue-info">
+            <div className="ch-continue-icon">{continueLesson.subject?.icon || '📚'}</div>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 800, opacity: 0.9 }}>⏯️ تابِع من حيث توقفت</div>
-              <div style={{ fontSize: '20px', fontWeight: 900 }}>{continueLesson.lesson.title}</div>
-              <div style={{ fontSize: '12.5px', opacity: 0.9 }}>{continueLesson.subject?.title}</div>
+              <div className="ch-continue-kicker">⏯️ تابِع من حيث توقفت</div>
+              <div className="ch-continue-title">{continueLesson.lesson.title}</div>
+              <div className="ch-continue-subject">{continueLesson.subject?.title}</div>
               {continueLesson.progress > 0 && (
-                <div style={{ marginTop: '8px', width: '220px', height: '8px', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', overflow: 'hidden' }}>
-                  <div style={{ width: `${Math.min(100, Math.round(continueLesson.progress))}%`, height: '100%', background: 'var(--card-bg)' }} />
+                <div className="ch-continue-track">
+                  <div className="ch-continue-fill" style={{ '--p': `${Math.min(100, Math.round(continueLesson.progress))}%` }} />
                 </div>
               )}
             </div>
           </div>
-          <button
-            style={{ background: 'var(--card-bg)', color: '#047857', fontWeight: 900, fontSize: '15px', padding: '12px 26px', borderRadius: 'var(--radius-full)', border: 'none', cursor: 'pointer' }}
-            onClick={() => goLesson(continueLesson.lesson.id, 'video')}
-          >
+          <button className="ch-continue-btn" onClick={() => goLesson(continueLesson.lesson.id, 'video')}>
             أكمل الدرس ▶ {continueLesson.progress > 0 ? `(${Math.round(continueLesson.progress)}%)` : ''}
           </button>
         </section>
       )}
 
       {/* يومك النهارده */}
-      <section style={{
-        background: 'var(--card-bg)', border: '3px solid var(--line)', borderRadius: '32px',
-        padding: '28px 32px', marginBottom: '28px', boxShadow: '0 15px 30px rgba(245, 158, 11, 0.07)'
-      }}>
-        <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+      <section className="ch-card">
+        <h2 className="ch-card-title">
           <span>📅 يومك النهارده</span>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--amber-text)', background: 'var(--yellow-light)', padding: '4px 12px', borderRadius: '20px' }}>{todayName}</span>
+          <span className="ch-day-chip">{todayName}</span>
         </h2>
         {todayPlan.length === 0 ? (
-          <div style={{ background: 'var(--bg)', border: '2px dashed var(--line)', borderRadius: '20px', padding: '28px', textAlign: 'center', color: 'var(--muted)', fontWeight: 700, fontSize: '15px' }}>
+          <div className="ch-empty">
             {scheduleData.length === 0 && slotsLoaded
               ? '📭 لم تُحدَّد خانات جدول لهذا الطفل بعد — ستضيفها الإدارة. يمكنك اختيار أي مادة بالأسفل.'
               : '🌴 لا توجد حصص مجدولة اليوم — يوم راحة! يمكنك اختيار أي مادة بالأسفل.'}
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+          <div className="ch-plan-grid">
             {todayPlan.map(slot => {
               const slotType = SLOT_TYPES[slot.type] || SLOT_TYPES.lesson;
               return (
-                <div key={slot.id} style={{
-                  border: slot.done ? '2px solid #86efac' : '2px solid #e0e7ff',
-                  background: slot.done ? 'var(--green-light)' : 'var(--bg)',
-                  borderRadius: '20px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '10px'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, fontSize: '13px', color: 'var(--blue-text)', background: 'var(--blue-light)', padding: '3px 12px', borderRadius: '14px' }}>🕓 {slot.localTime || slot.time}</span>
-                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--amber-text)' }}>{slotType.icon} {slotType.label}</span>
+                <div key={slot.id} className={`ch-slot${slot.done ? ' done' : ''}`}>
+                  <div className="ch-slot-head">
+                    <span className="ch-slot-time">🕓 {slot.localTime || slot.time}</span>
+                    <span className="ch-slot-type">{slotType.icon} {slotType.label}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '26px' }}>{slot.subject?.icon || '📚'}</span>
+                  <div className="ch-slot-body">
+                    <span className="ch-slot-icon">{slot.subject?.icon || '📚'}</span>
                     <div>
-                      <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--navy)' }}>{slot.subject?.title || slot.subjectId}</div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                      <div className="ch-slot-subject">{slot.subject?.title || slot.subjectId}</div>
+                      <div className="ch-slot-lesson">
                         {slot.lesson
                           ? <>الدرس {slot.lesson.order}: {slot.lesson.title}</>
                           : slot.subject ? '🎉 كل دروس المادة مُتقنة' : 'المادة غير متاحة في المنهج بعد'}
@@ -172,11 +142,7 @@ export default function ChildHome() {
                   <LiveJoin slot={slot} />
                   {slot.lesson && (
                     <button
-                      style={{
-                        background: slot.done ? 'var(--green-light)' : 'var(--blue)', color: slot.done ? 'var(--green-text)' : 'white',
-                        padding: '9px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px',
-                        border: 'none', cursor: 'pointer', width: '100%'
-                      }}
+                      className={`ch-slot-btn${slot.done ? ' done' : ''}`}
                       onClick={() => goLesson(slot.lesson.id, 'video')}
                     >
                       {slot.done ? '✓ مُنجز — شاهد مرة أخرى' : 'ابدأ الدرس ▶'}
@@ -190,49 +156,40 @@ export default function ChildHome() {
       </section>
 
       {/* المواد بتقدمها الحقيقي */}
-      <section style={{
-        background: 'var(--card-bg)', border: '3px solid #e0e7ff', borderRadius: '36px',
-        padding: '28px 32px', boxShadow: '0 15px 30px rgba(99, 102, 241, 0.05)', marginBottom: '40px'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--navy)' }}>🗺️ جزيرة المواد</h2>
-          <div style={{ display: 'flex', background: 'var(--bg)', padding: '4px', borderRadius: 'var(--radius-full)', gap: '4px', flexWrap: 'wrap' }}>
+      <section className="ch-card">
+        <div className="ch-subjects-head">
+          <h2>🗺️ جزيرة المواد</h2>
+          <div className="ch-cats">
             {CHILD_CATEGORIES.map(cat => (
               <button
                 key={cat.id}
-                style={{
-                  padding: '6px 12px', borderRadius: 'var(--radius-full)', fontWeight: 700, fontSize: '11.5px',
-                  background: activeCategory === cat.id ? 'var(--blue)' : 'transparent',
-                  color: activeCategory === cat.id ? 'white' : 'var(--muted)', border: 'none', cursor: 'pointer'
-                }}
+                className={`ch-cat-btn${activeCategory === cat.id ? ' active' : ''}`}
                 onClick={() => setActiveCategory(cat.id)}
               >{cat.label}</button>
             ))}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '16px' }}>
+        <div className="ch-subjects-grid">
           {subjects.map(s => {
             const p = getSubjectProgress(curriculumData[s.id], learningRecords, masteredLessons);
             return (
               <button
                 key={s.id}
+                className="ch-subject-card"
+                style={{ '--subj': s.color }}
                 onClick={() => navigate(childPaths.subject(s.id))}
-                style={{
-                  textAlign: 'right', background: 'var(--card-bg)', border: `2px solid ${s.color}33`, borderRadius: '22px',
-                  padding: '18px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '10px'
-                }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '30px' }}>{s.icon}</span>
-                  <span style={{ fontWeight: 900, fontSize: '14.5px', color: 'var(--navy)' }}>{s.label}</span>
+                <div className="ch-subject-head">
+                  <span className="ch-subject-icon">{s.icon}</span>
+                  <span className="ch-subject-label">{s.label}</span>
                 </div>
-                <div style={{ height: '9px', background: 'var(--line)', borderRadius: '9px', overflow: 'hidden' }}>
-                  <div style={{ width: `${p.percent}%`, height: '100%', background: s.color, transition: 'width 0.4s' }} />
+                <div className="ch-subject-track">
+                  <div className="ch-subject-fill" style={{ '--p': `${p.percent}%` }} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800 }}>
-                  <span style={{ color: 'var(--navy)' }}>{p.percent}%</span>
-                  <span style={{ color: 'var(--muted)' }}>{p.done}/{p.total} درس متقن</span>
+                <div className="ch-subject-stats">
+                  <span className="pct">{p.percent}%</span>
+                  <span className="count">{p.done}/{p.total} درس متقن</span>
                 </div>
               </button>
             );

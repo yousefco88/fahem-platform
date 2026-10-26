@@ -1,0 +1,146 @@
+/* ChildHome — أنماط رئيسية فضاء الطفل (بديل inline styles)
+   الألوان من متغيرات الثيم في index.css؛ المتدرجات علامة ثابتة بنص أبيض (تعمل في الوضعين). */
+
+/* ===== Hero ===== */
+.ch-hero {
+  background: linear-gradient(135deg, #4338ca, #3b82f6 60%, #06b6d4);
+  color: white;
+  border-radius: 32px;
+  padding: 32px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 20px 35px rgba(59, 130, 246, 0.25);
+  margin-bottom: 28px;
+}
+.ch-hero-title { font-size: 32px; margin-bottom: 8px; font-weight: 900; }
+.ch-hero-sub { font-size: 16px; color: #e0e7ff; max-width: 580px; margin-bottom: 20px; }
+.ch-hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.ch-exam-btn {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  color: white; border: none; border-radius: var(--radius-full);
+  font-size: 15px; padding: 15px 24px; font-weight: 800;
+  box-shadow: 0 8px 20px rgba(190, 18, 60, 0.35); cursor: pointer; font-family: inherit;
+}
+.ch-exam-locked {
+  background: rgba(255, 255, 255, 0.14); color: white;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-full); font-size: 13.5px; padding: 13px 22px; font-weight: 800;
+}
+.ch-mascot { text-align: center; cursor: pointer; }
+.ch-mascot-bubble {
+  background: var(--card-bg); color: var(--navy);
+  padding: 6px 12px; border-radius: 16px; font-size: 11px; font-weight: 800;
+  margin-bottom: 6px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.ch-mascot-emoji { font-size: 90px; }
+
+/* ===== تابِع من حيث توقفت ===== */
+.ch-continue {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white; border-radius: 28px; padding: 22px 28px; margin-bottom: 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; box-shadow: 0 14px 28px rgba(5, 150, 105, 0.25);
+}
+.ch-continue-info { display: flex; align-items: center; gap: 16px; }
+.ch-continue-icon { font-size: 42px; }
+.ch-continue-kicker { font-size: 13px; font-weight: 800; opacity: 0.9; }
+.ch-continue-title { font-size: 20px; font-weight: 900; }
+.ch-continue-subject { font-size: 12.5px; opacity: 0.9; }
+.ch-continue-track {
+  margin-top: 8px; width: 220px; max-width: 100%; height: 8px;
+  background: rgba(255, 255, 255, 0.3); border-radius: 8px; overflow: hidden;
+}
+.ch-continue-fill { width: var(--p, 0%); height: 100%; background: white; }
+.ch-continue-btn {
+  background: white; color: #047857; font-weight: 900; font-size: 15px;
+  padding: 12px 26px; border-radius: var(--radius-full); border: none; cursor: pointer; font-family: inherit;
+}
+
+/* ===== البطاقات العامة ===== */
+.ch-card {
+  background: var(--card-bg); border: 3px solid var(--line);
+  border-radius: 32px; padding: 28px 32px; margin-bottom: 28px;
+}
+.ch-card-title {
+  font-size: 22px; font-weight: 900; color: var(--navy);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+}
+.ch-day-chip {
+  font-size: 13px; font-weight: 700; color: var(--amber-text);
+  background: var(--yellow-light); padding: 4px 12px; border-radius: 20px;
+}
+.ch-empty {
+  background: var(--bg); border: 2px dashed var(--line); border-radius: 20px;
+  padding: 28px; text-align: center; color: var(--muted); font-weight: 700; font-size: 15px;
+}
+
+/* ===== يومك النهارده ===== */
+.ch-plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.ch-slot {
+  border: 2px solid var(--line); background: var(--bg);
+  border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 10px;
+}
+.ch-slot.done { border-color: var(--green-text); background: var(--green-light); }
+.ch-slot-head { display: flex; justify-content: space-between; align-items: center; }
+.ch-slot-time {
+  font-weight: 800; font-size: 13px; color: var(--blue-text);
+  background: var(--blue-light); padding: 3px 12px; border-radius: 14px;
+}
+.ch-slot-type { font-size: 11.5px; font-weight: 700; color: var(--amber-text); }
+.ch-slot-body { display: flex; align-items: center; gap: 8px; }
+.ch-slot-icon { font-size: 26px; }
+.ch-slot-subject { font-weight: 800; font-size: 14px; color: var(--navy); }
+.ch-slot-lesson { font-size: 12px; color: var(--muted); }
+.ch-slot-btn {
+  background: var(--blue); color: white; padding: 9px;
+  border-radius: var(--radius-md); font-weight: 800; font-size: 13px;
+  border: none; cursor: pointer; width: 100%; font-family: inherit;
+}
+.ch-slot-btn.done { background: var(--green-light); color: var(--green-text); }
+
+/* ===== جزيرة المواد ===== */
+.ch-subjects-head {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 14px; margin-bottom: 20px;
+}
+.ch-subjects-head h2 { font-size: 22px; font-weight: 900; color: var(--navy); }
+.ch-cats {
+  display: flex; background: var(--bg); padding: 4px;
+  border-radius: var(--radius-full); gap: 4px; flex-wrap: wrap;
+}
+.ch-cat-btn {
+  padding: 6px 12px; border-radius: var(--radius-full); font-weight: 700; font-size: 11.5px;
+  background: transparent; color: var(--muted); border: none; cursor: pointer; font-family: inherit;
+}
+.ch-cat-btn.active { background: var(--blue); color: white; }
+.ch-subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+.ch-subject-card {
+  text-align: right; background: var(--card-bg);
+  border: 2px solid color-mix(in srgb, var(--subj, var(--blue)) 25%, transparent);
+  border-radius: 22px; padding: 18px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 10px; font-family: inherit;
+}
+.ch-subject-head { display: flex; align-items: center; gap: 10px; }
+.ch-subject-icon { font-size: 30px; }
+.ch-subject-label { font-weight: 900; font-size: 14.5px; color: var(--navy); }
+.ch-subject-track { height: 9px; background: var(--line); border-radius: 9px; overflow: hidden; }
+.ch-subject-fill { width: var(--p, 0%); height: 100%; background: var(--subj, var(--blue)); transition: width 0.4s; }
+.ch-subject-stats { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; }
+.ch-subject-stats .pct { color: var(--navy); }
+.ch-subject-stats .count { color: var(--muted); }
+
+/* ===== جوال ===== */
+@media (max-width: 640px) {
+  .ch-hero { padding: 20px; border-radius: 24px; }
+  .ch-hero-title { font-size: 22px; }
+  .ch-hero-sub { font-size: 14px; }
+  .ch-mascot-emoji { font-size: 60px; }
+  .ch-continue { padding: 18px; border-radius: 22px; }
+  .ch-continue-btn { width: 100%; }
+  .ch-card { padding: 18px; border-radius: 24px; }
+  .ch-card-title { font-size: 18px; }
+  .ch-subjects-head h2 { font-size: 18px; }
+}
