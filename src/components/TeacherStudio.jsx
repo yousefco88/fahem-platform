@@ -73,27 +73,21 @@ export default function TeacherStudio() {
       navigate('/admin'); // جدولة الحصص تتم من لوحة الإدارة (قسم الجداول)
     } else {
       triggerToast('جدولة الحصص تتم عبر الإدارة — تجد حصصك وروابطها في «مساحتي ← حصصي»');
-      navigate('/myspace');
+      navigate('/account');
     }
   };
 
   return (
-    <div style={{ maxWidth: '1350px', margin: '30px auto', padding: '0 30px', width: '100%' }}>
+    <div className="teacher-page">
       {/* Teacher Hero Banner */}
-      <section style={{
-        background: 'linear-gradient(135deg, #064e3b, #059669 60%, #10b981)',
-        color: 'white', borderRadius: 'var(--radius-lg)', padding: '28px 32px',
-        marginBottom: '30px', display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', boxShadow: '0 15px 30px rgba(16, 185, 129, 0.25)',
-        flexWrap: 'wrap', gap: '16px'
-      }}>
+      <section className="teacher-hero">
         <div>
           <h1 style={{ fontSize: '26px', marginBottom: '6px' }}>مرحباً بك في مساحة المعلم 👋</h1>
           <p style={{ opacity: 0.9, fontSize: '14px', maxWidth: '600px' }}>
             مساحة معلم المنهج المصري — تغطية متكاملة لجميع مواد الصف الأول الابتدائي (عربي، ماث، إنجليزي كونكت، ديسكفر، وقيم وأخلاق).
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div>
           <button
             className="btn-accent"
             style={{ background: '#fef08a', color: '#064e3b' }}
@@ -105,10 +99,7 @@ export default function TeacherStudio() {
       </section>
 
       {/* Metrics Grid — أرقام حقيقية فقط */}
-      <section style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '18px', marginBottom: '30px'
-      }}>
+      <section className="teacher-metrics">
         <div style={cardStyle}>
           <div>
             <span className="u-17">حصصي المجدولة أسبوعياً</span>
@@ -159,16 +150,9 @@ export default function TeacherStudio() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
-            <h3 style={{ fontSize: '18px', color: '#9a3412' }}>⚠️ قائمة المتابعة الخاصة: طلاب بحاجة لتشجيع في الحصة القادمة</h3>
-            <span style={{ fontSize: '12.5px', color: '#c2410c' }}>مرصودون تلقائياً عبر نتائج محاولات الإتقان في مختلف المواد:</span>
+            <h3 style={{ fontSize: '18px', color: 'var(--orange-text)' }}>⚠️ قائمة المتابعة الخاصة: طلاب بحاجة لتشجيع في الحصة القادمة</h3>
+            <span style={{ fontSize: '12.5px', color: 'var(--orange-text)' }}>مرصودون تلقائياً عبر نتائج محاولات الإتقان في مختلف المواد:</span>
           </div>
-          <button
-            className="tag-badge"
-            style={{ background: 'var(--orange-light)', color: '#9a3412', border: '1px solid var(--line)' }}
-            onClick={() => triggerToast('الإرسال للأسر غير متصل بخدمة إشعارات بعد.')}
-          >
-            إرسال رسائل تشجيع لأولياء الأمور
-          </button>
         </div>
 
         <div style={{ background: 'var(--card-bg)', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)', padding: '24px', textAlign: 'center' }}>
@@ -182,7 +166,7 @@ export default function TeacherStudio() {
       </div>
 
       {/* Two Column Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+      <div className="teacher-cols">
         <div className="u-16">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>
             <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><span>🗓️</span> جدول حصصي اليوم — {DAY_NAMES[today]}</h3>
@@ -213,19 +197,6 @@ export default function TeacherStudio() {
           )}
         </div>
 
-        <div className="u-16">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>
-            <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><span>📄</span> رفع وتجهيز أوراق عمل الدروس (PDF)</h3>
-          </div>
-          <div style={{ border: '2px dashed var(--line)', borderRadius: '16px', padding: '24px', textAlign: 'center', background: '#fafafa' }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>📤</div>
-            <h5 style={{ fontSize: '14px', marginBottom: '4px' }}>اسحب أوراق العمل التفاعلية لأي من المواد الخمس</h5>
-            <p style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '14px' }}>عربي، ماث، كونكت إنجليزي، ديسكفر، أو كتاب القيم والأخلاق</p>
-            <button className="btn-secondary" onClick={() => triggerToast('رفع الملفات غير متصل بالتخزين السحابي بعد.')}>
-              اختيار ملف PDF من الجهاز
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
