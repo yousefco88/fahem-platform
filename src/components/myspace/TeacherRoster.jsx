@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { uploadLessonRecording } from '../../hooks/useLessonRecordings';
+import { nextSlotDate, minutesUntil, humanCountdown, sameAsCairo, formatLocal } from '../../utils/slotTime';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -28,6 +29,17 @@ export default function TeacherRoster() {
   const [students, setStudents] = useState(null);
   const [slots, setSlots] = useState(null);
   const [err, setErr] = useState('');
+  // ساعة حية (كل دقيقة) لعدّاد «تبدأ خلال…» — بيانات حقيقية من مواعيد الجدول فقط
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
+  const showLocal = !sameAsCairo(now);
+  const lessonTitleOf = (s) => (curriculumData?.[s.subject_id]?.lessons || []).find(l => l.id === s.lesson_ref)?.title;
+  const nextOf = (s) => nextSlotDate(s.day, s.time, now);
+  const nextLive = (slots || [])
+    .filter(s => s.slot_type === 'live')
+    .map(s => ({ s, at: nextOf(s) }))
+    .filter(x => x.at)
+    .sort((a, b) => a.at - b.at)[0] || null;
 
   useEffect(() => {
     if (!supabase || !user) return;
@@ -94,6 +106,32 @@ export default function TeacherRoster() {
           {slots === null && <p style={muted}>جارٍ التحميل…</p>}
           {slots?.length === 0 && <p style={muted}>لا توجد حصص مسندة إليك في الجدول.</p>}
           {slots?.length > 0 && <p style={muted}>أوقات الحصص بتوقيت القاهرة. أضف رابط الاجتماع (Zoom / Meet / Teams) لكل حصة؛ يظهر للطالب داخل درسه قبل الموعد بـ 15 دقيقة.</p>}
+          {nextLive && (() => {
+            const { s, at } = nextLive;
+            const mins = minutesUntil(at, now);
+            const soon = mins <= 60;
+            const lessonTitle = lessonTitleOf(s);
+            const kid = students?.find(k => k.id === s.child_id);
+            return (
+              <div role="status" style={{
+                border: `1px solid ${soon ? 'var(--amber-text)' : 'var(--line)'}`,
+                background: soon ? 'var(--yellow-light)' : 'var(--bg)',
+                borderRadius: 14, padding: '12px 14px', margin: '4px 0 14px', fontSize: 13.5, color: 'var(--navy)',
+              }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'baseline' }}>
+                  <strong>⏰ حصتك المباشرة القادمة:</strong>
+                  <span>{DAY_NAMES[s.day]} <span style={{ direction: 'ltr', display: 'inline-block' }}>{s.time}</span> بتوقيت القاهرة</span>
+                  <strong style={{ color: soon ? 'var(--amber-text)' : 'var(--blue-text)' }}>— تبدأ {humanCountdown(mins)}</strong>
+                </div>
+                {showLocal && <div style={{ ...muted, marginTop: 4 }}>🌍 بتوقيتك المحلي: {formatLocal(at)}</div>}
+                <ul style={{ margin: '8px 0 0', paddingInlineStart: 18, display: 'grid', gap: 3 }}>
+                  <li>{s.meeting_url ? '✅ رابط الاجتماع جاهز' : '⚠️ رابط الاجتماع غير مُضاف بعد — أضفه من خانة الحصة أدناه'}</li>
+                  <li>{lessonTitle ? `📘 درس الحصة: ${lessonTitle}` : 'ℹ️ لم تحدد الإدارة درساً لهذه الخانة بعد'}</li>
+                  <li>👧 الطالب: {s.children?.name || '—'}{kid ? ` — أكمل ${kid.completed} درساً حتى الآن` : ''}</li>
+                </ul>
+              </div>
+            );
+          })()}
           {slots?.map(s => {
             const draft = urlDraft[s.id] ?? s.meeting_url ?? '';
             const save = async () => {
@@ -111,6 +149,16 @@ export default function TeacherRoster() {
                   <span>· {s.children?.name || 'طالب'}</span>
                   <span style={{ ...muted, marginInlineStart: 'auto' }}>{SLOT_TYPES[s.slot_type]?.label}</span>
                 </div>
+                {s.slot_type === 'live' && (() => {
+                  const at = nextOf(s);
+                  if (!at) return null;
+                  return (
+                    <div style={{ ...muted, marginTop: 4 }}>
+                      تبدأ {humanCountdown(minutesUntil(at, now))}{showLocal ? ` · بتوقيتك: ${formatLocal(at)}` : ''}
+                      {!s.meeting_url && <strong style={{ color: 'var(--amber-text)' }}> · ⚠️ بلا رابط اجتماع</strong>}
+                    </div>
+                  );
+                })()}
                 {s.slot_type === 'live' && (
                   <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                     <input
