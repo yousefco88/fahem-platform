@@ -1,14 +1,14 @@
-// Edge Function: ai-tutor-chat — مساعد التدريب (Anthropic)
-// المفتاح ANTHROPIC_API_KEY سر في الخادم فقط (supabase secrets set).
-// التحقق: JWT -> ai_tutor_reserve (ملكية + موافقة + حد يومي + سقف شهري) -> Anthropic -> ai_tutor_record.
+// Edge Function: ai-tutor-chat — مساعد التدريب (NVIDIA API Catalog، متوافق مع OpenAI)
+// المفتاح NVIDIA_API_KEY سر في الخادم فقط (supabase secrets set). النموذج قابل للتغيير عبر NVIDIA_MODEL.
+// التحقق: JWT -> ai_tutor_reserve (ملكية + موافقة + حد يومي + سقف شهري) -> NVIDIA -> ai_tutor_record.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const MODEL = 'claude-haiku-4-5';
+const DEFAULT_MODEL = 'meta/llama-3.1-70b-instruct'; // غير مُتحقَّق من توفره/جودته بالعربية؛ جرّب قبل الإطلاق
+const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 const MAX_INPUT_CHARS = 500;
 const MAX_OUTPUT_TOKENS = 400;
-// تقدير تكلفة تحفظي بالميكرو دولار لكل مليون توكن (1$ دخل / 5$ خرج)
-const IN_MICRO_PER_TOKEN = 1;
-const OUT_MICRO_PER_TOKEN = 5;
+// الطبقة المجانية: التكلفة صفر؛ يبقى الحد اليومي (50) هو الحماية الفعلية
+const COST_MICRO = 0;
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
-  const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
+  const apiKey = Deno.env.get('NVIDIA_API_KEY');
   if (!apiKey) return json({ error: 'not_configured', message: 'الخدمة غير مفعّلة بعد.' }, 503);
 
   const auth = req.headers.get('Authorization') ?? '';
@@ -62,21 +62,25 @@ Deno.serve(async (req) => {
     ? `\nالدرس الحالي للطفل: «${String(body.lesson.title).slice(0, 120)}». الهدف: ${String(body.lesson.objective ?? '').slice(0, 300)}`
     : '';
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetch(NVIDIA_URL, {
     method: 'POST',
-    headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    headers: { Authorization: `Bearer ${apiKey}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: MODEL,
+      model: Deno.env.get('NVIDIA_MODEL') ?? DEFAULT_MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
-      system: SYSTEM_PROMPT + lessonCtx,
-      messages: [{ role: 'user', content: message }],
+      temperature: 0.4,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT + lessonCtx },
+        { role: 'user', content: message },
+      ],
     }),
   });
   if (!resp.ok) return json({ error: 'upstream_failed', message: 'تعذر الرد الآن. جرّب بعد قليل.' }, 502);
 
   const out = await resp.json();
-  const reply: string = (out.content ?? []).filter((b: { type: string }) => b.type === 'text').map((b: { text: string }) => b.text).join('\n').trim();
-  const cost = (out.usage?.input_tokens ?? 0) * IN_MICRO_PER_TOKEN + (out.usage?.output_tokens ?? 0) * OUT_MICRO_PER_TOKEN;
+  const reply: string = (out.choices?.[0]?.message?.content ?? '').toString().trim();
+  if (!reply) return json({ error: 'empty_reply', message: 'لم أستطع الرد. اسأل معلمك 👨‍🏫' }, 502);
+  const cost = COST_MICRO;
 
   const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   await admin.rpc('ai_tutor_record', { p_child: childId, p_user: message, p_reply: reply, p_cost_micro: cost });
