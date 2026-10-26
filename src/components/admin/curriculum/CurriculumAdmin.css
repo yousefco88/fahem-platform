@@ -819,3 +819,23 @@
 .arrange-item .input-md {
   flex: 1;
 }
+
+/* حقول لوحات المعلم/المراجعة: تتبع الثيم (نهاري/ليلي) */
+.curriculum-panel input,
+.curriculum-panel select,
+.curriculum-table input,
+.curriculum-table select {
+  background: var(--card-bg);
+  color: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font: inherit;
+  max-width: 100%;
+}
+.curriculum-panel .header-actions { flex-wrap: wrap; }
+.curriculum-table input[type="checkbox"] { min-width: 0; width: 18px; height: 18px; padding: 0; }
+@media (max-width: 640px) {
+  .curriculum-panel .header-actions > * { flex: 1 1 100%; }
+  .curriculum-panel .input-md { width: 100%; }
+}
