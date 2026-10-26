@@ -32,6 +32,7 @@ export default function LiveJoin({ slot }) {
   return (
     <div style={{ ...box, background: 'var(--red-light)', color: 'var(--red-text)' }}>
       🔴 حصة مباشرة: {formatInTz(live.start, effectiveTimezone)}
+      {slot.teacherName && <span> · مع المعلم {slot.teacherName}</span>}
       <div style={{ fontWeight: 600, fontSize: 12, marginTop: 2 }}>يظهر زر الانضمام قبل الموعد بـ {JOIN_BEFORE_MIN} دقيقة</div>
     </div>
   );
