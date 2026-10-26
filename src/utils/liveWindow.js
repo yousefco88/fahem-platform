@@ -7,7 +7,7 @@
 
 export const PLATFORM_TZ = 'Africa/Cairo';
 export const JOIN_BEFORE_MIN = 15;
-export const SLOT_MINUTES = 60; // افتراض: مدة الحصة ساعة (لا يوجد حقل مدة في الجدول)
+export const SLOT_MINUTES = 60; // المدة الافتراضية؛ تُتجاوز بحقل duration_min لكل خانة
 
 export function deviceTimezone() {
   try { return Intl.DateTimeFormat().resolvedOptions().timeZone || PLATFORM_TZ; } catch { return PLATFORM_TZ; }
@@ -69,15 +69,21 @@ export function slotStart(slot, now = new Date(), weekShift = 0) {
  *  upcoming = أقرب موعد قادم (هذا الأسبوع أو التالي)
  *  none     = خانة غير صالحة
  */
+export function slotMinutes(slot) {
+  const m = Number(slot?.durationMin);
+  return Number.isFinite(m) && m >= 15 && m <= 240 ? m : SLOT_MINUTES;
+}
+
 export function getLiveState(slot, now = new Date()) {
   let start = slotStart(slot, now, 0);
   if (!start) return { state: 'none' };
-  let end = new Date(start.getTime() + SLOT_MINUTES * 60000);
+  const dur = slotMinutes(slot) * 60000;
+  let end = new Date(start.getTime() + dur);
   const opensAt = new Date(start.getTime() - JOIN_BEFORE_MIN * 60000);
   if (now >= opensAt && now <= end) return { state: 'open', start, end, opensAt };
   if (now > end) {
     start = slotStart(slot, now, 1);
-    end = new Date(start.getTime() + SLOT_MINUTES * 60000);
+    end = new Date(start.getTime() + dur);
   }
   return { state: 'upcoming', start, end, opensAt: new Date(start.getTime() - JOIN_BEFORE_MIN * 60000) };
 }

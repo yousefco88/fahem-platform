@@ -145,14 +145,14 @@ export function AppProvider({ children }) {
   const mapSlotRow = (r) => ({
     id: r.id, childId: r.child_id, day: r.day, time: r.time,
     subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson',
-    teacherId: r.teacher_id || null, meetingUrl: r.meeting_url || null,
+    teacherId: r.teacher_id || null, meetingUrl: r.meeting_url || null, durationMin: r.duration_min || 60,
     teacherName: r.profiles?.full_name || null
   });
   const reloadSlots = async () => {
     if (!supabase || !user?.id) { setAllSlots([]); setSlotsLoaded(true); return; }
     const { data, error } = await supabase
       .from('schedule_slots')
-      .select('id, child_id, day, time, subject_id, lesson_ref, slot_type, teacher_id, meeting_url, profiles(full_name)')
+      .select('id, child_id, day, time, subject_id, lesson_ref, slot_type, teacher_id, meeting_url, duration_min, profiles(full_name)')
       .order('day', { ascending: true })
       .order('time', { ascending: true });
     if (error) { console.warn('تعذر تحميل الجدول:', error.message); setSlotsLoaded(true); return; }
@@ -306,7 +306,7 @@ export function AppProvider({ children }) {
     const rows = slots.map(s => ({
       id: dbId(s.id), child_id: childId, day: s.day, time: s.time,
       subject_id: s.subjectId, lesson_ref: s.lessonRef || 'next', slot_type: s.type || 'lesson',
-      teacher_id: s.teacherId || null
+      teacher_id: s.teacherId || null, duration_min: s.durationMin || 60
     }));
     if (rows.length) {
       const { error: upError } = await supabase.from('schedule_slots').upsert(rows, { onConflict: 'id' });

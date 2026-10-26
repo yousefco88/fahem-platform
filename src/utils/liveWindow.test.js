@@ -36,3 +36,12 @@ test('اليوم يُحتسب بمنطقة المستخدم', () => {
 test('خانة غير صالحة', () => {
   assert.equal(getLiveState({ day: 0, time: 'x' }).state, 'none');
 });
+
+test('مدة الحصة قابلة للتخصيص وتسقط للافتراضي عند قيمة غير صالحة', () => {
+  const t = (m) => new Date(start.getTime() + m * 60000);
+  const long = { ...slot, durationMin: 90 };
+  assert.equal(getLiveState(long, t(80)).state, 'open');
+  assert.equal(getLiveState(long, t(91)).state, 'upcoming');
+  assert.equal(getLiveState({ ...slot, durationMin: 5 }, t(61)).state, 'upcoming');
+  assert.equal(getLiveState({ ...slot, durationMin: 'x' }, t(59)).state, 'open');
+});

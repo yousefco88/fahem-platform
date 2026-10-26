@@ -75,8 +75,17 @@ export default function AdminDashboard() {
   const updateSlot = (id, field, value) =>
     setScheduleData(prev => prev.map(s => s.id === id ? { ...s, [field]: field === 'day' ? Number(value) : value } : s));
   const removeSlot = (id) => setScheduleData(prev => prev.filter(s => s.id !== id));
+  // معلم الطفل المُسنَد (إن كان واحداً) يُملأ تلقائياً في الخانة الجديدة كي لا تبقى بلا teacher_id
+  const [childTeacherIds, setChildTeacherIds] = useState([]);
+  useEffect(() => {
+    setChildTeacherIds([]);
+    if (!supabase || !scheduleChildId) return;
+    supabase.from('teacher_students').select('teacher_id').eq('child_id', scheduleChildId)
+      .then(({ data }) => setChildTeacherIds((data || []).map(r => r.teacher_id)));
+  }, [scheduleChildId]);
   const addSlot = () => setScheduleData(prev => ([...prev, {
-    id: `slot_${Date.now()}`, childId: scheduleChildId, day: 0, time: '16:00',
+    id: `slot_${Date.now()}`, childId: scheduleChildId, day: 0, time: '16:00', durationMin: 60,
+    teacherId: childTeacherIds.length === 1 ? childTeacherIds[0] : null,
     subjectId: Object.keys(curriculumData)[0] || 'arabic', lessonRef: 'next', type: 'lesson'
   }]));
   const syncSchedule = async () => {
@@ -322,7 +331,7 @@ export default function AdminDashboard() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: 'var(--bg)', color: 'var(--muted)' }}>
-                    {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', 'المعلم', ''].map(h => (
+                    {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', 'المدة', 'المعلم', ''].map(h => (
                       <th key={h} style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid var(--line)' }}>{h}</th>
                     ))}
                   </tr>
@@ -354,6 +363,11 @@ export default function AdminDashboard() {
                         <td style={{ padding: '8px' }}>
                           <select value={slot.type || 'lesson'} onChange={e => updateSlot(slot.id, 'type', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
                             {Object.entries(SLOT_TYPES).map(([id, t]) => <option key={id} value={id}>{t.icon} {t.label}</option>)}
+                          </select>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <select aria-label="مدة الحصة" value={slot.durationMin || 60} onChange={e => updateSlot(slot.id, 'durationMin', Number(e.target.value))} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                            {[30, 45, 60, 90, 120].map(m => <option key={m} value={m}>{m} د</option>)}
                           </select>
                         </td>
                         <td style={{ padding: '8px' }}>
