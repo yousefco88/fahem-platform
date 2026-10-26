@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
@@ -60,7 +61,7 @@ export default function AssignStudents() {
         </select>
         <select aria-label="الطالب" style={sel} value={c} onChange={e => setC(e.target.value)}>
           <option value="">— الطالب —</option>
-          {kids.map(x => <option key={x.id} value={x.id}>{x.name} ({x.grade})</option>)}
+          {kids.map(x => <option key={x.id} value={x.id}>{x.name} ({gradeLabel(x.grade)})</option>)}
         </select>
         <button style={btn} onClick={assign}>إسناد</button>
       </div>

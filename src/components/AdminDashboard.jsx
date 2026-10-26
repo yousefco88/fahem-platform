@@ -1,4 +1,5 @@
 import RecordingsReview from './admin/RecordingsReview';
+import { gradeLabel } from '../utils/gradeLabel';
 import LessonReview from './admin/LessonReview';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
@@ -316,7 +317,7 @@ export default function AdminDashboard() {
             style={{ marginTop: '12px', padding: '9px 12px', borderRadius: '10px', border: '1px solid var(--line)', minWidth: '240px', font: 'inherit' }}
           >
             <option value="">— اختر الطفل —</option>
-            {allKids.map(k => <option key={k.id} value={k.id}>{k.name}{k.grade ? ` (${k.grade})` : ''}</option>)}
+            {allKids.map(k => <option key={k.id} value={k.id}>{k.name}{k.grade ? ` (${gradeLabel(k.grade)})` : ''}</option>)}
           </select>
           {!scheduleChildId ? (
             <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { gradeLabel } from '../../utils/gradeLabel';
 import { useApp } from '../../context/AppContext';
 import { getChildStats } from '../../utils/childProgress';
 
@@ -30,7 +31,7 @@ export default function ChildTopBar() {
         </div>
         <div>
           <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>البطل {activeChild.name}</h3>
-          <span style={{ fontSize: '12px', color: 'var(--blue-text)', fontWeight: 700 }}>{activeChild.grade} 🚀</span>
+          <span style={{ fontSize: '12px', color: 'var(--blue-text)', fontWeight: 700 }}>{gradeLabel(activeChild.grade)} 🚀</span>
         </div>
       </div>
 

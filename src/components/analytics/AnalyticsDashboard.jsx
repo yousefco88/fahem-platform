@@ -6,6 +6,7 @@
  * الـ sparkline محسوب من سجل التعلم الفعلي، والفراغ يُعرض صراحة.
  */
 import React, { useState, useEffect, useCallback } from 'react';
+import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import AnalyticsCard from './AnalyticsCard';
@@ -212,7 +213,7 @@ export default function AnalyticsDashboard() {
 
       const gradeCount = {};
       children.forEach(c => {
-        const g = c.grade || 'غير محدد';
+        const g = gradeLabel(c.grade) || 'غير محدد';
         gradeCount[g] = (gradeCount[g] || 0) + 1;
       });
       setGradeData(Object.entries(gradeCount).map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value));

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { gradeLabel } from '../utils/gradeLabel';
+import { pendingCompletedRows } from '../lib/pendingProgress';
 import { resolveLocalOwner, LOCAL_OWNER_KEY } from '../lib/localDataOwner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
@@ -402,6 +404,16 @@ export function AppProvider({ children }) {
         if (remote) map[c.id] = remote.id;
       });
       setChildCloudIds(map);
+      // رفع التقدم المكتمل قبل الربط (كان يضيع لأن الكتابة تتطلب uuid)
+      try {
+        const localRecords = JSON.parse(localStorage.getItem('fahem_learning_records') || '{}');
+        const pending = pendingCompletedRows(localRecords, map, allChildren);
+        if (pending.length) {
+          const { error: pErr } = await supabase.from('learning_records').upsert(pending, { onConflict: 'child_id,lesson_id' });
+          if (pErr) console.warn('تعذر رفع التقدم السابق للربط:', pErr.message);
+        }
+      } catch { /* تجاهل بيانات محلية تالفة */ }
+      if (cancelled) return;
 
       // علم فتح المحاكي اليدوي (يضبطه المعلم/الأدمن عبر RPC) — يُقرأ من السحابة
       setChildrenList(prev => prev.map(c => {
@@ -565,7 +577,7 @@ export function AppProvider({ children }) {
     if (target) {
       setChildName(target.name);
       setGrade(target.grade);
-      triggerToast(`تم تحويل المتابعة إلى ملف: ${target.name} (${target.grade}) 🌟`);
+      triggerToast(`تم تحويل المتابعة إلى ملف: ${target.name} (${gradeLabel(target.grade)}) 🌟`);
     }
   };
 

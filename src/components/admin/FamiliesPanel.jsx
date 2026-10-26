@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
 
 // إدارة حسابات الأسر — بيانات حقيقية من parent_profiles + children (سياسة admin reads)
@@ -101,7 +102,7 @@ export default function FamiliesPanel() {
                 {f.children.length === 0 && <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>لا أطفال مزامَنون بعد</span>}
                 {f.children.map(c => (
                   <span key={c.id} style={{ background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '5px 12px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 800 }}>
-                    🧒 {c.name} · {c.grade || 'بدون صف'}
+                    🧒 {c.name} · {gradeLabel(c.grade) || 'بدون صف'}
                   </span>
                 ))}
               </div>

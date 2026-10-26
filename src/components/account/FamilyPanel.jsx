@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
 import { arabicAuthError } from './authErrors';
 import Field from './Field';
@@ -64,7 +65,7 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
           <span className="emoji" aria-hidden="true">🧒</span>
           <div className="info">
             <strong>{c.name}</strong>
-            <span className="tag-badge info">{c.grade}</span>
+            <span className="tag-badge info">{gradeLabel(c.grade)}</span>
           </div>
           {confirmId === c.id ? (
             <div className="fam-confirm">
