@@ -49,8 +49,16 @@ const LOCAL_RESPONSES = {
 };
 
 // 🔍 تحليل السؤال وإرجاع الرد المناسب
-function analyzeAndRespond(message) {
+function analyzeAndRespond(message, lesson = null) {
   const msg = message.toLowerCase();
+
+  // سؤال عن الدرس الحالي: رد من هدف الدرس الحقيقي في المنهج (إن وُجد)
+  if (lesson?.objective && msg.match(/الدرس|درسي|ما فهمت|مو فاهم/)) {
+    return `درسك الحالي: «${lesson.title}» 📘
+هدفه: ${lesson.objective}
+
+اضغط «كمّل درسك» وشاهد الفيديو من جديد، وإن بقي شيء غامضًا اسأل معلمك في الحصة 👨‍🏫`;
+  }
   
   // تحيات
   if (msg.match(/مرحبا|اهلا|هلا|السلام|صباح|مساء/)) {
@@ -127,7 +135,7 @@ export default function AITutor({ childName: childNameProp, subject = null }) {
     await new Promise(r => setTimeout(r, 800 + Math.random() * 700));
     
     // Get AI response
-    const aiResponse = analyzeAndRespond(userMessage);
+    const aiResponse = analyzeAndRespond(userMessage, continueLesson?.lesson);
     
     setIsTyping(false);
     setMessages(prev => [...prev, { role: 'ai', content: aiResponse }]);
