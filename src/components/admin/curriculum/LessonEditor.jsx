@@ -7,8 +7,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import { logActivity } from '../../../lib/activityLog';
+import { useAuth } from '../../../context/AuthContext';
 import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
+
+const REVIEW_LABELS = { draft: '○ مسودة', submitted: '⏳ بانتظار المراجعة', approved: '✓ معتمد', rejected: '✕ مرفوض' };
 
 const TABS = [
   { id: 'basic', label: '📋 أساسي', icon: '📋' },
@@ -23,6 +26,9 @@ const TABS = [
 export default function LessonEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { role, user } = useAuth();
+  const isTeacher = role === 'teacher';
+  const base = isTeacher ? '/teacher/curriculum' : '/admin';
   const [activeTab, setActiveTab] = useState('basic');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -124,7 +130,7 @@ export default function LessonEditor() {
         title: form.title,
         subject_key: form.subject_key,
         sort_order: form.sort_order,
-        published: form.published,
+        ...(isTeacher ? {} : { published: form.published }),
         video_url: form.video_url || null,
         video_type: form.video_type,
         pdf_url: form.pdf_url || null,
@@ -143,6 +149,24 @@ export default function LessonEditor() {
     setSaving(false);
   }
 
+  // المعلم يعدّل مسوداته/المرفوضة فقط؛ بعد الإرسال أو الاعتماد يُقفل الدرس
+  const locked = isTeacher && !(lesson?.created_by === user?.id && ['draft', 'rejected'].includes(lesson?.review_status));
+
+  async function submitForReview() {
+    if (!confirm('إرسال الدرس للمراجعة؟ لن تستطيع تعديله حتى تردّ الإدارة.')) return;
+    if (hasChanges) await saveLesson();
+    const { error } = await supabase.from('curriculum_lessons').update({ review_status: 'submitted' }).eq('id', id);
+    if (error) { alert('تعذر الإرسال: ' + error.message); return; }
+    fetchLesson();
+  }
+
+  async function archiveLesson() {
+    if (!confirm('أرشفة الدرس؟ يختفي من قائمتك ويمكن للإدارة استرجاعه.')) return;
+    const { error } = await supabase.from('curriculum_lessons').update({ archived: true }).eq('id', id);
+    if (error) { alert('تعذرت الأرشفة: ' + error.message); return; }
+    navigate(base);
+  }
+
   if (loading) return <div className="curriculum-loading">جارٍ التحميل...</div>;
   if (error) return <div className="curriculum-error">خطأ: {error}</div>;
   if (!lesson) return <div className="curriculum-error">الدرس غير موجود</div>;
@@ -153,11 +177,12 @@ export default function LessonEditor() {
     <div className="lesson-editor">
       {/* Navigation Bar */}
       <nav className="curriculum-nav">
+        {isTeacher ? <Link to={base}>مناهجي</Link> : (<>
         <Link to="/admin/grades">الصفوف</Link>
         <span className="nav-arrow">→</span>
         <Link to="/admin/subjects">المواد</Link>
         <span className="nav-arrow">→</span>
-        <Link to={`/admin/lessons?subject=${form.subject_key}`}>الدروس</Link>
+        <Link to={`/admin/lessons?subject=${form.subject_key}`}>الدروس</Link></>)}
         <span className="nav-arrow">→</span>
         <span className="nav-active">✏️ {form.title || id}</span>
       </nav>
@@ -169,21 +194,42 @@ export default function LessonEditor() {
           </h2>
         </div>
         <div className="editor-actions">
-          <button 
-            className={`badge ${form.published ? 'badge-success' : 'badge-muted'}`}
-            onClick={() => updateForm('published', !form.published)}
-          >
-            {form.published ? '✓ منشور' : '○ مسودة'}
-          </button>
+          {isTeacher ? (
+            <span className={`badge ${lesson.review_status === 'approved' ? 'badge-success' : 'badge-muted'}`}>
+              {REVIEW_LABELS[lesson.review_status] || lesson.review_status}
+            </span>
+          ) : (
+            <button
+              className={`badge ${form.published ? 'badge-success' : 'badge-muted'}`}
+              onClick={() => updateForm('published', !form.published)}
+            >
+              {form.published ? '✓ منشور' : '○ مسودة'}
+            </button>
+          )}
           <button 
             className="btn-primary"
             onClick={saveLesson}
-            disabled={saving || !hasChanges}
+            disabled={saving || !hasChanges || locked}
           >
             {saving ? 'جارٍ الحفظ...' : hasChanges ? '💾 حفظ التغييرات' : '✓ محفوظ'}
           </button>
+          {isTeacher && !locked && (
+            <>
+              <button className="btn-success" onClick={submitForReview} disabled={saving}>📤 إرسال للمراجعة</button>
+              <button className="btn-muted" onClick={archiveLesson} disabled={saving}>🗄️ أرشفة</button>
+            </>
+          )}
         </div>
       </div>
+
+      {isTeacher && lesson.review_status === 'rejected' && lesson.review_note && (
+        <div className="curriculum-error">سبب الرفض: {lesson.review_note}</div>
+      )}
+      {locked && (
+        <p className="empty-state">
+          {lesson.review_status === 'submitted' ? 'الدرس بانتظار مراجعة الإدارة — التعديل مقفل.' : 'هذا الدرس للعرض فقط.'}
+        </p>
+      )}
 
       <div className="editor-tabs">
         {TABS.map(tab => (
@@ -198,6 +244,7 @@ export default function LessonEditor() {
       </div>
 
       <div className="editor-content">
+      <fieldset disabled={locked} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
         {activeTab === 'basic' && (
           <BasicTab form={form} updateForm={updateForm} subjects={subjects} />
         )}
@@ -219,6 +266,7 @@ export default function LessonEditor() {
         {activeTab === 'references' && (
           <ReferencesTab form={form} updateForm={updateForm} />
         )}
+      </fieldset>
       </div>
     </div>
   );

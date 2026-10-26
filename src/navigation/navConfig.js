@@ -62,6 +62,7 @@ export function getNavForRole(navRole) {
 // roles = من يحق له رؤية القسم؛ ما لم يُذكر دوره لا يراه (الخادم يفرض الصلاحيات فعلياً عبر RLS).
 export const ADMIN_SECTIONS = [
   { id: 'curriculum', icon: '📚', label: 'إدارة المناهج', roles: ['admin', 'content_editor'] },
+  { id: 'lessonReview', icon: '🧾', label: 'مراجعة دروس المعلمين', roles: ['admin', 'content_editor'] },
   { id: 'settings', icon: '⚙️', label: 'إعدادات الموقع', roles: ['admin', 'content_editor'] },
   { id: 'recordings', icon: '🎥', label: 'مراجعة تسجيلات الحصص', roles: ['admin'] },
   { id: 'bookings', icon: '📋', label: 'حجوزات الحصص التجريبية', roles: ['admin'] },

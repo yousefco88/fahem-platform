@@ -1239,6 +1239,7 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
   box-shadow: 0 15px 30px rgba(16, 185, 129, 0.25);
 }
+.teacher-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .teacher-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 24px; }
 .teacher-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 24px; }
 @media (max-width: 768px) {
@@ -1246,7 +1247,8 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   .teacher-hero { padding: 18px; margin-bottom: 14px; }
   .teacher-hero h1 { font-size: 20px !important; }
   .teacher-hero p { font-size: 13px !important; }
-  .teacher-hero .btn-accent { width: 100%; justify-content: center; }
+  .teacher-hero-actions { width: 100%; }
+  .teacher-hero .btn-accent { flex: 1 1 100%; justify-content: center; }
   .teacher-metrics { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
   .teacher-metrics > div { padding: 14px !important; gap: 8px !important; }
   .teacher-metrics .u-17 { font-size: 12px; }

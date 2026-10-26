@@ -4,6 +4,7 @@
  */
 import { useState, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { useAuth } from '../../../context/AuthContext';
 
 const BUCKET = 'curriculum-media';
 
@@ -39,6 +40,7 @@ export default function FileUploader({
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
+  const { user, role } = useAuth();
   
   const config = FILE_TYPES[type] || FILE_TYPES.pdf;
 
@@ -61,7 +63,9 @@ export default function FileUploader({
       const ext = file.name.split('.').pop();
       const timestamp = Date.now();
       const safeName = `${lessonId || 'lesson'}_${type}_${timestamp}.${ext}`;
-      const filePath = `${type}s/${safeName}`;
+      // المعلم يرفع داخل مجلد باسمه فقط (تفرضه سياسة التخزين)
+      const folder = role === 'teacher' && user?.id ? `${user.id}/` : '';
+      const filePath = `${folder}${type}s/${safeName}`;
 
       // Upload to Supabase Storage
       const { data, error: uploadError } = await supabase.storage

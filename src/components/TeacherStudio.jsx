@@ -87,7 +87,14 @@ export default function TeacherStudio() {
             مساحة معلم المنهج المصري — تغطية متكاملة لجميع مواد الصف الأول الابتدائي (عربي، ماث، إنجليزي كونكت، ديسكفر، وقيم وأخلاق).
           </p>
         </div>
-        <div>
+        <div className="teacher-hero-actions">
+          <button
+            className="btn-accent"
+            style={{ background: '#fff', color: '#064e3b' }}
+            onClick={() => navigate('/teacher/curriculum')}
+          >
+            <span>📚 مناهجي</span>
+          </button>
           <button
             className="btn-accent"
             style={{ background: '#fef08a', color: '#064e3b' }}

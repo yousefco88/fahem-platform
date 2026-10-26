@@ -1,4 +1,5 @@
 import RecordingsReview from './admin/RecordingsReview';
+import LessonReview from './admin/LessonReview';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
@@ -243,6 +244,8 @@ export default function AdminDashboard() {
         )}
       </div>
 
+      {activeAdminTab === 'lessonReview' && <LessonReview />}
+
       {/* TAB: SITE SETTINGS */}
       {activeAdminTab === 'settings' && <SiteSettingsPanel />}
 
@@ -447,6 +450,12 @@ export default function AdminDashboard() {
                     <tr key={u.id} style={{ borderBottom: '1px solid var(--line)' }}>
                       <td style={{ padding: '14px 16px' }}>
                         <strong style={{ display: 'block', color: 'var(--navy)' }}>{u.full_name || '—'}</strong>
+                        {u.teacher_request && u.role !== 'teacher' && (
+                          <span style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginTop: 4 }}>
+                            🎓 طلب انضمام كمعلم — {u.teacher_request.subjects || '—'} · {u.teacher_request.stage || '—'}
+                            {u.teacher_request.phone ? ` · ${u.teacher_request.phone}` : ''}
+                          </span>
+                        )}
                         <span style={{ fontSize: '12px', color: 'var(--muted)', direction: 'ltr', display: 'inline-block' }}>{u.email}</span>
                       </td>
                       <td style={{ padding: '14px 16px' }}>

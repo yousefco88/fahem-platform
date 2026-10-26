@@ -18,6 +18,7 @@ const PublicLandingPage = lazy(() => import('./components/PublicLandingPage'));
 const ParentDashboard = lazy(() => import('./components/ParentDashboard'));
 const ChildUniverse = lazy(() => import('./components/ChildUniverse'));
 const TeacherStudio = lazy(() => import('./components/TeacherStudio'));
+const TeacherCurriculum = lazy(() => import('./components/teacher/TeacherCurriculum'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulator'));
 const PricingPlans = lazy(() => import('./components/PricingPlans'));
@@ -91,6 +92,14 @@ function MainAppContent() {
               element={
                 <AuthGate roles={['teacher', 'admin']}>
                   <TeacherStudio />
+                </AuthGate>
+              }
+            />
+            <Route
+              path="/teacher/curriculum/*"
+              element={
+                <AuthGate roles={['teacher', 'admin']}>
+                  <TeacherCurriculum />
                 </AuthGate>
               }
             />
