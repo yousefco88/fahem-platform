@@ -19,6 +19,8 @@ const PublicLandingPage = lazy(() => import('./components/PublicLandingPage'));
 const ParentDashboard = lazy(() => import('./components/ParentDashboard'));
 const ChildUniverse = lazy(() => import('./components/ChildUniverse'));
 const TeacherStudio = lazy(() => import('./components/TeacherStudio'));
+const TeacherClasses = lazy(() => import('./components/teacher/TeacherClasses'));
+const TeacherLayout = lazy(() => import('./components/teacher/TeacherLayout'));
 const TeacherCurriculum = lazy(() => import('./components/teacher/TeacherCurriculum'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulator'));
@@ -92,21 +94,17 @@ function MainAppContent() {
             <Route path="/lessons" element={<Navigate to="/child" replace />} />
             <Route path="/child/*" element={<RequireChild><ChildUniverse /></RequireChild>} />
             <Route
-              path="/teacher"
+              path="/teacher/*"
               element={
                 <AuthGate roles={['teacher', 'admin']}>
-                  <TeacherStudio />
+                  <TeacherLayout />
                 </AuthGate>
               }
-            />
-            <Route
-              path="/teacher/curriculum/*"
-              element={
-                <AuthGate roles={['teacher', 'admin']}>
-                  <TeacherCurriculum />
-                </AuthGate>
-              }
-            />
+            >
+              <Route index element={<TeacherStudio />} />
+              <Route path="classes" element={<TeacherClasses />} />
+              <Route path="curriculum/*" element={<TeacherCurriculum />} />
+            </Route>
             <Route
               path="/admin/*"
               element={

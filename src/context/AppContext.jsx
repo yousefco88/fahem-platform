@@ -145,6 +145,7 @@ export function AppProvider({ children }) {
   // ولي الأمر → خانات أبنائه، المعلم → خانات طلابه/حصصه، الإدارة → الكل. لا جدول افتراضي مشترك.
   const [allSlots, setAllSlots] = useState([]);
   const [slotsLoaded, setSlotsLoaded] = useState(false);
+  const [slotsError, setSlotsError] = useState('');
   const mapSlotRow = (r) => ({
     id: r.id, childId: r.child_id, day: r.day, time: r.time,
     subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson',
@@ -152,14 +153,20 @@ export function AppProvider({ children }) {
     teacherName: r.profiles?.full_name || null
   });
   const reloadSlots = async () => {
-    if (!supabase || !user?.id) { setAllSlots([]); setSlotsLoaded(true); return; }
+    if (!supabase || !user?.id) { setAllSlots([]); setSlotsError(''); setSlotsLoaded(true); return; }
     const { data, error } = await supabase
       .from('schedule_slots')
       .select('id, child_id, day, time, subject_id, lesson_ref, slot_type, teacher_id, meeting_url, duration_min, profiles(full_name)')
       .order('day', { ascending: true })
       .order('time', { ascending: true });
-    if (error) { console.warn('تعذر تحميل الجدول:', error.message); setSlotsLoaded(true); return; }
+    if (error) {
+      console.warn('تعذر تحميل الجدول:', error.message);
+      setSlotsError('تعذر تحميل جدول الحصص: ' + error.message);
+      setSlotsLoaded(true);
+      return;
+    }
     setAllSlots((data || []).map(mapSlotRow));
+    setSlotsError('');
     setSlotsLoaded(true);
   };
 
@@ -771,7 +778,7 @@ export function AppProvider({ children }) {
     activeChild,
     activeChildCloudId: childCloudIds[activeChild?.id] || null,
     learningRecords: learningRecords[activeChild?.id] || {},
-    scheduleData, allSlots, slotsLoaded, reloadSlots, saveScheduleToCloud, setSlotMeetingUrl,
+    scheduleData, allSlots, slotsLoaded, slotsError, reloadSlots, saveScheduleToCloud, setSlotMeetingUrl,
     parentTimezone, effectiveTimezone, setParentTimezone,
     curriculumSource,
     saveExamAttempt,

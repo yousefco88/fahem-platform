@@ -6,6 +6,8 @@ import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { uploadLessonRecording } from '../../hooks/useLessonRecordings';
 import { minutesUntil, humanCountdown, sameAsCairo, formatLocal } from '../../utils/slotTime';
 import { getLiveState } from '../../utils/liveWindow';
+import { getTeacherSlotState } from '../../lib/teacherSlotState';
+import { getTeacherCompletedCount } from '../../lib/teacherCompletion';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -29,6 +31,8 @@ export default function TeacherRoster() {
   };
   const [students, setStudents] = useState(null);
   const [slots, setSlots] = useState(null);
+  const [slotError, setSlotError] = useState('');
+  const slotState = getTeacherSlotState(slots, slotError);
   const [err, setErr] = useState('');
   // ساعة حية (كل دقيقة) لعدّاد «تبدأ خلال…» — بيانات حقيقية من مواعيد الجدول فقط
   const [now, setNow] = useState(() => new Date());
@@ -51,21 +55,25 @@ export default function TeacherRoster() {
         .select('child_id, children(id, name, grade, avatar, exam_unlocked)').eq('teacher_id', user.id);
       if (st.error) {
         setErr('تعذر تحميل الطلاب (هل طُبّقت migration الإسناد؟): ' + st.error.message);
-        setStudents([]);
+        setStudents(null);
       } else {
         const kids = st.data.map(r => r.children).filter(Boolean);
         const ids = kids.map(k => k.id);
         const rec = ids.length
           ? await supabase.from('learning_records').select('child_id, status').in('child_id', ids)
           : { data: [] };
-        const done = {};
-        (rec.data || []).forEach(r => { if (r.status === 'completed') done[r.child_id] = (done[r.child_id] || 0) + 1; });
-        setStudents(kids.map(k => ({ ...k, completed: done[k.id] || 0 })));
+
+
+        setStudents(kids.map(k => ({ ...k, completed: getTeacherCompletedCount((rec.data || []).filter(r => r.child_id === k.id), rec.error) })));
       }
       const sl = await supabase.from('schedule_slots').select('id, child_id, day, time, subject_id, slot_type, meeting_url, duration_min, children(name)')
         .eq('teacher_id', user.id).order('day').order('time');
       setSlots(sl.error ? [] : sl.data);
-    })();
+      setSlotError(sl.error ? 'تعذر تحميل جدول الحصص: ' + sl.error.message : '');
+    })().catch(error => {
+      setSlots([]);
+      setSlotError('تعذر تحميل جدول الحصص: ' + (error?.message || 'حدث خطأ غير متوقع'));
+    });
   }, [user?.id]);
 
   return (
@@ -83,7 +91,7 @@ export default function TeacherRoster() {
             <div key={s.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--line)', color: 'var(--navy)', alignItems: 'center', flexWrap: 'wrap' }}>
               <span style={{ fontSize: 22 }}>{s.avatar || '🧒'}</span>
               <div style={{ flex: 1 }}><strong>{s.name}</strong><div style={muted}>{s.grade}</div></div>
-              <span style={muted}>دروس مكتملة: <strong>{s.completed}</strong></span>
+              <span style={muted}>{s.completed === null ? 'تعذر تحميل تقدم الدروس' : <>دروس مكتملة: <strong>{s.completed}</strong></>}</span>
               <button
                 title="فتح/قفل محاكي السفارة يدوياً لهذا الطالب (يُفتح تلقائياً أيضاً بإكمال مادة كاملة)"
                 style={{
@@ -106,9 +114,10 @@ export default function TeacherRoster() {
       {tab === 'classes' && (
         <>
           <h2 style={h2}>حصصي</h2>
-          {slots === null && <p style={muted}>جارٍ التحميل…</p>}
-          {slots?.length === 0 && <p style={muted}>لا توجد حصص مسندة إليك في الجدول.</p>}
-          {slots?.length > 0 && <p style={muted}>أوقات الحصص بتوقيت القاهرة. أضف رابط الاجتماع (Zoom / Meet / Teams) لكل حصة؛ يظهر للطالب داخل درسه قبل الموعد بـ 15 دقيقة ويبقى مفتوحاً طوال مدة الحصة التي تحددها الإدارة (الافتراضي ساعة).</p>}
+          {slotState.status === 'loading' && <p style={muted}>جارٍ التحميل…</p>}
+          {slotState.status === 'error' && <p role="alert" style={{ ...muted, color: 'var(--red-text)' }}>{slotState.message}</p>}
+          {slotState.status === 'empty' && <p style={muted}>لا توجد حصص مسندة إليك في الجدول.</p>}
+          {slotState.status === 'data' && <p style={muted}>أوقات الحصص بتوقيت القاهرة. أضف رابط الاجتماع (Zoom / Meet / Teams) لكل حصة؛ يظهر للطالب داخل درسه قبل الموعد بـ 15 دقيقة ويبقى مفتوحاً طوال مدة الحصة التي تحددها الإدارة (الافتراضي ساعة).</p>}
           {nextLive && (() => {
             const { s, at } = nextLive;
             const mins = minutesUntil(at, now);
@@ -130,7 +139,7 @@ export default function TeacherRoster() {
                 <ul style={{ margin: '8px 0 0', paddingInlineStart: 18, display: 'grid', gap: 3 }}>
                   <li>{s.meeting_url ? '✅ رابط الاجتماع جاهز' : '⚠️ رابط الاجتماع غير مُضاف بعد — أضفه من خانة الحصة أدناه'}</li>
                   <li>{lessonTitle ? `📘 درس الحصة: ${lessonTitle}` : 'ℹ️ لم تحدد الإدارة درساً لهذه الخانة بعد'}</li>
-                  <li>👧 الطالب: {s.children?.name || '—'}{kid ? ` — أكمل ${kid.completed} درساً حتى الآن` : ''}</li>
+                  <li>👧 الطالب: {s.children?.name || '—'}{kid?.completed != null ? ` — أكمل ${kid.completed} درساً حتى الآن` : ''}</li>
                 </ul>
               </div>
             );

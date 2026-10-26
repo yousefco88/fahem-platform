@@ -9,7 +9,6 @@ import { TIMEZONE_OPTIONS } from '../../utils/timezones';
 import LiveJoin from '../LiveJoin';
 import { ROLE_LABELS, resolveNavRole } from '../../navigation/navConfig';
 import ParentAccount from '../ParentAccount';
-import TeacherRoster from './TeacherRoster';
 import SkillsReport from './SkillsReport';
 import WeeklySummaryCard from './WeeklySummaryCard';
 import AssignStudents from './AssignStudents';
@@ -250,7 +249,6 @@ export default function MySpace() {
       {navRole === 'parent' && <SkillsReport />}
       {navRole === 'parent' && <WeeklySummaryCard />}
       {navRole === 'teacher' && <TeacherSpace go={setCurrentScreen} />}
-      {navRole === 'teacher' && <TeacherRoster />}
       {staff && <AdminSpace go={setCurrentScreen} isAdmin={navRole === 'admin'} />}
       {navRole === 'admin' && <AssignStudents />}
 

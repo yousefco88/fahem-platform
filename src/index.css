@@ -1257,6 +1257,35 @@ body { max-width: 100%; overflow-x: clip; overscroll-behavior-x: none; }
   .teacher-metrics > div > div:last-child { width: 36px !important; height: 36px !important; font-size: 18px !important; }
 }
 
+/* مساحة المعلم الموحدة */
+.teacher-workspace-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.teacher-workspace-header h1 { margin: 0 0 6px; color: var(--navy); font-size: clamp(24px, 3vw, 32px); }
+.teacher-workspace-header p { margin: 0; color: var(--muted); }
+.teacher-workspace-kicker { color: var(--blue-text) !important; font-size: 12px; font-weight: 800; margin-bottom: 5px !important; }
+.teacher-admin-link, .teacher-section-heading > a { color: var(--blue-text); font-weight: 800; text-decoration: none; }
+.teacher-workspace-nav { display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 20px; padding-bottom: 10px; }
+.teacher-studio-content, .teacher-curriculum-content, .teacher-classes-page { min-width: 0; }
+.teacher-classes-page > .teacher-section-heading { margin-bottom: 12px; }
+.teacher-overview, .teacher-roster-section, .teacher-classes-page { background: var(--card-bg); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 18px; }
+.teacher-overview-heading, .teacher-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.teacher-overview-heading h2, .teacher-section-heading h2 { margin: 0 0 5px; color: var(--navy); font-size: 19px; }
+.teacher-overview-heading p, .teacher-section-heading p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.teacher-count { color: var(--blue-text); background: var(--blue-light); padding: 7px 11px; border-radius: 999px; font-weight: 800; font-size: 12.5px; }
+.teacher-empty { color: var(--muted); padding: 12px 0; }
+.teacher-today-list { display: grid; gap: 8px; }
+.teacher-today-item { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; color: var(--navy); }
+.teacher-today-item time { font-weight: 900; min-width: 54px; }
+.teacher-today-detail { display: grid; gap: 3px; flex: 1 1 160px; }
+.teacher-today-detail span, .teacher-muted { color: var(--muted); font-size: 12.5px; }
+.teacher-today-item a { color: var(--blue-text); font-weight: 800; text-decoration: none; }
+@media (max-width: 768px) {
+  .teacher-workspace-header { align-items: flex-start; flex-direction: column; }
+  .teacher-workspace-nav { margin-bottom: 14px; }
+  .teacher-overview, .teacher-roster-section { padding: 14px; margin-bottom: 12px; }
+  .teacher-today-item { align-items: flex-start; }
+  .teacher-today-item a, .teacher-today-item .teacher-muted { flex-basis: 100%; }
+}
+
 /* الهبوط: المراسي لا يغطيها الهيدر + احترام تقليل الحركة */
 section[id] { scroll-margin-top: 72px; }
 @media (prefers-reduced-motion: reduce) {

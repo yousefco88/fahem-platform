@@ -187,7 +187,7 @@ function MyLessons() {
 
 export default function TeacherCurriculum() {
   return (
-    <div className="teacher-page">
+    <div className="teacher-curriculum-content">
       <Routes>
         <Route index element={<MyLessons />} />
         <Route path="lesson/:id" element={<LessonEditor />} />
