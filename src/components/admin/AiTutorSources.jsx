@@ -10,7 +10,7 @@ import { useApp } from '../../context/AppContext';
 import { buildChunks, cleanExtracted, looksScanned } from '../../lib/knowledgeIngest';
 import '../ai/AiTutorAdmin.css';
 
-const MAX_MB = 60;
+const MAX_MB = 200;
 const MAX_PAGES = 400;
 const STATUS_LABEL = { pending: 'بانتظار الاعتماد', approved: 'معتمد', rejected: 'مرفوض' };
 
