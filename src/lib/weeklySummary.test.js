@@ -19,10 +19,6 @@ test('counts only in-window records and attempts', () => {
       l2: { lastOpenedAt: daysAgo(3) },
       l3: { completedAt: daysAgo(20) }, // خارج النافذة
     },
-    examAttempts: [
-      { percentage: 80, created_at: daysAgo(1) },
-      { percentage: 60, created_at: daysAgo(30) }, // خارج النافذة
-    ],
     bankAttempts: [
       { is_correct: true, skill: 'الجمع ضمن 10', created_at: daysAgo(1) },
       { is_correct: false, skill: 'الجمع ضمن 10', created_at: daysAgo(1) },
@@ -32,8 +28,6 @@ test('counts only in-window records and attempts', () => {
   });
   assert.equal(s.completed, 1);
   assert.equal(s.opened, 1);
-  assert.equal(s.examCount, 1);
-  assert.equal(s.avgPct, 80);
   assert.equal(s.bankAnswered, 3);
   assert.equal(s.bankCorrect, 1);
   // 1/3 = 33% < 60% => مهارة ضعيفة

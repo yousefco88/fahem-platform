@@ -1,7 +1,7 @@
 /**
  * weeklySummary.js — توليد الملخص الدوري لولي الأمر (م5 — داخلي فقط)
  * يبني ملخصاً نصياً عربياً جاهزاً للنسخ من البيانات الحقيقية حصراً:
- * سجل التعلم المحلي + محاولات المحاكي + إجابات بنك الأسئلة من Supabase.
+ * سجل التعلم المحلي + إجابات بنك الأسئلة من Supabase.
  * ⛔ لا إرسال خارجي هنا — الإرسال التلقائي معلّق على اختيار يوسف للمزود.
  * لا أرقام وهمية: غياب النشاط يُقال صراحة في النص.
  */
@@ -15,14 +15,13 @@ function inWindow(ts, since) {
 
 /**
  * يجمع أرقام الأسبوع من المصادر الثلاثة.
- * examAttempts/bankAttempts: صفوف Supabase الخاصة بهذا الطفل فقط (مفلترة مسبقاً).
+ * bankAttempts: صفوف Supabase الخاصة بهذا الطفل فقط (مفلترة مسبقاً).
  */
 export function buildWeeklySummary({
   childName = 'الطفل',
   grade = '',
   learningRecords = {},
   stats = null,
-  examAttempts = [],
   bankAttempts = [],
   days = 7,
   now = new Date(),
@@ -36,12 +35,6 @@ export function buildWeeklySummary({
     if (rec?.completedAt && inWindow(rec.completedAt, since)) completed++;
     else if (rec?.lastOpenedAt && inWindow(rec.lastOpenedAt, since)) opened++;
   });
-
-  // محاولات المحاكي خلال الفترة
-  const weekExams = (examAttempts || []).filter(a => inWindow(a.created_at, since));
-  const avgPct = weekExams.length
-    ? Math.round(weekExams.reduce((s, a) => s + (Number(a.percentage) || 0), 0) / weekExams.length)
-    : null;
 
   // إجابات بنك الأسئلة خلال الفترة + أضعف المهارات
   const weekBank = (bankAttempts || []).filter(a => inWindow(a.created_at, since));
@@ -60,7 +53,7 @@ export function buildWeeklySummary({
     .sort((a, b) => a.pct - b.pct)
     .slice(0, 3);
 
-  const hasActivity = completed > 0 || opened > 0 || weekExams.length > 0 || weekBank.length > 0;
+  const hasActivity = completed > 0 || opened > 0 || weekBank.length > 0;
 
   // بناء النص الجاهز للنسخ
   const lines = [];
@@ -72,7 +65,6 @@ export function buildWeeklySummary({
   } else {
     if (completed > 0) lines.push(`✅ أكمل ${completed} ${completed === 1 ? 'درساً' : 'دروس'}`);
     if (opened > 0) lines.push(`📖 فتح ${opened} ${opened === 1 ? 'درساً إضافياً' : 'دروس إضافية'} دون إكمال`);
-    if (weekExams.length > 0) lines.push(`📝 ${weekExams.length} ${weekExams.length === 1 ? 'محاولة اختبار تدريبي' : 'محاولات اختبار تدريبي'} بمتوسط ${avgPct}%`);
     if (weekBank.length > 0) lines.push(`❓ أجاب على ${weekBank.length} ${weekBank.length === 1 ? 'سؤال' : 'سؤالاً'} من أسئلة الدروس (${bankCorrect} صحيحة)`);
     if (stats?.streak > 0) lines.push(`🔥 سلسلة نشاط: ${stats.streak} ${stats.streak === 1 ? 'يوم' : 'أيام'} متتالية`);
     if (weakSkills.length > 0) {
@@ -89,8 +81,6 @@ export function buildWeeklySummary({
     hasActivity,
     completed,
     opened,
-    examCount: weekExams.length,
-    avgPct,
     bankAnswered: weekBank.length,
     bankCorrect,
     weakSkills,
