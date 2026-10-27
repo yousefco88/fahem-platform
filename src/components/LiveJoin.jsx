@@ -11,7 +11,9 @@ export default function LiveJoin({ slot }) {
     const t = setInterval(() => setNow(new Date()), 30000);
     return () => clearInterval(t);
   }, []);
-  if (!slot || slot.type !== 'live') return null;
+  const isLive = slot?.type === 'live';
+  // المعلم قد يضع رابطاً لأي حصة (لا مباشرة فقط) — يظهر زر الانضمام لها متى وُجد الرابط
+  if (!slot || (!isLive && !slot.meetingUrl)) return null;
 
   const live = getLiveState(slot, now);
   if (live.state === 'none') return null;
@@ -26,12 +28,17 @@ export default function LiveJoin({ slot }) {
         >🔴 انضم للحصة الآن</a>
         {slot.teacherName && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 4, textAlign: 'center', color: 'var(--muted)' }}>مع المعلم {slot.teacherName}</div>}
       </div>
-    ) : (
+    ) : !isLive ? null : (
       <div style={{ ...box, background: 'var(--yellow-light)', color: 'var(--amber-text)' }}>
         🔴 الحصة قريبة — لم يضف المعلم رابط الاجتماع بعد. حدّث الصفحة بعد قليل.
       </div>
     );
   }
+  if (!isLive) return (
+    <div style={{ ...box, background: 'var(--red-light)', color: 'var(--red-text)' }}>
+      🔗 رابط الحصة جاهز — يظهر زر الانضمام قبل الموعد بـ {JOIN_BEFORE_MIN} دقيقة
+    </div>
+  );
   return (
     <div style={{ ...box, background: 'var(--red-light)', color: 'var(--red-text)' }}>
       🔴 حصة مباشرة: {formatInTz(live.start, effectiveTimezone)}

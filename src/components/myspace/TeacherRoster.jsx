@@ -231,7 +231,7 @@ export default function TeacherRoster() {
                     </div>
                   );
                 })()}
-                {s.slot_type === 'live' && (
+                {(
                   <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                     <input
                       type="url" inputMode="url" dir="ltr" placeholder="https://…" aria-label="رابط الاجتماع"
