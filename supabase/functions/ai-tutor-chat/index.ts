@@ -33,6 +33,9 @@ const SYSTEM_PROMPT = `أنت «فاهم»، مساعد تدريب لطفل في
 - اكتب بالعربية وبنص عادي بلا رموز تنسيق ولا قوائم مرقّمة ولا تحية في أول الرد، وبحد أقصى 4 جمل قصيرة. استخدم كلمة إنجليزية فقط عندما يكون السؤال عن اللغة الإنجليزية أو عندما تلزم لتسمية مصطلح، وضعها بين قوسين بعد شرحها بالعربية.
 - لا تتحدث عن مواضيع طبية أو دينية أو سياسية أو مخيفة؛ أعد الطفل للدرس.`;
 
+// وضع تجربة مفتوح (تفعّله الإدارة من ai_tutor_settings.open_mode): بلا قيود محتوى، مع بقاء الضوابط الصلبة (الدخول/الموافقة/الحدود).
+const OPEN_PROMPT = `أنت «فاهم»، مساعد ذكي ودود. أجب عن أي سؤال بوضوح وبالعربية البسيطة ما لم يُطلب غير ذلك.`;
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 }
@@ -62,7 +65,7 @@ Deno.serve(async (req) => {
 
   // إعدادات الإدارة + تصحيحات المعلمين (قراءة بصلاحية الخدمة؛ أي فشل = نكمل بالإعدادات الافتراضية)
   const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-  const { data: cfg } = await admin.from('ai_tutor_settings').select('extra_instructions, model').eq('id', 1).maybeSingle();
+  const { data: cfg } = await admin.from('ai_tutor_settings').select('extra_instructions, model, open_mode').eq('id', 1).maybeSingle();
   const { data: fixes } = await admin.from('ai_tutor_corrections')
     .select('question, correction').eq('verdict', 'wrong').order('created_at', { ascending: false }).limit(6);
   const extra = (cfg?.extra_instructions ?? '').toString().trim().slice(0, 1500);
@@ -116,7 +119,7 @@ Deno.serve(async (req) => {
       temperature: 0.4,
       chat_template_kwargs: { enable_thinking: false },
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT + extraCtx + fixCtx + lessonCtx + kbCtx },
+        { role: 'system', content: (cfg?.open_mode ? OPEN_PROMPT : SYSTEM_PROMPT + extraCtx + fixCtx + lessonCtx + kbCtx) },
         { role: 'user', content: message },
       ],
     }),
