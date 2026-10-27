@@ -14,18 +14,36 @@ const MAX_MB = 200;
 const MAX_PAGES = 400;
 const STATUS_LABEL = { pending: 'بانتظار الاعتماد', approved: 'معتمد', rejected: 'مرفوض' };
 
-async function extractPdf(file, onProgress) {
+// قراءة PDF: نص مباشر لكل صفحة؛ الصفحة بلا نص تُقرأ بالتعرف الضوئي (OCR) داخل المتصفح
+async function extractPdf(file, onProgress, ocrLang) {
   const pdfjs = await import('pdfjs-dist/build/pdf.min.mjs');
   const worker = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
   pdfjs.GlobalWorkerOptions.workerSrc = worker;
   const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()), useSystemFonts: true, cMapUrl: '/pdfjs-cmaps/', cMapPacked: true }).promise;
   if (doc.numPages > MAX_PAGES) throw new Error(`الملف أكبر من ${MAX_PAGES} صفحة`);
   const pages = [];
-  for (let p = 1; p <= doc.numPages; p++) {
-    const tc = await (await doc.getPage(p)).getTextContent();
-    pages.push(tc.items.map(i => i.str).join(' '));
-    if (p % 5 === 0 || p === doc.numPages) onProgress(p, doc.numPages);
-  }
+  let ocr = null;
+  try {
+    for (let p = 1; p <= doc.numPages; p++) {
+      const page = await doc.getPage(p);
+      let text = (await page.getTextContent()).items.map(i => i.str).join(' ');
+      if (cleanExtracted(text).length < 30) { // صفحة ممسوحة → OCR
+        if (!ocr) {
+          onProgress(p, doc.numPages, 'تجهيز محرك القراءة الضوئية (أول مرة يحمّل نحو 3MB)');
+          const { createWorker } = await import('tesseract.js');
+          ocr = await createWorker(ocrLang, 1, { workerPath: '/tesseract/worker.min.js', corePath: '/tesseract/', langPath: '/tesseract/lang' });
+        }
+        const vp = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width; canvas.height = vp.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+        text = (await ocr.recognize(canvas)).data.text;
+        canvas.width = canvas.height = 0;
+        onProgress(p, doc.numPages, 'قراءة ضوئية');
+      } else if (p % 5 === 0 || p === doc.numPages) onProgress(p, doc.numPages);
+      pages.push(text);
+    }
+  } finally { if (ocr) await ocr.terminate(); }
   return pages;
 }
 
@@ -36,7 +54,7 @@ export default function AiTutorSources() {
   const [subjects, setSubjects] = useState([]);
   const [list, setList] = useState([]);
   const [state, setState] = useState('loading');
-  const [form, setForm] = useState({ title: '', rights: 'official', confirmed: false, grade_id: '', subject_key: '', note: '', pasted: '' });
+  const [form, setForm] = useState({ title: '', rights: 'official', confirmed: false, grade_id: '', subject_key: '', note: '', pasted: '', ocrLang: 'ara' });
   const [file, setFile] = useState(null);
   const [draft, setDraft] = useState(null); // { chunks, pages, chars }
   const [busy, setBusy] = useState('');
@@ -65,11 +83,11 @@ export default function AiTutorSources() {
     setBusy('جارٍ الاستخراج...');
     try {
       let pages;
-      if (file && /\.pdf$/i.test(file.name)) pages = await extractPdf(file, (p, n) => setBusy(`استخراج الصفحات ${p}/${n}...`));
+      if (file && /\.pdf$/i.test(file.name)) pages = await extractPdf(file, (p, n, m) => setBusy(`${m || 'استخراج الصفحات'} ${p}/${n}...`), form.ocrLang);
       else if (file) pages = [await file.text()];
       else pages = [form.pasted];
       const chars = pages.reduce((n, t) => n + cleanExtracted(t).length, 0);
-      if (looksScanned(chars, pages.length)) throw new Error('هذا الملف ممسوح ضوئيًا (صور بلا طبقة نص) ويحتاج OCR، وهو غير مدعوم حاليًا. استخدم نسخة نصية أو ألصق النص.');
+      if (looksScanned(chars, pages.length)) throw new Error('هذا الملف ممسوح ضوئيًا ولم تُستخرج منه نصوص حتى بالقراءة الضوئية. جرّب نسخة أوضح أو ألصق النص.');
       const chunks = buildChunks(pages);
       if (!chunks.length) throw new Error('لم يُستخرج نص صالح');
       setDraft({ chunks, pages: pages.length, chars });
@@ -157,6 +175,10 @@ export default function AiTutorSources() {
           <label className="atr-field"><span>ملف (PDF نصي / TXT / MD)</span>
             <input type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" onChange={e => { setFile(e.target.files?.[0] || null); setDraft(null); }} />
           </label>
+          <label className="atr-field"><span>لغة الملف إن كان ممسوحًا ضوئيًا <small>(تُقرأ الصفحات المصوّرة تلقائيًا؛ الصفحة الواحدة نحو 5–15 ثانية)</small></span>
+            <select value={form.ocrLang} onChange={e => set('ocrLang', e.target.value)}>
+              <option value="ara">عربي</option><option value="ara+eng">عربي + إنجليزي</option><option value="eng">إنجليزي</option>
+            </select></label>
           <label className="atr-field"><span>أو ألصق النص <small>(يُستخدم إن لم تختر ملفًا)</small></span>
             <textarea rows={4} value={form.pasted} onChange={e => set('pasted', e.target.value)} />
           </label>
