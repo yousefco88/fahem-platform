@@ -17,18 +17,6 @@
 }
 .ch-hero-title { font-size: 32px; margin-bottom: 8px; font-weight: 900; }
 .ch-hero-sub { font-size: 16px; color: #e0e7ff; max-width: 580px; margin-bottom: 20px; }
-.ch-hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-.ch-exam-btn {
-  background: linear-gradient(135deg, #e11d48, #be123c);
-  color: white; border: none; border-radius: var(--radius-full);
-  font-size: 15px; padding: 15px 24px; font-weight: 800;
-  box-shadow: 0 8px 20px rgba(190, 18, 60, 0.35); cursor: pointer; font-family: inherit;
-}
-.ch-exam-locked {
-  background: rgba(255, 255, 255, 0.14); color: white;
-  border: 1px dashed rgba(255, 255, 255, 0.5);
-  border-radius: var(--radius-full); font-size: 13.5px; padding: 13px 22px; font-weight: 800;
-}
 .ch-mascot { text-align: center; cursor: pointer; }
 .ch-mascot-bubble {
   background: var(--card-bg); color: var(--navy);
@@ -131,6 +119,34 @@
 .ch-subject-stats { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; }
 .ch-subject-stats .pct { color: var(--navy); }
 .ch-subject-stats .count { color: var(--muted); }
+
+/* ===== خريطة المادة ===== */
+.sl-wrap { background: var(--card-bg); border: 3px solid var(--line); border-radius: 32px; padding: 26px 28px; margin-bottom: 40px; }
+.sl-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+.sl-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.sl-title h2 { font-size: 21px; font-weight: 900; color: var(--navy); }
+.sl-back { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-full); padding: 8px 16px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; }
+.sl-progress { min-width: 220px; }
+.sl-progress-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; margin-bottom: 6px; color: var(--muted); }
+.sl-progress-row .pct { color: var(--subj, var(--blue)); }
+.sl-track { height: 10px; background: var(--line); border-radius: 10px; overflow: hidden; }
+.sl-fill { width: var(--p, 0%); height: 100%; background: var(--subj, var(--blue)); }
+.sl-empty { background: var(--bg); border: 2px dashed var(--line); border-radius: 20px; padding: 28px; text-align: center; color: var(--muted); font-weight: 700; }
+.sl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.sl-card { position: relative; display: flex; flex-direction: column; gap: 10px; border: 2px solid var(--line); border-radius: 24px; padding: 20px 18px; background: var(--card-bg); text-align: center; }
+.sl-card.current { border: 3px solid var(--subj, var(--blue)); background: var(--blue-light); }
+.sl-card.done { border-color: color-mix(in srgb, var(--subj, var(--blue)) 45%, transparent); }
+.sl-card.next { opacity: 0.85; }
+.sl-station { position: absolute; top: 12px; right: 14px; font-size: 11px; font-weight: 800; color: var(--muted); }
+.sl-sound { position: absolute; top: 8px; left: 10px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); cursor: pointer; }
+.sl-badge { align-self: center; font-size: 12px; font-weight: 800; margin-top: 18px; color: var(--navy); }
+.sl-letter { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto; display: grid; place-items: center; font-size: 24px; font-weight: 900; background: var(--yellow-light); border: 3px solid var(--subj, var(--blue)); color: var(--navy); }
+.sl-card h4 { font-size: 16px; color: var(--navy); }
+.sl-obj { font-size: 12px; color: var(--muted); }
+.sl-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.sl-main { width: 100%; justify-content: center; }
+.sl-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.sl-link { background: none; border: none; color: var(--blue-text, var(--blue)); font-weight: 800; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
 
 /* ===== جوال ===== */
 @media (max-width: 640px) {

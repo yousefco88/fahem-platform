@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getTodayPlan, getContinueLesson } from '../../utils/todayPlan';
-import { getSubjectProgress, getExamUnlockProgress } from '../../utils/childProgress';
+import { getSubjectProgress } from '../../utils/childProgress';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
-import { CHILD_SUBJECTS, CHILD_CATEGORIES, childPaths } from './childSubjects';
+import { CHILD_CATEGORIES, listChildSubjects, childPaths } from './childSubjects';
 import LiveJoin from '../LiveJoin';
 import StreakBadge from './StreakBadge';
 import useStreak from '../../hooks/useStreak';
@@ -15,7 +15,7 @@ export default function ChildHome() {
   const navigate = useNavigate();
   const {
     activeChild, activeChildCloudId, curriculumData, activeSubject, soundManager, triggerToast,
-    setCurrentScreen, learningRecords, scheduleData, effectiveTimezone, slotsLoaded
+    learningRecords, scheduleData, effectiveTimezone, slotsLoaded
   } = useApp();
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -34,9 +34,9 @@ export default function ChildHome() {
     triggerToast('🦊 الثعلب فاهم يرحب بك!');
   };
 
-  const subjects = CHILD_SUBJECTS
-    .filter(s => curriculumData[s.id])
-    .filter(s => activeCategory === 'all' || s.category === activeCategory);
+  const allSubjects = listChildSubjects(curriculumData);
+  const categories = CHILD_CATEGORIES.filter(cat => cat.id === 'all' || allSubjects.some(s => s.category === cat.id));
+  const subjects = allSubjects.filter(s => activeCategory === 'all' || s.category === activeCategory);
 
   return (
     <>
@@ -45,25 +45,8 @@ export default function ChildHome() {
         <div>
           <h1 className="ch-hero-title">جاهز نفهم ونلعب سوا يا {activeChild.name}؟ 🌟</h1>
           <p className="ch-hero-sub">
-            كل مواد المنهج المصري (عربي، ماث، إنجليزي، ديسكفر، وأخلاق) موجودة في جزيرتك — اختر مادة وابدأ رحلتك.
+            اختر مادة من جزيرتك وابدأ رحلتك.
           </p>
-          <div className="ch-hero-actions">
-            {(() => {
-              // المحاكي يُفتح بإكمال أي مادة كاملة أو بفتح يدوي من المعلم/الأدمن
-              const unlock = getExamUnlockProgress(curriculumData, learningRecords?.[activeChild.id] || {}, activeChild.masteredLessons || []);
-              const examOpen = activeChild.examUnlocked || unlock.unlocked;
-              return examOpen ? (
-                <button className="ch-exam-btn" onClick={() => setCurrentScreen('exam')}>
-                  🇪🇬 محاكي امتحانات السفارة
-                </button>
-              ) : (
-                <div
-                  className="ch-exam-locked"
-                  title={unlock.subjectTitle ? `الأقرب: ${unlock.subjectTitle} (${unlock.done}/${unlock.total} دروس)` : ''}
-                >🔒 محاكي السفارة — يُفتح بإكمال مادة كاملة{unlock.subjectTitle ? ` (${unlock.subjectTitle}: ${unlock.done}/${unlock.total})` : ''}</div>
-              );
-            })()}
-          </div>
         </div>
         <div className="ch-mascot" onClick={handleMascotSpeak} title="انقر للتحدث مع فاهم!">
           <div className="ch-mascot-bubble">اضغط لسماعي! 💬</div>
@@ -160,7 +143,7 @@ export default function ChildHome() {
         <div className="ch-subjects-head">
           <h2>🗺️ جزيرة المواد</h2>
           <div className="ch-cats">
-            {CHILD_CATEGORIES.map(cat => (
+            {categories.map(cat => (
               <button
                 key={cat.id}
                 className={`ch-cat-btn${activeCategory === cat.id ? ' active' : ''}`}
