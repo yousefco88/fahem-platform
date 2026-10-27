@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
+import { resolveAssignmentLoad } from '../../lib/assignmentLoadState';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const muted = { color: 'var(--muted)', fontSize: 13.5 };
@@ -15,21 +16,45 @@ export default function AssignStudents() {
   const [t, setT] = useState('');
   const [c, setC] = useState('');
   const [msg, setMsg] = useState('');
+  const [loadStatus, setLoadStatus] = useState('loading');
 
   const load = async () => {
-    const [tr, kr, lr] = await Promise.all([
-      supabase.from('profiles').select('id, full_name').eq('role', 'teacher'),
-      supabase.from('children').select('id, name, grade, exam_unlocked'),
-      supabase.from('teacher_students').select('teacher_id, child_id')
-    ]);
-    const bad = tr.error || kr.error || lr.error;
-    if (bad) { setMsg('تعذر التحميل: ' + bad.message); return; }
-    setTeachers(tr.data); setKids(kr.data); setLinks(lr.data);
+    setLoadStatus('loading');
+    try {
+      if (!supabase) throw new Error('Supabase unavailable');
+      const results = await Promise.all([
+        supabase.from('profiles').select('id, full_name').eq('role', 'teacher'),
+        supabase.from('children').select('id, name, grade, exam_unlocked'),
+        supabase.from('teacher_students').select('teacher_id, child_id')
+      ]);
+      const result = resolveAssignmentLoad(results);
+      if (result.status === 'error') throw result.error;
+      setTeachers(result.teachers);
+      setKids(result.kids);
+      setLinks(result.links);
+      setLoadStatus(result.status);
+    } catch {
+      setLoadStatus('error');
+    }
   };
-  useEffect(() => { if (supabase) load(); }, []);
+  useEffect(() => { load(); }, []);
 
   const tName = id => teachers.find(x => x.id === id)?.full_name || 'معلم';
   const kName = id => kids.find(x => x.id === id)?.name || 'طالب';
+
+  if (loadStatus === 'loading' || loadStatus === 'error') {
+    return (
+      <section style={card}>
+        <h2 style={{ fontSize: 17, margin: '0 0 12px', color: 'var(--navy)' }}>🔗 إسناد الطلاب للمعلمين</h2>
+        {loadStatus === 'loading'
+          ? <p role="status" style={muted}>جارٍ تحميل بيانات الإسناد…</p>
+          : <div role="alert">
+              <p style={muted}>تعذر تحميل بيانات الإسناد. أعد المحاولة، وإذا استمر الخطأ تواصل مع الإدارة التقنية.</p>
+              <button type="button" style={btn} onClick={load}>إعادة المحاولة</button>
+            </div>}
+      </section>
+    );
+  }
 
   const assign = async () => {
     if (!t || !c) return;

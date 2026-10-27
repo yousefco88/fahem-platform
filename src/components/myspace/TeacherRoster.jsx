@@ -8,6 +8,7 @@ import { minutesUntil, humanCountdown, sameAsCairo, formatLocal } from '../../ut
 import { getLiveState } from '../../utils/liveWindow';
 import { getTeacherSlotState } from '../../lib/teacherSlotState';
 import { getTeacherCompletedCount } from '../../lib/teacherCompletion';
+import { resolveTeacherRosterLoad } from '../../lib/teacherRosterLoadState';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -34,6 +35,8 @@ export default function TeacherRoster() {
   const [slotError, setSlotError] = useState('');
   const slotState = getTeacherSlotState(slots, slotError);
   const [err, setErr] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
+  const [unlockBusy, setUnlockBusy] = useState({});
   // ساعة حية (كل دقيقة) لعدّاد «تبدأ خلال…» — بيانات حقيقية من مواعيد الجدول فقط
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
@@ -49,32 +52,74 @@ export default function TeacherRoster() {
     .sort((a, b) => a.at - b.at)[0] || null;
 
   useEffect(() => {
-    if (!supabase || !user) return;
+    let active = true;
+    setErr('');
+    setStudents(null);
+    setSlots(null);
+    setSlotError('');
+
+    const applyLoadError = (message) => {
+      if (!active) return;
+      setErr(message);
+      setStudents(null);
+      setSlots(null);
+      setSlotError(message);
+    };
+
+    if (!supabase || !user?.id) {
+      const result = resolveTeacherRosterLoad({ serviceAvailable: !!supabase, userId: user?.id });
+      applyLoadError(result.message);
+      return () => { active = false; };
+    }
+
     (async () => {
-      const st = await supabase.from('teacher_students')
-        .select('child_id, children(id, name, grade, avatar, exam_unlocked)').eq('teacher_id', user.id);
-      if (st.error) {
-        setErr('تعذر تحميل الطلاب (هل طُبّقت migration الإسناد؟): ' + st.error.message);
-        setStudents(null);
-      } else {
-        const kids = st.data.map(r => r.children).filter(Boolean);
-        const ids = kids.map(k => k.id);
-        const rec = ids.length
-          ? await supabase.from('learning_records').select('child_id, status').in('child_id', ids)
-          : { data: [] };
-
-
-        setStudents(kids.map(k => ({ ...k, completed: getTeacherCompletedCount((rec.data || []).filter(r => r.child_id === k.id), rec.error) })));
+      let studentsResult;
+      let slotsResult;
+      try {
+        [studentsResult, slotsResult] = await Promise.all([
+          supabase.from('teacher_students')
+            .select('child_id, children(id, name, grade, avatar, exam_unlocked)').eq('teacher_id', user.id),
+          supabase.from('schedule_slots').select('id, child_id, day, time, subject_id, slot_type, meeting_url, duration_min, children(name)')
+            .eq('teacher_id', user.id).order('day').order('time'),
+        ]);
+      } catch (thrown) {
+        const result = resolveTeacherRosterLoad({ serviceAvailable: true, userId: user.id, thrown });
+        applyLoadError(result.message);
+        return;
       }
-      const sl = await supabase.from('schedule_slots').select('id, child_id, day, time, subject_id, slot_type, meeting_url, duration_min, children(name)')
-        .eq('teacher_id', user.id).order('day').order('time');
-      setSlots(sl.error ? [] : sl.data);
-      setSlotError(sl.error ? 'تعذر تحميل جدول الحصص: ' + sl.error.message : '');
-    })().catch(error => {
-      setSlots([]);
-      setSlotError('تعذر تحميل جدول الحصص: ' + (error?.message || 'حدث خطأ غير متوقع'));
+
+      const result = resolveTeacherRosterLoad({ serviceAvailable: true, userId: user.id, studentsResult, slotsResult });
+      if (result.status === 'error') {
+        applyLoadError(result.message);
+        return;
+      }
+
+      const kids = result.students.map(row => row.children).filter(Boolean);
+      const ids = kids.map(child => child.id);
+      let records = [];
+      let recordsError = null;
+      if (ids.length) {
+        try {
+          const recordsResult = await supabase.from('learning_records').select('child_id, status').in('child_id', ids);
+          records = recordsResult.data || [];
+          recordsError = recordsResult.error;
+        } catch {
+          recordsError = true;
+        }
+      }
+      if (!active) return;
+      setStudents(kids.map(child => ({
+        ...child,
+        completed: getTeacherCompletedCount(records.filter(record => record.child_id === child.id), recordsError),
+      })));
+      setSlots(result.slots);
+    })().catch(() => {
+      const result = resolveTeacherRosterLoad({ serviceAvailable: true, userId: user.id, thrown: true });
+      applyLoadError(result.message);
     });
-  }, [user?.id]);
+
+    return () => { active = false; };
+  }, [user?.id, reloadKey]);
 
   return (
     <section style={card}>
@@ -82,7 +127,10 @@ export default function TeacherRoster() {
         <button style={tabBtn(tab === 'students')} onClick={() => setTab('students')}>👧 طلابي</button>
         <button style={tabBtn(tab === 'classes')} onClick={() => setTab('classes')}>🗓️ حصصي</button>
       </div>
-      {err && <p role="alert" style={{ ...muted, color: 'var(--red-text)' }}>{err}</p>}
+      {err && <div role="alert" style={{ ...muted, color: 'var(--red-text)', marginBottom: 10 }}>
+        <p style={{ margin: '0 0 6px' }}>{err}</p>
+        <button type="button" style={tabBtn(false)} onClick={() => setReloadKey(key => key + 1)}>إعادة المحاولة</button>
+      </div>}
       {tab === 'students' && (
         <>
           <h2 style={h2}>طلابي ({students?.length ?? '…'})</h2>
@@ -100,11 +148,23 @@ export default function TeacherRoster() {
                   background: s.exam_unlocked ? 'var(--green-light)' : 'var(--bg)',
                   color: s.exam_unlocked ? 'var(--green-text)' : 'var(--muted)'
                 }}
+                disabled={!!unlockBusy[s.id]}
                 onClick={async () => {
+                  if (unlockBusy[s.id]) return;
                   const next = !s.exam_unlocked;
-                  const r = await supabase.rpc('set_exam_unlocked', { p_child_id: s.id, p_unlocked: next });
-                  if (r.error) { setErr('تعذر تغيير حالة المحاكي: ' + r.error.message); return; }
-                  setStudents(list => list.map(x => x.id === s.id ? { ...x, exam_unlocked: next } : x));
+                  setUnlockBusy(current => ({ ...current, [s.id]: true }));
+                  try {
+                    const r = await supabase.rpc('set_exam_unlocked', { p_child_id: s.id, p_unlocked: next });
+                    if (r.error) {
+                      setErr('تعذر تغيير حالة المحاكي. أعد المحاولة، وإذا استمر الخطأ تواصل مع الإدارة التقنية.');
+                      return;
+                    }
+                    setStudents(list => list.map(x => x.id === s.id ? { ...x, exam_unlocked: next } : x));
+                  } catch {
+                    setErr('تعذر تغيير حالة المحاكي. أعد المحاولة، وإذا استمر الخطأ تواصل مع الإدارة التقنية.');
+                  } finally {
+                    setUnlockBusy(current => ({ ...current, [s.id]: false }));
+                  }
                 }}
               >{s.exam_unlocked ? '🔓 المحاكي مفتوح' : '🔒 فتح المحاكي'}</button>
             </div>
