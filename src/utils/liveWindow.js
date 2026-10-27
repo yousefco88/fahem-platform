@@ -102,6 +102,13 @@ export function timeInTz(date, tz) {
   return new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date);
 }
 
+export function weekdayIndexInTz(date, tz) {
+  const zone = isValidTimezone(tz) ? tz : deviceTimezone();
+  const weekday = new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short' }).format(date);
+  const index = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(weekday);
+  return index < 0 ? date.getDay() : index;
+}
+
 /** يوم التقويم (y-m-d) للحظة في منطقة */
 export function dayKeyInTz(date, tz) {
   const p = partsOf(date, isValidTimezone(tz) ? tz : deviceTimezone());

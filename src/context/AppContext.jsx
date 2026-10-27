@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { gradeLabel } from '../utils/gradeLabel';
 import { pendingCompletedRows } from '../lib/pendingProgress';
+import { loadScheduleSlots } from '../lib/scheduleSlotsQuery';
 import { resolveLocalOwner, LOCAL_OWNER_KEY } from '../lib/localDataOwner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
@@ -146,26 +147,15 @@ export function AppProvider({ children }) {
   const [allSlots, setAllSlots] = useState([]);
   const [slotsLoaded, setSlotsLoaded] = useState(false);
   const [slotsError, setSlotsError] = useState('');
-  const mapSlotRow = (r) => ({
-    id: r.id, childId: r.child_id, day: r.day, time: r.time,
-    subjectId: r.subject_id, lessonRef: r.lesson_ref || 'next', type: r.slot_type || 'lesson',
-    teacherId: r.teacher_id || null, meetingUrl: r.meeting_url || null, durationMin: r.duration_min || 60,
-    teacherName: r.profiles?.full_name || null
-  });
   const reloadSlots = async () => {
-    if (!supabase || !user?.id) { setAllSlots([]); setSlotsError(''); setSlotsLoaded(true); return; }
-    const { data, error } = await supabase
-      .from('schedule_slots')
-      .select('id, child_id, day, time, subject_id, lesson_ref, slot_type, teacher_id, meeting_url, duration_min, profiles(full_name)')
-      .order('day', { ascending: true })
-      .order('time', { ascending: true });
-    if (error) {
-      console.warn('تعذر تحميل الجدول:', error.message);
-      setSlotsError('تعذر تحميل جدول الحصص: ' + error.message);
+    const result = await loadScheduleSlots({ supabase, userId: user?.id });
+    if (result.status === 'error') {
+      console.warn('تعذر تحميل الجدول:', result.message);
+      setSlotsError('تعذر تحميل جدول الحصص: ' + result.message);
       setSlotsLoaded(true);
       return;
     }
-    setAllSlots((data || []).map(mapSlotRow));
+    setAllSlots(result.slots);
     setSlotsError('');
     setSlotsLoaded(true);
   };

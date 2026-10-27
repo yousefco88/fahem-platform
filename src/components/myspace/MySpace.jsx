@@ -4,10 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { getChildStats } from '../../utils/childProgress';
 import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
-import { slotsForToday, timeInTz } from '../../utils/liveWindow';
+import { slotsForToday, timeInTz, weekdayIndexInTz } from '../../utils/liveWindow';
 import { TIMEZONE_OPTIONS } from '../../utils/timezones';
 import LiveJoin from '../LiveJoin';
 import { ROLE_LABELS, resolveNavRole } from '../../navigation/navConfig';
+import { getMySpaceQueryState } from '../../lib/mySpaceQueryState';
 import ParentAccount from '../ParentAccount';
 import SkillsReport from './SkillsReport';
 import WeeklySummaryCard from './WeeklySummaryCard';
@@ -28,15 +29,18 @@ function Stat({ label, value }) {
   );
 }
 
-function TodaySchedule({ slots, curriculumData }) {
+function TodaySchedule({ slots, curriculumData, loading, error }) {
   const { effectiveTimezone } = useApp();
-  const today = slotsForToday(slots || [], effectiveTimezone);
+  const state = getMySpaceQueryState({ loading, data: slots, error });
+  const today = state.status === 'data' ? slotsForToday(slots, effectiveTimezone) : [];
   return (
     <section style={card}>
-      <h2 style={h2}>📅 جدول اليوم — {DAY_NAMES[new Date().getDay()]}</h2>
-      {today.length === 0 ? (
-        <p style={muted}>{(slots || []).length === 0 ? 'لم تُحدَّد خانات جدول بعد.' : 'لا توجد خانات في الجدول لهذا اليوم.'}</p>
-      ) : today.map(s => (
+      <h2 style={h2}>📅 جدول اليوم — {DAY_NAMES[weekdayIndexInTz(new Date(), effectiveTimezone)]}</h2>
+      {state.status === 'loading' && <p style={muted}>جارٍ تحميل الجدول…</p>}
+      {state.status === 'error' && <p role="alert" style={muted}>{state.message}</p>}
+      {state.status === 'empty' && <p style={muted}>لم تُحدَّد خانات جدول بعد.</p>}
+      {state.status === 'data' && today.length === 0 && <p style={muted}>لا توجد خانات في الجدول لهذا اليوم.</p>}
+      {state.status === 'data' && today.map(s => (
         <div key={s.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--line)', fontSize: 14, color: 'var(--navy)' }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <strong style={{ direction: 'ltr' }}>{timeInTz(s.startsAt, effectiveTimezone)}</strong>
@@ -74,21 +78,48 @@ function TimezoneCard() {
 }
 
 function ParentSpace({ go }) {
-  const { childrenList, activeChild, switchChild, curriculumData, learningRecords, scheduleData } = useApp();
+  const { childrenList, activeChild, switchChild, curriculumData, learningRecords, scheduleData, slotsLoaded, slotsError } = useApp();
   const [attempts, setAttempts] = useState(null);
+  const [attemptsError, setAttemptsError] = useState('');
 
   useEffect(() => {
-    if (!supabase) { setAttempts([]); return; }
-    supabase.from('exam_attempts').select('id, child_name, percentage, band, created_at')
-      .order('created_at', { ascending: false }).limit(3)
-      .then(({ data }) => setAttempts(data || []));
+    let cancelled = false;
+    const loadAttempts = async () => {
+      if (!supabase) {
+        setAttemptsError('الخدمة غير متاحة حالياً.');
+        return;
+      }
+      try {
+        const { data, error } = await supabase.from('exam_attempts')
+          .select('id, child_name, percentage, band, created_at')
+          .order('created_at', { ascending: false }).limit(3);
+        if (cancelled) return;
+        if (error) {
+          console.error('MySpace exam attempts query failed:', error.message);
+          setAttemptsError('تعذر تحميل النتائج. حاول تحديث الصفحة.');
+          return;
+        }
+        setAttempts(data || []);
+      } catch (error) {
+        if (cancelled) return;
+        console.error('MySpace exam attempts query failed:', error);
+        setAttemptsError('تعذر تحميل النتائج. حاول تحديث الصفحة.');
+      }
+    };
+    loadAttempts();
+    return () => { cancelled = true; };
   }, []);
 
+  const attemptsState = getMySpaceQueryState({
+    loading: attempts === null && !attemptsError,
+    data: attempts,
+    error: attemptsError,
+  });
   const stats = activeChild ? getChildStats(curriculumData, learningRecords, activeChild.masteredLessons) : null;
 
   return (
     <>
-      <TodaySchedule slots={scheduleData} curriculumData={curriculumData} />
+      <TodaySchedule slots={scheduleData} curriculumData={curriculumData} loading={!slotsLoaded} error={slotsError} />
       <TimezoneCard />
       <section style={card}>
         <h2 style={h2}>👧 أبنائي ({childrenList.length})</h2>
@@ -120,9 +151,10 @@ function ParentSpace({ go }) {
       </section>
       <section style={card}>
         <h2 style={h2}>📝 آخر نتائج المحاكي</h2>
-        {attempts === null && <p style={muted}>جارٍ التحميل…</p>}
-        {attempts?.length === 0 && <p style={muted}>لا توجد نتائج موثقة حتى الآن.</p>}
-        {attempts?.map(a => (
+        {attemptsState.status === 'loading' && <p style={muted}>جارٍ التحميل…</p>}
+        {attemptsState.status === 'error' && <p role="alert" style={muted}>{attemptsState.message}</p>}
+        {attemptsState.status === 'empty' && <p style={muted}>لا توجد نتائج موثقة حتى الآن.</p>}
+        {attemptsState.status === 'data' && attempts.map(a => (
           <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', color: 'var(--navy)', fontSize: 14 }}>
             <span>{a.child_name || 'طفل'} — {new Date(a.created_at).toLocaleDateString('ar-EG')}</span>
             <strong>{Math.round(a.percentage)}%{a.band ? ` · ${a.band}` : ''}</strong>
@@ -149,31 +181,69 @@ function TeacherSpace({ go }) {
   );
 }
 
-function AdminSpace({ go, isAdmin }) {
+function AdminSpace({ go }) {
   const [counts, setCounts] = useState(null);
+  const [countsError, setCountsError] = useState('');
   useEffect(() => {
-    if (!supabase) { setCounts({}); return; }
-    Promise.all([
-      supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'new'),
-      supabase.from('parent_profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('children').select('id', { count: 'exact', head: true })
-    ]).then(([b, p, c]) => setCounts({ newBookings: b.count, families: p.count, children: c.count }));
+    let cancelled = false;
+    const loadCounts = async () => {
+      if (!supabase) {
+        setCountsError('الخدمة غير متاحة حالياً.');
+        return;
+      }
+      try {
+        const results = await Promise.all([
+          supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+          supabase.from('parent_profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('children').select('id', { count: 'exact', head: true })
+        ]);
+        if (cancelled) return;
+        if (results.some(result => result.error || result.count == null)) {
+          console.error('MySpace admin counts query failed:', results.filter(result => result.error).map(result => result.error.message));
+          setCountsError('تعذر تحميل مؤشرات الإدارة. حاول تحديث الصفحة.');
+          return;
+        }
+        setCounts({ newBookings: results[0].count, families: results[1].count, children: results[2].count });
+      } catch (error) {
+        if (cancelled) return;
+        console.error('MySpace admin counts query failed:', error);
+        setCountsError('تعذر تحميل مؤشرات الإدارة. حاول تحديث الصفحة.');
+      }
+    };
+    loadCounts();
+    return () => { cancelled = true; };
   }, []);
-  const v = x => (x == null ? '—' : x);
+  const countsState = getMySpaceQueryState({
+    loading: counts === null && !countsError,
+    data: counts,
+    error: countsError,
+  });
   return (
     <section style={card}>
       <h2 style={h2}>⚙️ نظرة سريعة</h2>
-      {counts === null ? <p style={muted}>جارٍ التحميل…</p> : (
+      {countsState.status === 'loading' && <p style={muted}>جارٍ تحميل المؤشرات…</p>}
+      {countsState.status === 'error' && <p role="alert" style={muted}>{countsState.message}</p>}
+      {countsState.status === 'data' && (
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <Stat label="حجوزات جديدة" value={v(counts.newBookings)} />
-          <Stat label="أسر" value={v(counts.families)} />
-          <Stat label="أبناء" value={v(counts.children)} />
+          <Stat label="حجوزات جديدة" value={counts.newBookings} />
+          <Stat label="أسر" value={counts.families} />
+          <Stat label="أبناء" value={counts.children} />
         </div>
       )}
       <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
         <button style={btnPrimary} onClick={() => go('admin')}>لوحة الإدارة</button>
-        {isAdmin && <button style={btn} onClick={() => go('analytics')}>التحليلات</button>}
+        <button style={btn} onClick={() => go('analytics')}>التحليلات</button>
       </div>
+    </section>
+  );
+}
+
+function ContentEditorSpace({ go }) {
+  return (
+    <section style={card}>
+      <h2 style={h2}>📚 أدوات المحتوى</h2>
+      <p style={muted}>إدارة المناهج ومراجعة الدروس حسب صلاحية محرر المحتوى.</p>
+      <button style={btnPrimary} onClick={() => go('admin')}>فتح مساحة المحتوى</button>
     </section>
   );
 }
@@ -228,7 +298,6 @@ export default function MySpace() {
   if (!user) return <ParentAccount />;
 
   const name = profile?.full_name || user.email;
-  const staff = navRole === 'admin' || navRole === 'content_editor';
 
   return (
     <main dir="rtl" style={{ maxWidth: 760, width: 'calc(100% - 32px)', margin: '24px auto', color: 'var(--navy)' }}>
@@ -249,7 +318,8 @@ export default function MySpace() {
       {navRole === 'parent' && <SkillsReport />}
       {navRole === 'parent' && <WeeklySummaryCard />}
       {navRole === 'teacher' && <TeacherSpace go={setCurrentScreen} />}
-      {staff && <AdminSpace go={setCurrentScreen} isAdmin={navRole === 'admin'} />}
+      {navRole === 'admin' && <AdminSpace go={setCurrentScreen} />}
+      {navRole === 'content_editor' && <ContentEditorSpace go={setCurrentScreen} />}
       {navRole === 'admin' && <AssignStudents />}
 
       <PersonalSettings />

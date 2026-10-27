@@ -8,6 +8,7 @@ import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-
 import { useAuth } from '../context/AuthContext';
 import { adminSectionsForRole, adminSectionPath } from '../navigation/navConfig';
 import { useApp } from '../context/AppContext';
+import { loadAdminKpiStats } from '../lib/adminKpiStats';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
 import FamiliesPanel from './admin/FamiliesPanel';
@@ -37,29 +38,29 @@ export default function AdminDashboard() {
   const [syncingSchedule, setSyncingSchedule] = useState(false);
 
   // ===== KPI ديناميكي من Supabase =====
-  const [kpiStats, setKpiStats] = useState({ families: 0, children: 0, bookings: 0, newBookings: 0 });
+  const [kpiStats, setKpiStats] = useState(null);
   const [kpiLoading, setKpiLoading] = useState(true);
+  const [kpiError, setKpiError] = useState(null);
 
   useEffect(() => {
-    if (!supabase) { setKpiLoading(false); return; }
-    Promise.all([
-      supabase.from('parent_profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('children').select('id', { count: 'exact', head: true }),
-      supabase.from('bookings').select('id', { count: 'exact', head: true }),
-      supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'new')
-    ]).then(([parents, children, bookings, newBookings]) => {
-      setKpiStats({
-        families: parents.count || 0,
-        children: children.count || 0,
-        bookings: bookings.count || 0,
-        newBookings: newBookings.count || 0
-      });
+    let cancelled = false;
+    loadAdminKpiStats(supabase).then(result => {
+      if (cancelled) return;
+      if (result.status === 'error') {
+        setKpiError(result.message);
+        setKpiStats(null);
+      } else {
+        setKpiStats(result.counts);
+        setKpiError(null);
+      }
       setKpiLoading(false);
-    }).catch(() => setKpiLoading(false));
+    });
+    return () => { cancelled = true; };
   }, []);
 
   // عدد المواد الفعلي
   const subjectsCount = Object.keys(curriculumData).filter(k => k !== 'expatExamCalendar').length;
+  const kpiValue = key => kpiLoading ? '...' : kpiError ? '—' : (kpiStats?.[key] ?? '—');
 
   // ===== محرر الجدول الأسبوعي =====
   // الجدول لكل ابن: الإدارة تختار الطفل ثم تعدّل مسودته وتحفظها
@@ -201,15 +202,17 @@ export default function AdminDashboard() {
       }}>
         <div className="u-1">
           <span className="u-2">الأسر المسجلة</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{kpiLoading ? '...' : kpiStats.families}</h3>
-          <small style={{ color: 'var(--green-text)', fontWeight: 700, fontSize: '11.5px' }}>{kpiStats.children} طفل مسجّل</small>
+          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{kpiValue('families')}</h3>
+          <small style={{ color: 'var(--green-text)', fontWeight: 700, fontSize: '11.5px' }}>
+            {kpiLoading ? 'جارٍ التحميل…' : kpiError ? 'تعذر تحميل البيانات' : `${kpiStats.children} طفل مسجّل`}
+          </small>
         </div>
 
         <div className="u-1">
           <span className="u-2">حجوزات الحصص التجريبية</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--blue-text)' }}>{kpiLoading ? '...' : kpiStats.bookings}</h3>
-          <small style={{ color: kpiStats.newBookings > 0 ? 'var(--red-text)' : 'var(--blue-text)', fontWeight: 700, fontSize: '11.5px' }}>
-            {kpiStats.newBookings > 0 ? `🔴 ${kpiStats.newBookings} جديد` : 'لا يوجد جديد'}
+          <h3 style={{ fontSize: '26px', color: 'var(--blue-text)' }}>{kpiValue('bookings')}</h3>
+          <small style={{ color: kpiStats?.newBookings > 0 ? 'var(--red-text)' : 'var(--blue-text)', fontWeight: 700, fontSize: '11.5px' }}>
+            {kpiLoading ? 'جارٍ التحميل…' : kpiError ? 'تعذر تحميل البيانات' : kpiStats.newBookings > 0 ? `🔴 ${kpiStats.newBookings} جديد` : 'لا يوجد جديد'}
           </small>
         </div>
 

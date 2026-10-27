@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
+import { loadGradeSubjectCounts } from '../../../lib/gradeSubjectCounts';
 import './CurriculumAdmin.css';
 
 const STAGES = [
@@ -16,7 +17,8 @@ const STAGES = [
 
 export default function GradesPanel() {
   const [grades, setGrades] = useState([]);
-  const [subjectCounts, setSubjectCounts] = useState({});
+  const [subjectCounts, setSubjectCounts] = useState(null);
+  const [subjectCountsError, setSubjectCountsError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -44,17 +46,14 @@ export default function GradesPanel() {
   }
 
   async function fetchSubjectCounts() {
-    const { data } = await supabase
-      .from('curriculum_subjects')
-      .select('grade_id');
-    
-    if (data) {
-      const counts = {};
-      data.forEach(s => {
-        counts[s.grade_id] = (counts[s.grade_id] || 0) + 1;
-      });
-      setSubjectCounts(counts);
+    const result = await loadGradeSubjectCounts(supabase);
+    if (result.status === 'error') {
+      setSubjectCountsError(result.message);
+      setSubjectCounts(null);
+      return;
     }
+    setSubjectCounts(result.counts);
+    setSubjectCountsError(null);
   }
 
   function startEdit(grade) {
@@ -293,7 +292,7 @@ export default function GradesPanel() {
                     <td>{grade.sort_order}</td>
                     <td>
                       <Link to={`/admin/subjects?grade=${grade.id}`} className="lessons-link">
-                        {subjectCounts[grade.id] || 0} مادة →
+                        {subjectCountsError ? 'تعذر التحميل' : subjectCounts === null ? 'جارٍ التحميل…' : `${subjectCounts[grade.id] || 0} مادة →`}
                       </Link>
                     </td>
                     <td>
