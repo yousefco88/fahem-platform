@@ -127,7 +127,7 @@ export default function AITutor({ childName: childNameProp, subject = null }) {
   const childName = childNameProp || activeChild?.name || 'صديقي';
   const continueLesson = getContinueLesson(curriculumData, learningRecords, activeChild?.masteredLessons || []);
   const [messages, setMessages] = useState([
-    { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعد التدريب (ردود تشجيعية جاهزة). اسألني عن الرياضيات أو العربي أو العلوم 🌟` }
+    { role: 'ai', content: `أهلاً ${childName}! 👋 أنا فاهم، مساعد التدريب. اسألني عن الرياضيات أو العربي أو العلوم 🌟` }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
