@@ -33,6 +33,7 @@ async function extractPdf(file, onProgress, ocrLang) {
           const { createWorker } = await import('tesseract.js');
           ocr = await createWorker(ocrLang, 1, { workerPath: `${location.origin}/tesseract/worker.min.js`, corePath: `${location.origin}/tesseract`, langPath: `${location.origin}/tesseract/lang` });
         }
+        onProgress(p, doc.numPages, 'قراءة ضوئية للصفحة');
         const vp = page.getViewport({ scale: 2 });
         const canvas = document.createElement('canvas');
         canvas.width = vp.width; canvas.height = vp.height;
