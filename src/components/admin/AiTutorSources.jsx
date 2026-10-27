@@ -31,7 +31,7 @@ async function extractPdf(file, onProgress, ocrLang) {
         if (!ocr) {
           onProgress(p, doc.numPages, 'تجهيز محرك القراءة الضوئية (أول مرة يحمّل نحو 3MB)');
           const { createWorker } = await import('tesseract.js');
-          ocr = await createWorker(ocrLang, 1, { workerPath: '/tesseract/worker.min.js', corePath: '/tesseract/', langPath: '/tesseract/lang' });
+          ocr = await createWorker(ocrLang, 1, { workerPath: `${location.origin}/tesseract/worker.min.js`, corePath: `${location.origin}/tesseract`, langPath: `${location.origin}/tesseract/lang` });
         }
         const vp = page.getViewport({ scale: 2 });
         const canvas = document.createElement('canvas');
