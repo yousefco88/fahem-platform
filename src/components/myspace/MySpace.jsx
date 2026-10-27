@@ -79,42 +79,6 @@ function TimezoneCard() {
 
 function ParentSpace({ go }) {
   const { childrenList, activeChild, switchChild, curriculumData, learningRecords, scheduleData, slotsLoaded, slotsError } = useApp();
-  const [attempts, setAttempts] = useState(null);
-  const [attemptsError, setAttemptsError] = useState('');
-
-  useEffect(() => {
-    let cancelled = false;
-    const loadAttempts = async () => {
-      if (!supabase) {
-        setAttemptsError('الخدمة غير متاحة حالياً.');
-        return;
-      }
-      try {
-        const { data, error } = await supabase.from('exam_attempts')
-          .select('id, child_name, percentage, band, created_at')
-          .order('created_at', { ascending: false }).limit(3);
-        if (cancelled) return;
-        if (error) {
-          console.error('MySpace exam attempts query failed:', error.message);
-          setAttemptsError('تعذر تحميل النتائج. حاول تحديث الصفحة.');
-          return;
-        }
-        setAttempts(data || []);
-      } catch (error) {
-        if (cancelled) return;
-        console.error('MySpace exam attempts query failed:', error);
-        setAttemptsError('تعذر تحميل النتائج. حاول تحديث الصفحة.');
-      }
-    };
-    loadAttempts();
-    return () => { cancelled = true; };
-  }, []);
-
-  const attemptsState = getMySpaceQueryState({
-    loading: attempts === null && !attemptsError,
-    data: attempts,
-    error: attemptsError,
-  });
   const stats = activeChild ? getChildStats(curriculumData, learningRecords, activeChild.masteredLessons) : null;
 
   return (
@@ -146,20 +110,7 @@ function ParentSpace({ go }) {
         )}
         <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
           <button style={btn} onClick={() => go('parent')}>لوحة ولي الأمر</button>
-          <button style={btn} onClick={() => go('exam')}>محاكي الامتحانات</button>
         </div>
-      </section>
-      <section style={card}>
-        <h2 style={h2}>📝 آخر نتائج المحاكي</h2>
-        {attemptsState.status === 'loading' && <p style={muted}>جارٍ التحميل…</p>}
-        {attemptsState.status === 'error' && <p role="alert" style={muted}>{attemptsState.message}</p>}
-        {attemptsState.status === 'empty' && <p style={muted}>لا توجد نتائج موثقة حتى الآن.</p>}
-        {attemptsState.status === 'data' && attempts.map(a => (
-          <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', color: 'var(--navy)', fontSize: 14 }}>
-            <span>{a.child_name || 'طفل'} — {new Date(a.created_at).toLocaleDateString('ar-EG')}</span>
-            <strong>{Math.round(a.percentage)}%{a.band ? ` · ${a.band}` : ''}</strong>
-          </div>
-        ))}
       </section>
     </>
   );

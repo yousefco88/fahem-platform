@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getSubjectProgress, getStreakDays, getChildStats, findLessonSubject, getExamUnlockProgress } from './childProgress.js';
+import { getSubjectProgress, getStreakDays, getChildStats, findLessonSubject } from './childProgress.js';
 
 const curriculum = {
   arabic: { lessons: [{ id: 'alef' }, { id: 'baa' }, { id: 'taa' }, { id: 'thaa' }] },
@@ -61,38 +61,4 @@ test('normalizeCurriculum keeps non-subject arrays intact (expatExamCalendar)', 
   assert.equal(out.arabic.lessons[0].order, 1);
   const stats = getChildStats(out, {}, []);
   assert.equal(stats.total, 1);
-});
-
-test('getExamUnlockProgress: لا بيانات => مقفول بصفر تقدم', () => {
-  const r = getExamUnlockProgress({}, {}, []);
-  assert.equal(r.unlocked, false);
-  assert.equal(r.subjectTitle, null);
-  assert.equal(r.total, 0);
-});
-
-test('getExamUnlockProgress: مادة ناقصة => مقفول مع أقرب مادة للاكتمال', () => {
-  const cur = {
-    arabic: { title: 'عربي', lessons: [{ id: 'a1' }, { id: 'a2' }, { id: 'a3' }] },
-    math: { title: 'ماث', lessons: [{ id: 'm1' }, { id: 'm2' }] }
-  };
-  const r = getExamUnlockProgress(cur, { m1: { completed: true } }, []);
-  assert.equal(r.unlocked, false);
-  assert.equal(r.subjectTitle, 'ماث'); // 50% أقرب من 0%
-  assert.equal(r.done, 1);
-  assert.equal(r.total, 2);
-});
-
-test('getExamUnlockProgress: مادة كاملة واحدة تكفي للفتح', () => {
-  const cur = {
-    arabic: { title: 'عربي', lessons: [{ id: 'a1' }, { id: 'a2' }] },
-    math: { title: 'ماث', lessons: [{ id: 'm1' }] }
-  };
-  const r = getExamUnlockProgress(cur, {}, ['m1']);
-  assert.equal(r.unlocked, true);
-  assert.equal(r.subjectTitle, 'ماث');
-});
-
-test('getExamUnlockProgress: مادة بلا دروس لا تفتح المحاكي', () => {
-  const r = getExamUnlockProgress({ empty: { title: 'فارغة', lessons: [] } }, {}, []);
-  assert.equal(r.unlocked, false);
 });

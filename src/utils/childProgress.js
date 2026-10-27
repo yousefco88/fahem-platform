@@ -70,26 +70,3 @@ export function findLessonSubject(curriculum = {}, lessonId) {
   }
   return null;
 }
-
-/**
- * أهلية فتح محاكي السفارة بالتقدم الحقيقي:
- * تتحقق بإكمال كل دروس أي مادة واحدة (المنهج الحالي بلا مستوى «وحدات» —
- * المادة هي الوحدة الفعلية). حساب لحظي نقي من السجل، بلا كتابة.
- * يُرجع أيضاً أقرب مادة للاكتمال لعرض شاشة قفل صادقة ومحفزة.
- */
-export function getExamUnlockProgress(curriculum = {}, learningRecords = {}, masteredLessons = []) {
-  let best = null; // أقرب مادة للاكتمال (الأعلى نسبة ثم الأقل دروساً متبقية)
-  for (const subject of Object.values(curriculum || {})) {
-    const p = getSubjectProgress(subject, learningRecords, masteredLessons);
-    if (p.total === 0) continue;
-    if (p.done === p.total) {
-      return { unlocked: true, subjectTitle: subject.title, done: p.done, total: p.total };
-    }
-    if (!best || p.percent > best.percent || (p.percent === best.percent && (p.total - p.done) < (best.total - best.done))) {
-      best = { percent: p.percent, done: p.done, total: p.total, subjectTitle: subject.title };
-    }
-  }
-  return best
-    ? { unlocked: false, subjectTitle: best.subjectTitle, done: best.done, total: best.total }
-    : { unlocked: false, subjectTitle: null, done: 0, total: 0 };
-}

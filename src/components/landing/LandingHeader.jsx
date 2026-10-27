@@ -67,15 +67,6 @@ export default function LandingHeader() {
         {/* CTA Buttons */}
         <div className="desktop-cta" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
-            style={{
-              background: 'var(--bg)', color: 'var(--navy)', border: '1px solid var(--line)',
-              padding: '9px 16px', borderRadius: 'var(--radius-full)', fontWeight: 700, fontSize: '13px', cursor: 'pointer'
-            }}
-            onClick={() => setCurrentScreen('exam')}
-          >
-            🇪🇬 محاكي السفارة
-          </button>
-          <button
             className="btn-accent"
             style={{ padding: '9px 20px', fontSize: '13px', borderRadius: 'var(--radius-full)' }}
             onClick={scrollToBooking}

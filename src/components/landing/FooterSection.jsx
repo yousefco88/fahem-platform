@@ -28,7 +28,6 @@ export default function FooterSection() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
             <button className="u-26" onClick={() => setCurrentScreen('parent')}>لوحة ولي الأمر</button>
             <button className="u-26" onClick={() => setCurrentScreen('child')}>مساحة الطفل التفاعلية</button>
-            <button className="u-26" onClick={() => setCurrentScreen('exam')}>محاكي امتحانات السفارة</button>
             <button className="u-26" onClick={() => setCurrentScreen('pricing')}>باقات الاشتراك والأسعار</button>
           </div>
         </div>

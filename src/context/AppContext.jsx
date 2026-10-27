@@ -375,9 +375,9 @@ export function AppProvider({ children }) {
         { onConflict: 'id' }
       );
       // سحب أبناء الحساب من السحابة: الدخول من جهاز جديد أو إضافة طفل من «حسابي» لا يترك القائمة فارغة
-      const { data: existing } = await supabase.from('children').select('id, name, grade, avatar, exam_unlocked').eq('parent_id', user.id);
+      const { data: existing } = await supabase.from('children').select('id, name, grade, avatar').eq('parent_id', user.id);
       const missing = (existing || []).filter(r => !localChildren.some(c => c.name === r.name))
-        .map(r => ({ id: r.id, name: r.name, grade: r.grade, avatar: r.avatar || '⭐', points: 0, badges: 0, baaMastered: false, masteredLessons: [], masteredSkills: 0, examUnlocked: !!r.exam_unlocked }));
+        .map(r => ({ id: r.id, name: r.name, grade: r.grade, avatar: r.avatar || '⭐', points: 0, badges: 0, baaMastered: false, masteredLessons: [], masteredSkills: 0 }));
       if (cancelled) return;
       if (missing.length) {
         setChildrenList(prev => [...prev, ...missing.filter(m => !prev.some(c => c.name === m.name))]);
@@ -411,12 +411,6 @@ export function AppProvider({ children }) {
         }
       } catch { /* تجاهل بيانات محلية تالفة */ }
       if (cancelled) return;
-
-      // علم فتح المحاكي اليدوي (يضبطه المعلم/الأدمن عبر RPC) — يُقرأ من السحابة
-      setChildrenList(prev => prev.map(c => {
-        const row = (existing || []).find(r => r.name === c.name);
-        return row ? { ...c, examUnlocked: !!row.exam_unlocked } : c;
-      }));
 
       // تحميل التقدم المحفوظ سحابياً ودمجه (السحابة لا تمسح تقدماً محلياً)
       const uuids = Object.values(map);
@@ -488,26 +482,6 @@ export function AppProvider({ children }) {
     });
   };
 
-  // حفظ محاولة محاكي الامتحان (يتطلب تسجيل دخول ولي الأمر)
-  const saveExamAttempt = async (attempt) => {
-    if (!supabase || !user?.id) return { saved: false, reason: 'no-session' };
-    const { error } = await supabase.from('exam_attempts').insert({
-      parent_id: user.id,
-      child_key: attempt.childKey || null,
-      child_name: attempt.childName || null,
-      total_questions: attempt.totalQuestions,
-      attempted_count: attempt.attemptedCount,
-      correct_count: attempt.correctCount,
-      percentage: attempt.percentage,
-      band: attempt.band || null,
-      answers: attempt.answers || null
-    });
-    if (error) {
-      console.warn('تعذر حفظ محاولة الامتحان:', error.message);
-      return { saved: false, reason: error.message };
-    }
-    return { saved: true };
-  };
   // ========== نهاية المزامنة السحابية ==========
 
   // Subject and Lesson Selection
@@ -771,7 +745,6 @@ export function AppProvider({ children }) {
     scheduleData, allSlots, slotsLoaded, slotsError, reloadSlots, saveScheduleToCloud, setSlotMeetingUrl,
     parentTimezone, effectiveTimezone, setParentTimezone,
     curriculumSource,
-    saveExamAttempt,
     studentsSeeded,
     sampleStudents,
     switchChild,

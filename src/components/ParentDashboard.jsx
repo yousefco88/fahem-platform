@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import LiveJoin from './LiveJoin';
 import { slotsForToday, timeInTz } from '../utils/liveWindow';
 import { useApp } from '../context/AppContext';
-import ExamAttemptsCard from './parent/ExamAttemptsCard';
 import AiTutorConsentCard from './parent/AiTutorConsentCard';
 import { getChildStats } from '../utils/childProgress';
 import { useSiteSettings } from '../context/SiteSettingsContext';
@@ -415,9 +414,6 @@ export default function ParentDashboard() {
               <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--orange-light)', color: 'var(--orange-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>⭐</div>
             </div>
           </section>
-
-          {/* آخر محاولات محاكي الامتحان (بيانات حقيقية من exam_attempts) */}
-          <ExamAttemptsCard activeChildName={activeChild?.name} />
 
           {/* 3. أجندة امتحانات المغتربين الرسمية — تُدار بالكامل من لوحة الإدارة (site_settings.examCalendar) */}
           <section style={{

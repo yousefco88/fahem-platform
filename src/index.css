@@ -296,13 +296,6 @@ input, select, textarea {
   box-shadow: none;
 }
 
-.role-pill-btn.exam.active {
-  background: #be123c;
-  color: #ffe4e6;
-  border: 1.5px solid #fb7185;
-  box-shadow: none;
-}
-
 .role-pill-btn.live {
   background: #dc2626;
   color: white;
@@ -766,7 +759,6 @@ input, select, textarea {
   color: white;
 }
 
-
 .more-menu-item.active .more-menu-label {
   color: var(--blue-text);
 }
@@ -855,7 +847,6 @@ input, select, textarea {
     text-align: center;
   }
 }
-
 
 
 /* ========================================================

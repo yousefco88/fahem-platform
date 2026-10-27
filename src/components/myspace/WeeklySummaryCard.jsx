@@ -19,7 +19,7 @@ const card = {
 export default function WeeklySummaryCard() {
   const { activeChild, curriculumData, learningRecords, grade } = useApp();
   const { user } = useAuth();
-  const [cloud, setCloud] = useState({ exams: [], bank: [], loading: true, error: '' });
+  const [cloud, setCloud] = useState({ bank: [], loading: true, error: '' });
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -27,20 +27,16 @@ export default function WeeklySummaryCard() {
     (async () => {
       if (!supabase || !user?.id) { setCloud(c => ({ ...c, loading: false })); return; }
       const sinceIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const [examRes, bankRes] = await Promise.all([
-        supabase.from('exam_attempts')
-          .select('child_key, child_name, percentage, created_at')
-          .gte('created_at', sinceIso),
+      const [bankRes] = await Promise.all([
         supabase.from('lesson_question_attempts')
           .select('child_name, is_correct, skill, created_at')
           .gte('created_at', sinceIso),
       ]);
       if (cancelled) return;
       setCloud({
-        exams: examRes.data || [],
         bank: bankRes.data || [],
         loading: false,
-        error: examRes.error?.message || bankRes.error?.message || '',
+        error: bankRes.error?.message || '',
       });
     })();
     return () => { cancelled = true; };
@@ -55,7 +51,6 @@ export default function WeeklySummaryCard() {
       grade: activeChild.grade || grade || '',
       learningRecords,
       stats: getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []),
-      examAttempts: cloud.exams.filter(byName),
       bankAttempts: cloud.bank.filter(byName),
     });
   }, [activeChild, curriculumData, learningRecords, grade, cloud]);

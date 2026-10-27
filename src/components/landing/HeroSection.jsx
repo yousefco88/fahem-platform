@@ -93,11 +93,6 @@ export default function HeroSection() {
               <div className="u-27">لوحة متابعة ولي الأمر</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
             </div>
-            <div style={{ background: 'linear-gradient(135deg, var(--red-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
-              <div style={{ fontSize: '26px', marginBottom: '6px' }}>🇪🇬</div>
-              <div className="u-27">محاكي امتحانات السفارة</div>
-              <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>تدريب مجاني بنمط الامتحان الرسمي</div>
-            </div>
           </div>
         </div>
 
@@ -119,9 +114,6 @@ export default function HeroSection() {
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
             <strong>🕐 مواعيد تناسب الخليج وأوروبا</strong>
-          </div>
-          <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>🇪🇬 محاكي امتحانات السفارة</strong>
           </div>
         </div>
       </div>

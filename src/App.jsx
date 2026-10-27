@@ -10,7 +10,6 @@ import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
 import { ThemeToggle } from './context/ThemeContext';
 import RequireChild from './components/RequireChild';
-import ExamGate from './components/ExamGate';
 import Modals from './components/Modals';
 import PwaUpdatePrompt from './components/PwaUpdatePrompt';
 
@@ -24,7 +23,6 @@ const TeacherLayout = lazy(() => import('./components/teacher/TeacherLayout'));
 const TeacherCurriculum = lazy(() => import('./components/teacher/TeacherCurriculum'));
 const AiTutorReview = lazy(() => import('./components/ai/AiTutorReview'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
-const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulator'));
 const PricingPlans = lazy(() => import('./components/PricingPlans'));
 const MySpace = lazy(() => import('./components/myspace/MySpace'));
 const AITutor = lazy(() => import('./components/ai/AITutor'));
@@ -115,7 +113,6 @@ function MainAppContent() {
                 </AuthGate>
               }
             />
-            <Route path="/exam" element={<ExamGate><EmbassyExamSimulator /></ExamGate>} />
             {/* التسجيل الحقيقي موحّد في /account (حساب Supabase) — المعالج المحلي القديم أُلغي */}
             <Route path="/onboarding" element={<Navigate to="/account" replace />} />
             <Route path="/pricing" element={<PricingPlans />} />

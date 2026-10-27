@@ -1,34 +1,17 @@
 /**
  * SkillsReport.jsx — تقرير مهارات الطفل لولي الأمر (م3)
- * المصدر: محاولات المحاكي التدريبي المحفوظة في exam_attempts (RLS: ولي الأمر يرى محاولاته فقط)
- * - المحاولات الجديدة تحمل تحليل skills جاهزاً داخل answers
- * - المحاولات القديمة (answers = خريطة اختيارات فقط) تُحلَّل وفق قائمة الأسئلة الحالية
+ * المصدر: إجابات أسئلة بنك الدروس المحفوظة في lesson_question_attempts (RLS: ولي الأمر يرى محاولات أبنائه فقط)
  * لا بيانات وهمية: بدون محاولات محفوظة تظهر حالة فارغة صريحة.
  */
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
-import { EXAM_QUESTIONS } from '../../data/examQuestions';
 
 const card = {
   background: 'var(--card-bg)', border: '1px solid var(--line)',
   borderRadius: 16, padding: '18px 20px', marginTop: 16,
   boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
 };
-
-function deriveLegacySkills(answers, totalQuestions) {
-  // محاولة قديمة: {idx: chosenIdx} — تصح فقط إذا طابق عدد الأسئلة القائمة الحالية
-  if (!answers || typeof answers !== 'object' || totalQuestions !== EXAM_QUESTIONS.length) return null;
-  const skills = {};
-  EXAM_QUESTIONS.forEach((q, idx) => {
-    const key = q.skill || q.subject;
-    if (!skills[key]) skills[key] = { correct: 0, total: 0, subject: q.subject };
-    skills[key].total++;
-    const chosen = answers[idx];
-    if (chosen !== undefined && q.options[chosen]?.correct) skills[key].correct++;
-  });
-  return skills;
-}
 
 function mergeSkills(target, skills) {
   Object.entries(skills).forEach(([key, s]) => {
@@ -48,30 +31,14 @@ export default function SkillsReport() {
     let cancelled = false;
     (async () => {
       if (!supabase || !user?.id) { setLoading(false); return; }
-      const [examRes, bankRes] = await Promise.all([
-        supabase
-          .from('exam_attempts')
-          .select('child_key, child_name, total_questions, percentage, answers, created_at')
-          .order('created_at', { ascending: false })
-          .limit(40),
-        supabase
-          .from('lesson_question_attempts')
-          .select('child_name, is_correct, skill, created_at')
-          .order('created_at', { ascending: false })
-          .limit(300),
-      ]);
+      const bankRes = await supabase
+        .from('lesson_question_attempts')
+        .select('child_name, is_correct, skill, created_at')
+        .order('created_at', { ascending: false })
+        .limit(300);
       if (cancelled) return;
-      const { data, error: e } = examRes;
-      if (e) { setError(e.message); setLoading(false); return; }
+      if (bankRes.error) { setError(bankRes.error.message); setLoading(false); return; }
       const grouped = {};
-      (data || []).forEach(a => {
-        const name = a.child_name || 'طفل غير مسمى';
-        if (!grouped[name]) grouped[name] = { skills: {}, attempts: 0, lastAt: a.created_at };
-        const skills = a.answers?.skills || deriveLegacySkills(a.answers?.choices || a.answers, a.total_questions);
-        if (!skills) return; // محاولة لا يمكن تحليلها — تُتجاهل بدل اختلاق أرقام
-        grouped[name].attempts++;
-        mergeSkills(grouped[name].skills, skills);
-      });
       // محاولات أسئلة بنك الدروس — كل صف إجابة واحدة على سؤال
       (bankRes.data || []).forEach(a => {
         const name = a.child_name || 'طفل غير مسمى';
@@ -95,11 +62,11 @@ export default function SkillsReport() {
       <h2 style={{ fontSize: 17, margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
         🎯 تقرير المهارات
         <span style={{ fontSize: 11, background: 'var(--yellow-light)', color: 'var(--amber-text)', padding: '2px 8px', borderRadius: 8, fontWeight: 700 }}>
-          من المحاولات التدريبية — غير رسمي
+          من أسئلة بنك الدروس
         </span>
       </h2>
       <p style={{ fontSize: 12.5, color: 'var(--muted)', margin: '0 0 12px' }}>
-        يُحسب من إجابات طفلك الفعلية في محاكي الاختبار التدريبي
+        يُحسب من إجابات طفلك الفعلية على أسئلة الدروس
       </p>
 
       {loading && <div style={{ color: 'var(--muted)', fontSize: 13 }}>جارٍ تحميل المحاولات...</div>}
@@ -113,9 +80,9 @@ export default function SkillsReport() {
       {!loading && !error && children.length === 0 && (
         <div style={{ textAlign: 'center', padding: 22, border: '1px dashed var(--line)', borderRadius: 12, color: 'var(--muted)' }}>
           <div style={{ fontSize: 24, marginBottom: 6 }}>📭</div>
-          <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 2 }}>لا توجد محاولات اختبار محفوظة بعد</div>
+          <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 2 }}>لا توجد إجابات محفوظة بعد</div>
           <div style={{ fontSize: 12.5 }}>
-            عندما يُكمل طفلك اختباراً في «محاكي اختبار السفارة» وأنت مسجل الدخول، سيظهر تحليل مهاراته هنا تلقائياً
+            عندما يجيب طفلك على أسئلة الدروس وأنت مسجل الدخول، سيظهر تحليل مهاراته هنا تلقائياً
           </div>
         </div>
       )}

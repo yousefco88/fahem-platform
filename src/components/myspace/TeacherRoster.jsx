@@ -36,7 +36,6 @@ export default function TeacherRoster() {
   const slotState = getTeacherSlotState(slots, slotError);
   const [err, setErr] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
-  const [unlockBusy, setUnlockBusy] = useState({});
   // ساعة حية (كل دقيقة) لعدّاد «تبدأ خلال…» — بيانات حقيقية من مواعيد الجدول فقط
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t); }, []);
@@ -78,7 +77,7 @@ export default function TeacherRoster() {
       try {
         [studentsResult, slotsResult] = await Promise.all([
           supabase.from('teacher_students')
-            .select('child_id, children(id, name, grade, avatar, exam_unlocked)').eq('teacher_id', user.id),
+            .select('child_id, children(id, name, grade, avatar)').eq('teacher_id', user.id),
           supabase.from('schedule_slots').select('id, child_id, day, time, subject_id, slot_type, meeting_url, duration_min, children(name)')
             .eq('teacher_id', user.id).order('day').order('time'),
         ]);
@@ -140,33 +139,6 @@ export default function TeacherRoster() {
               <span style={{ fontSize: 22 }}>{s.avatar || '🧒'}</span>
               <div style={{ flex: 1 }}><strong>{s.name}</strong><div style={muted}>{s.grade}</div></div>
               <span style={muted}>{s.completed === null ? 'تعذر تحميل تقدم الدروس' : <>دروس مكتملة: <strong>{s.completed}</strong></>}</span>
-              <button
-                title="فتح/قفل محاكي السفارة يدوياً لهذا الطالب (يُفتح تلقائياً أيضاً بإكمال مادة كاملة)"
-                style={{
-                  border: '1px solid var(--line)', borderRadius: 999, padding: '5px 12px', fontSize: 12,
-                  fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit',
-                  background: s.exam_unlocked ? 'var(--green-light)' : 'var(--bg)',
-                  color: s.exam_unlocked ? 'var(--green-text)' : 'var(--muted)'
-                }}
-                disabled={!!unlockBusy[s.id]}
-                onClick={async () => {
-                  if (unlockBusy[s.id]) return;
-                  const next = !s.exam_unlocked;
-                  setUnlockBusy(current => ({ ...current, [s.id]: true }));
-                  try {
-                    const r = await supabase.rpc('set_exam_unlocked', { p_child_id: s.id, p_unlocked: next });
-                    if (r.error) {
-                      setErr('تعذر تغيير حالة المحاكي. أعد المحاولة، وإذا استمر الخطأ تواصل مع الإدارة التقنية.');
-                      return;
-                    }
-                    setStudents(list => list.map(x => x.id === s.id ? { ...x, exam_unlocked: next } : x));
-                  } catch {
-                    setErr('تعذر تغيير حالة المحاكي. أعد المحاولة، وإذا استمر الخطأ تواصل مع الإدارة التقنية.');
-                  } finally {
-                    setUnlockBusy(current => ({ ...current, [s.id]: false }));
-                  }
-                }}
-              >{s.exam_unlocked ? '🔓 المحاكي مفتوح' : '🔒 فتح المحاكي'}</button>
             </div>
           ))}
         </>
