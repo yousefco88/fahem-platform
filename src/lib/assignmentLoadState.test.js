@@ -39,3 +39,17 @@ test('reports an unavailable or malformed query set as an error', () => {
   assert.equal(resolveAssignmentLoad(null).status, 'error');
   assert.equal(resolveAssignmentLoad([{}]).status, 'error');
 });
+
+test('does not classify missing or non-array data as a successful empty result', () => {
+  for (const malformed of [undefined, null, {}, 'not an array']) {
+    const result = resolveAssignmentLoad([
+      { data: [] },
+      { data: [] },
+      { data: malformed },
+    ]);
+    assert.equal(result.status, 'error');
+    assert.equal(result.teachers, null);
+    assert.equal(result.kids, null);
+    assert.equal(result.links, null);
+  }
+});

@@ -48,3 +48,18 @@ test('reports unavailable Supabase as an error', () => {
   assert.equal(result.status, 'error');
   assert.equal(result.error.message, 'الخدمة غير مهيأة');
 });
+
+test('does not classify missing or non-array data as a successful empty result', () => {
+  for (const malformed of [undefined, null, {}, 'not an array']) {
+    const result = resolveLessonReviewLoad([
+      { data: [] },
+      { data: [] },
+      { data: [] },
+      { data: malformed },
+    ]);
+    assert.equal(result.status, 'error');
+    assert.equal(result.queue, null);
+    assert.equal(result.teachers, null);
+    assert.ok(result.error instanceof Error);
+  }
+});

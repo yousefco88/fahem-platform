@@ -15,7 +15,18 @@ export function resolveLessonReviewLoad(results) {
     return { status: 'error', queue: null, subjects: null, assignments: null, teachers: null, error: failed.error };
   }
 
-  const [queue, subjects, assignments, teachers] = results.map(result => result?.data || []);
+  if (results.some(result => !Array.isArray(result?.data))) {
+    return {
+      status: 'error',
+      queue: null,
+      subjects: null,
+      assignments: null,
+      teachers: null,
+      error: new Error('Invalid lesson review query data'),
+    };
+  }
+
+  const [queue, subjects, assignments, teachers] = results.map(result => result.data);
   const hasData = [queue, subjects, assignments, teachers].some(rows => rows.length > 0);
 
   return {
