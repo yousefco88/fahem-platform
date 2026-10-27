@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import AiTutorReview from '../ai/AiTutorReview';
+import AiTutorSources from './AiTutorSources';
 import '../ai/AiTutorAdmin.css';
 
 export default function AiTutorSettings() {
@@ -93,6 +94,7 @@ export default function AiTutorSettings() {
           </>
         )}
       </section>
+      <AiTutorSources />
       <AiTutorReview />
     </div>
   );

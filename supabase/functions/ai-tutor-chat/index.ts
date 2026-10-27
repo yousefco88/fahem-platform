@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL')!;
   const userClient = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: auth } } });
 
-  let body: { childId?: string; message?: string; lesson?: { title?: string; objective?: string } };
+  let body: { childId?: string; message?: string; lesson?: { id?: string; title?: string; objective?: string } };
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const childId = body.childId;
   const message = (body.message ?? '').toString().trim().slice(0, MAX_INPUT_CHARS);
@@ -72,6 +72,37 @@ Deno.serve(async (req) => {
       fixes.map((f: { question: string; correction: string }) => `- سؤال: ${f.question.slice(0, 200)} ← الصواب: ${f.correction.slice(0, 400)}`).join('\n')
     : '';
 
+  // نص الدرس الحالي من المنهج المنشور والمعتمد فقط
+  let lessonText = '';
+  let lessonSubject: string | null = null;
+  if (body.lesson?.id) {
+    const { data: L, error: lerr } = await admin.from('curriculum_lessons')
+      .select('title, description, subject_key, content')
+      .eq('id', String(body.lesson.id).slice(0, 120)).eq('published', true).eq('review_status', 'approved').maybeSingle();
+    if (lerr) console.error('lesson lookup failed:', lerr.message);
+    if (L) {
+      lessonSubject = L.subject_key ?? null;
+      const c = (L.content ?? {}) as Record<string, unknown>;
+      const guide = typeof c.parentGuide === 'string' ? c.parentGuide : '';
+      lessonText = [L.title, L.description, typeof c.objective === 'string' ? c.objective : '', guide]
+        .filter(Boolean).join(' — ').slice(0, 1000);
+    }
+  }
+  // قاعدة المعرفة: مدخلات معتمدة + مصادر معتمدة (فشل البحث لا يوقف الرد)
+  type Hit = { kind: string; title: string; content: string };
+  const { data: hitsRaw } = await admin.rpc('ai_tutor_retrieve', { p_child: childId, p_query: message, p_subject: lessonSubject, p_limit: 3 });
+  const hits = (hitsRaw ?? []) as Hit[];
+  const qa = hits.filter((h) => h.kind === 'qa').slice(0, 3);
+  const src = hits.filter((h) => h.kind === 'source').slice(0, 3);
+  const kbParts: string[] = [];
+  if (lessonText) kbParts.push('نص الدرس الحالي: ' + lessonText);
+  for (const h of qa) kbParts.push(`إجابة معتمدة — سؤال: ${h.title.slice(0, 200)} ← ${h.content.slice(0, 500)}`);
+  for (const h of src) kbParts.push(`مقتطف من «${h.title.slice(0, 80)}»: ${h.content.slice(0, 600)}`);
+  const kbCtx = kbParts.length
+    ? '\nمادة مرجعية معتمدة (أجب منها بكلماتك البسيطة ولا تنسخها حرفيًا؛ إن لم تكفِ للإجابة فقل: اسأل معلمك):\n' + kbParts.join('\n')
+    : '';
+  const ctxTag = qa.length ? 'knowledge' : src.length ? 'source' : lessonText ? 'lesson' : 'model';
+
   const lessonCtx = body.lesson?.title
     ? `\nالدرس الحالي للطفل: «${String(body.lesson.title).slice(0, 120)}». الهدف: ${String(body.lesson.objective ?? '').slice(0, 300)}`
     : '';
@@ -85,7 +116,7 @@ Deno.serve(async (req) => {
       temperature: 0.4,
       chat_template_kwargs: { enable_thinking: false },
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT + extraCtx + fixCtx + lessonCtx },
+        { role: 'system', content: SYSTEM_PROMPT + extraCtx + fixCtx + lessonCtx + kbCtx },
         { role: 'user', content: message },
       ],
     }),
@@ -99,7 +130,7 @@ Deno.serve(async (req) => {
   if (!reply) return json({ error: 'empty_reply', message: 'لم أستطع الرد. اسأل معلمك 👨‍🏫' }, 502);
   const cost = COST_MICRO;
 
-  await admin.rpc('ai_tutor_record', { p_child: childId, p_user: message, p_reply: reply, p_cost_micro: cost });
+  await admin.rpc('ai_tutor_record', { p_child: childId, p_user: message, p_reply: reply, p_cost_micro: cost, p_ctx: /اسأل معلمك/.test(reply) ? 'deferred' : ctxTag });
 
   return json({ reply });
 });

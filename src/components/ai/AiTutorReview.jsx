@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
+import AiTutorKnowledge from './AiTutorKnowledge';
 import './AiTutorAdmin.css';
 
 const FILTERS = [
@@ -15,7 +16,7 @@ const FILTERS = [
   { id: 'all', label: 'الكل' },
 ];
 
-export default function AiTutorReview() {
+function ChatsReview() {
   const { triggerToast } = useApp();
   const [items, setItems] = useState([]);
   const [state, setState] = useState('loading'); // loading | error | ready
@@ -134,5 +135,15 @@ export default function AiTutorReview() {
         </article>
       ))}
     </section>
+  );
+}
+
+
+export default function AiTutorReview() {
+  return (
+    <div className="atr-page" dir="rtl">
+      <ChatsReview />
+      <AiTutorKnowledge />
+    </div>
   );
 }

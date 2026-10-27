@@ -36,3 +36,7 @@
 .atr-btn.bad { background: var(--red-light); color: var(--red-text); border-color: var(--red-text); }
 .atr-btn:disabled { opacity: .5; cursor: not-allowed; }
 @media (max-width: 640px) { .atr-row .atr-btn { flex: 1 1 100%; } }
+
+.atr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.atr-field select, .atr-field input[type="file"] { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card-bg); color: inherit; font: inherit; font-weight: 400; }
+.atr-sub { margin: 18px 0 4px; color: var(--navy); font-size: 15px; }

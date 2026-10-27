@@ -106,7 +106,7 @@ async function askRealAi(message, childId, lesson) {
       body: {
         childId,
         message,
-        lesson: lesson ? { title: lesson.title, objective: lesson.objective } : undefined
+        lesson: lesson ? { id: lesson.id, title: lesson.title, objective: lesson.objective } : undefined
       }
     });
     if (!error && data?.reply) return data.reply;
