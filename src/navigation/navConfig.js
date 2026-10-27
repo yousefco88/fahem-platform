@@ -64,6 +64,7 @@ export const ADMIN_SECTIONS = [
   { id: 'curriculum', icon: '📚', label: 'إدارة المناهج', roles: ['admin', 'content_editor'] },
   { id: 'lessonReview', icon: '🧾', label: 'مراجعة دروس المعلمين', roles: ['admin', 'content_editor'] },
   { id: 'settings', icon: '⚙️', label: 'إعدادات الموقع', roles: ['admin', 'content_editor'] },
+  { id: 'aiTutor', icon: '🤖', label: 'مساعد التدريب', roles: ['admin'] },
   { id: 'recordings', icon: '🎥', label: 'مراجعة تسجيلات الحصص', roles: ['admin'] },
   { id: 'bookings', icon: '📋', label: 'حجوزات الحصص التجريبية', roles: ['admin'] },
   { id: 'families', icon: '👨‍👩‍👧‍👦', label: 'حسابات الأسر', roles: ['admin'] },

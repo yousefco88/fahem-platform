@@ -19,6 +19,7 @@ const REASON_MESSAGES: Record<string, string> = {
   consent_required: 'مساعد الذكاء الاصطناعي مغلق. يفعّله ولي الأمر من إعدادات الحساب.',
   daily_limit: 'وصلت للحد اليومي من الأسئلة. كمّل غدًا أو اسأل معلمك 👨‍🏫',
   budget_exhausted: 'المساعد متوقف مؤقتًا. اسأل معلمك في الحصة 👨‍🏫',
+  tutor_disabled: 'المساعد متوقف مؤقتًا من الإدارة. اسأل معلمك في الحصة 👨‍🏫',
   forbidden: 'غير مسموح.',
   unauthenticated: 'سجّل الدخول أولًا.',
 };
@@ -59,6 +60,18 @@ Deno.serve(async (req) => {
     return json({ error: reason, message: REASON_MESSAGES[reason as string] ?? 'غير متاح الآن.' }, reason === 'unauthenticated' ? 401 : 403);
   }
 
+  // إعدادات الإدارة + تصحيحات المعلمين (قراءة بصلاحية الخدمة؛ أي فشل = نكمل بالإعدادات الافتراضية)
+  const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const { data: cfg } = await admin.from('ai_tutor_settings').select('extra_instructions, model').eq('id', 1).maybeSingle();
+  const { data: fixes } = await admin.from('ai_tutor_corrections')
+    .select('question, correction').eq('verdict', 'wrong').order('created_at', { ascending: false }).limit(6);
+  const extra = (cfg?.extra_instructions ?? '').toString().trim().slice(0, 1500);
+  const extraCtx = extra ? `\nتعليمات إضافية من الإدارة:\n${extra}` : '';
+  const fixCtx = (fixes && fixes.length)
+    ? '\nتصحيحات معتمدة من المعلمين (التزم بها إن تكرر السؤال أو ما يشبهه):\n' +
+      fixes.map((f: { question: string; correction: string }) => `- سؤال: ${f.question.slice(0, 200)} ← الصواب: ${f.correction.slice(0, 400)}`).join('\n')
+    : '';
+
   const lessonCtx = body.lesson?.title
     ? `\nالدرس الحالي للطفل: «${String(body.lesson.title).slice(0, 120)}». الهدف: ${String(body.lesson.objective ?? '').slice(0, 300)}`
     : '';
@@ -67,12 +80,12 @@ Deno.serve(async (req) => {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: Deno.env.get('NVIDIA_MODEL') ?? DEFAULT_MODEL,
+      model: cfg?.model || Deno.env.get('NVIDIA_MODEL') || DEFAULT_MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
       temperature: 0.4,
       chat_template_kwargs: { enable_thinking: false },
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT + lessonCtx },
+        { role: 'system', content: SYSTEM_PROMPT + extraCtx + fixCtx + lessonCtx },
         { role: 'user', content: message },
       ],
     }),
@@ -86,7 +99,6 @@ Deno.serve(async (req) => {
   if (!reply) return json({ error: 'empty_reply', message: 'لم أستطع الرد. اسأل معلمك 👨‍🏫' }, 502);
   const cost = COST_MICRO;
 
-  const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   await admin.rpc('ai_tutor_record', { p_child: childId, p_user: message, p_reply: reply, p_cost_micro: cost });
 
   return json({ reply });

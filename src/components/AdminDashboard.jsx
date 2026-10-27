@@ -1,6 +1,7 @@
 import RecordingsReview from './admin/RecordingsReview';
 import { gradeLabel } from '../utils/gradeLabel';
 import LessonReview from './admin/LessonReview';
+import AiTutorSettings from './admin/AiTutorSettings';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
@@ -256,6 +257,7 @@ export default function AdminDashboard() {
       </div>
 
       {activeAdminTab === 'lessonReview' && <LessonReview />}
+      {activeAdminTab === 'aiTutor' && role === 'admin' && <AiTutorSettings />}
 
       {/* TAB: SITE SETTINGS */}
       {activeAdminTab === 'settings' && <SiteSettingsPanel />}

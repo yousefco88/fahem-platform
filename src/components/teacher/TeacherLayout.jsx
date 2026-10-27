@@ -28,6 +28,7 @@ export default function TeacherLayout() {
         <NavLink end to="/teacher" style={linkStyle}>🏠 الرئيسية</NavLink>
         <NavLink to="/teacher/classes" style={({ isActive }) => linkStyle({ isActive })}>🗓️ الحصص والطلاب</NavLink>
         <NavLink to="/teacher/curriculum" style={() => linkStyle({ isActive: curriculumActive })}>📚 مناهجي</NavLink>
+        <NavLink to="/teacher/ai-review" style={({ isActive }) => linkStyle({ isActive })}>🤖 مراجعة المساعد</NavLink>
       </nav>
       <Outlet />
     </main>

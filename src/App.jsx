@@ -22,6 +22,7 @@ const TeacherStudio = lazy(() => import('./components/TeacherStudio'));
 const TeacherClasses = lazy(() => import('./components/teacher/TeacherClasses'));
 const TeacherLayout = lazy(() => import('./components/teacher/TeacherLayout'));
 const TeacherCurriculum = lazy(() => import('./components/teacher/TeacherCurriculum'));
+const AiTutorReview = lazy(() => import('./components/ai/AiTutorReview'));
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const EmbassyExamSimulator = lazy(() => import('./components/EmbassyExamSimulator'));
 const PricingPlans = lazy(() => import('./components/PricingPlans'));
@@ -104,6 +105,7 @@ function MainAppContent() {
               <Route index element={<TeacherStudio />} />
               <Route path="classes" element={<TeacherClasses />} />
               <Route path="curriculum/*" element={<TeacherCurriculum />} />
+              <Route path="ai-review" element={<AiTutorReview />} />
             </Route>
             <Route
               path="/admin/*"
