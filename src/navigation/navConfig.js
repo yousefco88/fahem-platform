@@ -7,7 +7,7 @@ const ITEM = {
   pricing: { id: 'pricing', icon: '💳', label: 'اشتراكي' },
   parent: { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
   child: { id: 'child', icon: '🎓', label: 'التعلّم', variant: 'child' },
-  aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'مساعد التدريب' },
+  aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'مساعد التدريب', short: 'المساعد' },
   teacher: { id: 'teacher', icon: '👩‍🏫', label: 'مساحة المعلم', variant: 'teacher' },
   admin: { id: 'admin', icon: '⚙️', label: 'الإدارة', variant: 'admin' },
   analytics: { id: 'analytics', icon: '📊', label: 'التحليلات' }
@@ -15,28 +15,33 @@ const ITEM = {
 
 const mySpace = (label = 'مساحتي') => ({ id: 'account', icon: '👤', label });
 
-// primary = الشريط السفلي في الجوال (4 + "المزيد") وكل عناصر الويب
-// more    = قائمة "المزيد" في الجوال وبقية عناصر الويب
+// primary = عناصر الويب الأساسية | more = بقية عناصر الويب
+// mobile  = الشريط السفلي في الجوال: كل التبويبات ظاهرة (حتى 5) بلا قائمة "المزيد"
 export const NAV_BY_ROLE = {
   guest: {
     primary: [ITEM.landing, ITEM.pricing, mySpace('دخول')],
-    more: [ITEM.aiTutor]
+    more: [ITEM.aiTutor],
+    mobile: [ITEM.landing, ITEM.pricing, ITEM.aiTutor, mySpace('دخول')]
   },
   parent: {
     primary: [ITEM.landing, ITEM.child, ITEM.parent, mySpace()],
-    more: [ITEM.aiTutor, ITEM.pricing]
+    more: [ITEM.aiTutor, ITEM.pricing],
+    mobile: [ITEM.landing, ITEM.child, ITEM.parent, ITEM.aiTutor, mySpace()]
   },
   teacher: {
     primary: [ITEM.landing, ITEM.teacher, mySpace()],
-    more: [ITEM.child, ITEM.aiTutor]
+    more: [ITEM.child, ITEM.aiTutor],
+    mobile: [ITEM.landing, ITEM.teacher, ITEM.child, ITEM.aiTutor, mySpace()]
   },
   content_editor: {
     primary: [ITEM.landing, ITEM.admin, mySpace()],
-    more: [ITEM.child]
+    more: [ITEM.child],
+    mobile: [ITEM.landing, ITEM.admin, ITEM.child, mySpace()]
   },
   admin: {
     primary: [ITEM.landing, ITEM.admin, ITEM.analytics, mySpace()],
-    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.pricing]
+    more: [ITEM.teacher, ITEM.parent, ITEM.child, ITEM.pricing],
+    mobile: [ITEM.landing, ITEM.admin, ITEM.analytics, ITEM.child, mySpace()]
   }
 };
 
