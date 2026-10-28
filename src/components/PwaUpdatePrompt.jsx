@@ -1,4 +1,5 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import Emoji from '../ui/Emoji';
 
 // شريط «يتوفر تحديث» — يظهر عندما ينتظر Service Worker جديد.
 // سبب وجوده: كان المستخدم يبقى على نسخة قديمة بعد النشر حتى يُغلق التطبيق كلياً.
@@ -32,7 +33,7 @@ export default function PwaUpdatePrompt() {
         maxWidth: 'min(92vw, 420px)'
       }}
     >
-      <span style={{ fontWeight: 700, fontSize: 14 }}>✨ يتوفر تحديث جديد للتطبيق</span>
+      <span style={{ fontWeight: 700, fontSize: 14 }}><Emoji>✨</Emoji> يتوفر تحديث جديد للتطبيق</span>
       <button
         onClick={() => updateServiceWorker(true)}
         style={{

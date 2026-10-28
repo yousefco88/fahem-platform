@@ -10,6 +10,7 @@ import { logActivity } from '../../../lib/activityLog';
 import { useAuth } from '../../../context/AuthContext';
 import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
+import Emoji from '../../../ui/Emoji';
 
 // يحذف الخيارات الفارغة ويعيد حساب رقم الإجابة الصحيحة ليشير لنفس الخيار بعد الحذف
 function compactChoices(choices, answer) {
@@ -246,8 +247,8 @@ export default function LessonEditor() {
           </button>
           {isTeacher && !locked && (
             <>
-              <button className="btn-success" onClick={submitForReview} disabled={saving}>📤 إرسال للمراجعة</button>
-              <button className="btn-muted" onClick={archiveLesson} disabled={saving}>🗄️ أرشفة</button>
+              <button className="btn-success" onClick={submitForReview} disabled={saving}><Emoji>📤</Emoji> إرسال للمراجعة</button>
+              <button className="btn-muted" onClick={archiveLesson} disabled={saving}><Emoji>🗄️</Emoji> أرشفة</button>
             </>
           )}
         </div>
@@ -689,7 +690,7 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
         <div style={{ color: 'var(--muted)', fontSize: '13px', padding: '16px' }}>جارٍ تحميل الأسئلة...</div>
       ) : items.length === 0 && !draft ? (
         <div style={{ textAlign: 'center', padding: '24px', border: '1px dashed var(--line)', borderRadius: '12px', color: 'var(--muted)', marginBottom: '12px' }}>
-          <div style={{ fontSize: '24px', marginBottom: '6px' }}>❓</div>
+          <div style={{ fontSize: '24px', marginBottom: '6px' }}><Emoji>❓</Emoji></div>
           <div style={{ fontSize: '13px' }}>لا توجد أسئلة في البنك بعد — أضف أول سؤال</div>
         </div>
       ) : (
@@ -763,7 +764,7 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
             <div className="form-group">
               <label>العناصر بالترتيب الصحيح (سطر لكل عنصر)</label>
               <textarea className="input-md" rows={4} value={draft.choices.join('\n')} onChange={e => updateDraft('choices', e.target.value.split('\n'))} placeholder={'الأول\nالثاني\nالثالث'} />
-              <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}>⚠️ أسئلة الترتيب تُحفظ في البنك لكنها لا تُعرض في مشغّل الطفل بعد</span>
+              <span style={{ fontSize: '11.5px', color: 'var(--muted)' }}><Emoji>⚠️</Emoji> أسئلة الترتيب تُحفظ في البنك لكنها لا تُعرض في مشغّل الطفل بعد</span>
             </div>
           )}
 

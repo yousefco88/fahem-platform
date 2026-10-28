@@ -163,3 +163,8 @@
   .ch-card-title { font-size: 18px; }
   .ch-subjects-head h2 { font-size: 18px; }
 }
+
+/* المظهر المعتمد */
+.ch-slot-btn, .ch-cat-btn { border-radius: 999px; }
+.ch-slot-btn { box-shadow: var(--press); transition: transform .12s, box-shadow .12s; }
+.ch-slot-btn:active { transform: translateY(2px); box-shadow: var(--press-down); }

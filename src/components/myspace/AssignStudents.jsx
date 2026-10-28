@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
 import { resolveAssignmentLoad } from '../../lib/assignmentLoadState';
+import Emoji from '../../ui/Emoji';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const muted = { color: 'var(--muted)', fontSize: 13.5 };
@@ -45,7 +46,7 @@ export default function AssignStudents() {
   if (loadStatus === 'loading' || loadStatus === 'error') {
     return (
       <section style={card}>
-        <h2 style={{ fontSize: 17, margin: '0 0 12px', color: 'var(--navy)' }}>🔗 إسناد الطلاب للمعلمين</h2>
+        <h2 style={{ fontSize: 17, margin: '0 0 12px', color: 'var(--navy)' }}><Emoji>🔗</Emoji> إسناد الطلاب للمعلمين</h2>
         {loadStatus === 'loading'
           ? <p role="status" style={muted}>جارٍ تحميل بيانات الإسناد…</p>
           : <div role="alert">
@@ -70,7 +71,7 @@ export default function AssignStudents() {
 
   return (
     <section style={card}>
-      <h2 style={{ fontSize: 17, margin: '0 0 12px', color: 'var(--navy)' }}>🔗 إسناد الطلاب للمعلمين</h2>
+      <h2 style={{ fontSize: 17, margin: '0 0 12px', color: 'var(--navy)' }}><Emoji>🔗</Emoji> إسناد الطلاب للمعلمين</h2>
       {teachers.length === 0 && <p style={muted}>لا يوجد معلمون مسجلون (غيّر دور الحساب إلى معلم أولاً).</p>}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <select aria-label="المعلم" style={sel} value={t} onChange={e => setT(e.target.value)}>

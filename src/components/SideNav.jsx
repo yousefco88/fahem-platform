@@ -58,7 +58,7 @@ export default function SideNav() {
   return (
     <aside className={`side-nav ${collapsed ? 'collapsed' : ''}`} aria-label="أقسام منصة فاهم">
       <div className="side-nav-brand">
-        <span className="side-nav-logo">🎓</span>
+        <span className="side-nav-logo"><Emoji>🎓</Emoji></span>
         {!collapsed && (
           <div className="side-nav-brand-text">
             <strong>منصة فاهم</strong>

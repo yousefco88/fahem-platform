@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getLiveState, formatInTz, JOIN_BEFORE_MIN } from '../utils/liveWindow';
+import Emoji from '../ui/Emoji';
 
 // يظهر داخل الدرس المجدول فقط، وفقط للخانة type === 'live'.
 // open = من 15 دقيقة قبل الموعد حتى نهاية الحصة. الرابط من المعلم (لا مزود بث خارجي).
@@ -25,7 +26,7 @@ export default function LiveJoin({ slot }) {
         <a
           href={slot.meetingUrl} target="_blank" rel="noopener noreferrer"
           style={{ ...box, display: 'block', textAlign: 'center', background: '#dc2626', color: 'white', textDecoration: 'none', fontWeight: 900 }}
-        >🔴 انضم للحصة الآن</a>
+        ><Emoji>🔴</Emoji> انضم للحصة الآن</a>
         {slot.teacherName && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 4, textAlign: 'center', color: 'var(--muted)' }}>مع المعلم {slot.teacherName}</div>}
       </div>
     ) : !isLive ? null : (

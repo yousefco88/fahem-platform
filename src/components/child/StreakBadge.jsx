@@ -1,5 +1,6 @@
 import React from 'react';
 import { getStreakMessage, getLevelTitle, xpForLevel } from '../../hooks/useStreak';
+import Emoji from '../../ui/Emoji';
 
 /**
  * StreakBadge - يعرض سلسلة الأيام والـ XP والمستوى
@@ -38,7 +39,7 @@ export default function StreakBadge({
         }}
         title="اضغط لرؤية التفاصيل"
       >
-        <span style={{ fontSize: '20px' }}>🔥</span>
+        <span style={{ fontSize: '20px' }}><Emoji>🔥</Emoji></span>
         <span style={{ fontWeight: 800, color: 'var(--amber-text)', fontSize: '15px' }}>
           {currentStreak} {currentStreak === 1 ? 'يوم' : 'أيام'}
         </span>
@@ -74,7 +75,7 @@ export default function StreakBadge({
         right: '20px',
         fontSize: '60px',
         opacity: 0.2
-      }}>🔥</div>
+      }}><Emoji>🔥</Emoji></div>
 
       {/* Header */}
       <div style={{
@@ -90,7 +91,7 @@ export default function StreakBadge({
             gap: '8px',
             marginBottom: '4px'
           }}>
-            <span style={{ fontSize: '32px' }}>🔥</span>
+            <span style={{ fontSize: '32px' }}><Emoji>🔥</Emoji></span>
             <span style={{
               fontSize: '36px',
               fontWeight: 900,
@@ -142,7 +143,7 @@ export default function StreakBadge({
       }}>
         {/* Best Streak */}
         <div className="u-22">
-          <div style={{ fontSize: '20px', marginBottom: '4px' }}>🏆</div>
+          <div style={{ fontSize: '20px', marginBottom: '4px' }}><Emoji>🏆</Emoji></div>
           <div className="u-23">
             {bestStreak}
           </div>
@@ -164,7 +165,7 @@ export default function StreakBadge({
 
         {/* Level */}
         <div className="u-22">
-          <div style={{ fontSize: '20px', marginBottom: '4px' }}>🎖️</div>
+          <div style={{ fontSize: '20px', marginBottom: '4px' }}><Emoji>🎖️</Emoji></div>
           <div className="u-23">
             {level}
           </div>
@@ -217,7 +218,7 @@ export default function StreakBadge({
           alignItems: 'center',
           gap: '8px'
         }}>
-          <span>💡</span>
+          <span><Emoji>💡</Emoji></span>
           <span>أكمل درسًا واحدًا اليوم للحفاظ على سلسلتك!</span>
         </div>
       )}

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import './CurriculumAdmin.css';
+import Emoji from '../../../ui/Emoji';
 
 export default function LessonsPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -149,7 +150,7 @@ export default function LessonsPanel() {
         <span className="nav-arrow">→</span>
         <Link to="/admin/subjects">المواد</Link>
         <span className="nav-arrow">→</span>
-        <span className="nav-active">📝 الدروس</span>
+        <span className="nav-active"><Emoji>📝</Emoji> الدروس</span>
       </nav>
 
       <div className="curriculum-header">

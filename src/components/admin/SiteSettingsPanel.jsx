@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { useAuth } from '../../context/AuthContext';
+import Emoji from '../../ui/Emoji';
 
 /**
  * ⚙️ إعدادات الموقع — تعديل محتوى الموقع العام من لوحة الإدارة:
@@ -118,7 +119,7 @@ function SiteSettingsEditor() {
       {isAdmin && (<>
       {/* الشريط العلوي */}
       <div style={card}>
-        <h3 style={sectionTitle}>📣 الشريط العلوي (البانر التسويقي)</h3>
+        <h3 style={sectionTitle}><Emoji>📣</Emoji> الشريط العلوي (البانر التسويقي)</h3>
         <p style={hint}>يظهر أعلى الصفحة الرئيسية فوق الهيدر.</p>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div>
@@ -140,7 +141,7 @@ function SiteSettingsEditor() {
 
       {/* الهيدر */}
       <div style={card}>
-        <h3 style={sectionTitle}>🔝 الهيدر</h3>
+        <h3 style={sectionTitle}><Emoji>🔝</Emoji> الهيدر</h3>
         <p style={hint}>اسم العلامة والسطر التعريفي وزر الحجز (سطح المكتب).</p>
         <div className="u-19">
           <div>
@@ -162,7 +163,7 @@ function SiteSettingsEditor() {
 
       {/* الهيرو */}
       <div style={card}>
-        <h3 style={sectionTitle}>🦸 قسم الهيرو (الرئيسية)</h3>
+        <h3 style={sectionTitle}><Emoji>🦸</Emoji> قسم الهيرو (الرئيسية)</h3>
         <p style={hint}>العنوان الرئيسي والنص التسويقي وأزرار الدعوة لاتخاذ إجراء.</p>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div>
@@ -198,7 +199,7 @@ function SiteSettingsEditor() {
 
       {/* الفوتر */}
       <div style={card}>
-        <h3 style={sectionTitle}>🔻 الفوتر</h3>
+        <h3 style={sectionTitle}><Emoji>🔻</Emoji> الفوتر</h3>
         <p style={hint}>النبذة التعريفية وبيانات التواصل وحقوق النشر. كل سطر تواصل في سطر مستقل.</p>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div>
@@ -224,7 +225,7 @@ function SiteSettingsEditor() {
 
       {/* SEO */}
       <div style={card}>
-        <h3 style={sectionTitle}>🔎 SEO (الصفحة الرئيسية)</h3>
+        <h3 style={sectionTitle}><Emoji>🔎</Emoji> SEO (الصفحة الرئيسية)</h3>
         <p style={hint}>عنوان ووصف الصفحة الرئيسية في محركات البحث (وسم title وmeta description).</p>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div>
@@ -264,7 +265,7 @@ function SiteSettingsEditor() {
 
       {/* المقارنة */}
       <div style={card}>
-        <h3 style={sectionTitle}>⚖️ قسم المقارنة (فاهم مقابل الدروس الخصوصية)</h3>
+        <h3 style={sectionTitle}><Emoji>⚖️</Emoji> قسم المقارنة (فاهم مقابل الدروس الخصوصية)</h3>
         <p style={hint}>الترويسة ورؤوس الأعمدة وكل صفوف الجدول.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
           <div className="u-19">
@@ -302,11 +303,11 @@ function SiteSettingsEditor() {
                 <input style={input} value={row.aspect} onChange={e => setListItem('comparison', 'rows', idx, 'aspect', e.target.value)} />
               </div>
               <div>
-                <label style={label}>✓ في فاهم</label>
+                <label style={label}><Emoji>✓</Emoji> في فاهم</label>
                 <textarea style={{ ...textarea, minHeight: '48px' }} value={row.fahem} onChange={e => setListItem('comparison', 'rows', idx, 'fahem', e.target.value)} />
               </div>
               <div>
-                <label style={label}>❌ في البديل</label>
+                <label style={label}><Emoji>❌</Emoji> في البديل</label>
                 <textarea style={{ ...textarea, minHeight: '48px' }} value={row.other} onChange={e => setListItem('comparison', 'rows', idx, 'other', e.target.value)} />
               </div>
             </div>
@@ -319,7 +320,7 @@ function SiteSettingsEditor() {
 
       {/* المواد والمسارات */}
       <div style={card}>
-        <h3 style={sectionTitle}>📚 قسم المواد والمسارات (الرئيسية)</h3>
+        <h3 style={sectionTitle}><Emoji>📚</Emoji> قسم المواد والمسارات (الرئيسية)</h3>
         <p style={hint}>العداد في العنوان يُحسب تلقائياً من عدد البطاقات. هذا عرض تسويقي — المناهج الفعلية تُدار من تبويب إدارة المناهج.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
           <div className="u-19">
@@ -370,7 +371,7 @@ function SiteSettingsEditor() {
 
       {/* الشهادات */}
       <div style={card}>
-        <h3 style={sectionTitle}>💬 قسم آراء الأسر</h3>
+        <h3 style={sectionTitle}><Emoji>💬</Emoji> قسم آراء الأسر</h3>
         <p style={hint}>حالياً نص صادق «ستُضاف بعد التشغيل التجريبي» — عدّله عند توفر شهادات حقيقية موثقة.</p>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div>
@@ -392,7 +393,7 @@ function SiteSettingsEditor() {
 
       {/* نموذج الحجز */}
       <div style={card}>
-        <h3 style={sectionTitle}>📋 قسم نموذج الحجز التجريبي</h3>
+        <h3 style={sectionTitle}><Emoji>📋</Emoji> قسم نموذج الحجز التجريبي</h3>
         <p style={hint}>نصوص الترويسة وزر الإرسال — حقول النموذج نفسها ثابتة (ترتبط بقاعدة البيانات).</p>
         <div style={{ display: 'grid', gap: '14px' }}>
           <div>
@@ -418,7 +419,7 @@ function SiteSettingsEditor() {
 
       {/* الأسئلة الشائعة */}
       <div style={card}>
-        <h3 style={sectionTitle}>❓ الأسئلة الشائعة</h3>
+        <h3 style={sectionTitle}><Emoji>❓</Emoji> الأسئلة الشائعة</h3>
         <p style={hint}>الترويسة وكل الأسئلة والإجابات — أضف أو احذف أسئلة بحرية.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
           <div>
@@ -455,7 +456,7 @@ function SiteSettingsEditor() {
 
       {/* الباقات والأسعار */}
       <div style={card}>
-        <h3 style={sectionTitle}>💳 الباقات والأسعار</h3>
+        <h3 style={sectionTitle}><Emoji>💳</Emoji> الباقات والأسعار</h3>
         <p style={hint}>ترويسة صفحة الأسعار والباقات الثلاث بكامل محتواها. الميزات: سطر لكل ميزة.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '20px' }}>
           <div>
@@ -525,7 +526,7 @@ function SiteSettingsEditor() {
 
       {/* م4: ترتيب أقسام الرئيسية + ويدجات مخصصة */}
       <div style={card}>
-        <h3 style={sectionTitle}>🧩 أقسام الصفحة الرئيسية والويدجات</h3>
+        <h3 style={sectionTitle}><Emoji>🧩</Emoji> أقسام الصفحة الرئيسية والويدجات</h3>
         <p style={hint}>
           رتّب الأقسام بالأسهم، أخفِ أي قسم بإلغاء التحديد، وأضف ويدجات نصية مخصصة بينها.
           الهيدر والفوتر ثابتان دائماً.
@@ -598,7 +599,7 @@ function SiteSettingsEditor() {
 
       {/* م4: تقويم امتحانات المغتربين — كان ثابتاً في الكود، الآن يُدار من هنا (أدمن + محرر محتوى) */}
       <div style={card}>
-        <h3 style={sectionTitle}>🗓 تقويم امتحانات المغتربين</h3>
+        <h3 style={sectionTitle}><Emoji>🗓</Emoji> تقويم امتحانات المغتربين</h3>
         <p style={hint}>المحطات الرسمية التي تظهر في لوحة ولي الأمر — حدّث المواعيد مع كل عام دراسي.</p>
         <div style={{ display: 'grid', gap: '10px', marginBottom: '14px' }}>
           <input style={input} value={draft.examCalendar?.subtitle || ''} onChange={e => set('examCalendar', 'subtitle', e.target.value)} placeholder="العنوان الفرعي تحت عنوان الأجندة" />

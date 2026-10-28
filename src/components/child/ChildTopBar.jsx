@@ -2,6 +2,7 @@ import React from 'react';
 import { gradeLabel } from '../../utils/gradeLabel';
 import { useApp } from '../../context/AppContext';
 import { getChildStats } from '../../utils/childProgress';
+import Emoji from '../../ui/Emoji';
 
 const pill = (border, color) => ({
   background: 'var(--card-bg)', border: `2px solid ${border}`, padding: '6px 14px',
@@ -40,10 +41,10 @@ export default function ChildTopBar() {
           <span>⭐</span><span>{stats.points}</span><span style={{ fontSize: '12px', fontWeight: 600 }}>نقطة</span>
         </div>
         <div style={pill('#fed7aa', '#ea580c')} title="شارة لكل درس متقن">
-          <span>🏆</span><span>{stats.badges}</span><span style={{ fontSize: '12px', fontWeight: 600 }}>شارات</span>
+          <span><Emoji>🏆</Emoji></span><span>{stats.badges}</span><span style={{ fontSize: '12px', fontWeight: 600 }}>شارات</span>
         </div>
         <div style={pill('#fca5a5', '#dc2626')} title="أيام تعلّم متتالية من سجلك">
-          <span>🔥</span>
+          <span><Emoji>🔥</Emoji></span>
           <span>{stats.streak > 0 ? `${stats.streak} ${stats.streak === 1 ? 'يوم' : 'أيام'}` : 'ابدأ اليوم'}</span>
         </div>
       </div>
@@ -56,7 +57,7 @@ export default function ChildTopBar() {
         }}
         onClick={() => setShowGateModal(true)}
       >
-        <span>🔒 مساحة ولي الأمر</span>
+        <span><Emoji>🔒</Emoji> مساحة ولي الأمر</span>
       </button>
     </nav>
   );

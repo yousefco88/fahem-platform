@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import Emoji from '../../ui/Emoji';
 
 export const scrollToBooking = () => {
   document.getElementById('booking-section')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
@@ -72,7 +73,7 @@ export default function LandingHeader() {
             onClick={scrollToBooking}
           >
             <span>{header.ctaLabel}</span>
-            <span>🚀</span>
+            <span><Emoji>🚀</Emoji></span>
           </button>
         </div>
       </header>

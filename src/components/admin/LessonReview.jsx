@@ -12,6 +12,7 @@ import { useApp } from '../../context/AppContext';
 import { buildTeacherAssignmentRows, filterTeacherAssignmentRows } from '../../lib/teacherSubjectAssignments';
 import './curriculum/CurriculumAdmin.css';
 import './LessonReview.css';
+import Emoji from '../../ui/Emoji';
 
 export default function LessonReview() {
   const { role } = useAuth();
@@ -142,7 +143,7 @@ export default function LessonReview() {
         <section className="lsa-section" aria-labelledby="lsa-title">
           <div className="lsa-heading">
             <div>
-              <h2 id="lsa-title">🎓 إسناد المواد للمعلمين</h2>
+              <h2 id="lsa-title"><Emoji>🎓</Emoji> إسناد المواد للمعلمين</h2>
               <p>اختر المعلم، ثم فعّل المواد التي يدرّسها. يُحفظ كل تغيير مباشرة.</p>
             </div>
             <div className="lsa-summary" aria-label="ملخص الإسناد">
@@ -154,13 +155,13 @@ export default function LessonReview() {
 
           {teachers.length === 0 ? (
             <div className="lsa-empty">
-              <span aria-hidden="true">👩‍🏫</span>
+              <span aria-hidden="true"><Emoji>👩‍🏫</Emoji></span>
               <strong>لا يوجد معلمون بعد</strong>
               <p>فعّل حساب المعلم من قسم «المستخدمون والصلاحيات»، ثم ارجع لتحديد مواده.</p>
             </div>
           ) : subjects.length === 0 ? (
             <div className="lsa-empty">
-              <span aria-hidden="true">📚</span>
+              <span aria-hidden="true"><Emoji>📚</Emoji></span>
               <strong>لا توجد مواد متاحة للإسناد</strong>
               <p>أضف المواد من إدارة المناهج أولاً.</p>
             </div>

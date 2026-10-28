@@ -3,6 +3,7 @@
  * إعدادات الإشعارات
  */
 import React, { useState, useEffect } from 'react';
+import Emoji from '../ui/Emoji';
 import { 
   isNotificationSupported, 
   getNotificationPermission, 
@@ -48,7 +49,7 @@ export default function NotificationSettings() {
   if (!supported) {
     return (
       <div className="bg-yellow-50 rounded-2xl p-6 text-center">
-        <span className="text-4xl mb-3 block">📵</span>
+        <span className="text-4xl mb-3 block"><Emoji>📵</Emoji></span>
         <h3 className="font-bold text-yellow-800 mb-2">الإشعارات غير مدعومة</h3>
         <p className="text-yellow-700 text-sm">
           المتصفح لا يدعم الإشعارات. جرب متصفح آخر.
@@ -147,7 +148,7 @@ export default function NotificationSettings() {
             onClick={handleTestNotification}
             className="w-full py-3 bg-gray-100 rounded-xl text-gray-700 font-medium hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
           >
-            <span>🧪</span>
+            <span><Emoji>🧪</Emoji></span>
             <span>اختبار الإشعارات</span>
           </button>
         </>

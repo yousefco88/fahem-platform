@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import Emoji from '../ui/Emoji';
 
 export default function RequireChild({ children }) {
   const { activeChild, setCurrentScreen } = useApp();
@@ -17,7 +18,7 @@ export default function RequireChild({ children }) {
       alignItems: 'center', justifyContent: 'center', textAlign: 'center',
       padding: '40px 20px', fontFamily: 'Cairo, sans-serif',
     }}>
-      <div style={{ fontSize: 56, marginBottom: 12 }}>👨‍👩‍👧</div>
+      <div style={{ fontSize: 56, marginBottom: 12 }}><Emoji>👨‍👩‍👧</Emoji></div>
       <h2 style={{ fontSize: 22, color: 'var(--navy, var(--navy))', margin: '0 0 8px', fontWeight: 900 }}>
         لا يوجد ملف طفل بعد
       </h2>

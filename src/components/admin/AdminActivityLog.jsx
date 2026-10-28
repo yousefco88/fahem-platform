@@ -6,6 +6,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import Emoji from '../../ui/Emoji';
 
 const ACTION_LABELS = {
   'question.create': { text: 'أضاف سؤالاً لبنك الأسئلة', icon: '➕', badge: 'بنك الأسئلة' },
@@ -74,7 +75,7 @@ export default function AdminActivityLog() {
 
       {!loading && !error && rows.length === 0 && (
         <div style={{ textAlign: 'center', padding: '24px', border: '1px dashed var(--line)', borderRadius: '10px', color: 'var(--muted)' }}>
-          <div style={{ fontSize: '24px', marginBottom: '6px' }}>📭</div>
+          <div style={{ fontSize: '24px', marginBottom: '6px' }}><Emoji>📭</Emoji></div>
           <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '2px' }}>لا توجد أحداث مسجلة بعد</div>
           <div style={{ fontSize: '12px' }}>ستظهر هنا إجراءات المعلمين والإدارة (بنك الأسئلة، المنهج...) فور حدوثها</div>
         </div>

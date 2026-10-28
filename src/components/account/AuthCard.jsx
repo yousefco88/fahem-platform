@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { arabicAuthError } from './authErrors';
 import Field, { PasswordStrength } from './Field';
+import Emoji from '../../ui/Emoji';
 
 export const GRADES = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس']
   .map(n => `الصف ${n} الابتدائي`);
@@ -103,7 +104,7 @@ export default function AuthCard() {
 
       {mode === 'register' && isTeacher && (
         <div className="acct-tabs" role="tablist" aria-label="نوع الحساب" style={{ marginBottom: 12 }}>
-          <span className="acct-tab active" role="tab" aria-selected="true" style={{ cursor: 'default' }}>🎓 تسجيل معلم</span>
+          <span className="acct-tab active" role="tab" aria-selected="true" style={{ cursor: 'default' }}><Emoji>🎓</Emoji> تسجيل معلم</span>
         </div>
       )}
 

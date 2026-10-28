@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { buildChunks, cleanExtracted, looksScanned } from '../../lib/knowledgeIngest';
 import '../ai/AiTutorAdmin.css';
+import Emoji from '../../ui/Emoji';
 
 const MAX_MB = 200;
 const MAX_PAGES = 400;
@@ -139,7 +140,7 @@ export default function AiTutorSources() {
 
   return (
     <section className="atr-wrap" dir="rtl">
-      <h3 className="atr-title">📚 مصادر المناهج</h3>
+      <h3 className="atr-title"><Emoji>📚</Emoji> مصادر المناهج</h3>
       <p className="atr-hint">
         ارفع كتابًا أو ملخصًا (PDF نصي أو TXT أو نص ملصوق). يُقسَّم النص إلى مقاطع ويُحفظ دون الملف الأصلي، ولا يصل المساعد قبل اعتماده.
         المساعد يشرح بكلماته البسيطة ولا ينسخ المقاطع حرفيًا.

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
+import Emoji from '../../ui/Emoji';
 
 const STATUS_OPTIONS = [
   { value: 'new', label: '🆕 جديد', color: 'var(--blue-text)', bg: 'var(--blue-light)' },
@@ -59,7 +60,7 @@ export default function BookingsPanel() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
-          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 900 }}>📋 حجوزات الحصص التجريبية</h3>
+          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 900 }}><Emoji>📋</Emoji> حجوزات الحصص التجريبية</h3>
           <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
             بيانات حقيقية من قاعدة البيانات — إجمالي: {bookings.length} حجز
           </p>
@@ -99,7 +100,7 @@ export default function BookingsPanel() {
 
       {!loading && !loadError && shown.length === 0 && (
         <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)' }}>
-          <div style={{ fontSize: '32px', marginBottom: '8px' }}>📭</div>
+          <div style={{ fontSize: '32px', marginBottom: '8px' }}><Emoji>📭</Emoji></div>
           <div style={{ fontWeight: 800, color: 'var(--navy)' }}>لا توجد حجوزات {filter !== 'all' ? 'بهذه الحالة' : 'بعد'}</div>
           <div className="u-4">كل حجز جديد من صفحة الهبوط سيظهر هنا فوراً.</div>
         </div>

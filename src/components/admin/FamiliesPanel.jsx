@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
+import Emoji from '../../ui/Emoji';
 
 // إدارة حسابات الأسر — بيانات حقيقية من parent_profiles + children (سياسة admin reads)
 export default function FamiliesPanel() {
@@ -42,7 +43,7 @@ export default function FamiliesPanel() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
-          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 900 }}>👨‍👩‍👧‍👦 حسابات الأسر</h3>
+          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 900 }}><Emoji>👨‍👩‍👧‍👦</Emoji> حسابات الأسر</h3>
           <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: 'var(--muted)' }}>
             {families.length} أسرة مسجلة · {families.reduce((n, f) => n + f.children.length, 0)} طفل
           </p>
@@ -54,7 +55,7 @@ export default function FamiliesPanel() {
             placeholder="🔍 ابحث باسم ولي الأمر أو الطفل أو الرقم"
             style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '12.5px', fontFamily: 'inherit', minWidth: '240px' }}
           />
-          <button onClick={fetchFamilies} style={{ border: '1px solid var(--line)', background: 'var(--card-bg)', borderRadius: '10px', padding: '8px 14px', fontWeight: 800, fontSize: '12.5px', cursor: 'pointer' }}>🔄</button>
+          <button onClick={fetchFamilies} style={{ border: '1px solid var(--line)', background: 'var(--card-bg)', borderRadius: '10px', padding: '8px 14px', fontWeight: 800, fontSize: '12.5px', cursor: 'pointer' }}><Emoji>🔄</Emoji></button>
         </div>
       </div>
 
@@ -68,7 +69,7 @@ export default function FamiliesPanel() {
 
       {state === 'ready' && shown.length === 0 && (
         <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)' }}>
-          <div style={{ fontSize: '32px', marginBottom: '8px' }}>📭</div>
+          <div style={{ fontSize: '32px', marginBottom: '8px' }}><Emoji>📭</Emoji></div>
           <div style={{ fontWeight: 800, color: 'var(--navy)' }}>{query ? 'لا نتائج لبحثك' : 'لا توجد أسر مسجلة بعد'}</div>
           <div className="u-4">كل أسرة تسجّل حساباً وتزامن أطفالها ستظهر هنا.</div>
         </div>

@@ -10,6 +10,7 @@ import { useApp } from '../../context/AppContext';
 import AiTutorReview from '../ai/AiTutorReview';
 import AiTutorSources from './AiTutorSources';
 import '../ai/AiTutorAdmin.css';
+import Emoji from '../../ui/Emoji';
 
 export default function AiTutorSettings() {
   const { user } = useAuth();
@@ -53,7 +54,7 @@ export default function AiTutorSettings() {
   return (
     <div className="atr-page" dir="rtl">
       <section className="atr-wrap">
-        <h3 className="atr-title">🤖 إعدادات مساعد التدريب</h3>
+        <h3 className="atr-title"><Emoji>🤖</Emoji> إعدادات مساعد التدريب</h3>
         {state === 'loading' && <div className="atr-empty">جارٍ التحميل...</div>}
         {state === 'error' && <div className="atr-empty atr-err">تعذر تحميل الإعدادات (تتطلب صلاحية الإدارة). <button type="button" className="atr-link" onClick={load}>إعادة المحاولة</button></div>}
         {state === 'ready' && (

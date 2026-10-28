@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 import AiTutorKnowledge from './AiTutorKnowledge';
 import './AiTutorAdmin.css';
+import Emoji from '../../ui/Emoji';
 
 const FILTERS = [
   { id: 'todo', label: 'بانتظار المراجعة' },
@@ -78,7 +79,7 @@ function ChatsReview() {
 
   return (
     <section className="atr-wrap" dir="rtl">
-      <h3 className="atr-title">🧐 مراجعة محادثات المساعد</h3>
+      <h3 className="atr-title"><Emoji>🧐</Emoji> مراجعة محادثات المساعد</h3>
       <p className="atr-hint">
         ما يظهر هنا هو ما دار فعليًا بين أطفال فعّل أولياء أمورهم المساعد وبين النموذج (للمعلم: أطفاله المسندون فقط).
         علّم الرد «صحيحًا» أو «خاطئًا» مع الصواب؛ آخر 6 تصحيحات تُضاف تلقائيًا لتعليمات المساعد في كل رد.

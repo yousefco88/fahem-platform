@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { scrollToBooking } from './LandingHeader';
+import Emoji from '../../ui/Emoji';
 
 // CTA عائم للجوال — يظهر بعد تجاوز قسم الهيرو ويختفي عند نموذج الحجز
 export default function StickyMobileCta() {
@@ -38,7 +39,7 @@ export default function StickyMobileCta() {
         onClick={scrollToBooking}
       >
         <span>احجز حصة تجريبية مجانية</span>
-        <span>🎁</span>
+        <span><Emoji>🎁</Emoji></span>
       </button>
       <style>{`
         @media (max-width: 768px) {

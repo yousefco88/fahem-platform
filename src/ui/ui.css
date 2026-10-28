@@ -114,6 +114,15 @@
 .ch-subject-icon .fe { width: 32px; height: 32px; }
 .tag-badge .fe { width: 1.1em; height: 1.1em; }
 
+/* ---- روابط سريعة وشارات قابلة للنقر (ولي الأمر) ---- */
+.quick-link { border-radius: 16px; transition: transform .15s, box-shadow .15s; }
+.quick-link:hover { transform: translateX(-3px); }
+.quick-link.active { background: var(--g-soft); color: var(--fun-accent); font-weight: 800; }
+button.tag-badge { cursor: pointer; transition: transform .12s; }
+button.tag-badge:hover { transform: translateY(-1px); }
+.tag-badge.info { background: linear-gradient(135deg, #e0e7ff, #ede9fe); color: #4338ca; border-color: transparent; }
+:root.dark .tag-badge.info { background: linear-gradient(135deg, #312e81, #4c1d95); color: #e0e7ff; }
+
 @media (prefers-reduced-motion: reduce) {
   .fe, .bottom-nav-icon .fe, .toast-banner, .btn-primary, .btn-secondary, .btn-accent { transition: none; animation: none; }
 }

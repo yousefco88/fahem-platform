@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
+import Emoji from '../../ui/Emoji';
 
 const card = {
   background: 'var(--card-bg)', border: '1px solid var(--line)',
@@ -79,7 +80,7 @@ export default function SkillsReport() {
 
       {!loading && !error && children.length === 0 && (
         <div style={{ textAlign: 'center', padding: 22, border: '1px dashed var(--line)', borderRadius: 12, color: 'var(--muted)' }}>
-          <div style={{ fontSize: 24, marginBottom: 6 }}>📭</div>
+          <div style={{ fontSize: 24, marginBottom: 6 }}><Emoji>📭</Emoji></div>
           <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 2 }}>لا توجد إجابات محفوظة بعد</div>
           <div style={{ fontSize: 12.5 }}>
             عندما يجيب طفلك على أسئلة الدروس وأنت مسجل الدخول، سيظهر تحليل مهاراته هنا تلقائياً

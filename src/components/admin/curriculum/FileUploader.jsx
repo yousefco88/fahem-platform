@@ -5,6 +5,7 @@
 import { useState, useRef } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../context/AuthContext';
+import Emoji from '../../../ui/Emoji';
 
 const BUCKET = 'curriculum-media';
 
@@ -170,7 +171,7 @@ export default function FileUploader({
             </>
           ) : (
             <>
-              <span className="upload-icon">📤</span>
+              <span className="upload-icon"><Emoji>📤</Emoji></span>
               <span>اختر {config.label} للرفع</span>
               <span className="upload-hint">الحد الأقصى: {config.maxSize / (1024 * 1024)}MB</span>
             </>

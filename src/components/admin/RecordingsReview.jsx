@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { listPendingRecordings, reviewLessonRecording, signedRecordingUrl } from '../../hooks/useLessonRecordings';
+import Emoji from '../../ui/Emoji';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 12 };
 const btn = (bg) => ({ padding: '8px 16px', borderRadius: 999, border: 0, cursor: 'pointer', font: 'inherit', fontWeight: 800, fontSize: 13.5, background: bg, color: 'white', boxShadow: 'var(--press)' });
@@ -28,7 +29,7 @@ export default function RecordingsReview() {
 
   return (
     <section>
-      <h2 style={{ fontSize: 18, color: 'var(--navy)', marginBottom: 6 }}>🎥 مراجعة تسجيلات الحصص</h2>
+      <h2 style={{ fontSize: 18, color: 'var(--navy)', marginBottom: 6 }}><Emoji>🎥</Emoji> مراجعة تسجيلات الحصص</h2>
       <p style={{ color: 'var(--muted)', fontSize: 13.5, marginBottom: 14 }}>شاهد التسجيل قبل القبول، وتأكد أنه لا يظهر وجوه الأطفال ولا أصواتهم. المقبول يظهر لطلاب الدرس المنشور فقط.</p>
       {msg && <p role="alert" style={{ color: 'var(--red-text)' }}>{msg}</p>}
       {rows === null && <p>جارٍ التحميل…</p>}

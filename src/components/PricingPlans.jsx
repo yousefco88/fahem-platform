@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import Emoji from '../ui/Emoji';
 
 // صفحة الباقات — كل المحتوى قابل للتعديل من لوحة الإدارة ⚙️ إعدادات الموقع
 export default function PricingPlans() {
@@ -67,7 +68,7 @@ export default function PricingPlans() {
             <ul style={{ listStyle: 'none', margin: '28px 0', padding: 0, display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
               {(plan.features || []).map((feature, i) => (
                 <li key={i} style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: 'var(--green-text)', fontWeight: 900 }}>✓</span> {feature}
+                  <span style={{ color: 'var(--green-text)', fontWeight: 900 }}><Emoji>✓</Emoji></span> {feature}
                 </li>
               ))}
             </ul>

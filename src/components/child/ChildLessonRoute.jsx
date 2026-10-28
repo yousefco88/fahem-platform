@@ -5,6 +5,7 @@ import { useUIState } from '../../context/UIContext';
 import { findLessonSubject } from '../../utils/childProgress';
 import SubjectLessons from './SubjectLessons';
 import { childPaths } from './childSubjects';
+import Emoji from '../../ui/Emoji';
 
 const VALID_TABS = ['video', 'quiz', 'pdf', 'guide'];
 
@@ -50,7 +51,7 @@ export default function ChildLessonRoute() {
   if (!found) {
     return (
       <div style={{ background: 'var(--card-bg)', border: '2px dashed var(--line)', borderRadius: '28px', padding: '40px', textAlign: 'center' }}>
-        <div style={{ fontSize: '40px', marginBottom: '8px' }}>🔍</div>
+        <div style={{ fontSize: '40px', marginBottom: '8px' }}><Emoji>🔍</Emoji></div>
         <div style={{ fontWeight: 900, color: 'var(--navy)', marginBottom: '6px' }}>هذا الدرس غير موجود في المنهج</div>
         <Link to={childPaths.home} style={{ color: 'var(--blue-text)', fontWeight: 800 }}>ارجع إلى مساحتك</Link>
       </div>

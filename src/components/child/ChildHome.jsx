@@ -51,7 +51,7 @@ export default function ChildHome() {
         </div>
         <div className="ch-mascot" onClick={handleMascotSpeak} title="انقر للتحدث مع فاهم!">
           <div className="ch-mascot-bubble">اضغط لسماعي! 💬</div>
-          <div className="ch-mascot-emoji">🦊</div>
+          <div className="ch-mascot-emoji"><Emoji>🦊</Emoji></div>
         </div>
       </section>
 
@@ -93,7 +93,7 @@ export default function ChildHome() {
       {/* يومك النهارده */}
       <section className="ch-card">
         <h2 className="ch-card-title">
-          <span>📅 يومك النهارده</span>
+          <span><Emoji>📅</Emoji> يومك النهارده</span>
           <span className="ch-day-chip">{todayName}</span>
         </h2>
         {todayPlan.length === 0 ? (
@@ -142,7 +142,7 @@ export default function ChildHome() {
       {/* المواد بتقدمها الحقيقي */}
       <section className="ch-card">
         <div className="ch-subjects-head">
-          <h2>🗺️ جزيرة المواد</h2>
+          <h2><Emoji>🗺️</Emoji> جزيرة المواد</h2>
           <div className="ch-cats">
             {categories.map(cat => (
               <button

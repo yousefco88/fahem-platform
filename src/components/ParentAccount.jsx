@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import AuthCard from './account/AuthCard';
 import FamilyPanel from './account/FamilyPanel';
 import './account/account.css';
+import Emoji from '../ui/Emoji';
 
 /**
  * صفحة حساب الأسرة — غلاف نحيف:
@@ -45,7 +46,7 @@ export default function ParentAccount({ embedded = false }) {
       <section className="acct-card">
         {!embedded && (
           <header className="acct-head">
-            <div className="acct-logo" aria-hidden="true">🎓</div>
+            <div className="acct-logo" aria-hidden="true"><Emoji>🎓</Emoji></div>
             <h1>حسابك في فاهم</h1>
             <p>دخول واحد يناسب الجميع — بأمان وخصوصية كاملة.</p>
           </header>

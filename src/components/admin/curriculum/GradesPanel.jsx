@@ -8,6 +8,7 @@ import { supabase } from '../../../lib/supabase';
 import { loadGradeSubjectCounts } from '../../../lib/gradeSubjectCounts';
 import { buildGradeManagementRows, filterGradeManagementRows, summarizeGradeManagement } from '../../../lib/gradeManagement';
 import './CurriculumAdmin.css';
+import Emoji from '../../../ui/Emoji';
 
 const STAGES = [
   { id: 'kg', label: 'رياض الأطفال' },
@@ -188,7 +189,7 @@ export default function GradesPanel() {
   return (
     <div className="curriculum-panel gm-panel">
       <nav className="curriculum-nav" aria-label="مسار إدارة المناهج">
-        <span className="nav-active">📚 الصفوف</span>
+        <span className="nav-active"><Emoji>📚</Emoji> الصفوف</span>
         <span className="nav-arrow">→</span>
         <Link to="/admin/subjects">المواد</Link>
         <span className="nav-arrow">→</span>
@@ -197,7 +198,7 @@ export default function GradesPanel() {
 
       <div className="curriculum-header gm-header">
         <div>
-          <h2>📚 إدارة الصفوف الدراسية</h2>
+          <h2><Emoji>📚</Emoji> إدارة الصفوف الدراسية</h2>
           <p>ابحث عن الصفوف، راجع المواد المرتبطة، وعدّل الحالة من بطاقة الصف.</p>
         </div>
         <button className="btn-primary" onClick={startNew}>
@@ -319,14 +320,14 @@ export default function GradesPanel() {
 
       {grades.length === 0 ? (
         <div className="gm-empty-state">
-          <span aria-hidden="true">📚</span>
+          <span aria-hidden="true"><Emoji>📚</Emoji></span>
           <h3>لا توجد صفوف دراسية بعد</h3>
           <p>أضف الصف الأول لبدء تنظيم المواد والدروس.</p>
           {!editingId && <button className="btn-primary" onClick={startNew}>+ إضافة أول صف</button>}
         </div>
       ) : visibleGrades.length === 0 ? (
         <div className="gm-empty-state">
-          <span aria-hidden="true">🔎</span>
+          <span aria-hidden="true"><Emoji>🔎</Emoji></span>
           <h3>لا توجد نتائج مطابقة</h3>
           <p>جرّب تغيير عبارة البحث أو خيارات التصفية.</p>
           <button type="button" className="btn-muted" onClick={() => {

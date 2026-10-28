@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { BADGE_CATEGORIES } from '../../data/badges';
+import Emoji from '../../ui/Emoji';
 
 export default function BadgeCard({ badge, earned = false, showDetails = false, onClick }) {
   const category = BADGE_CATEGORIES[badge.category];
@@ -65,14 +66,14 @@ export default function BadgeCard({ badge, earned = false, showDetails = false, 
       {/* Earned checkmark */}
       {earned && (
         <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow">
-          <span className="text-white text-sm">✓</span>
+          <span className="text-white text-sm"><Emoji>✓</Emoji></span>
         </div>
       )}
 
       {/* Locked icon for unearned */}
       {!earned && (
         <div className="absolute -top-1 -right-1 w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center">
-          <span className="text-white text-xs">🔒</span>
+          <span className="text-white text-xs"><Emoji>🔒</Emoji></span>
         </div>
       )}
     </button>

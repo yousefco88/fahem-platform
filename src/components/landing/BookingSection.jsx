@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { launchConfetti } from '../../utils/confetti';
 import { supabase } from '../../lib/supabase';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import Emoji from '../../ui/Emoji';
 
 // رمز الدولة (ISO) يُحفظ في country_code بدل نص الخيار
 const COUNTRY_CODES = {
@@ -81,7 +82,7 @@ export default function BookingSection() {
         }}>
           {bookingSuccess ? (
             <div style={{ textAlign: 'center', padding: '20px 10px' }}>
-              <div style={{ fontSize: '54px', marginBottom: '12px' }}>🎉</div>
+              <div style={{ fontSize: '54px', marginBottom: '12px' }}><Emoji>🎉</Emoji></div>
               <h3 style={{ fontSize: '22px', color: 'var(--green-text)', marginBottom: '8px' }}>
                 تم استلام طلبك بنجاح
               </h3>
@@ -187,7 +188,7 @@ export default function BookingSection() {
                 }}
               >
                 <span>{bookingTexts.submitLabel}</span>
-                <span>📲</span>
+                <span><Emoji>📲</Emoji></span>
               </button>
             </form>
           )}

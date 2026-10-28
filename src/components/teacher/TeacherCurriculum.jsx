@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import LessonEditor from '../admin/curriculum/LessonEditor';
 import '../admin/curriculum/CurriculumAdmin.css';
+import Emoji from '../../ui/Emoji';
 
 const STATUS = {
   rejected: { label: '✕ مرفوض — يحتاج تعديلك', cls: 'tc-badge-rejected', order: 0 },
@@ -110,10 +111,10 @@ function MyLessons() {
       <nav className="curriculum-nav">
         <Link to="/teacher">مساحة المعلم</Link>
         <span className="nav-arrow">→</span>
-        <span className="nav-active">📚 مناهجي</span>
+        <span className="nav-active"><Emoji>📚</Emoji> مناهجي</span>
       </nav>
 
-      <div className="curriculum-header"><h2>📚 مناهجي</h2></div>
+      <div className="curriculum-header"><h2><Emoji>📚</Emoji> مناهجي</h2></div>
 
       {subjects.length === 0 ? (
         <p className="empty-state">لم تُسنَد لك مواد بعد. تُسنِد الإدارة المواد من «المستخدمون والصلاحيات»، وبعدها تستطيع إضافة دروسك هنا.</p>

@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { arabicAuthError } from './authErrors';
 import Field from './Field';
 import { GRADES } from './AuthCard';
+import Emoji from '../../ui/Emoji';
 
 /**
  * لوحة العائلة بعد تسجيل الدخول: بطاقة ولي الأمر + ملفات الأبناء + إضافة/حذف.
@@ -62,7 +63,7 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
 
       {kids.map((c) => (
         <div className="fam-child" key={c.id}>
-          <span className="emoji" aria-hidden="true">🧒</span>
+          <span className="emoji" aria-hidden="true"><Emoji>🧒</Emoji></span>
           <div className="info">
             <strong>{c.name}</strong>
             <span className="tag-badge info">{gradeLabel(c.grade)}</span>
@@ -79,7 +80,7 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
       ))}
 
       <form className="fam-add" onSubmit={addChild}>
-        <h3 className="fam-sec-title" style={{ marginTop: 0 }}>➕ إضافة ابن/ابنة</h3>
+        <h3 className="fam-sec-title" style={{ marginTop: 0 }}><Emoji>➕</Emoji> إضافة ابن/ابنة</h3>
         <Field
           label="اسم الطفل" required value={newChild.name}
           onChange={(e) => setNewChild(c => ({ ...c, name: e.target.value }))}

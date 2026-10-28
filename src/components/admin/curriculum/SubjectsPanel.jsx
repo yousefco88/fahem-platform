@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import './CurriculumAdmin.css';
+import Emoji from '../../../ui/Emoji';
 
 const ICONS = ['📖', '🔢', '🔬', '🌍', '🎨', '🏃', '💻', '📐', '🎵', '📚', '🧪', '🌱', '🕌'];
 const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ca8a04', '#0891b2', '#be185d'];
@@ -182,13 +183,13 @@ export default function SubjectsPanel() {
       <nav className="curriculum-nav">
         <Link to="/admin/grades">الصفوف</Link>
         <span className="nav-arrow">→</span>
-        <span className="nav-active">📚 المواد</span>
+        <span className="nav-active"><Emoji>📚</Emoji> المواد</span>
         <span className="nav-arrow">→</span>
         <Link to="/admin/lessons">الدروس</Link>
       </nav>
 
       <div className="curriculum-header">
-        <h2>📚 إدارة المواد الدراسية</h2>
+        <h2><Emoji>📚</Emoji> إدارة المواد الدراسية</h2>
         <div className="header-actions">
           <select 
             value={selectedGrade} 
@@ -247,7 +248,7 @@ export default function SubjectsPanel() {
                 <td>—</td>
                 <td>
                   <button className="btn-success btn-sm" onClick={saveSubject} disabled={saving}>{saving ? '...' : '✓ حفظ'}</button>
-                  <button className="btn-muted btn-sm" onClick={cancelEdit}>✕ إلغاء</button>
+                  <button className="btn-muted btn-sm" onClick={cancelEdit}><Emoji>✕</Emoji> إلغاء</button>
                 </td>
               </tr>
             )}
@@ -274,7 +275,7 @@ export default function SubjectsPanel() {
                     <td>—</td>
                     <td>
                       <button className="btn-success btn-sm" onClick={saveSubject} disabled={saving}>{saving ? '...' : '✓ حفظ'}</button>
-                      <button className="btn-muted btn-sm" onClick={cancelEdit}>✕ إلغاء</button>
+                      <button className="btn-muted btn-sm" onClick={cancelEdit}><Emoji>✕</Emoji> إلغاء</button>
                     </td>
                   </>
                 ) : (

@@ -9,6 +9,7 @@ import { isLessonDone } from '../utils/todayPlan';
 // Dynamic import for PDF (lazy load - reduces bundle)
 const loadPdfGenerator = () => import('./parent/WeeklyReportPDF');
 import useStreak, { getStreakMessage, getLevelTitle } from '../hooks/useStreak';
+import Emoji from '../ui/Emoji';
 
 export default function ParentDashboard() {
   const {
@@ -199,7 +200,7 @@ export default function ParentDashboard() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '20px' }}>🔥</span>
+                  <span style={{ fontSize: '20px' }}><Emoji>🔥</Emoji></span>
                   <span style={{ fontWeight: 800, color: 'var(--amber-text)', fontSize: '18px' }}>
                     {streak.currentStreak}
                   </span>
@@ -228,54 +229,50 @@ export default function ParentDashboard() {
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
-            borderRadius: 'var(--radius-md)', background: 'var(--blue-light)', color: 'var(--blue-text)',
-            fontWeight: 700, fontSize: '14px', width: '100%', textAlign: 'right'
-          }}>
+          <button className="u-12 quick-link active">
             <span>⌂</span> لوحة المتابعة الشاملة
           </button>
           <button
             className="u-12"
             onClick={() => document.getElementById('live-schedule-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <span>🗓</span> جدول الحصص الحية
+            <span><Emoji>🗓</Emoji></span> جدول الحصص الحية
           </button>
           <button
             className="u-12"
             onClick={() => document.getElementById('mastery-matrix-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <span>🎯</span> مصفوفة إتقان المهارات (5 مواد)
+            <span><Emoji>🎯</Emoji></span> مصفوفة إتقان المهارات (5 مواد)
           </button>
           <button
             className="u-12"
             onClick={() => setCurrentScreen('pricing')}
           >
-            <span>💳</span> باقة الاشتراك النشطة
+            <span><Emoji>💳</Emoji></span> باقة الاشتراك النشطة
           </button>
         </nav>
 
         {/* WhatsApp integration placeholder */}
         <button
           style={{
-            background: '#25D366', color: 'white', padding: '11px', borderRadius: 'var(--radius-md)',
+            background: 'linear-gradient(135deg, #25D366, #128C7E)', color: 'white', padding: '11px', borderRadius: 999,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            fontWeight: 700, fontSize: '12.5px', boxShadow: '0 4px 10px rgba(37,211,102,0.25)'
+            fontWeight: 800, fontSize: '12.5px', boxShadow: 'var(--press)'
           }}
           onClick={() => {
             const shareText = `سجّل طفلك في منصة فاهم للتعليم المصري بالخارج 📚\n${window.location.origin}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
           }}
         >
-          <span>💬</span>
+          <span><Emoji>💬</Emoji></span>
           <span>إرسال الرابط عبر واتساب</span>
         </button>
 
         {/* 📄 Weekly PDF Report Button */}
         <button
           style={{
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white',
-            padding: '11px', borderRadius: 'var(--radius-md)',
+            background: 'var(--g-primary)', color: 'white',
+            padding: '11px', borderRadius: 999, boxShadow: 'var(--press)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             fontWeight: 700, fontSize: '12.5px', boxShadow: '0 4px 10px rgba(99,102,241,0.25)',
             opacity: pdfGenerating ? 0.7 : 1, cursor: pdfGenerating ? 'wait' : 'pointer'
@@ -289,15 +286,15 @@ export default function ParentDashboard() {
 
         <button
           style={{
-            marginTop: 'auto', background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
-            color: 'white', padding: '14px', borderRadius: 'var(--radius-md)',
+            marginTop: 'auto', background: 'var(--g-fun)',
+            color: 'white', padding: '14px', borderRadius: 999, boxShadow: 'var(--press)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
             fontWeight: 700, boxShadow: '0 10px 20px rgba(236,72,153,0.25)'
           }}
           onClick={() => setCurrentScreen('child')}
         >
           <span>دخول مساحة {activeChild.name}</span>
-          <span style={{ fontSize: '18px' }}>🚀</span>
+          <span style={{ fontSize: '18px' }}><Emoji>🚀</Emoji></span>
         </button>
       </aside>
 
@@ -338,7 +335,7 @@ export default function ParentDashboard() {
             justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '24px' }}>🛡️</span>
+              <span style={{ fontSize: '24px' }}><Emoji>🛡️</Emoji></span>
               <div>
                 <strong style={{ color: 'var(--green-text)', fontSize: '13.5px', display: 'block' }}>
                   تغطية المنهج المصري المتكامل لأبنائنا بالخارج:
@@ -360,7 +357,7 @@ export default function ParentDashboard() {
           {/* حصة مباشرة اليوم لهذا الطفل (تظهر فقط إن وُجدت في جدوله) */}
           {todayLive.length > 0 && (
             <section id="live-schedule-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '18px', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '10px' }}>🔴 حصة مباشرة اليوم</h3>
+              <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '10px' }}><Emoji>🔴</Emoji> حصة مباشرة اليوم</h3>
               {todayLive.map(x => (
                 <div key={x.id} style={{ marginBottom: '8px' }}>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '6px', fontSize: '14px', color: 'var(--navy)' }}>
@@ -384,7 +381,7 @@ export default function ParentDashboard() {
                 <h3 className="u-15">—</h3>
                 <small style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '12px' }}>يُحتسب بعد بدء الحصص المباشرة</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--green-light)', color: '#10b981', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🗓</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--green-light)', color: '#10b981', display: 'grid', placeItems: 'center', fontSize: '22px' }}><Emoji>🗓</Emoji></div>
             </div>
 
             <div className="u-13">
@@ -393,16 +390,16 @@ export default function ParentDashboard() {
                 <h3 className="u-15">{childStats.done} / {childStats.total}</h3>
                 <small style={{ color: 'var(--green-text)', fontWeight: 600, fontSize: '12px' }}>⭐ درس متقن من المنهج المنشور</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--yellow-light)', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}>🏆</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--yellow-light)', color: '#ca8a04', display: 'grid', placeItems: 'center', fontSize: '22px' }}><Emoji>🏆</Emoji></div>
             </div>
 
             <div className="u-13">
               <div>
                 <span className="u-14">مواد ومسارات تجريبية</span>
                 <h3 className="u-15">{Object.values(curriculumData || {}).filter(v => Array.isArray(v?.lessons)).length} مسارًا</h3>
-                <small style={{ color: 'var(--blue-text)', fontWeight: 600, fontSize: '12px' }}>📖 لغات + عام + هوية + تقنية</small>
+                <small style={{ color: 'var(--blue-text)', fontWeight: 600, fontSize: '12px' }}><Emoji>📖</Emoji> لغات + عام + هوية + تقنية</small>
               </div>
-              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}>📚</div>
+              <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'var(--blue-light)', color: 'var(--blue-text)', display: 'grid', placeItems: 'center', fontSize: '22px' }}><Emoji>📚</Emoji></div>
             </div>
 
             <div className="u-13">
@@ -423,7 +420,7 @@ export default function ParentDashboard() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
                 <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>📅</span> أجندة امتحانات «أبنائنا في الخارج» — وزارة التربية والتعليم المصرية
+                  <span><Emoji>📅</Emoji></span> أجندة امتحانات «أبنائنا في الخارج» — وزارة التربية والتعليم المصرية
                 </h3>
                 <span style={{ fontSize: '12.5px', color: 'var(--muted)' }}>
                   {siteSettings.examCalendar?.subtitle || 'المحطات الرسمية لامتحانات الطلبة المصريين بالخارج'}
@@ -512,7 +509,7 @@ export default function ParentDashboard() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <h3 style={{ fontSize: '18px', color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>🎯</span> مصفوفة إتقان المنهج لـ {activeChild.name}
+                    <span><Emoji>🎯</Emoji></span> مصفوفة إتقان المنهج لـ {activeChild.name}
                   </h3>
                   <span style={{ fontSize: '12px', color: 'var(--muted)' }}>تُبنى من المواد والدروس المنشورة في المنهج — وتقدّم {activeChild.name} الفعلي فيها</span>
                 </div>
@@ -522,7 +519,7 @@ export default function ParentDashboard() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '460px', overflowY: 'auto', paddingRight: '4px' }}>
                 {matrixSubjects.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '28px 16px', border: '1px dashed var(--line)', borderRadius: 'var(--radius-md)', color: 'var(--muted)' }}>
-                    <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎯</div>
+                    <div style={{ fontSize: '28px', marginBottom: '8px' }}><Emoji>🎯</Emoji></div>
                     <div style={{ fontSize: '13.5px', fontWeight: 700, marginBottom: '4px' }}>لا توجد مواد منشورة بعد</div>
                     <div style={{ fontSize: '12px' }}>عند نشر المواد والدروس من لوحة إدارة المنهج ستظهر هنا تلقائياً</div>
                   </div>
@@ -608,7 +605,7 @@ export default function ParentDashboard() {
                 </button>
                 <button
                   type="button"
-                  style={{ background: '#e2e8f0', color: 'var(--navy)', border: 'none', padding: '12px 18px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
+                  className="btn-ghost"
                   onClick={() => setShowAddChildModal(false)}
                 >
                   إلغاء

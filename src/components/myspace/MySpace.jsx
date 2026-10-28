@@ -14,6 +14,7 @@ import SkillsReport from './SkillsReport';
 import WeeklySummaryCard from './WeeklySummaryCard';
 import AssignStudents from './AssignStudents';
 import { useLanguage } from '../../context/LanguageContext';
+import Emoji from '../../ui/Emoji';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -66,7 +67,7 @@ function TimezoneCard() {
   };
   return (
     <section style={card}>
-      <h2 style={h2}>🌍 منطقتي الزمنية</h2>
+      <h2 style={h2}><Emoji>🌍</Emoji> منطقتي الزمنية</h2>
       <p style={muted}>تُحسب مواعيد الحصص وزر الانضمام بناءً على هذه المنطقة. الجدول يُكتب بتوقيت القاهرة ويُحوَّل لك تلقائياً.</p>
       <select value={effectiveTimezone} onChange={change} aria-label="المنطقة الزمنية"
         style={{ marginTop: 8, padding: '10px 12px', borderRadius: 10, border: '1px solid var(--line)', width: '100%', maxWidth: 360, font: 'inherit' }}>
@@ -123,7 +124,7 @@ function TeacherSpace({ go }) {
   return (
     <>
       <section style={card}>
-        <h2 style={h2}>🛠️ أدواتك</h2>
+        <h2 style={h2}><Emoji>🛠️</Emoji> أدواتك</h2>
         <p style={muted}>حصص مباشرة مجدولة اليوم: <strong>{liveToday}</strong></p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button style={btnPrimary} onClick={() => go('teacher')}>مساحة المعلم</button>
@@ -172,7 +173,7 @@ function AdminSpace({ go }) {
   });
   return (
     <section style={card}>
-      <h2 style={h2}>⚙️ نظرة سريعة</h2>
+      <h2 style={h2}><Emoji>⚙️</Emoji> نظرة سريعة</h2>
       {countsState.status === 'loading' && <p style={muted}>جارٍ تحميل المؤشرات…</p>}
       {countsState.status === 'error' && <p role="alert" style={muted}>{countsState.message}</p>}
       {countsState.status === 'data' && (
@@ -193,7 +194,7 @@ function AdminSpace({ go }) {
 function ContentEditorSpace({ go }) {
   return (
     <section style={card}>
-      <h2 style={h2}>📚 أدوات المحتوى</h2>
+      <h2 style={h2}><Emoji>📚</Emoji> أدوات المحتوى</h2>
       <p style={muted}>إدارة المناهج ومراجعة الدروس حسب صلاحية محرر المحتوى.</p>
       <button style={btnPrimary} onClick={() => go('admin')}>فتح مساحة المحتوى</button>
     </section>
@@ -225,14 +226,14 @@ function PersonalSettings() {
   };
   return (
     <section style={card}>
-      <h2 style={h2}>⚙️ الإعدادات الشخصية</h2>
+      <h2 style={h2}><Emoji>⚙️</Emoji> الإعدادات الشخصية</h2>
       <form onSubmit={saveName} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <input value={name} onChange={e => setName(e.target.value)} placeholder="الاسم الكامل" aria-label="الاسم الكامل"
           style={{ flex: '1 1 200px', padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 10, font: 'inherit' }} />
         <button style={btnPrimary} disabled={busy}>حفظ الاسم</button>
       </form>
       <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-        <button style={btn} onClick={resetPassword}>🔐 تغيير كلمة المرور بالبريد</button>
+        <button style={btn} onClick={resetPassword}><Emoji>🔐</Emoji> تغيير كلمة المرور بالبريد</button>
         <button style={btn} onClick={signOut}>تسجيل الخروج</button>
       </div>
       {msg && <p role="status" style={{ ...muted, marginTop: 10 }}>{msg}</p>}
@@ -253,7 +254,7 @@ function QuickLinks({ navRole, go }) {
       <h2 style={h2}>روابط سريعة</h2>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         {links.map(([id, label]) => <button key={id} style={btn} onClick={() => go(id)}>{label}</button>)}
-        <span style={{ ...muted, marginInlineStart: 'auto' }}>🌐 اللغة</span>
+        <span style={{ ...muted, marginInlineStart: 'auto' }}><Emoji>🌐</Emoji> اللغة</span>
         {Object.entries(languages).map(([code, info]) => (
           <button key={code} style={{ ...btn, ...(lang === code ? { borderColor: 'var(--blue)', fontWeight: 800 } : {}) }} onClick={() => setLang(code)}>
             {info.flag} {info.name}

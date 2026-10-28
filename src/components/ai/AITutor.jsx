@@ -11,6 +11,7 @@ import { childPaths } from '../child/childSubjects';
 import { supabase } from '../../lib/supabase';
 import useAiTutorConsent from '../../hooks/useAiTutorConsent';
 import './AITutor.css';
+import Emoji from '../../ui/Emoji';
 
 // 🤖 ردود محلية ذكية
 const LOCAL_RESPONSES = {
@@ -185,7 +186,7 @@ export default function AITutor({ childName: childNameProp, subject = null }) {
   return (
     <div className="ait-wrap" dir="rtl">
       <div className="ait-header">
-        <div className="ait-avatar">🤖</div>
+        <div className="ait-avatar"><Emoji>🤖</Emoji></div>
         <div>
           <h2 className="ait-title">فاهم - مساعد التدريب</h2>
           <p className="ait-sub">
@@ -211,14 +212,14 @@ export default function AITutor({ childName: childNameProp, subject = null }) {
         {messages.map((msg, idx) => (
           <div key={idx} className={`ait-row ${msg.role}`}>
             <div className={`ait-bubble ${msg.role}`}>
-              {msg.role === 'ai' && <span aria-hidden="true">🤖 </span>}
+              {msg.role === 'ai' && <span aria-hidden="true"><Emoji>🤖</Emoji> </span>}
               {msg.content}
             </div>
           </div>
         ))}
         {isTyping && (
           <div className="ait-row ai">
-            <div className="ait-bubble ai ait-typing">🤖 يكتب...</div>
+            <div className="ait-bubble ai ait-typing"><Emoji>🤖</Emoji> يكتب...</div>
           </div>
         )}
         <div ref={messagesEndRef} />

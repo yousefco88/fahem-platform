@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import './AiTutorAdmin.css';
+import Emoji from '../../ui/Emoji';
 
 const STATUS_LABEL = { pending: 'بانتظار الاعتماد', approved: 'معتمد', rejected: 'مرفوض' };
 
@@ -72,7 +73,7 @@ export default function AiTutorKnowledge() {
 
   return (
     <section className="atr-wrap" dir="rtl">
-      <h3 className="atr-title">🧠 قاعدة المعرفة (سؤال وجواب معتمد)</h3>
+      <h3 className="atr-title"><Emoji>🧠</Emoji> قاعدة المعرفة (سؤال وجواب معتمد)</h3>
       <p className="atr-hint">
         اكتب السؤال كما يسأله الطفل والجواب بأسلوب بسيط. {isAdmin ? 'إضافاتك تُعتمد مباشرة.' : 'إضافتك تنتظر اعتماد الإدارة، ولا تصل للمساعد قبل ذلك.'}
         المعلم يضيف في المواد المسندة إليه فقط.

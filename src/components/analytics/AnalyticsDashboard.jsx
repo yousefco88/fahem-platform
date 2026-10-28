@@ -10,6 +10,7 @@ import { gradeLabel } from '../../utils/gradeLabel';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import AnalyticsCard from './AnalyticsCard';
+import Emoji from '../../ui/Emoji';
 
 const CARD = {
   background: 'var(--card-bg, var(--card-bg))', border: '1px solid var(--line, var(--line))',
@@ -22,7 +23,7 @@ const DONUT_COLORS = ['#2563eb', '#16a34a', '#ea580c', '#9333ea', '#0d9488', '#d
 function EmptyBox({ text }) {
   return (
     <div style={{ textAlign: 'center', padding: '28px 10px', color: MUTED, fontSize: 13 }}>
-      <div style={{ fontSize: 28, marginBottom: 6 }}>📭</div>
+      <div style={{ fontSize: 28, marginBottom: 6 }}><Emoji>📭</Emoji></div>
       {text}
     </div>
   );
@@ -113,7 +114,7 @@ function DonutChart({ data, title, centerLabel }) {
 function ActivityTimeline({ activities }) {
   return (
     <div style={CARD}>
-      <h3 style={H3}>🕐 آخر النشاطات</h3>
+      <h3 style={H3}><Emoji>🕐</Emoji> آخر النشاطات</h3>
       {activities.length === 0 ? (
         <EmptyBox text="لا توجد نشاطات في هذه الفترة" />
       ) : (
@@ -265,12 +266,12 @@ export default function AnalyticsDashboard() {
   if (error) {
     return (
       <div dir="rtl" style={{ ...CARD, textAlign: 'center', margin: '24px auto', maxWidth: 480, padding: 32 }}>
-        <div style={{ fontSize: 36, marginBottom: 8 }}>⚠️</div>
+        <div style={{ fontSize: 36, marginBottom: 8 }}><Emoji>⚠️</Emoji></div>
         <p style={{ color: 'var(--navy, var(--navy))', fontWeight: 800, fontSize: 14.5, margin: '0 0 16px' }}>{error}</p>
         <button onClick={loadAnalytics} style={{
           border: 'none', background: 'var(--blue)', color: '#fff', borderRadius: 10,
           padding: '10px 22px', fontWeight: 800, fontSize: 13.5, cursor: 'pointer', fontFamily: 'inherit',
-        }}>🔄 إعادة المحاولة</button>
+        }}><Emoji>🔄</Emoji> إعادة المحاولة</button>
       </div>
     );
   }
@@ -282,7 +283,7 @@ export default function AnalyticsDashboard() {
       {/* الترويسة + فلتر فترة فعّال */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
         <div>
-          <h2 style={{ fontSize: 21, fontWeight: 900, color: 'var(--navy, var(--navy))', margin: 0 }}>📊 لوحة التحليلات</h2>
+          <h2 style={{ fontSize: 21, fontWeight: 900, color: 'var(--navy, var(--navy))', margin: 0 }}><Emoji>📊</Emoji> لوحة التحليلات</h2>
           {updatedAt && (
             <span style={{ fontSize: 11.5, color: MUTED }}>
               آخر تحديث: {updatedAt.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
@@ -331,7 +332,7 @@ export default function AnalyticsDashboard() {
         background: 'linear-gradient(to left, #2563eb, #4f46e5)', borderRadius: 16,
         padding: 20, color: '#fff',
       }}>
-        <h3 style={{ fontSize: 15.5, fontWeight: 900, margin: '0 0 12px' }}>💡 رؤى سريعة</h3>
+        <h3 style={{ fontSize: 15.5, fontWeight: 900, margin: '0 0 12px' }}><Emoji>💡</Emoji> رؤى سريعة</h3>
         {activities.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12 }}>
             {[

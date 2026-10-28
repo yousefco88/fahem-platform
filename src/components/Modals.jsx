@@ -4,6 +4,7 @@ import { useUIState } from '../context/UIContext';
 import { supabase } from '../lib/supabase';
 import { resolveVideo, safeFileUrl } from '../utils/videoEmbed';
 import { useLessonRecordings } from '../hooks/useLessonRecordings';
+import Emoji from '../ui/Emoji';
 
 // حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
 
@@ -286,14 +287,14 @@ export default function Modals() {
                                         flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white',
                                         textAlign: 'center', padding: '24px'
                                       }}>
-                                        <span style={{ fontSize: '48px', marginBottom: '16px' }}>🎬</span>
+                                        <span style={{ fontSize: '48px', marginBottom: '16px' }}><Emoji>🎬</Emoji></span>
                                         <span style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>الفيديو قيد التحضير</span>
                                         <span style={{ fontSize: '14px', opacity: 0.9, marginBottom: '16px' }}>سيتوفر قريباً — تابع الإشعارات</span>
                                         <div style={{ 
                                           background: 'rgba(255,255,255,0.15)', padding: '12px 20px', borderRadius: '12px',
                                           fontSize: '13px', maxWidth: '500px'
                                         }}>
-                                          <strong>🎯 هدف الدرس:</strong> {activeLesson.objective}
+                                          <strong><Emoji>🎯</Emoji> هدف الدرس:</strong> {activeLesson.objective}
                                         </div>
                                       </div>
                                     )}
@@ -382,7 +383,7 @@ export default function Modals() {
                           </button>
                         ))}
                         <button
-                          style={{ background: 'var(--bg)', color: 'var(--muted)', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 700 }}
+                          className="btn-ghost"
                           onClick={handleResetBuilder}
                         >
                           مسح ↺
@@ -400,7 +401,7 @@ export default function Modals() {
                   {/* Part 2: أسئلة الإتقان — من بنك الأسئلة إن وُجد، وإلا السؤال القديم المفرد */}
                   {!currentQ ? (
                     <div style={{ textAlign: 'center', padding: '28px 16px', border: '1px dashed var(--line)', borderRadius: '18px', color: 'var(--muted)' }}>
-                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>❓</div>
+                      <div style={{ fontSize: '28px', marginBottom: '8px' }}><Emoji>❓</Emoji></div>
                       <div style={{ fontWeight: 700, marginBottom: '4px' }}>لا توجد أسئلة لهذا الدرس بعد</div>
                       <div style={{ fontSize: '13px' }}>سيضيف المعلم أسئلة الإتقان قريباً من لوحة المنهج</div>
                     </div>
@@ -423,7 +424,7 @@ export default function Modals() {
                         onClick={() => soundManager.speak(currentQ.question)}
                         title="استمع للسؤال بصوت ناطق"
                       >
-                        <span>🔊</span>
+                        <span><Emoji>🔊</Emoji></span>
                         <span>اقرأ لي السؤال</span>
                       </button>
                     </div>
@@ -451,7 +452,7 @@ export default function Modals() {
                         <h4 style={{ color: 'var(--green-text)', fontSize: '20px', marginBottom: '6px' }}>
                           {currentQ.celebration || 'إجابة صحيحة! أحسنت 🌟'}
                         </h4>
-                        <button className="btn-accent" style={{ background: '#16a34a', color: 'white' }} onClick={() => { setQIndex(qIndex + 1); setQuizAnswered(null); }}>
+                        <button className="btn-secondary" onClick={() => { setQIndex(qIndex + 1); setQuizAnswered(null); }}>
                           السؤال التالي ←
                         </button>
                       </div>
@@ -463,7 +464,7 @@ export default function Modals() {
                         <p style={{ color: 'var(--green-text)', fontSize: '14px', marginBottom: '14px' }}>
                           تم منحك شارة الإتقان الذهبية وإضافة 30 نقطة فهم لحسابك!
                         </p>
-                        <button className="btn-accent" style={{ background: '#16a34a', color: 'white' }} onClick={() => completeLessonMastery(activeLesson.id)}>
+                        <button className="btn-secondary" onClick={() => completeLessonMastery(activeLesson.id)}>
                           حفظ الإتقان والعودة للخريطة ✓
                         </button>
                       </div>
@@ -489,7 +490,7 @@ export default function Modals() {
               {/* Tab 3: PDF */}
               {studioActiveTab === 'pdf' && (
                 <div style={{ textAlign: 'center', padding: '40px' }}>
-                  <div style={{ fontSize: '56px', marginBottom: '12px' }}>📄</div>
+                  <div style={{ fontSize: '56px', marginBottom: '12px' }}><Emoji>📄</Emoji></div>
                   <h3 style={{ fontSize: '20px', marginBottom: '6px' }}>{activeLesson.pdfTitle || 'ورقة العمل'}</h3>
                   {pdfUrl ? (
                     <a className="btn-accent" href={pdfUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', textDecoration: 'none', marginTop: '16px' }}>
@@ -504,7 +505,7 @@ export default function Modals() {
               {/* Tab 4: Parent Companion Guide */}
               {studioActiveTab === 'guide' && !activeLesson.parentGuide && !(activeLesson.references || []).length && (
                 <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--muted)' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '12px' }}>💡</div>
+                  <div style={{ fontSize: '48px', marginBottom: '12px' }}><Emoji>💡</Emoji></div>
                   <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--navy)' }}>لا يوجد دليل مذاكرة لهذا الدرس بعد</div>
                   <div style={{ fontSize: '13.5px' }}>سيضيفه المعلم قريباً من لوحة المنهج</div>
                 </div>
@@ -587,7 +588,7 @@ export default function Modals() {
       {showGateModal && (
         <div className="modal-overlay">
           <div style={{ background: 'var(--card-bg)', borderRadius: '24px', padding: '30px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔒</div>
+            <div style={{ fontSize: '36px', marginBottom: '8px' }}><Emoji>🔒</Emoji></div>
             <h3 style={{ fontSize: '20px', color: 'var(--navy)' }}>بوابة ولي الأمر</h3>
             <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '16px' }}>
               لحماية الطفل، يُرجى حل المسألة الرياضية للعودة:
@@ -614,7 +615,7 @@ export default function Modals() {
                 دخول
               </button>
               <button
-                style={{ background: '#e2e8f0', color: 'var(--navy)', border: 'none', padding: '12px 20px', borderRadius: 'var(--radius-md)', fontWeight: 700 }}
+                className="btn-ghost"
                 onClick={() => setShowGateModal(false)}
               >
                 إلغاء

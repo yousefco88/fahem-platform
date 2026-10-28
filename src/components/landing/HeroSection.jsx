@@ -2,6 +2,7 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { scrollToBooking } from './LandingHeader';
+import Emoji from '../../ui/Emoji';
 
 export default function HeroSection() {
   const { setCurrentScreen } = useApp();
@@ -52,7 +53,7 @@ export default function HeroSection() {
             onClick={scrollToBooking}
           >
             <span>{hero.ctaPrimary}</span>
-            <span>🎁</span>
+            <span><Emoji>🎁</Emoji></span>
           </button>
 
           <button
@@ -65,7 +66,7 @@ export default function HeroSection() {
             onClick={() => setCurrentScreen('child')}
           >
             <span>{hero.ctaSecondary}</span>
-            <span>🦊</span>
+            <span><Emoji>🦊</Emoji></span>
           </button>
         </div>
 
@@ -84,12 +85,12 @@ export default function HeroSection() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', padding: '18px' }}>
             <div style={{ background: 'linear-gradient(135deg, var(--blue-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
-              <div style={{ fontSize: '26px', marginBottom: '6px' }}>🦊</div>
+              <div style={{ fontSize: '26px', marginBottom: '6px' }}><Emoji>🦊</Emoji></div>
               <div className="u-27">مساحة الطفل التفاعلية</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>دروس وألعاب تعليمية بشخصية فاهم</div>
             </div>
             <div style={{ background: 'linear-gradient(135deg, var(--green-light), var(--bg))', borderRadius: '14px', padding: '16px' }}>
-              <div style={{ fontSize: '26px', marginBottom: '6px' }}>📊</div>
+              <div style={{ fontSize: '26px', marginBottom: '6px' }}><Emoji>📊</Emoji></div>
               <div className="u-27">لوحة متابعة ولي الأمر</div>
               <div style={{ fontSize: '11.5px', color: 'var(--muted)' }}>مصفوفة إتقان وتقارير تقدم حقيقية</div>
             </div>
@@ -107,13 +108,13 @@ export default function HeroSection() {
             <strong>🇪🇬 مبني على المنهج الوزاري</strong>
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>👩‍🏫 مجموعات مصغرة</strong>
+            <strong><Emoji>👩‍🏫</Emoji> مجموعات مصغرة</strong>
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>📼 تسجيلات للحصص المراجَعة</strong>
+            <strong><Emoji>📼</Emoji> تسجيلات للحصص المراجَعة</strong>
           </div>
           <div style={{ whiteSpace: 'nowrap' }}>
-            <strong>🕐 مواعيد تناسب الخليج وأوروبا</strong>
+            <strong><Emoji>🕐</Emoji> مواعيد تناسب الخليج وأوروبا</strong>
           </div>
         </div>
       </div>
