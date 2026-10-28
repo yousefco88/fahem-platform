@@ -5,6 +5,7 @@ import { getNextLesson, isLessonDone } from '../../utils/todayPlan';
 import { getSubjectProgress } from '../../utils/childProgress';
 import { CHILD_SUBJECTS, childPaths } from './childSubjects';
 import './ChildHome.css';
+import Emoji from '../../ui/Emoji';
 
 // /child/subject/:key — خريطة المادة (محطات الدروس): زر رئيسي واحد لكل درس + روابط ثانوية
 export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
@@ -37,7 +38,7 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
       <div className="sl-head">
         <div className="sl-title">
           <button className="sl-back" onClick={() => navigate(childPaths.home)}>→ كل المواد</button>
-          <h2>{subject.icon} {subject.title}</h2>
+          <h2><Emoji>{subject.icon}</Emoji> {subject.title}</h2>
           {subject.badge && <span className="tag-badge info" style={{ fontSize: '11px' }}>{subject.badge}</span>}
         </div>
         <div className="sl-progress">
@@ -58,20 +59,20 @@ export default function SubjectLessons({ subjectKey: subjectKeyProp }) {
             const isCurrent = !isMastered && lesson.id === currentLessonId;
             const state = isMastered ? 'done' : isCurrent ? 'current' : 'next';
             return (
-              <div key={lesson.id} className={`sl-card ${state}`}>
+              <div key={lesson.id} className={`sl-card ${state} state-${state}`}>
                 <span className="sl-station">محطة {lesson.order}</span>
-                <button className="sl-sound" onClick={() => playSound(lesson.letter ? `${lesson.letter}... ${lesson.title}` : lesson.title)} title="استمع لعنوان الدرس">🔊</button>
-                <span className="sl-badge">{isMastered ? '✓ متقن' : isCurrent ? '🎯 درسك الحالي' : '🔜 قادم'}</span>
+                <button className="sl-sound" aria-label="استمع" onClick={() => playSound(lesson.letter ? `${lesson.letter}... ${lesson.title}` : lesson.title)} title="استمع لعنوان الدرس"><Emoji>🔊</Emoji></button>
+                <span className="sl-badge"><Emoji>{isMastered ? '✅ متقن' : isCurrent ? '🎯 درسك الحالي' : '🔜 قادم'}</Emoji></span>
                 {lesson.letter && <div className="sl-letter">{lesson.letter}</div>}
                 <h4>{lesson.title}</h4>
                 {lesson.objective && <p className="sl-obj">{lesson.objective}</p>}
                 <div className="sl-actions">
                   <button className="btn-primary sl-main" onClick={() => goLesson(lesson.id, 'video')}>
-                    {isMastered ? 'شاهد مرة أخرى ▶' : 'ابدأ الدرس ▶'}
+                    <Emoji>{isMastered ? '🔁 شاهد مرة أخرى' : '▶️ ابدأ الدرس'}</Emoji>
                   </button>
                   <div className="sl-links">
-                    {!isMastered && <button className="sl-link" onClick={() => goLesson(lesson.id, 'quiz')}>🎯 تحدي الإتقان</button>}
-                    <button className="sl-link" onClick={() => goLesson(lesson.id, 'guide')}>💡 دليل الأهل</button>
+                    {!isMastered && <button className="btn-accent btn-sm" onClick={() => goLesson(lesson.id, 'quiz')}><Emoji>🎯</Emoji> تحدي الإتقان</button>}
+                    <button className="btn-ghost btn-sm" onClick={() => goLesson(lesson.id, 'guide')}><Emoji>💡</Emoji> دليل الأهل</button>
                   </div>
                 </div>
               </div>

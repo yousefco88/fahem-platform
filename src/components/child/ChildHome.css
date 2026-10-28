@@ -134,7 +134,9 @@
 .sl-empty { background: var(--bg); border: 2px dashed var(--line); border-radius: 20px; padding: 28px; text-align: center; color: var(--muted); font-weight: 700; }
 .sl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
 .sl-card { position: relative; display: flex; flex-direction: column; gap: 10px; border: 2px solid var(--line); border-radius: 24px; padding: 20px 18px; background: var(--card-bg); text-align: center; }
-.sl-card.current { border: 3px solid var(--subj, var(--blue)); background: var(--blue-light); }
+.sl-card.current { border: 3px solid transparent; }
+.sl-card.current .sl-letter { animation: ui-bounce 1.2s ease-in-out infinite; }
+.sl-card { animation: ui-rise 0.4s ease both; }
 .sl-card.done { border-color: color-mix(in srgb, var(--subj, var(--blue)) 45%, transparent); }
 .sl-card.next { opacity: 0.85; }
 .sl-station { position: absolute; top: 12px; right: 14px; font-size: 11px; font-weight: 800; color: var(--muted); }
@@ -145,6 +147,7 @@
 .sl-obj { font-size: 12px; color: var(--muted); }
 .sl-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
 .sl-main { width: 100%; justify-content: center; }
+.sl-links .btn-accent, .sl-links .btn-ghost { font-size: 12px; }
 .sl-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .sl-link { background: none; border: none; color: var(--blue-text, var(--blue)); font-weight: 800; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; }
 

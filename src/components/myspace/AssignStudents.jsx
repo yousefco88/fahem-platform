@@ -6,7 +6,7 @@ import { resolveAssignmentLoad } from '../../lib/assignmentLoadState';
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const muted = { color: 'var(--muted)', fontSize: 13.5 };
 const sel = { flex: '1 1 180px', padding: '9px 10px', border: '1px solid var(--line)', borderRadius: 10, font: 'inherit' };
-const btn = { padding: '9px 14px', borderRadius: 10, border: '1px solid #1d4ed8', background: 'var(--blue-dark)', color: 'white', cursor: 'pointer', font: 'inherit', fontSize: 13.5 };
+const btn = { padding: '9px 16px', borderRadius: 999, border: 0, background: 'var(--g-primary)', color: 'white', boxShadow: 'var(--press)', cursor: 'pointer', font: 'inherit', fontWeight: 800, fontSize: 13.5 };
 
 // للمسؤول فقط: إسناد طالب لمعلم (RLS يمنع غير المسؤول حتى لو ظهرت الواجهة).
 export default function AssignStudents() {

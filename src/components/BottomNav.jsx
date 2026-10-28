@@ -2,6 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { getNavForRole, resolveNavRole } from '../navigation/navConfig';
+import Emoji from '../ui/Emoji';
 
 export default function BottomNav() {
   const { currentScreen, setCurrentScreen } = useApp();
@@ -22,7 +23,7 @@ export default function BottomNav() {
             onClick={() => handleNavClick(item.id)}
             aria-current={currentScreen === item.id ? 'page' : undefined}
           >
-            <span className="bottom-nav-icon">{item.icon}</span>
+            <span className="bottom-nav-icon"><Emoji>{item.icon}</Emoji></span>
             <span className="bottom-nav-label">{item.short || item.label}</span>
             {item.id === currentScreen && <span className="bottom-nav-indicator" />}
           </button>

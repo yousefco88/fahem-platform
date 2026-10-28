@@ -18,8 +18,8 @@ import { useLanguage } from '../../context/LanguageContext';
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
 const muted = { color: 'var(--muted)', fontSize: 13.5 };
-const btn = { padding: '9px 14px', borderRadius: 10, border: '1px solid var(--line)', background: 'var(--bg)', color: 'var(--navy)', cursor: 'pointer', font: 'inherit', fontSize: 13.5 };
-const btnPrimary = { ...btn, background: 'var(--blue-dark)', borderColor: '#1d4ed8', color: 'white' };
+const btn = { padding: '9px 16px', borderRadius: 999, border: 0, background: 'var(--card-bg)', color: 'var(--navy)', boxShadow: '0 0 0 2px var(--line) inset', cursor: 'pointer', font: 'inherit', fontWeight: 800, fontSize: 13.5 };
+const btnPrimary = { padding: '9px 16px', borderRadius: 999, border: 0, background: 'var(--g-primary)', color: 'white', boxShadow: 'var(--press)', cursor: 'pointer', font: 'inherit', fontWeight: 800, fontSize: 13.5 };
 
 function Stat({ label, value }) {
   return (

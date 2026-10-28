@@ -9,6 +9,7 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { getNavForRole, resolveNavRole, ROLE_LABELS, adminSectionsForRole, adminSectionPath } from '../navigation/navConfig';
+import Emoji from '../ui/Emoji';
 
 export default function SideNav() {
   const { currentScreen, setCurrentScreen } = useApp();
@@ -79,7 +80,7 @@ export default function SideNav() {
                   aria-current={onAdmin ? 'page' : undefined}
                   title={collapsed ? item.label : undefined}
                 >
-                  <span className="side-nav-icon" aria-hidden="true">{item.icon}</span>
+                  <span className="side-nav-icon" aria-hidden="true"><Emoji>{item.icon}</Emoji></span>
                   {!collapsed && <span className="side-nav-label">{item.label}</span>}
                   {!collapsed && <span className="side-nav-caret" aria-hidden="true">{onAdmin && adminOpen ? '▴' : '▾'}</span>}
                 </button>
@@ -89,7 +90,7 @@ export default function SideNav() {
                       <button key={sec.id} role="menuitem"
                         className={`side-nav-sub-item ${activeSectionId === sec.id ? 'active' : ''}`}
                         onClick={() => navigate(adminSectionPath(sec))}>
-                        <span aria-hidden="true">{sec.icon}</span><span>{sec.label}</span>
+                        <span aria-hidden="true"><Emoji>{sec.icon}</Emoji></span><span>{sec.label}</span>
                       </button>
                     ))}
                   </div>
@@ -103,7 +104,7 @@ export default function SideNav() {
                 aria-current={currentScreen === item.id ? 'page' : undefined}
                 title={collapsed ? item.label : undefined}
               >
-                <span className="side-nav-icon" aria-hidden="true">{item.icon}</span>
+                <span className="side-nav-icon" aria-hidden="true"><Emoji>{item.icon}</Emoji></span>
                 {!collapsed && <span className="side-nav-label">{item.label}</span>}
               </button>
             ))}

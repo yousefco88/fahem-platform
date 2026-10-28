@@ -15,6 +15,7 @@ import FamiliesPanel from './admin/FamiliesPanel';
 import SiteSettingsPanel from './admin/SiteSettingsPanel';
 import { GradesPanel, SubjectsPanel, LessonsPanel, LessonEditor } from './admin/curriculum';
 import './admin/curriculum/CurriculumAdmin.css';
+import Emoji from '../ui/Emoji';
 
 export default function AdminDashboard() {
   const {
@@ -252,7 +253,7 @@ export default function AdminDashboard() {
               <button key={x.id}
                 onClick={() => { setMobileMenuOpen(false); adminNavigate(adminSectionPath(x)); }}
                 style={{ display: 'block', width: '100%', padding: '12px 16px', border: 'none', borderBottom: '1px solid var(--line)', background: x.id === activeAdminTab ? 'var(--blue-light)' : 'transparent', textAlign: 'right', cursor: 'pointer', fontSize: '14px', fontWeight: 700, color: 'var(--navy)' }}>
-                {x.icon} {x.label}
+                <Emoji>{x.icon}</Emoji> {x.label}
               </button>
             ))}
           </div>

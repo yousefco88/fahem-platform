@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { getNavForRole, resolveNavRole, ROLE_LABELS } from '../navigation/navConfig';
+import Emoji from '../ui/Emoji';
 
 export default function RoleBar() {
   const { currentScreen, setCurrentScreen } = useApp();
@@ -35,7 +36,7 @@ export default function RoleBar() {
 
         {collapsed && current && (
           <span className="role-bar-current">
-            {current.icon} {current.label}
+            <Emoji>{current.icon}</Emoji> {current.label}
           </span>
         )}
 
@@ -63,7 +64,7 @@ export default function RoleBar() {
                   onClick={() => handleItem(item.id)}
                   aria-current={currentScreen === item.id ? 'page' : undefined}
                 >
-                  {item.icon} {item.label}
+                  <Emoji>{item.icon}</Emoji> {item.label}
                 </button>
               ))}
             </div>

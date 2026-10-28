@@ -1,0 +1,119 @@
+/* =====================================================================
+   طبقة الواجهة المرحة (معتمدة): تدرّجات لونية، أزرار بحافة ضغط، إيموجي Fluent 3D
+   تُطبَّق على كل المنصة عبر الأصناف العامة (btn-*, bottom-nav, toast, role-pill)
+   ===================================================================== */
+:root {
+  --g-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --g-fun: linear-gradient(135deg, #f59e0b, #f97316);
+  --g-mint: linear-gradient(135deg, #10b981, #14b8a6);
+  --g-pink: linear-gradient(135deg, #ec4899, #f43f5e);
+  --g-sky: linear-gradient(135deg, #0ea5e9, #6366f1);
+  --g-soft: linear-gradient(135deg, #fdf2f8, #eff6ff);
+  --fun-accent: #7c3aed;
+  --press: 0 4px 0 rgba(0, 0, 0, 0.18);
+  --press-hover: 0 6px 0 rgba(0, 0, 0, 0.18);
+  --press-down: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+:root.dark {
+  --g-soft: linear-gradient(135deg, #1e1b4b, #0f172a);
+  --fun-accent: #a78bfa;
+  --press: 0 4px 0 rgba(0, 0, 0, 0.45);
+  --press-hover: 0 6px 0 rgba(0, 0, 0, 0.45);
+  --press-down: 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* ---- إيموجي Fluent ---- */
+.fe {
+  width: 1.25em; height: 1.25em; object-fit: contain; vertical-align: -0.3em;
+  display: inline-block; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15));
+  user-select: none; -webkit-user-drag: none;
+}
+
+/* ---- الأزرار العامة: استبدال نظيف لـ btn-primary / btn-secondary / btn-accent ---- */
+.btn-primary, .btn-secondary, .btn-accent {
+  border-radius: var(--radius-full);
+  border: 0;
+  font-weight: 800;
+  box-shadow: var(--press);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.btn-primary:hover, .btn-secondary:hover, .btn-accent:hover { transform: translateY(-2px); box-shadow: var(--press-hover); filter: brightness(1.05); }
+.btn-primary:active, .btn-secondary:active, .btn-accent:active { transform: translateY(2px); box-shadow: var(--press-down); }
+.btn-primary:disabled, .btn-secondary:disabled, .btn-accent:disabled { opacity: 0.6; transform: none; box-shadow: none; cursor: not-allowed; }
+.btn-primary { background: var(--g-primary); color: #fff; }
+.btn-primary:hover { background: var(--g-primary); }
+.btn-secondary { background: var(--g-mint); color: #fff; border: 0; }
+.btn-secondary:hover { background: var(--g-mint); color: #fff; }
+.btn-accent { background: var(--g-fun); color: #fff; }
+.btn-accent:hover { background: var(--g-fun); }
+/* متغيرات إضافية للاستخدام الصريح */
+.btn-pink { background: var(--g-pink); color: #fff; }
+.btn-sky { background: var(--g-sky); color: #fff; }
+.btn-ghost { background: var(--card-bg); color: var(--navy); box-shadow: 0 0 0 2px var(--line) inset; }
+.btn-ghost:hover { box-shadow: 0 0 0 2px var(--fun-accent) inset; }
+.btn-pink, .btn-sky, .btn-ghost {
+  padding: 10px 18px; border-radius: var(--radius-full); border: 0; font-weight: 800; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: inherit;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.btn-pink, .btn-sky { box-shadow: var(--press); }
+.btn-pink:hover, .btn-sky:hover { transform: translateY(-2px); box-shadow: var(--press-hover); }
+.btn-pink:active, .btn-sky:active { transform: translateY(2px); box-shadow: var(--press-down); }
+.btn-sm { padding: 7px 12px !important; font-size: 12px !important; }
+.btn-icon { padding: 9px !important; border-radius: 50% !important; }
+
+/* ---- شريط الجوال السفلي: غير النشط رمادي باهت، النشط ملوّن ويقفز ---- */
+.bottom-nav { background: var(--g-soft); border-top: 1px solid var(--line); }
+.bottom-nav-item { border-radius: 16px; transition: background 0.2s, color 0.2s; }
+.bottom-nav-icon { font-size: 24px; }
+.bottom-nav-icon .fe {
+  width: 28px; height: 28px; vertical-align: middle;
+  filter: grayscale(1) opacity(0.55);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s;
+}
+.bottom-nav-item.active { background: var(--card-bg); box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15); }
+.bottom-nav-item.active .bottom-nav-icon { transform: none; }
+.bottom-nav-item.active .bottom-nav-icon .fe { filter: none; transform: translateY(-3px) scale(1.2) rotate(-6deg); }
+.bottom-nav-item.active .bottom-nav-label { color: var(--fun-accent); }
+.bottom-nav-indicator { display: none; }
+
+/* ---- شريط الأدوار (سطح المكتب) ---- */
+.role-pill-btn .fe { width: 18px; height: 18px; filter: grayscale(1) opacity(0.7); }
+.role-pill-btn.active { background: var(--g-primary); box-shadow: 0 0 14px rgba(139, 92, 246, 0.5); }
+.role-pill-btn.active .fe { filter: none; }
+.side-nav-icon .fe { width: 22px; height: 22px; }
+
+/* ---- التنبيهات ---- */
+.toast-banner {
+  background: var(--g-primary); color: #fff; border-radius: var(--radius-full); font-weight: 800;
+  animation: ui-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes ui-pop { from { opacity: 0; transform: scale(0.85) translateY(6px); } }
+@keyframes ui-rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes ui-bounce { 50% { transform: translateY(-4px); } }
+
+/* ---- بطاقات حالة (متقن / حالي / قادم) تُستخدم في جزيرة التعلم ---- */
+.state-done { background: linear-gradient(135deg, #dcfce7, #d1fae5) !important; color: #14532d; }
+.state-current { background: linear-gradient(135deg, #fef3c7, #fde68a) !important; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35); color: #1e1b4b; }
+.state-next { background: var(--bg) !important; opacity: 0.8; }
+:root.dark .state-done { background: linear-gradient(135deg, #14532d, #064e3b) !important; color: #dcfce7; }
+:root.dark .state-current { background: linear-gradient(135deg, #78350f, #92400e) !important; color: #fef3c7; }
+
+/* ---- الإعدادات ومساعد التدريب (الإدارة): نفس اللغة البصرية ---- */
+.settings-btn { border-radius: var(--radius-full); border: 2px solid var(--line); font-weight: 800; }
+.settings-btn.active { background: var(--g-primary); border-color: transparent; color: #fff; box-shadow: var(--press); }
+.atr-btn { border-radius: var(--radius-full); }
+.atr-btn.good { background: var(--g-mint); color: #fff; border: 0; box-shadow: var(--press); }
+.atr-btn.bad { background: var(--g-pink); color: #fff; border: 0; box-shadow: var(--press); }
+.atr-btn.good:hover, .atr-btn.bad:hover { transform: translateY(-2px); box-shadow: var(--press-hover); }
+.atr-btn.good:active, .atr-btn.bad:active { transform: translateY(2px); box-shadow: var(--press-down); }
+.btn-outline { padding: 9px 16px; border-radius: var(--radius-full); border: 0; background: var(--card-bg); color: var(--navy); box-shadow: 0 0 0 2px var(--line) inset; font-weight: 800; font-family: inherit; cursor: pointer; }
+.ch-cat-btn.active { background: var(--g-primary); }
+.ch-continue-btn { box-shadow: var(--press); transition: transform 0.12s, box-shadow 0.12s; }
+.ch-continue-btn:active { transform: translateY(2px); box-shadow: var(--press-down); }
+.ch-subject-icon .fe { width: 32px; height: 32px; }
+.tag-badge .fe { width: 1.1em; height: 1.1em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fe, .bottom-nav-icon .fe, .toast-banner, .btn-primary, .btn-secondary, .btn-accent { transition: none; animation: none; }
+}

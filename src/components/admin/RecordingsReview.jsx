@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { listPendingRecordings, reviewLessonRecording, signedRecordingUrl } from '../../hooks/useLessonRecordings';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 12 };
-const btn = (bg) => ({ padding: '8px 14px', borderRadius: 10, border: 0, cursor: 'pointer', font: 'inherit', fontSize: 13.5, background: bg, color: 'white' });
+const btn = (bg) => ({ padding: '8px 16px', borderRadius: 999, border: 0, cursor: 'pointer', font: 'inherit', fontWeight: 800, fontSize: 13.5, background: bg, color: 'white', boxShadow: 'var(--press)' });
 
 // مراجعة تسجيلات الحصص قبل نشرها للطلاب (الإدارة فقط؛ الخادم يفرض ذلك).
 export default function RecordingsReview() {

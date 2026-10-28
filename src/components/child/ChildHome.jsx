@@ -9,6 +9,7 @@ import LiveJoin from '../LiveJoin';
 import StreakBadge from './StreakBadge';
 import useStreak from '../../hooks/useStreak';
 import './ChildHome.css';
+import Emoji from '../../ui/Emoji';
 
 // /child — الرئيسية: التحية + تابِع من حيث توقفت + يومك النهارده + المواد بتقدمها الحقيقي
 export default function ChildHome() {
@@ -109,7 +110,7 @@ export default function ChildHome() {
                 <div key={slot.id} className={`ch-slot${slot.done ? ' done' : ''}`}>
                   <div className="ch-slot-head">
                     <span className="ch-slot-time">🕓 {slot.localTime || slot.time}</span>
-                    <span className="ch-slot-type">{slotType.icon} {slotType.label}</span>
+                    <span className="ch-slot-type"><Emoji>{slotType.icon}</Emoji> {slotType.label}</span>
                   </div>
                   <div className="ch-slot-body">
                     <span className="ch-slot-icon">{slot.subject?.icon || '📚'}</span>
@@ -164,7 +165,7 @@ export default function ChildHome() {
                 onClick={() => navigate(childPaths.subject(s.id))}
               >
                 <div className="ch-subject-head">
-                  <span className="ch-subject-icon">{s.icon}</span>
+                  <span className="ch-subject-icon"><Emoji>{s.icon}</Emoji></span>
                   <span className="ch-subject-label">{s.label}</span>
                 </div>
                 <div className="ch-subject-track">
