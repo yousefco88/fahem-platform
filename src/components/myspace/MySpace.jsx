@@ -13,6 +13,7 @@ import ParentAccount from '../ParentAccount';
 import SkillsReport from './SkillsReport';
 import WeeklySummaryCard from './WeeklySummaryCard';
 import AssignStudents from './AssignStudents';
+import { useLanguage } from '../../context/LanguageContext';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -239,6 +240,30 @@ function PersonalSettings() {
   );
 }
 
+// روابط وإعدادات كانت في قائمة "المزيد" بالجوال: اشتراكي، الشاشات الأخرى للإدارة، واللغة
+function QuickLinks({ navRole, go }) {
+  const { lang, setLang, languages } = useLanguage();
+  const links = [
+    ['pricing', '💳 اشتراكي', ['parent', 'admin']],
+    ['teacher', '👩‍🏫 مساحة المعلم', ['admin']],
+    ['parent', '👨‍👩‍👦 ولي الأمر', ['admin']],
+  ].filter(([, , roles]) => roles.includes(navRole));
+  return (
+    <section style={card}>
+      <h2 style={h2}>روابط سريعة</h2>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        {links.map(([id, label]) => <button key={id} style={btn} onClick={() => go(id)}>{label}</button>)}
+        <span style={{ ...muted, marginInlineStart: 'auto' }}>🌐 اللغة</span>
+        {Object.entries(languages).map(([code, info]) => (
+          <button key={code} style={{ ...btn, ...(lang === code ? { borderColor: 'var(--blue)', fontWeight: 800 } : {}) }} onClick={() => setLang(code)}>
+            {info.flag} {info.name}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function MySpace() {
   const { user, role, profile, loading } = useAuth();
   const { setCurrentScreen } = useApp();
@@ -272,6 +297,8 @@ export default function MySpace() {
       {navRole === 'admin' && <AdminSpace go={setCurrentScreen} />}
       {navRole === 'content_editor' && <ContentEditorSpace go={setCurrentScreen} />}
       {navRole === 'admin' && <AssignStudents />}
+
+      <QuickLinks navRole={navRole} go={setCurrentScreen} />
 
       <PersonalSettings />
 
