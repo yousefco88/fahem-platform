@@ -1,0 +1,222 @@
+.lsa-section {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.lsa-heading,
+.lsa-teacher-head,
+.lsa-teacher-identity,
+.lsa-summary,
+.lsa-filters {
+  display: flex;
+  align-items: center;
+}
+.lsa-heading {
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.lsa-heading h2 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 20px;
+}
+.lsa-heading p,
+.lsa-teacher-identity p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.lsa-summary {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.lsa-summary span,
+.lsa-count {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.lsa-summary strong { color: var(--navy); }
+.lsa-filters {
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+}
+.lsa-filters label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.lsa-search { flex: 1 1 230px; }
+.lsa-filter { flex: 0 1 190px; }
+.lsa-filters input,
+.lsa-filters select {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--navy);
+  font: inherit;
+  font-size: 14px;
+}
+.lsa-filters input:focus-visible,
+.lsa-filters select:focus-visible,
+.lsa-reset:focus-visible,
+.lsa-subject:focus-within {
+  outline: 3px solid color-mix(in srgb, var(--blue-text) 35%, transparent);
+  outline-offset: 2px;
+}
+.lsa-reset {
+  align-self: end;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--blue-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lsa-teachers { display: grid; gap: 14px; }
+.lsa-teacher {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--card-bg);
+}
+.lsa-teacher-head {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.lsa-teacher-identity { gap: 11px; min-width: 0; }
+.lsa-avatar {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--blue-light);
+  color: var(--blue-text);
+  font-size: 17px;
+  font-weight: 800;
+}
+.lsa-teacher-identity h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--navy);
+  font-size: 15px;
+}
+.lsa-count.is-assigned {
+  border-color: color-mix(in srgb, var(--green-text) 25%, var(--line));
+  background: var(--green-light);
+  color: var(--green-text);
+}
+.lsa-subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr));
+  gap: 9px;
+}
+.lsa-subject {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--navy);
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.lsa-subject:hover { border-color: var(--blue-text); transform: translateY(-1px); }
+.lsa-subject.is-selected { border-color: var(--blue-text); background: var(--blue-light); }
+.lsa-subject.is-busy { opacity: .65; cursor: progress; }
+.lsa-subject input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.lsa-subject-icon { flex: 0 0 auto; font-size: 17px; }
+.lsa-subject-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 700;
+}
+.lsa-checkmark {
+  display: grid;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--card-bg);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+.lsa-subject.is-selected .lsa-checkmark {
+  border-color: var(--blue-text);
+  background: var(--blue-text);
+  color: var(--card-bg);
+}
+.lsa-empty,
+.lsa-filter-empty {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 28px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.lsa-empty > span { font-size: 28px; }
+.lsa-empty strong { color: var(--navy); }
+.lsa-empty p { max-width: 460px; margin: 0; font-size: 13px; }
+.lsa-footnote { margin: 12px 2px 0; color: var(--muted); font-size: 12px; }
+
+@media (max-width: 680px) {
+  .lsa-section { margin-top: 22px; padding-top: 18px; }
+  .lsa-heading { align-items: flex-start; flex-direction: column; }
+  .lsa-heading h2 { font-size: 18px; }
+  .lsa-summary { justify-content: flex-start; }
+  .lsa-summary span { font-size: 11px; }
+  .lsa-filters { align-items: stretch; }
+  .lsa-search, .lsa-filter { flex: 1 1 100%; }
+  .lsa-reset { align-self: stretch; }
+  .lsa-teacher { padding: 12px; }
+  .lsa-teacher-head { align-items: flex-start; }
+  .lsa-count { white-space: normal; text-align: center; }
+  .lsa-subject-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .lsa-subject { gap: 6px; padding: 8px; }
+  .lsa-subject-title { font-size: 12px; }
+}
+@media (max-width: 380px) {
+  .lsa-subject-grid { grid-template-columns: 1fr; }
+}

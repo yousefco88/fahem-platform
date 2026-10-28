@@ -3,13 +3,15 @@
  * الاعتماد/الرفض عبر دالة review_lesson (تفرض الصلاحية على الخادم).
  * الإسناد (teacher_subjects) للمدير فقط بحسب RLS.
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { resolveLessonReviewLoad } from '../../lib/lessonReviewLoadState';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { buildTeacherAssignmentRows, filterTeacherAssignmentRows } from '../../lib/teacherSubjectAssignments';
 import './curriculum/CurriculumAdmin.css';
+import './LessonReview.css';
 
 export default function LessonReview() {
   const { role } = useAuth();
@@ -21,6 +23,9 @@ export default function LessonReview() {
   const [assigned, setAssigned] = useState(new Set());
   const [loadState, setLoadState] = useState({ status: 'loading', error: null });
   const [busy, setBusy] = useState('');
+  const [teacherQuery, setTeacherQuery] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('');
+  const [assignmentFilter, setAssignmentFilter] = useState('all');
 
   const load = useCallback(async () => {
     setLoadState({ status: 'loading', error: null });
@@ -51,6 +56,21 @@ export default function LessonReview() {
   }, [isAdmin]);
 
   useEffect(() => { load(); }, [load]);
+
+  const assignmentRows = useMemo(
+    () => buildTeacherAssignmentRows({ teachers, subjects, assigned }),
+    [teachers, subjects, assigned],
+  );
+  const visibleTeachers = useMemo(
+    () => filterTeacherAssignmentRows(assignmentRows, {
+      query: teacherQuery,
+      subjectKey: subjectFilter,
+      status: assignmentFilter,
+    }),
+    [assignmentRows, teacherQuery, subjectFilter, assignmentFilter],
+  );
+  const assignedSubjectsCount = assignmentRows.reduce((total, teacher) => total + teacher.assignedCount, 0);
+  const assignmentCellsCount = teachers.length * subjects.length;
 
   const teacherName = id => teachers.find(t => t.id === id)?.full_name || 'معلم';
 
@@ -119,33 +139,113 @@ export default function LessonReview() {
       )}
 
       {isAdmin && (
-        <>
-          <div className="curriculum-header" style={{ marginTop: 28 }}><h2>🎓 إسناد المواد للمعلمين</h2></div>
-          {teachers.length === 0 ? (
-            <p className="empty-state">لا يوجد معلمون بعد. فعّل معلماً من «المستخدمون والصلاحيات».</p>
-          ) : (
-            <div className="curriculum-table-wrapper">
-              <table className="curriculum-table">
-                <thead><tr><th>المعلم</th>{subjects.map(s => <th key={s.key}>{s.icon} {s.title}</th>)}</tr></thead>
-                <tbody>
-                  {teachers.map(t => (
-                    <tr key={t.id}>
-                      <td>{t.full_name || t.id.slice(0, 8)}</td>
-                      {subjects.map(s => (
-                        <td key={s.key}>
-                          <input type="checkbox" aria-label={`${t.full_name || 'معلم'} — ${s.title}`}
-                            checked={assigned.has(`${t.id}|${s.key}`)}
-                            disabled={busy === `${t.id}|${s.key}`}
-                            onChange={() => toggleSubject(t.id, s.key)} />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <section className="lsa-section" aria-labelledby="lsa-title">
+          <div className="lsa-heading">
+            <div>
+              <h2 id="lsa-title">🎓 إسناد المواد للمعلمين</h2>
+              <p>اختر المعلم، ثم فعّل المواد التي يدرّسها. يُحفظ كل تغيير مباشرة.</p>
             </div>
+            <div className="lsa-summary" aria-label="ملخص الإسناد">
+              <span><strong>{teachers.length}</strong> معلم</span>
+              <span><strong>{subjects.length}</strong> مادة</span>
+              <span><strong>{assignedSubjectsCount}</strong> إسناد من {assignmentCellsCount}</span>
+            </div>
+          </div>
+
+          {teachers.length === 0 ? (
+            <div className="lsa-empty">
+              <span aria-hidden="true">👩‍🏫</span>
+              <strong>لا يوجد معلمون بعد</strong>
+              <p>فعّل حساب المعلم من قسم «المستخدمون والصلاحيات»، ثم ارجع لتحديد مواده.</p>
+            </div>
+          ) : subjects.length === 0 ? (
+            <div className="lsa-empty">
+              <span aria-hidden="true">📚</span>
+              <strong>لا توجد مواد متاحة للإسناد</strong>
+              <p>أضف المواد من إدارة المناهج أولاً.</p>
+            </div>
+          ) : (
+            <>
+              <div className="lsa-filters">
+                <label className="lsa-search">
+                  <span>البحث عن معلم</span>
+                  <input
+                    type="search"
+                    value={teacherQuery}
+                    onChange={event => setTeacherQuery(event.target.value)}
+                    placeholder="اكتب اسم المعلم…"
+                  />
+                </label>
+                <label className="lsa-filter">
+                  <span>المادة</span>
+                  <select value={subjectFilter} onChange={event => setSubjectFilter(event.target.value)}>
+                    <option value="">كل المواد</option>
+                    {subjects.map(subject => <option key={subject.key} value={subject.key}>{subject.title}</option>)}
+                  </select>
+                </label>
+                <label className="lsa-filter">
+                  <span>حالة الإسناد</span>
+                  <select value={assignmentFilter} onChange={event => setAssignmentFilter(event.target.value)}>
+                    <option value="all">الكل</option>
+                    <option value="assigned">لديه مواد مسندة</option>
+                    <option value="unassigned">بلا مواد مسندة</option>
+                  </select>
+                </label>
+                {(teacherQuery || subjectFilter || assignmentFilter !== 'all') && (
+                  <button type="button" className="lsa-reset" onClick={() => {
+                    setTeacherQuery('');
+                    setSubjectFilter('');
+                    setAssignmentFilter('all');
+                  }}>مسح التصفية</button>
+                )}
+              </div>
+
+              {visibleTeachers.length === 0 ? (
+                <div className="lsa-filter-empty" role="status">لا يوجد معلمون يطابقون خيارات البحث والتصفية.</div>
+              ) : (
+                <div className="lsa-teachers">
+                  {visibleTeachers.map(teacher => (
+                    <article className="lsa-teacher" key={teacher.id}>
+                      <header className="lsa-teacher-head">
+                        <div className="lsa-teacher-identity">
+                          <span className="lsa-avatar" aria-hidden="true">{teacher.name.trim().charAt(0)}</span>
+                          <div>
+                            <h3>{teacher.name}</h3>
+                            <p>{teacher.assignedCount} من {subjects.length} مادة مسندة</p>
+                          </div>
+                        </div>
+                        <span className={`lsa-count${teacher.assignedCount ? ' is-assigned' : ''}`}>
+                          {teacher.assignedCount ? 'لديه إسناد' : 'لم تُسند مواد'}
+                        </span>
+                      </header>
+                      <div className="lsa-subject-grid" aria-label={`مواد ${teacher.name}`}>
+                        {teacher.subjects.map(subject => {
+                          const key = `${teacher.id}|${subject.key}`;
+                          const pending = busy === key;
+                          return (
+                            <label className={`lsa-subject${subject.assigned ? ' is-selected' : ''}${pending ? ' is-busy' : ''}`} key={subject.key}>
+                              <input
+                                type="checkbox"
+                                aria-label={`${teacher.name} — ${subject.title}`}
+                                checked={subject.assigned}
+                                disabled={Boolean(busy)}
+                                onChange={() => toggleSubject(teacher.id, subject.key)}
+                              />
+                              <span className="lsa-subject-icon" aria-hidden="true">{subject.icon || '📘'}</span>
+                              <span className="lsa-subject-title">{subject.title}</span>
+                              <span className="lsa-checkmark" aria-hidden="true">{pending ? '…' : subject.assigned ? '✓' : '+'}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+              <p className="lsa-footnote">التغييرات تُحفظ فوراً على النظام. صلاحيات الإسناد محصورة بالإدارة.</p>
+            </>
           )}
-        </>
+        </section>
       )}
     </div>
   );
