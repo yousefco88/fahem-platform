@@ -5,12 +5,15 @@ import { arabicAuthError } from './authErrors';
 import Field from './Field';
 import { GRADES } from './AuthCard';
 import Emoji from '../../ui/Emoji';
+import AccountSettings from './AccountSettings';
+import ChildInsightsPanel from './ChildInsightsPanel';
 
 /**
  * لوحة العائلة بعد تسجيل الدخول: بطاقة ولي الأمر + ملفات الأبناء + إضافة/حذف.
  * نفس عمليات Supabase السابقة — واجهة فقط.
  */
-export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
+export default function FamilyPanel({ parent, kids, setKids, onSignOut, onRenamed }) {
+  const [openId, setOpenId] = useState(null);
   const [newChild, setNewChild] = useState({ name: '', grade: GRADES[0] });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -51,6 +54,8 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
         <button type="button" className="fam-out" onClick={onSignOut}>تسجيل الخروج</button>
       </div>
 
+      <AccountSettings parent={parent} onRenamed={onRenamed} />
+
       <div aria-live="polite">
         {error && <div className="acct-alert error" role="alert">⚠️ <span>{error}</span></div>}
       </div>
@@ -62,12 +67,16 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
       )}
 
       {kids.map((c) => (
-        <div className="fam-child" key={c.id}>
+        <React.Fragment key={c.id}>
+        <div className="fam-child">
           <span className="emoji" aria-hidden="true"><Emoji>🧒</Emoji></span>
           <div className="info">
             <strong>{c.name}</strong>
             <span className="tag-badge info">{gradeLabel(c.grade)}</span>
           </div>
+          <button type="button" className="fam-out" aria-expanded={openId === c.id} onClick={() => setOpenId(openId === c.id ? null : c.id)}>
+            📊 التحليلات {openId === c.id ? '▴' : '▾'}
+          </button>
           {confirmId === c.id ? (
             <div className="fam-confirm">
               <button type="button" className="yes" onClick={() => removeChild(c)}>تأكيد الحذف</button>
@@ -77,6 +86,8 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut }) {
             <button type="button" className="fam-del" onClick={() => setConfirmId(c.id)}>🗑 حذف</button>
           )}
         </div>
+        {openId === c.id && <ChildInsightsPanel child={c} sameNameCount={kids.filter(k => k.name === c.name).length} />}
+        </React.Fragment>
       ))}
 
       <form className="fam-add" onSubmit={addChild}>

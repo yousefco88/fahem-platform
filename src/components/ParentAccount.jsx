@@ -58,6 +58,7 @@ export default function ParentAccount({ embedded = false }) {
             kids={children}
             setKids={setChildren}
             onSignOut={handleSignOut}
+            onRenamed={(name) => setParent(p => ({ ...p, name }))}
           />
         ) : (
           <AuthCard />

@@ -19,6 +19,7 @@ export default function Modals() {
     setShowStudioModal,
     setStudioActiveTab,
     activeChild,
+    activeChildCloudId,
     activeLesson,
     activeSubject,
     learningRecords,
@@ -158,6 +159,7 @@ export default function Modals() {
       supabase.from('lesson_question_attempts').insert({
         question_id: currentQ.id,
         lesson_id: String(activeLesson.id),
+        child_id: activeChildCloudId || null,
         child_key: activeChild?.id != null ? String(activeChild.id) : null,
         child_name: activeChild?.name || null,
         is_correct: !!isCorrect,
