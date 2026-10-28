@@ -116,6 +116,7 @@ export default function AdminDashboard() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState('');
   const [savingUser, setSavingUser] = useState(null);
+  const [banned, setBanned] = useState({});
   const [roleFilter, setRoleFilter] = useState('all');
   const [teacherEmail, setTeacherEmail] = useState('');
   const addTeacher = async () => {
@@ -150,6 +151,8 @@ export default function AdminDashboard() {
     if (!supabase) { setUsersLoading(false); return; }
     const { data, error } = await supabase.rpc('admin_list_users');
     if (error) setUsersError(error.message); else { setUsers(data || []); setUsersError(''); }
+    const st = await supabase.rpc('admin_user_status');
+    if (!st.error) setBanned(Object.fromEntries((st.data || []).map(r => [r.id, r.banned_until])));
     setUsersLoading(false);
   };
   useEffect(() => { loadUsers(); loadInvites(); }, []);
@@ -162,6 +165,35 @@ export default function AdminDashboard() {
     if (error) { triggerToast(`تعذر تغيير الدور: ${error.message}`); return; }
     setUsers(list => list.map(x => x.id === u.id ? { ...x, role } : x));
     triggerToast(`تم تغيير دور ${u.full_name || u.email} ✓`);
+  };
+
+  const manageUser = async (u, action) => {
+    if (!action) return;
+    const who = u.full_name || u.email;
+    const body = { action, userId: u.id };
+    if (action === 'rename') {
+      const n = window.prompt('الاسم الجديد:', u.full_name || '');
+      if (!n || !n.trim()) return; body.fullName = n.trim();
+    } else if (action === 'suspend') {
+      const h = window.prompt(`مدة إيقاف ${who} بالساعات (24 = يوم، 168 = أسبوع):`, '24');
+      if (!h || !(Number(h) > 0)) return; body.hours = Number(h);
+    } else if (action === 'unsuspend') {
+      if (!window.confirm(`إعادة تفعيل ${who}؟`)) return;
+    } else if (action === 'send_reset') {
+      if (!window.confirm(`إرسال رابط إعادة تعيين كلمة المرور إلى ${u.email}؟`)) return;
+    } else if (action === 'set_password') {
+      const pw = window.prompt(`كلمة مرور مؤقتة جديدة لـ ${who} (8 أحرف على الأقل). أبلغه بها بقناة آمنة:`);
+      if (!pw) return; body.password = pw;
+    }
+    setSavingUser(u.id);
+    const { data, error } = await supabase.functions.invoke('admin-manage-user', { body });
+    setSavingUser(null);
+    let msg = data?.message;
+    if (error && !msg && error.context?.json) { try { msg = (await error.context.json())?.message; } catch { /* ignore */ } }
+    if (error || data?.message) { triggerToast(`تعذر التنفيذ: ${msg || error.message}`); return; }
+    triggerToast('تم التنفيذ ✓');
+    if (action === 'rename') setUsers(l => l.map(x => x.id === u.id ? { ...x, full_name: body.fullName } : x));
+    if (action === 'suspend' || action === 'unsuspend') loadUsers();
   };
 
   // Audit Log items
@@ -300,7 +332,7 @@ export default function AdminDashboard() {
         <div className="u-3">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>🗓️ الجدول الأسبوعي لمساحة الطفل</h3>
+              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><Emoji>🗓️</Emoji> الجدول الأسبوعي لمساحة الطفل</h3>
               <p className="u-4">
                 كل طفل له جدوله الخاص. اختر الطفل ثم عدّل خاناته واحفظ. خيار «تلقائي» يعرض أول درس غير مُتقن. الحصة المباشرة: يضع المعلم المُسنَد رابط الاجتماع من «مساحتي ← حصصي».
               </p>
@@ -406,7 +438,7 @@ export default function AdminDashboard() {
           </p>
 
           <div className="u-1" style={{ marginBottom: '18px' }}>
-            <strong style={{ color: 'var(--navy)' }}>👩‍🏫 إضافة / تفعيل معلم</strong>
+            <strong style={{ color: 'var(--navy)' }}><Emoji>👩‍🏫</Emoji> إضافة / تفعيل معلم</strong>
             <p className="u-4">اكتب بريد المعلم: إن كان مسجّلاً يُفعَّل فوراً، وإن لم يكن تُنشأ دعوة تُطبَّق تلقائياً عند تسجيله بنفس البريد.</p>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
               <input type="email" dir="ltr" aria-label="بريد المعلم" placeholder="teacher@example.com" value={teacherEmail}
@@ -465,6 +497,7 @@ export default function AdminDashboard() {
                     <th style={{ padding: '12px 16px', fontWeight: 700 }}>الاسم والبريد</th>
                     <th style={{ padding: '12px 16px', fontWeight: 700 }}>الدور</th>
                     <th style={{ padding: '12px 16px', fontWeight: 700 }}>آخر دخول</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>إجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -494,6 +527,20 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{ padding: '14px 16px', color: 'var(--muted)' }}>
                         {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('ar-EG') : 'لم يدخل بعد'}
+                      </td>
+                      <td style={{ padding: '14px 16px' }}>
+                        {banned[u.id] && <span style={{ display: 'block', color: 'var(--red-text)', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>⏸ موقوف حتى {new Date(banned[u.id]).toLocaleString('ar-EG')}</span>}
+                        {u.role === 'admin' || u.id === user?.id ? <span style={{ color: 'var(--muted)', fontSize: 12 }}>محمي</span> : (
+                          <select aria-label={`إجراء على ${u.full_name || u.email}`} value="" disabled={savingUser === u.id}
+                            onChange={e => manageUser(u, e.target.value)}
+                            style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-bg)', fontSize: '13px' }}>
+                            <option value="">إجراء…</option>
+                            <option value="rename">✏️ تعديل الاسم</option>
+                            <option value="send_reset">📧 إرسال رابط كلمة مرور</option>
+                            <option value="set_password">🔑 تعيين كلمة مرور مؤقتة</option>
+                            {banned[u.id] ? <option value="unsuspend">▶️ إعادة التفعيل</option> : <option value="suspend">⏸ إيقاف مؤقت</option>}
+                          </select>
+                        )}
                       </td>
                     </tr>
                   ))}
