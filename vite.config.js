@@ -30,8 +30,12 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'],
-        // مولّد تقرير PDF (~1.25MB) يُحمَّل عند الطلب فقط، لا ضمن التخزين المسبق
-        globIgnores: ['**/WeeklyReportPDF-*.js', 'tesseract/**', 'emoji/**'],
+        // مولّد PDF ومكتباته تُحمّل عند الطلب ولا تدخل التخزين المسبق
+        globIgnores: [
+          '**/WeeklyReportPDF-*.js', '**/vendor-pdf-*.js', '**/vendor-fontkit-*.js',
+          '**/vendor-linebreak-*.js', '**/vendor-pdfkit-*.js', '**/vendor-png-js-*.js',
+          '**/pdf.min-*.js', '**/pdf.worker.min-*.js', 'tesseract/**', 'emoji/**'
+        ],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
@@ -81,10 +85,17 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-supabase': ['@supabase/supabase-js'],
-          'curriculum-data': ['./src/data/curriculumData.js']
+        manualChunks(id) {
+          if (id.includes('/src/data/curriculumData.js')) return 'curriculum-data';
+          if (/\/node_modules\/(react|react-dom|react-router-dom)\//.test(id)) return 'vendor-react';
+          if (id.includes('/node_modules/@supabase/')) return 'vendor-supabase';
+
+          // Keep the sizeable PDF toolchain in small, on-demand chunks.
+          const reactPdfPackage = id.match(/\/node_modules\/@react-pdf\/([^/]+)\//);
+          if (reactPdfPackage) return `vendor-pdf-${reactPdfPackage[1]}`;
+          for (const packageName of ['pdfkit', 'fontkit', 'linebreak', 'png-js']) {
+            if (id.includes(`/node_modules/${packageName}/`)) return `vendor-${packageName}`;
+          }
         }
       }
     }

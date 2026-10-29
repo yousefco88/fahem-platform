@@ -1,30 +1,54 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { validateRecordingFile, recordingPath, recordingError } from '../utils/recordingRules';
+import { validateRecordingFile, recordingPath, recordingError, recordingLoadStatus } from '../utils/recordingRules';
 
 const BUCKET = 'lesson-recordings';
 
 // المنشور من تسجيلات درس معيّن (الخادم يفلتر المقبول فقط عبر RLS) مع روابط موقّعة قصيرة العمر.
 export function useLessonRecordings(lessonId) {
-  const [items, setItems] = useState([]);
+  const [attempt, setAttempt] = useState(0);
+  const [result, setResult] = useState({ lessonId, items: [], status: lessonId ? 'loading' : 'idle' });
+
   useEffect(() => {
     let off = false;
-    setItems([]);
-    if (!supabase || !lessonId) return undefined;
+    setResult({ lessonId, items: [], status: !lessonId ? 'idle' : !supabase ? 'unavailable' : 'loading' });
+    if (!supabase || !lessonId) return () => { off = true; };
+
     (async () => {
-      const { data, error } = await supabase.from('lesson_recordings')
-        .select('id, storage_path, duration_sec, created_at').eq('lesson_id', lessonId).eq('status', 'accepted').order('created_at', { ascending: false });
-      if (off || error || !data?.length) return;
-      const out = [];
-      for (const r of data) {
-        const { data: s } = await supabase.storage.from(BUCKET).createSignedUrl(r.storage_path, 3600);
-        if (s?.signedUrl) out.push({ ...r, url: s.signedUrl });
+      try {
+        const { data, error } = await supabase.from('lesson_recordings')
+          .select('id, storage_path, duration_sec, created_at')
+          .eq('lesson_id', lessonId).eq('status', 'accepted').order('created_at', { ascending: false });
+        if (off) return;
+        if (error) throw error;
+
+        const out = [];
+        let signingFailed = false;
+        for (const recording of data || []) {
+          const { data: signed, error: signedError } = await supabase.storage.from(BUCKET).createSignedUrl(recording.storage_path, 3600);
+          if (off) return;
+          if (signedError) signingFailed = true;
+          if (signed?.signedUrl) out.push({ ...recording, url: signed.signedUrl });
+        }
+
+        if (!off) setResult({
+          lessonId,
+          items: out,
+          status: recordingLoadStatus({ signingFailed, loadedCount: out.length }),
+        });
+      } catch {
+        if (!off) setResult({ lessonId, items: [], status: 'error' });
       }
-      if (!off) setItems(out);
     })();
+
     return () => { off = true; };
-  }, [lessonId]);
-  return items;
+  }, [lessonId, attempt]);
+
+  const current = result.lessonId === lessonId
+    ? result
+    : { lessonId, items: [], status: lessonId ? 'loading' : 'idle' };
+
+  return { ...current, retry: () => setAttempt(value => value + 1) };
 }
 
 // المعلم: رفع الملف ثم تسجيله عبر الدالة. عند فشل التسجيل يُحذف الملف المرفوع.

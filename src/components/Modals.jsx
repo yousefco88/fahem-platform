@@ -1,9 +1,13 @@
-import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, lazy, Suspense } from 'react';
 import { useApp } from '../context/AppContext';
 import { useUIState } from '../context/UIContext';
 import { supabase } from '../lib/supabase';
 import { resolveVideo, safeFileUrl } from '../utils/videoEmbed';
 import { useLessonRecordings } from '../hooks/useLessonRecordings';
+import { findLessonLiveSlots } from '../utils/lessonPlayer';
+import { isCurrentQuizAttempt } from '../utils/quizAttempt';
+import LiveJoin from './LiveJoin';
+import LessonPlayerShell from './child/LessonPlayerShell';
 import Emoji from '../ui/Emoji';
 
 // حزمة ثقيلة (~42KB) — تُحمَّل فقط عند فتح البث المباشر
@@ -22,7 +26,11 @@ export default function Modals() {
     activeChildCloudId,
     activeLesson,
     activeSubject,
+    curriculumData,
     learningRecords,
+    scheduleData,
+    slotsLoaded,
+    slotsError,
     recordVideoProgress,
     completeLessonMastery,
     recordQuizAttempt,
@@ -31,7 +39,18 @@ export default function Modals() {
     triggerToast
   } = useApp();
   const video = resolveVideo(activeLesson?.videoUrl);
-  const liveRecordings = useLessonRecordings(activeLesson?.id);
+  const recordingState = useLessonRecordings(activeLesson?.id);
+  const liveRecordings = recordingState.items;
+  const liveSlots = findLessonLiveSlots({
+    scheduleData,
+    lessonId: activeLesson?.id,
+    curriculumData,
+    learningRecords,
+    masteredLessons: activeChild?.masteredLessons || [],
+  });
+  const hasRecordedLesson = Boolean(video || liveRecordings.length);
+  const hasLiveLesson = Boolean(slotsLoaded && liveSlots.length);
+  const canShowLiveMode = Boolean(hasLiveLesson || slotsError || !slotsLoaded);
   const pdfUrl = safeFileUrl(activeLesson?.pdfUrl);
 
   // Whiteboard Canvas State
@@ -41,6 +60,10 @@ export default function Modals() {
   const [qIndex, setQIndex] = useState(0); // مؤشر السؤال الحالي من بنك الأسئلة
   const [builtSyllables, setBuiltSyllables] = useState([]);
   const [builderCompleted, setBuilderCompleted] = useState(false);
+  const [playerMode, setPlayerMode] = useState('recorded');
+  const currentPlayerMode = hasRecordedLesson && canShowLiveMode
+    ? playerMode
+    : canShowLiveMode ? 'live' : 'recorded';
 
   // بنك الأسئلة يتقدم على السؤال القديم المفرد؛ السؤال القديم يبقى احتياطاً للدروس التي لم تُنقل بعد
   const bankQuestions = activeLesson?.questions?.length ? activeLesson.questions : null;
@@ -50,6 +73,22 @@ export default function Modals() {
         ? { question: activeLesson.question, options: activeLesson.options || [], celebration: activeLesson.celebration || '' }
         : null);
   const isLastQuestion = !bankQuestions || qIndex >= bankQuestions.length - 1;
+  const quizScope = JSON.stringify([
+    showStudioModal,
+    activeLesson?.id ?? null,
+    currentQ?.id ?? qIndex,
+    activeChildCloudId ?? null,
+    activeChild?.id ?? null,
+  ]);
+  const quizAttemptRef = useRef({ requestId: 0, scope: quizScope });
+  useLayoutEffect(() => {
+    if (quizAttemptRef.current.scope !== quizScope) {
+      quizAttemptRef.current = {
+        requestId: quizAttemptRef.current.requestId + 1,
+        scope: quizScope,
+      };
+    }
+  }, [quizScope]);
 
   // Parent Gate math
   const [gateNum1] = useState(5);
@@ -63,25 +102,26 @@ export default function Modals() {
   // Reset quiz/builder state when the lesson changes or the studio reopens
   useEffect(() => {
     setQuizAnswered(null);
+    setQuizChecking(false);
+    setPickedIdx(null);
     setQIndex(0);
     setBuiltSyllables([]);
     setBuilderCompleted(false);
     setIframeStart(null);
+    setPlayerMode('recorded');
   }, [activeLesson?.id, showStudioModal]);
+
+  useEffect(() => {
+    setQuizAnswered(null);
+    setQuizChecking(false);
+    setPickedIdx(null);
+  }, [currentQ?.id, activeChildCloudId, activeChild?.id]);
 
   // إغلاق المشغل: يوقف القراءة الصوتية الجارية دائماً
   const handleCloseStudio = () => {
     soundManager.stopSpeak();
     setShowStudioModal(false);
   };
-
-  // إغلاق بمفتاح Escape أثناء فتح المشغل
-  useEffect(() => {
-    if (!showStudioModal) return;
-    const onKeyDown = (e) => { if (e.key === 'Escape') handleCloseStudio(); };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [showStudioModal]);
 
   // تحويل "mm:ss" أو "hh:mm:ss" إلى ثوانٍ
   const chapterTimeToSeconds = (t) => {
@@ -126,10 +166,22 @@ export default function Modals() {
     if (bankQuestions && currentQ?.id && 'value' in opt) {
       if (!supabase) { triggerToast('تعذر التحقق من الإجابة الآن'); setPickedIdx(null); return; }
       setQuizChecking(true);
-      const { data, error } = await supabase.rpc('check_lesson_question_answer', {
-        p_question_id: currentQ.id, p_selected: opt.value,
-      });
+      const attempt = {
+        requestId: quizAttemptRef.current.requestId + 1,
+        scope: quizAttemptRef.current.scope,
+      };
+      quizAttemptRef.current.requestId = attempt.requestId;
+      let result;
+      try {
+        result = await supabase.rpc('check_lesson_question_answer', {
+          p_question_id: currentQ.id, p_selected: opt.value,
+        });
+      } catch (error) {
+        result = { error };
+      }
+      if (!isCurrentQuizAttempt(attempt, quizAttemptRef.current)) return;
       setQuizChecking(false);
+      const { data, error } = result || {};
       // خطأ الشبكة ليس إجابة خاطئة: نطلب المحاولة مجدداً بلا تسجيل
       if (error || typeof data !== 'boolean') {
         triggerToast('تعذر التحقق من الإجابة، حاول مرة أخرى');
@@ -202,59 +254,22 @@ export default function Modals() {
     <>
       {/* 2. Interactive Lesson Studio Modal */}
       {showStudioModal && activeLesson && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) handleCloseStudio(); }}>
-          <div
-            role="dialog" aria-modal="true" aria-label={activeLesson.title}
-            style={{
-            background: 'var(--card-bg)', width: '100%', maxWidth: '1150px',
-            borderRadius: '28px', overflow: 'hidden', maxHeight: '92vh',
-            display: 'flex', flexDirection: 'column'
-          }}>
-            <header style={{
-              background: 'var(--surface-inverse)', color: 'white', padding: '16px 28px',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-            }}>
-              <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {activeLesson.letter && <span className="tag-badge mastered" style={{ fontSize: '12px' }}>{activeLesson.letter}</span>}
-                <span>{activeLesson.title}</span>
-              </h3>
-              <button aria-label="إغلاق الدرس" style={{ background: 'none', color: 'white', fontSize: '22px' }} onClick={handleCloseStudio}>
-                ✕
-              </button>
-            </header>
-
-            <nav style={{ display: 'flex', background: 'var(--bg)', borderBottom: '2px solid var(--line)', padding: '0 24px', gap: '12px', overflowX: 'auto' }}>
-              <button
-                className={`studio-tab-btn ${studioActiveTab === 'video' ? 'active' : ''}`}
-                onClick={() => setStudioActiveTab('video')}
-              >
-                🎥 فيديو الدرس
-              </button>
-              <button
-                className={`studio-tab-btn ${studioActiveTab === 'quiz' ? 'active' : ''}`}
-                onClick={() => setStudioActiveTab('quiz')}
-              >
-                🎯 تحدي الإتقان وبناء الكلمة
-              </button>
-              <button
-                className={`studio-tab-btn ${studioActiveTab === 'pdf' ? 'active' : ''}`}
-                onClick={() => setStudioActiveTab('pdf')}
-              >
-                📄 ورقة العمل PDF
-              </button>
-              <button
-                className={`studio-tab-btn ${studioActiveTab === 'guide' ? 'active' : ''}`}
-                onClick={() => setStudioActiveTab('guide')}
-              >
-                💡 دليل ولي الأمر للمذاكرة
-              </button>
-            </nav>
-
-            <div style={{ padding: '28px', overflowY: 'auto', flex: 1 }}>
-              {/* Tab 1: Video */}
+        <LessonPlayerShell
+          lesson={activeLesson}
+          subject={curriculumData?.[activeSubject]}
+          tab={studioActiveTab}
+          onTabChange={setStudioActiveTab}
+          mode={currentPlayerMode}
+          onModeChange={setPlayerMode}
+          recordedAvailable={hasRecordedLesson}
+          liveAvailable={canShowLiveMode}
+          onClose={handleCloseStudio}
+        >
+          <div aria-labelledby={`lesson-tab-${studioActiveTab}`}>
+            {/* Tab 1: Video and live sessions */}
               {studioActiveTab === 'video' && (
                 <div>
-                  {video ? (
+                  {currentPlayerMode === 'live' ? null : video ? (
                     <div style={{ background: '#0f172a', borderRadius: '20px', padding: '10px', maxWidth: '850px', margin: '0 auto 20px' }}>
                       {video.kind === 'iframe' ? (
                         <iframe
@@ -282,34 +297,85 @@ export default function Modals() {
                       )}
                     </div>
                   ) : (
-                                      <div style={{
-                                        background: 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%)',
-                                        borderRadius: '20px', aspectRatio: '16 / 9',
-                                        maxHeight: '440px', margin: '0 auto 20px', display: 'flex',
-                                        flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white',
-                                        textAlign: 'center', padding: '24px'
-                                      }}>
-                                        <span style={{ fontSize: '48px', marginBottom: '16px' }}><Emoji>🎬</Emoji></span>
-                                        <span style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>الفيديو قيد التحضير</span>
-                                        <span style={{ fontSize: '14px', opacity: 0.9, marginBottom: '16px' }}>سيتوفر قريباً — تابع الإشعارات</span>
-                                        <div style={{ 
-                                          background: 'rgba(255,255,255,0.15)', padding: '12px 20px', borderRadius: '12px',
-                                          fontSize: '13px', maxWidth: '500px'
-                                        }}>
-                                          <strong><Emoji>🎯</Emoji> هدف الدرس:</strong> {activeLesson.objective}
-                                        </div>
-                                      </div>
-                                    )}
+                    <div className="lesson-player-state" role="status" aria-live="polite">
+                      <span aria-hidden="true"><Emoji>{recordingState.status === 'loading' ? '⏳' : recordingState.status === 'error' ? '⚠️' : '🎬'}</Emoji></span>
+                      <strong>
+                        {recordingState.status === 'loading' ? 'جارٍ تحميل تسجيلات الدرس' :
+                          recordingState.status === 'error' ? 'تعذر تحميل تسجيلات الدرس' :
+                            recordingState.status === 'unavailable' ? 'خدمة التسجيلات غير متاحة الآن' :
+                              'لا يوجد تسجيل معتمد لهذا الدرس حتى الآن'}
+                      </strong>
+                      <p>
+                        {recordingState.status === 'loading' ? 'لحظات ونجهز لك محتوى الدرس.' :
+                          recordingState.status === 'error' ? 'تحقق من اتصال الإنترنت ثم أعد المحاولة.' :
+                            recordingState.status === 'unavailable' ? 'يمكنك تجربة الدرس والأنشطة المتاحة أدناه.' :
+                              'يمكنك تجربة التحدي والأنشطة المتاحة لهذا الدرس.'}
+                      </p>
+                      {recordingState.status === 'error' && (
+                        <button type="button" className="btn-ghost btn-compact" onClick={recordingState.retry} style={{ marginTop: 10 }}>
+                          إعادة المحاولة ↻
+                        </button>
+                      )}
+                      {activeLesson.objective && (
+                        <p style={{ marginTop: 10 }}><strong>هدف الدرس:</strong> {activeLesson.objective}</p>
+                      )}
+                    </div>
+                  )}
 
-                  {liveRecordings.map((r, i) => (
+                  {currentPlayerMode === 'recorded' && liveRecordings.map((r, i) => (
                     <div key={r.id} style={{ background: '#0f172a', borderRadius: '20px', padding: '10px', maxWidth: '850px', margin: '0 auto 20px' }}>
                       <div style={{ color: 'white', fontSize: '13.5px', padding: '4px 8px 8px' }}>🎥 تسجيل الحصة المباشرة{liveRecordings.length > 1 ? ` (${i + 1})` : ''}</div>
                       <video controls playsInline preload="metadata" src={r.url} style={{ width: '100%', maxHeight: '440px', borderRadius: '14px' }} />
                     </div>
                   ))}
+                  {currentPlayerMode === 'recorded' && recordingState.status === 'partial' && (
+                    <div className="lesson-player-state" role="status">
+                      <span aria-hidden="true"><Emoji>⚠️</Emoji></span>
+                      <p>تعذر فتح بعض التسجيلات؛ نعرض المتاح منها فقط.</p>
+                    </div>
+                  )}
+                  {currentPlayerMode === 'recorded' && recordingState.status === 'error' && video && (
+                    <div className="lesson-player-state" role="alert">
+                      <p>تعذر تحميل تسجيلات إضافية لهذا الدرس.</p>
+                      <button type="button" className="btn-ghost btn-compact" onClick={recordingState.retry}>إعادة المحاولة ↻</button>
+                    </div>
+                  )}
+
+                  {currentPlayerMode === 'live' && (
+                    <section aria-label="الحصة المباشرة" aria-live="polite">
+                      {slotsError ? (
+                        <div className="lesson-player-state" role="alert">
+                          <span aria-hidden="true"><Emoji>⚠️</Emoji></span>
+                          <strong>تعذر تحميل جدول الحصص</strong>
+                          <p>لا نستطيع تأكيد موعد الحصة الآن. أعد المحاولة لاحقاً.</p>
+                        </div>
+                      ) : !slotsLoaded ? (
+                        <div className="lesson-player-state" role="status">
+                          <span aria-hidden="true"><Emoji>⏳</Emoji></span>
+                          <strong>جارٍ التحقق من جدولك</strong>
+                          <p>لن نعرض حصة مباشرة حتى نتأكد أنها مرتبطة بهذا الدرس.</p>
+                        </div>
+                      ) : liveSlots.length ? (
+                        <>
+                          <p className="lesson-player-live-note">يفتح رابط الاجتماع خارج المنصة، ويظهر زر الانضمام عند اقتراب موعد الحصة.</p>
+                          {liveSlots.map((slot, index) => (
+                            <div className="lesson-player-live-item" key={slot.id || `${slot.subjectId}-${index}`}>
+                              <LiveJoin slot={slot} />
+                            </div>
+                          ))}
+                        </>
+                      ) : (
+                        <div className="lesson-player-state" role="status">
+                          <span aria-hidden="true"><Emoji>📅</Emoji></span>
+                          <strong>لا توجد حصة مباشرة مرتبطة بهذا الدرس</strong>
+                          <p>يمكنك الرجوع إلى التسجيلات أو متابعة أنشطة الدرس.</p>
+                        </div>
+                      )}
+                    </section>
+                  )}
 
                   {/* محطات القفز السريع — تظهر فقط عند وجود فيديو فعلي ومحطات */}
-                  {video && activeLesson.videoChapters?.length > 0 && (
+                  {currentPlayerMode === 'recorded' && video && activeLesson.videoChapters?.length > 0 && (
                     <div style={{ background: 'var(--bg)', padding: '16px', borderRadius: '14px', border: '1px solid var(--line)' }}>
                       <strong>محطات الدرس للقفز السريع:</strong>
                       <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
@@ -436,16 +502,19 @@ export default function Modals() {
                       استمع وتذكر شرح المعلمة في الحصة المسجلة
                     </p>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '20px 0' }}>
+                    <div className="lesson-quiz-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '20px 0' }}>
                       {currentQ.options?.map((opt, i) => (
-                        <div
+                        <button
+                          type="button"
                           key={`${qIndex}-${i}`}
                           className={`quiz-option-card ${quizAnswered === 'correct' && pickedIdx === i ? 'correct' : ''} ${quizAnswered === 'wrong' && pickedIdx === i ? 'wrong' : ''}`}
-                          style={quizChecking ? { opacity: 0.6, pointerEvents: 'none' } : undefined}
+                          aria-pressed={pickedIdx === i}
+                          disabled={quizChecking}
+                          style={{ font: 'inherit', textAlign: 'start', cursor: quizChecking ? 'wait' : 'pointer', ...(quizChecking ? { opacity: 0.6 } : {}) }}
                           onClick={() => handlePickOption(opt, i)}
                         >
-                          <span>{opt.icon}</span> {opt.text}
-                        </div>
+                          <span aria-hidden="true">{opt.icon}</span> {opt.text}
+                        </button>
                       ))}
                     </div>
 
@@ -582,9 +651,8 @@ export default function Modals() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      )}
+          </LessonPlayerShell>
+        )}
 
       {/* 3. Parent Gate Modal */}
       {showGateModal && (

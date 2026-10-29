@@ -18,6 +18,11 @@ export function recordingPath(userId, uuid, file) {
 
 export const RECORDING_STATUS_LABEL = { review: 'بانتظار مراجعة الإدارة', accepted: 'منشور', rejected: 'مرفوض' };
 
+export function recordingLoadStatus({ signingFailed = false, loadedCount = 0 } = {}) {
+  if (!signingFailed) return 'ready';
+  return loadedCount > 0 ? 'partial' : 'error';
+}
+
 export function recordingError(error) {
   if (!error) return '';
   if (error.code === '42501') return 'هذه الحصة غير مسندة إليك';

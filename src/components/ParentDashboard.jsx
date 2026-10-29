@@ -272,7 +272,7 @@ export default function ParentDashboard() {
         <button
           style={{
             background: 'var(--g-primary)', color: 'white',
-            padding: '11px', borderRadius: 999, boxShadow: 'var(--press)',
+            padding: '11px', borderRadius: 999,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             fontWeight: 700, fontSize: '12.5px', boxShadow: '0 4px 10px rgba(99,102,241,0.25)',
             opacity: pdfGenerating ? 0.7 : 1, cursor: pdfGenerating ? 'wait' : 'pointer'
@@ -287,7 +287,7 @@ export default function ParentDashboard() {
         <button
           style={{
             marginTop: 'auto', background: 'var(--g-fun)',
-            color: 'white', padding: '14px', borderRadius: 999, boxShadow: 'var(--press)',
+            color: 'white', padding: '14px', borderRadius: 999,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
             fontWeight: 700, boxShadow: '0 10px 20px rgba(236,72,153,0.25)'
           }}
