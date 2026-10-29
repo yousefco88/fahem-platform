@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useApp } from '../../context/AppContext';
+import { gradeLabel } from '../../utils/gradeLabel';
 import { buildChildInsights, attemptsForChild } from '../../utils/childInsights';
 
 const box = { border: '1px solid var(--line)', borderRadius: 12, padding: 12, background: 'var(--card-bg)' };
@@ -7,6 +9,8 @@ const dt = (v) => (v ? new Date(v).toLocaleDateString('ar-EG') : '—');
 
 /** تحليلات طفل واحد من السحابة (بيانات حقيقية فقط). تُحمَّل عند فتح البطاقة. */
 export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
+  const { curriculumData, triggerToast } = useApp();
+  const [pdfBusy, setPdfBusy] = useState(false);
   const [state, setState] = useState({ loading: true, error: '', data: null });
 
   useEffect(() => {
@@ -33,6 +37,32 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
     })();
     return () => { off = true; };
   }, [child.id, child.name, sameNameCount]);
+
+  const downloadPdf = async () => {
+    if (pdfBusy || !state.data) return;
+    setPdfBusy(true);
+    try {
+      const d0 = state.data;
+      const done = new Set(d0.completedIds);
+      const subjects = (curriculumData?.subjects || []).map(sub => {
+        const lessons = (sub.modules || []).flatMap(m => m.lessons || []);
+        const completed = lessons.filter(l => done.has(l.id)).length;
+        return { name: sub.title, emoji: sub.icon || '📘', completed, total: lessons.length, percent: lessons.length ? Math.round((completed / lessons.length) * 100) : 0 };
+      }).filter(s => s.total > 0);
+      const total = subjects.reduce((a, s) => a + s.total, 0);
+      const { downloadWeeklyReport } = await import('../parent/WeeklyReportPDF');
+      await downloadWeeklyReport({
+        child: { name: child.name, grade: gradeLabel(child.grade) },
+        streak: { currentStreak: d0.streak?.current || 0, bestStreak: d0.streak?.best || 0, xpTotal: d0.streak?.xp || 0, level: d0.streak?.level || 1 },
+        stats: { lessonsCompleted: d0.lessonsDone, totalLessons: total, progressPercent: total ? Math.round((d0.lessonsDone / total) * 100) : 0, hoursStudied: 0 },
+        subjects,
+        weekRange: `أسبوع ${new Date().toLocaleDateString('ar-EG', { month: 'long', day: 'numeric' })}`,
+      });
+      triggerToast('✅ تم تحميل التقرير');
+    } catch (e) {
+      console.error(e); triggerToast('❌ تعذر إنشاء التقرير');
+    } finally { setPdfBusy(false); }
+  };
 
   if (state.loading) return <div style={{ padding: 8 }}>⏳ جارٍ تحميل التحليلات…</div>;
   if (state.error) return <div className="acct-alert error" role="alert">⚠️ <span>تعذر التحميل: {state.error}</span></div>;
@@ -68,6 +98,7 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
           <small>تُحسب المهارة بعد 3 إجابات على الأقل.</small>
         </div>
       )}
+      <button type="button" className="fam-out" onClick={downloadPdf} disabled={pdfBusy}>{pdfBusy ? '⏳ جارٍ الإنشاء…' : '📄 تحميل تقرير PDF'}</button>
     </div>
   );
 }

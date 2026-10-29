@@ -29,6 +29,7 @@ export function buildChildInsights({ records = [], streak = null, daily = [], at
   const activeDays14 = last14.filter(d => d.lessons > 0 || d.xp > 0).length;
   const lastDates = [streak?.last_activity_date, ...records.map(r => r.updated_at)].filter(Boolean).sort();
   return {
+    completedIds: records.filter(r => r.status === 'completed').map(r => r.lesson_id),
     lessonsDone, lessonsStarted,
     quiz: { total, correct, pct: total ? Math.round((correct / total) * 100) : null },
     skills, weakest, strongest,
