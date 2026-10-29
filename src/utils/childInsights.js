@@ -1,7 +1,7 @@
 // تحليلات الطفل — دوال نقية من بيانات حقيقية فقط؛ لا أرقام افتراضية (الفراغ يبقى فارغاً).
 const MIN_SKILL_ATTEMPTS = 3;
 
-export function buildChildInsights({ records = [], streak = null, daily = [], attempts = [], now = new Date() } = {}) {
+export function buildChildInsights({ records = [], streak = null, daily = [], attempts = [], joins = [], now = new Date() } = {}) {
   const lessonsDone = records.filter(r => r.status === 'completed').length;
   const lessonsStarted = records.filter(r => r.status !== 'completed').length;
   const total = attempts.length;
@@ -29,6 +29,7 @@ export function buildChildInsights({ records = [], streak = null, daily = [], at
   const activeDays14 = last14.filter(d => d.lessons > 0 || d.xp > 0).length;
   const lastDates = [streak?.last_activity_date, ...records.map(r => r.updated_at)].filter(Boolean).sort();
   return {
+    live: { total: joins.length, recent: [...joins].sort((a, b) => (b.joined_at || '').localeCompare(a.joined_at || '')).slice(0, 5) },
     completedIds: records.filter(r => r.status === 'completed').map(r => r.lesson_id),
     lessonsDone, lessonsStarted,
     quiz: { total, correct, pct: total ? Math.round((correct / total) * 100) : null },
@@ -36,7 +37,7 @@ export function buildChildInsights({ records = [], streak = null, daily = [], at
     last14, activeDays14,
     streak: streak ? { current: streak.current_streak || 0, best: streak.best_streak || 0, xp: streak.xp_total || 0, level: streak.level || 1 } : null,
     lastActivity: lastDates.length ? lastDates[lastDates.length - 1] : null,
-    hasAnyData: Boolean(records.length || total || streak || daily.length),
+    hasAnyData: Boolean(records.length || total || streak || daily.length || joins.length),
   };
 }
 

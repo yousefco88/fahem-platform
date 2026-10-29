@@ -2,11 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getLiveState, formatInTz, JOIN_BEFORE_MIN } from '../utils/liveWindow';
 import Emoji from '../ui/Emoji';
+import { supabase } from '../lib/supabase';
+
+// تسجيل الانضمام للحضور (best-effort: لا يعطّل فتح الرابط؛ فريد لكل طفل/حصة/يوم)
+async function logJoin(childId, slot, start) {
+  try {
+    if (!supabase || !childId || !slot?.id) return;
+    const { data } = await supabase.auth.getSession();
+    const uid = data?.session?.user?.id;
+    if (!uid) return;
+    await supabase.from('live_join_log').upsert(
+      { child_id: childId, parent_id: uid, slot_id: String(slot.id), slot_start: start ? new Date(start).toISOString() : null },
+      { onConflict: 'child_id,slot_id,joined_date', ignoreDuplicates: true }
+    );
+  } catch { /* ignore */ }
+}
 
 // يظهر داخل الدرس المجدول فقط، وفقط للخانة type === 'live'.
 // open = من 15 دقيقة قبل الموعد حتى نهاية الحصة. الرابط من المعلم (لا مزود بث خارجي).
 export default function LiveJoin({ slot }) {
-  const { effectiveTimezone } = useApp();
+  const { effectiveTimezone, activeChildCloudId } = useApp();
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30000);
@@ -25,6 +40,7 @@ export default function LiveJoin({ slot }) {
       <div>
         <a
           href={slot.meetingUrl} target="_blank" rel="noopener noreferrer"
+          onClick={() => logJoin(activeChildCloudId, slot, live.start)}
           style={{ ...box, display: 'block', textAlign: 'center', background: '#dc2626', color: 'white', textDecoration: 'none', fontWeight: 900 }}
         ><Emoji>🔴</Emoji> انضم للحصة الآن</a>
         {slot.teacherName && <div style={{ fontSize: 12, fontWeight: 700, marginTop: 4, textAlign: 'center', color: 'var(--muted)' }}>مع المعلم {slot.teacherName}</div>}

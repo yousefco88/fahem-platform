@@ -18,20 +18,22 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
     (async () => {
       if (!supabase) { setState({ loading: false, error: 'غير متصل', data: null }); return; }
       const since = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 10);
-      const [rec, st, da, at] = await Promise.all([
+      const [rec, st, da, at, jn] = await Promise.all([
         supabase.from('learning_records').select('lesson_id,status,score,updated_at').eq('child_id', child.id),
         supabase.from('child_streaks').select('*').eq('child_id', child.id).maybeSingle(),
         supabase.from('child_daily_activity').select('activity_date,lessons_completed,xp_earned').eq('child_id', child.id).gte('activity_date', since),
         supabase.from('lesson_question_attempts').select('child_id,child_name,is_correct,skill,created_at').order('created_at', { ascending: false }).limit(1000),
+        supabase.from('live_join_log').select('slot_id,joined_at').eq('child_id', child.id).order('joined_at', { ascending: false }).limit(50),
       ]);
       if (off) return;
-      const err = rec.error || st.error || da.error || at.error;
+      const err = rec.error || st.error || da.error || at.error || jn.error;
       if (err) { setState({ loading: false, error: err.message, data: null }); return; }
       setState({
         loading: false, error: '',
         data: buildChildInsights({
           records: rec.data || [], streak: st.data, daily: da.data || [],
           attempts: attemptsForChild(at.data || [], child, sameNameCount),
+          joins: jn.data || [],
         }),
       });
     })();
@@ -89,6 +91,17 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
               style={{ flex: 1, minHeight: 3, height: `${Math.max(6, (x.lessons / max) * 100)}%`, background: x.lessons ? 'var(--navy)' : 'var(--line)', borderRadius: 3 }} />
           ))}
         </div>
+      </div>
+
+      <div style={box}>
+        <strong>🔴 الحصص المباشرة</strong>
+        {d.live.total === 0
+          ? <p style={{ margin: '6px 0 0' }}>لم يسجَّل انضمام لأي حصة بعد. (يُسجَّل عند ضغط «انضم للحصة».)</p>
+          : <>
+              <p style={{ margin: '6px 0' }}>انضم لـ <strong>{d.live.total}</strong> حصة{d.live.total >= 50 ? ' (آخر 50)' : ''}.</p>
+              <small>آخر الانضمامات: {d.live.recent.map(j => new Date(j.joined_at).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' })).join(' · ')}</small>
+            </>}
+        <div><small>ملاحظة: يُحسب الحضور من ضغط زر الانضمام فقط، لا من مدة البقاء.</small></div>
       </div>
 
       {(d.weakest.length > 0 || d.strongest.length > 0) && (

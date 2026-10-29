@@ -34,3 +34,7 @@ test('attempt matching prefers id, falls back to unique name only', () => {
   assert.equal(attemptsForChild(all, c, 1).length, 2);
   assert.equal(attemptsForChild(all, c, 2).length, 1);
 });
+test('live joins counted and sorted newest first', () => {
+  const r = buildChildInsights({ joins: [{ joined_at: '2026-10-01T10:00:00Z' }, { joined_at: '2026-10-05T10:00:00Z' }] });
+  assert.equal(r.live.total, 2); assert.equal(r.live.recent[0].joined_at, '2026-10-05T10:00:00Z'); assert.equal(r.hasAnyData, true);
+});
