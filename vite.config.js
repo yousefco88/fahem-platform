@@ -31,10 +31,16 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'],
         // مولّد تقرير PDF (~1.25MB) يُحمَّل عند الطلب فقط، لا ضمن التخزين المسبق
-        globIgnores: ['**/WeeklyReportPDF-*.js', 'tesseract/**'],
+        globIgnores: ['**/WeeklyReportPDF-*.js', 'tesseract/**', 'emoji/**'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
+          {
+            // أيقونات Fluent Emoji المحلية (~5MB): عند الطلب، ثم من الكاش دون اتصال
+            urlPattern: ({ url }) => url.origin === self.location.origin && url.pathname.startsWith('/emoji/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'fahem-emoji', expiration: { maxEntries: 250, maxAgeSeconds: 60 * 60 * 24 * 180 } }
+          },
           {
             // المنهج المقروء يعمل دون اتصال: cache مع تحديث بالخلفية
             urlPattern: /^https:\/\/ehpyxinemoissuvbyawy\.supabase\.co\/rest\/v1\/curriculum_.*/i,
