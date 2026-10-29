@@ -35,6 +35,33 @@ npm run api:dev
 
 اختباراتها: `npm run api:test`. لا تحذف قاعدة الاختبار إلا بعد التحقق من أنها محلية وغير مطلوبة.
 
+## طبقة الواجهة الموحّدة (`src/ui/`)
+
+المظهر المعتمد (2026-10-29): تدرّجات لونية، أزرار دائرية بحافة ضغط، أيقونات **Fluent Emoji 3D** (Microsoft، رخصة MIT) موحّدة على كل الأجهزة.
+
+- `src/ui/ui.css` — المتغيرات (`--g-primary`, `--g-fun`, `--g-mint`, `--press`…) وأنماط `btn-primary/secondary/accent/ghost/pink/sky`، الشريط السفلي، التنبيهات، بطاقات الحالة `state-done/current/next`، أنماط الإعدادات والإدارة، والوضع الليلي. يُستورد في `main.jsx` بعد `index.css`.
+- `src/ui/Emoji.jsx` — مكوّن `<Emoji>🏠 نص</Emoji>` يستبدل الإيموجي بصورة. **الترتيب:** `public/emoji/<codepoint>.png` محليًا ← CDN jsDelivr عند الفشل ← النص العادي. الإيموجي غير المعروف يبقى نصًا.
+- `src/ui/fluentEmoji.js` (خريطة المستودع، مولَّدة) و`src/ui/localEmoji.js` (الأيقونات المنسوخة محليًا، مولَّدة).
+- `public/emoji/` — ~175 أيقونة (~5.7MB). **خارج** precache الـ PWA عمدًا؛ تُخزَّن عند الطلب عبر `runtimeCaching` باسم `fahem-emoji` (CacheFirst، 180 يومًا) في `vite.config.js`.
+- **عند إضافة إيموجي جديد في الكود:** شغّل `python scripts/sync-emoji.py` — يحصر المستخدم فعلًا في `src/`، ينزّل الناقص، ويعيد توليد `localEmoji.js`.
+- قاعدة: استبدال نظيف للأصناف القائمة بأسمائها، لا تركيب أنماط موازية. كتل `style={{}}` الخاصة بالتخطيط تُترك كما هي ولا تُغيَّر إلا عند لمس الملف لسبب آخر.
+
+## سجل التغييرات الأخيرة
+
+التفاصيل في `docs/logs/` (ملف لكل جلسة). أبرز ما أُنجز ونُشر على الإنتاج:
+
+| التاريخ | التغيير | الالتزامات |
+|---|---|---|
+| 2026-10-29 | الثيم المعتمد على كل المنصة (أزرار، شريط الجوال السفلي بلا «المزيد»، جزيرة التعلم، الإعدادات، الإدارة، النوافذ) + مكوّن `Emoji` في 42 ملفًا | `911f958`, `8c6b4f3` |
+| 2026-10-29 | استضافة ذاتية لأيقونات Fluent + `scripts/sync-emoji.py` + كاش PWA | `b68f3c3` |
+| 2026-10-29 | إدارة حسابات العائلات (`FamiliesPanel`, `FamilyDetailsModal`, `lib/familyManagement`) + RPC `admin_update_family_profile`/`admin_update_child_profile` (مطبّقة في الإنتاج) | `8cccf04` |
+| 2026-10-29 | إدارة الصفوف الدراسية (`GradesPanel`, `lib/gradeManagement`) | ضمن `911f958` |
+| 2026-10-29 | حذف محاكي السفارة من المنصة؛ تطوير جزيرة التعلم للطفل | انظر `docs/logs/` |
+
+غير مرفوع عمدًا: `supabase/migrations/20261105100000_assessment_rpcs.sql` (لا يستدعيها كود في `src/` بعد — عمل غير مكتمل).
+
+الاختبارات: `node --test src/lib/*.test.js` (58 اختبارًا). ملاحظة: ملفات `*.test.js` تستخدم `node:test` لا Vitest.
+
 ## التقنيات
 
 - React 19 وJavaScript وVite وReact Router
