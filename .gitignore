@@ -47,3 +47,6 @@ scratch/
 
 # حسابات تجربة محلية (لا تُرفع)
 .local/
+
+# Supabase CLI local link state (machine-specific)
+supabase/.temp/
