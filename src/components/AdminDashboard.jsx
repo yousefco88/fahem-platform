@@ -323,7 +323,10 @@ export default function AdminDashboard() {
       {/* TAB: FAMILIES (real data) */}
       {activeAdminTab === 'families' && (
         <div className="u-3">
-          <FamiliesPanel />
+          <FamiliesPanel onManageSchedule={child => {
+            setScheduleChildId(child.id);
+            adminNavigate('/admin?tab=schedule');
+          }} />
         </div>
       )}
 

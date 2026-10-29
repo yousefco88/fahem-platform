@@ -1,0 +1,111 @@
+.families-toolbar,
+.family-list,
+.family-card-actions,
+.family-child-actions,
+.family-form-actions,
+.family-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.families-toolbar { justify-content: space-between; flex-wrap: wrap; margin-bottom: 16px; }
+.families-search { display: flex; gap: 8px; flex-wrap: wrap; }
+.families-search input { min-width: min(320px, 78vw); }
+.family-list { align-items: stretch; flex-direction: column; }
+.family-list-card {
+  background: var(--card-bg); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px;
+}
+.family-list-main { min-width: 0; }
+.family-list-name { margin: 0; font-size: 15px; font-weight: 900; color: var(--navy); }
+.family-list-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; color: var(--muted); font-size: 12px; }
+.family-list-email { direction: ltr; unicode-bidi: plaintext; }
+.family-child-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+.family-child-chip { background: var(--blue-light); color: var(--blue-text); border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800; }
+.family-list-action { align-self: center; }
+.family-button {
+  border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; cursor: pointer;
+  font: inherit; font-size: 12px; font-weight: 800; white-space: nowrap;
+}
+.family-button.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.family-button.secondary { background: var(--card-bg); color: var(--navy); }
+.family-button:disabled { opacity: .6; cursor: wait; }
+
+.family-modal-backdrop {
+  position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center;
+  padding: 18px; background: rgba(15, 23, 42, .62); backdrop-filter: blur(3px);
+}
+.family-modal {
+  width: min(1120px, 100%); max-height: min(92vh, 920px); overflow: auto;
+  background: var(--card-bg); color: var(--navy); border: 1px solid var(--line);
+  border-radius: 18px; box-shadow: 0 24px 80px rgba(15, 23, 42, .3);
+}
+.family-modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 22px 24px; border-bottom: 1px solid var(--line);
+  background: linear-gradient(135deg, var(--card-bg), var(--blue-light));
+}
+.family-modal-header h2 { margin: 2px 0 0; font-size: 21px; }
+.family-modal-kicker { margin: 0; color: var(--blue-text); font-size: 12px; font-weight: 800; }
+.family-modal-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+.family-close-button { border: 1px solid var(--line); border-radius: 10px; background: var(--card-bg); color: var(--navy); width: 38px; height: 38px; cursor: pointer; font-size: 18px; }
+.family-tabs { display: flex; gap: 6px; padding: 10px 18px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+.family-tabs button { flex: 0 0 auto; border: 0; background: transparent; color: var(--muted); border-radius: 9px; padding: 9px 12px; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.family-tabs button.is-active { background: var(--blue-light); color: var(--blue-text); }
+.family-modal-content { padding: 20px 24px 24px; }
+.family-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.family-stat-grid article,.family-info-grid > div { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 13px 14px; }
+.family-stat-grid span,.family-info-grid span,.family-info-grid dt { display: block; color: var(--muted); font-size: 11px; }
+.family-stat-grid strong { display: block; margin-top: 6px; font-size: 22px; }
+.family-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 14px; }
+.family-info-grid strong,.family-info-grid dd { display: block; margin: 5px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+.family-note { margin: 13px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.family-section-card,.family-child-card { border: 1px solid var(--line); border-radius: 13px; padding: 16px; background: var(--card-bg); }
+.family-section-heading { justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
+.family-section-heading h3 { margin: 0; font-size: 15px; }
+.family-section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+.family-form { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
+.family-form label { display: grid; gap: 6px; font-size: 12px; font-weight: 800; }
+.family-form input,.family-form select { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 10px 11px; color: var(--navy); background: var(--card-bg); font: inherit; font-size: 13px; }
+.family-form-actions { grid-column: 1 / -1; flex-wrap: wrap; }
+.family-child-list { display: grid; gap: 10px; }
+.family-child-card { background: var(--bg); }
+.child-edit-form { padding-top: 12px; border-top: 1px solid var(--line); }
+.family-detail-state { padding: 24px; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); text-align: center; font-size: 13px; }
+.family-feedback { margin-bottom: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--blue-light); color: var(--blue-text); font-size: 12px; font-weight: 700; }
+.family-inline-error { margin: 10px 0; padding: 12px; border-radius: 9px; background: var(--red-light); color: var(--red-text); font-size: 12px; }
+.family-table-wrap { width: 100%; overflow-x: auto; }
+.family-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.family-table th,.family-table td { text-align: right; vertical-align: top; padding: 10px 9px; border-bottom: 1px solid var(--line); }
+.family-table th { color: var(--muted); background: var(--bg); white-space: nowrap; }
+.family-table td small { display: block; margin-top: 4px; color: var(--muted); }
+.family-link-button { border: 0; background: transparent; color: var(--blue-text); font: inherit; font-weight: 800; cursor: pointer; }
+.schedule-child-links { flex-wrap: wrap; margin-top: 14px; }
+.family-status { display: inline-flex; border-radius: 999px; padding: 4px 8px; background: var(--blue-light); color: var(--blue-text); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.family-status.completed { background: var(--green-light); color: var(--green-text); }
+.family-status.started { background: var(--yellow-light); color: var(--yellow); }
+.family-booking-list { display: grid; gap: 8px; }
+.family-recording-list { display: grid; gap: 8px; margin-top: 18px; }
+.family-recording-list h4 { margin: 0 0 3px; font-size: 13px; }
+.family-recording-list article { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.family-recording-list article div { display: grid; gap: 4px; }
+.family-recording-list article div span { color: var(--muted); font-size: 11px; }
+.family-booking-list article { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.family-booking-list article div { display: grid; gap: 3px; }
+.family-booking-list article div span,.family-booking-list time { color: var(--muted); font-size: 11px; }
+.family-subscription-notice { border-color: var(--yellow); background: var(--yellow-light); }
+.family-subscription-notice h3 { margin: 0 0 9px; }
+.family-subscription-notice p { margin: 0; line-height: 1.8; font-size: 13px; }
+.family-subscription-notice small { display: block; margin-top: 10px; color: var(--muted); line-height: 1.7; }
+
+@media (max-width: 700px) {
+  .family-list-card { grid-template-columns: 1fr; }
+  .family-list-action { justify-self: start; }
+  .family-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .family-modal-backdrop { padding: 7px; }
+  .family-modal { max-height: 96vh; border-radius: 13px; }
+  .family-modal-header,.family-modal-content { padding-inline: 14px; }
+  .family-form,.family-info-grid { grid-template-columns: 1fr; }
+  .family-child-actions { flex-wrap: wrap; }
+}

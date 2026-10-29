@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 import { gradeLabel } from '../../utils/gradeLabel';
+import AssessmentSection from './AssessmentSection';
 import { buildChildInsights, attemptsForChild } from '../../utils/childInsights';
 
 const box = { border: '1px solid var(--line)', borderRadius: 12, padding: 12, background: 'var(--card-bg)' };
@@ -46,11 +47,10 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
     try {
       const d0 = state.data;
       const done = new Set(d0.completedIds);
-      const subjects = (curriculumData?.subjects || []).map(sub => {
-        const lessons = (sub.modules || []).flatMap(m => m.lessons || []);
-        const completed = lessons.filter(l => done.has(l.id)).length;
-        return { name: sub.title, emoji: sub.icon || '📘', completed, total: lessons.length, percent: lessons.length ? Math.round((completed / lessons.length) * 100) : 0 };
-      }).filter(s => s.total > 0);
+      const subjects = Object.values(curriculumData || {}).filter(sub => sub && Array.isArray(sub.lessons) && (!sub.grade || !child.grade || sub.grade === child.grade)).map(sub => {
+        const completed = sub.lessons.filter(l => done.has(l.id)).length;
+        return { name: sub.title, emoji: sub.icon || '📘', completed, total: sub.lessons.length, percent: sub.lessons.length ? Math.round((completed / sub.lessons.length) * 100) : 0 };
+      }).filter(x => x.total > 0);
       const total = subjects.reduce((a, s) => a + s.total, 0);
       const { downloadWeeklyReport } = await import('../parent/WeeklyReportPDF');
       await downloadWeeklyReport({
@@ -111,6 +111,7 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
           <small>تُحسب المهارة بعد 3 إجابات على الأقل.</small>
         </div>
       )}
+      <AssessmentSection child={child} subjects={Object.values(curriculumData || {}).filter(x => x && Array.isArray(x.lessons) && x.lessons.length && (!x.grade || x.grade === child.grade))} />
       <button type="button" className="fam-out" onClick={downloadPdf} disabled={pdfBusy}>{pdfBusy ? '⏳ جارٍ الإنشاء…' : '📄 تحميل تقرير PDF'}</button>
     </div>
   );
