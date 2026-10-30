@@ -4,6 +4,7 @@ import { slotsForToday, timeInTz } from '../utils/liveWindow';
 import { useApp } from '../context/AppContext';
 import AiTutorConsentCard from './parent/AiTutorConsentCard';
 import { getChildStats } from '../utils/childProgress';
+import { buildParentReportSubjects } from '../utils/parentReport';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { isLessonDone } from '../utils/todayPlan';
 // Dynamic import for PDF (lazy load - reduces bundle)
@@ -62,21 +63,12 @@ export default function ParentDashboard() {
       // Dynamic import - loads PDF library only when needed
       const { downloadWeeklyReport } = await loadPdfGenerator();
 
-      // Prepare subjects data from curriculum
-      const subjectsList = curriculumData.subjects?.map(subject => {
-        const lessons = subject.modules?.flatMap(m => m.lessons || []) || [];
-        const completed = lessons.filter(l => 
-          learningRecords?.[activeChild.id]?.[l.id]?.status === 'completed' ||
-          (activeChild.masteredLessons || []).includes(l.id)
-        ).length;
-        return {
-          name: subject.title,
-          emoji: subject.icon || '📘',
-          completed,
-          total: lessons.length,
-          percent: lessons.length > 0 ? Math.round((completed / lessons.length) * 100) : 0
-        };
-      }) || [];
+      const subjectsList = buildParentReportSubjects({
+        curriculum: curriculumData,
+        learningRecords,
+        masteredLessons: activeChild.masteredLessons || [],
+        grade: activeChild.grade,
+      });
 
       await downloadWeeklyReport({
         child: {
@@ -236,19 +228,19 @@ export default function ParentDashboard() {
             className="u-12"
             onClick={() => document.getElementById('live-schedule-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <span><Emoji>🗓</Emoji></span> جدول الحصص الحية
+            <span><Emoji>🗓</Emoji></span> حصص اليوم
           </button>
           <button
             className="u-12"
             onClick={() => document.getElementById('mastery-matrix-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <span><Emoji>🎯</Emoji></span> مصفوفة إتقان المهارات (5 مواد)
+            <span><Emoji>🎯</Emoji></span> مصفوفة الإتقان ({matrixSubjects.length} مادة)
           </button>
           <button
             className="u-12"
             onClick={() => setCurrentScreen('pricing')}
           >
-            <span><Emoji>💳</Emoji></span> باقة الاشتراك النشطة
+            <span><Emoji>💳</Emoji></span> استعراض الباقات
           </button>
         </nav>
 
@@ -354,21 +346,23 @@ export default function ParentDashboard() {
             </button>
           </div>
 
-          {/* حصة مباشرة اليوم لهذا الطفل (تظهر فقط إن وُجدت في جدوله) */}
-          {todayLive.length > 0 && (
-            <section id="live-schedule-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '18px', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '10px' }}><Emoji>🔴</Emoji> حصة مباشرة اليوم</h3>
-              {todayLive.map(x => (
-                <div key={x.id} style={{ marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '6px', fontSize: '14px', color: 'var(--navy)' }}>
-                    <strong style={{ direction: 'ltr' }}>{timeInTz(x.startsAt, effectiveTimezone)}</strong>
-                    <span>{curriculumData[x.subjectId]?.title || x.subjectId}</span>
-                  </div>
-                  <LiveJoin slot={x} />
+          <section id="live-schedule-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '18px', marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '10px' }}><Emoji>🗓</Emoji> حصص اليوم</h3>
+            {todayLive.length > 0 ? todayLive.map(x => (
+              <div key={x.id} style={{ marginBottom: '8px' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '6px', fontSize: '14px', color: 'var(--navy)' }}>
+                  <strong style={{ direction: 'ltr' }}>{timeInTz(x.startsAt, effectiveTimezone)}</strong>
+                  <span>{curriculumData[x.subjectId]?.title || x.subjectId}</span>
                 </div>
-              ))}
-            </section>
-          )}
+                <LiveJoin slot={x} />
+              </div>
+            )) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <p style={{ color: 'var(--muted)', fontSize: '13px', margin: 0 }}>لا توجد حصة مباشرة مجدولة لهذا اليوم.</p>
+                <button className="btn-secondary" type="button" onClick={() => setCurrentScreen('account')}>عرض جدول الطفل</button>
+              </div>
+            )}
+          </section>
 
           {/* 2. Reassurance Metrics Grid */}
           <section style={{
