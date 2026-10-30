@@ -312,6 +312,23 @@ input, select, textarea {
   flex: 1;
 }
 
+.parent-child-selector {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.parent-child-selector button {
+  min-height: 40px;
+}
+
+.parent-child-selector button > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sidebar-panel {
   width: 270px;
   background: var(--card-bg);

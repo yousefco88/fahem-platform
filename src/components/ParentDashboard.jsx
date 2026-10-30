@@ -134,13 +134,15 @@ export default function ParentDashboard() {
             </button>
           </div>
 
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+          <div className="parent-child-selector" style={{ marginBottom: '10px' }}>
             {childrenList.map(child => (
               <button
                 key={child.id}
+                type="button"
+                aria-pressed={child.id === activeChild.id}
                 style={{
-                  flex: 1,
-                  padding: '8px 10px',
+                  minWidth: 0,
+                  padding: '8px 6px',
                   borderRadius: 'var(--radius-md)',
                   border: child.id === activeChild.id ? '2px solid var(--blue)' : '1px solid var(--line)',
                   background: child.id === activeChild.id ? 'var(--blue-light)' : '#ffffff',
@@ -220,24 +222,27 @@ export default function ParentDashboard() {
           )}
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <button className="u-12 quick-link active">
+        <nav aria-label="التنقل في لوحة ولي الأمر" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <button type="button" className="u-12 quick-link active" aria-current="page">
             <span>⌂</span> لوحة المتابعة الشاملة
           </button>
           <button
-            className="u-12"
+            type="button"
+            className="u-12 quick-link"
             onClick={() => document.getElementById('live-schedule-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span><Emoji>🗓</Emoji></span> حصص اليوم
           </button>
           <button
-            className="u-12"
+            type="button"
+            className="u-12 quick-link"
             onClick={() => document.getElementById('mastery-matrix-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span><Emoji>🎯</Emoji></span> مصفوفة الإتقان ({matrixSubjects.length} مادة)
           </button>
           <button
-            className="u-12"
+            type="button"
+            className="u-12 quick-link"
             onClick={() => setCurrentScreen('pricing')}
           >
             <span><Emoji>💳</Emoji></span> استعراض الباقات
@@ -320,31 +325,7 @@ export default function ParentDashboard() {
 
         <div style={{ padding: '32px', maxWidth: '1350px', width: '100%', margin: '0 auto' }}>
           
-          {/* Missed Class Recovery Reassurance Alert */}
-          <div style={{
-            background: 'var(--green-light)', border: '1.5px solid var(--line)', borderRadius: 'var(--radius-md)',
-            padding: '14px 20px', marginBottom: '22px', display: 'flex', alignItems: 'center',
-            justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '24px' }}><Emoji>🛡️</Emoji></span>
-              <div>
-                <strong style={{ color: 'var(--green-text)', fontSize: '13.5px', display: 'block' }}>
-                  تغطية المنهج المصري المتكامل لأبنائنا بالخارج:
-                </strong>
-                <span style={{ color: 'var(--green-text)', fontSize: '12.5px' }}>
-                  تعرض المنصة مواد ودروسًا تجريبية؛ تتم مراجعة مطابقتها للمنهج قبل اعتماد المحتوى.
-                </span>
-              </div>
-            </div>
-            <button
-              className="btn-secondary"
-              style={{ padding: '7px 14px', fontSize: '12px' }}
-              onClick={() => openLesson('arabic', 'baa', 'video')}
-            >
-              عرض درس تجريبي
-            </button>
-          </div>
+
 
           <section id="live-schedule-section" style={{ background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)', padding: '18px', marginBottom: '24px' }}>
             <h3 style={{ fontSize: '16px', color: 'var(--navy)', marginBottom: '10px' }}><Emoji>🗓</Emoji> حصص اليوم</h3>
