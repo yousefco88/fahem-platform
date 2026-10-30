@@ -9,6 +9,7 @@ import { getLiveState } from '../../utils/liveWindow';
 import { getTeacherSlotState } from '../../lib/teacherSlotState';
 import { getTeacherCompletedCount } from '../../lib/teacherCompletion';
 import { resolveTeacherRosterLoad } from '../../lib/teacherRosterLoadState';
+import TeacherLiveAttendance from './TeacherLiveAttendance';
 
 const card = { background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: 16, padding: 18, marginBottom: 16 };
 const h2 = { fontSize: 17, color: 'var(--navy)', margin: '0 0 12px' };
@@ -213,6 +214,9 @@ export default function TeacherRoster() {
                     <button style={tabBtn(true)} onClick={save}>حفظ الرابط</button>
                     {urlMsg[s.id] && <span role="status" style={muted}>{urlMsg[s.id]}</span>}
                   </div>
+                )}
+                {s.slot_type === 'live' && (
+                  <TeacherLiveAttendance slot={s} childName={s.children?.name} />
                 )}
                 {s.slot_type === 'live' && (
                   <details style={{ marginTop: 8 }}>
