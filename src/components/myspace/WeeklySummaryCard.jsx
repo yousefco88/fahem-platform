@@ -8,7 +8,7 @@ import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { getChildStats } from '../../utils/childProgress';
-import { buildWeeklySummary } from '../../lib/weeklySummary';
+import { buildWeeklySummary, attemptsForWeeklySummaryChild } from '../../lib/weeklySummary';
 
 const card = {
   background: 'var(--card-bg)', border: '1px solid var(--line)',
@@ -17,7 +17,7 @@ const card = {
 };
 
 export default function WeeklySummaryCard() {
-  const { activeChild, curriculumData, learningRecords, grade } = useApp();
+  const { activeChild, activeChildCloudId, childrenList = [], curriculumData, learningRecords, grade } = useApp();
   const { user } = useAuth();
   const [cloud, setCloud] = useState({ bank: [], loading: true, error: '' });
   const [copied, setCopied] = useState(false);
@@ -29,7 +29,7 @@ export default function WeeklySummaryCard() {
       const sinceIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const [bankRes] = await Promise.all([
         supabase.from('lesson_question_attempts')
-          .select('child_name, is_correct, skill, created_at')
+          .select('child_id, child_key, child_name, is_correct, skill, created_at')
           .gte('created_at', sinceIso),
       ]);
       if (cancelled) return;
@@ -44,16 +44,15 @@ export default function WeeklySummaryCard() {
 
   const summary = useMemo(() => {
     if (!activeChild) return null;
-    // المعرّف أولاً (child_key)؛ الاسم احتياطي لسجلات قديمة أو بنك الأسئلة الذي لا يحمل معرّفاً
-    const byName = r => (r.child_key ? r.child_key === activeChild.id : (!r.child_name || r.child_name === activeChild.name));
+    const sameNameCount = childrenList.filter(child => child.name === activeChild.name).length;
     return buildWeeklySummary({
       childName: activeChild.name,
       grade: activeChild.grade || grade || '',
       learningRecords,
       stats: getChildStats(curriculumData, learningRecords, activeChild.masteredLessons || []),
-      bankAttempts: cloud.bank.filter(byName),
+      bankAttempts: attemptsForWeeklySummaryChild(cloud.bank, activeChild, activeChildCloudId, sameNameCount),
     });
-  }, [activeChild, curriculumData, learningRecords, grade, cloud]);
+  }, [activeChild, activeChildCloudId, childrenList, curriculumData, learningRecords, grade, cloud]);
 
   const copyText = async () => {
     if (!summary) return;

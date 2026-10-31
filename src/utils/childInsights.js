@@ -1,6 +1,16 @@
 // تحليلات الطفل — دوال نقية من بيانات حقيقية فقط؛ لا أرقام افتراضية (الفراغ يبقى فارغاً).
 const MIN_SKILL_ATTEMPTS = 3;
 
+export function buildReportProgressStats(subjects = []) {
+  const lessonsCompleted = subjects.reduce((sum, subject) => sum + subject.completed, 0);
+  const totalLessons = subjects.reduce((sum, subject) => sum + subject.total, 0);
+  return {
+    lessonsCompleted,
+    totalLessons,
+    progressPercent: totalLessons ? Math.round((lessonsCompleted / totalLessons) * 100) : 0,
+  };
+}
+
 export function buildChildInsights({ records = [], streak = null, daily = [], attempts = [], joins = [], now = new Date() } = {}) {
   const lessonsDone = records.filter(r => r.status === 'completed').length;
   const lessonsStarted = records.filter(r => r.status !== 'completed').length;

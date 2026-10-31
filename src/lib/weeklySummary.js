@@ -8,6 +8,15 @@
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+export function attemptsForWeeklySummaryChild(all = [], child, childCloudId, siblingsSameName = 1) {
+  if (!child) return [];
+  return all.filter(attempt => {
+    if (attempt.child_id) return Boolean(childCloudId) && attempt.child_id === childCloudId;
+    if (attempt.child_key) return attempt.child_key === child.id || attempt.child_key === childCloudId;
+    return siblingsSameName === 1 && Boolean(attempt.child_name) && attempt.child_name === child.name;
+  });
+}
+
 function inWindow(ts, since) {
   const t = new Date(ts).getTime();
   return !Number.isNaN(t) && t >= since;

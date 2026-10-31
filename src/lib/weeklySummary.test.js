@@ -1,9 +1,33 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildWeeklySummary } from './weeklySummary.js';
+import { buildWeeklySummary, attemptsForWeeklySummaryChild } from './weeklySummary.js';
 
 const NOW = new Date('2026-10-27T12:00:00Z');
 const daysAgo = n => new Date(NOW.getTime() - n * 24 * 60 * 60 * 1000).toISOString();
+
+test('weekly summary matches attempts by cloud id and only uses unique legacy identity fallbacks', () => {
+  const child = { id: 'local-child-1', name: 'سارة' };
+  const attempts = [
+    { child_id: 'cloud-child-1', child_name: 'سارة', is_correct: true },
+    { child_id: 'cloud-child-2', child_name: 'سارة', is_correct: false },
+    { child_id: null, child_key: 'local-child-1', child_name: 'سارة', is_correct: true },
+    { child_id: null, child_name: 'سارة', is_correct: false },
+    { child_id: null, child_name: null, is_correct: false },
+  ];
+
+  assert.deepEqual(
+    attemptsForWeeklySummaryChild(attempts, child, 'cloud-child-1', 2),
+    [attempts[0], attempts[2]],
+  );
+  assert.deepEqual(
+    attemptsForWeeklySummaryChild([attempts[3]], child, 'cloud-child-1', 1),
+    [attempts[3]],
+  );
+  assert.deepEqual(
+    attemptsForWeeklySummaryChild([attempts[3]], child, 'cloud-child-1', 2),
+    [],
+  );
+});
 
 test('no activity => honest empty summary', () => {
   const s = buildWeeklySummary({ childName: 'جويرية', now: NOW });

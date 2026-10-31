@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
 const BAND = { needs_support: '🔻 يحتاج دعماً', developing: '🔸 في تقدّم', strong: '🔺 متمكّن' };
@@ -9,37 +9,55 @@ export default function AssessmentSection({ child, subjects }) {
   const [history, setHistory] = useState([]);
   const [subject, setSubject] = useState(subjects[0]?.id || '');
   const [qs, setQs] = useState(null);
+  const [assessmentId, setAssessmentId] = useState(null);
   const [ans, setAns] = useState({});
   const [result, setResult] = useState(null);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const childIdRef = useRef(child.id);
+  childIdRef.current = child.id;
 
-  const loadHistory = async () => {
+  const loadHistory = async (childId = child.id) => {
     const { data } = await supabase.from('exam_attempts').select('subject_key,percentage,band,total_questions,correct_count,created_at')
-      .eq('child_id', child.id).order('created_at', { ascending: false }).limit(10);
-    setHistory(data || []);
+      .eq('child_id', childId).order('created_at', { ascending: false }).limit(10);
+    if (childIdRef.current === childId) setHistory(data || []);
   };
-  useEffect(() => { loadHistory(); /* eslint-disable-next-line */ }, [child.id]);
+  useEffect(() => {
+    setHistory([]); setQs(null); setAssessmentId(null); setAns({});
+    setResult(null); setMsg(''); setBusy(false);
+    loadHistory(child.id);
+    /* eslint-disable-next-line */
+  }, [child.id]);
 
   const start = async () => {
+    const requestedChildId = child.id;
     setBusy(true); setMsg(''); setResult(null); setAns({});
-    const { data, error } = await supabase.rpc('start_assessment', { p_child: child.id, p_subject: subject, p_count: 10 });
+    const { data, error } = await supabase.rpc('start_assessment', { p_child: requestedChildId, p_subject: subject, p_count: 10 });
+    if (childIdRef.current !== requestedChildId) return;
     setBusy(false);
     if (error) {
-      setQs(null);
+      setQs(null); setAssessmentId(null);
       return setMsg(/not_enough_questions/.test(error.message)
         ? 'لا توجد أسئلة كافية لهذه المادة بعد (نحتاج 5 أسئلة معتمدة على الأقل). يضيفها المعلمون من لوحة المناهج.'
         : 'تعذر بدء الاختبار: ' + error.message);
     }
-    setQs(data);
+    setAssessmentId(data.assessment_id);
+    setQs(data.questions);
   };
 
   const submit = async () => {
+    const requestedChildId = child.id;
     setBusy(true);
-    const { data, error } = await supabase.rpc('submit_assessment', { p_child: child.id, p_subject: subject, p_answers: ans });
+    const { data, error } = await supabase.rpc('submit_assessment', {
+      p_child: requestedChildId,
+      p_subject: subject,
+      p_assessment_id: assessmentId,
+      p_answers: ans,
+    });
+    if (childIdRef.current !== requestedChildId) return;
     setBusy(false);
     if (error) return setMsg('تعذر حفظ النتيجة: ' + error.message);
-    setResult(data); setQs(null); loadHistory();
+    setResult(data); setQs(null); setAssessmentId(null); loadHistory(requestedChildId);
   };
 
   const label = (k) => subjects.find(s => s.id === k)?.title || k;
@@ -48,7 +66,7 @@ export default function AssessmentSection({ child, subjects }) {
       <strong>📝 اختبار تقييم</strong>
       {!qs && (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-          <select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="المادة">
+          <select value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="المادة" disabled={busy}>
             {subjects.map(s => <option key={s.id} value={s.id}>{s.icon} {s.title}</option>)}
           </select>
           <button type="button" className="fam-out" onClick={start} disabled={busy || !subject}>{busy ? '⏳' : 'ابدأ الاختبار'}</button>

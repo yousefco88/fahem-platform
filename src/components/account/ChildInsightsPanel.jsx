@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 import { gradeLabel } from '../../utils/gradeLabel';
 import AssessmentSection from './AssessmentSection';
-import { buildChildInsights, attemptsForChild } from '../../utils/childInsights';
+import { buildChildInsights, attemptsForChild, buildReportProgressStats } from '../../utils/childInsights';
 
 const box = { border: '1px solid var(--line)', borderRadius: 12, padding: 12, background: 'var(--card-bg)' };
 const dt = (v) => (v ? new Date(v).toLocaleDateString('ar-EG') : '—');
@@ -51,14 +51,13 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
         const completed = sub.lessons.filter(l => done.has(l.id)).length;
         return { name: sub.title, emoji: sub.icon || '📘', completed, total: sub.lessons.length, percent: sub.lessons.length ? Math.round((completed / sub.lessons.length) * 100) : 0 };
       }).filter(x => x.total > 0);
-      const total = subjects.reduce((a, s) => a + s.total, 0);
       const { downloadWeeklyReport } = await import('../parent/WeeklyReportPDF');
       await downloadWeeklyReport({
         child: { name: child.name, grade: gradeLabel(child.grade) },
         streak: { currentStreak: d0.streak?.current || 0, bestStreak: d0.streak?.best || 0, xpTotal: d0.streak?.xp || 0, level: d0.streak?.level || 1 },
-        stats: { lessonsCompleted: d0.lessonsDone, totalLessons: total, progressPercent: total ? Math.round((d0.lessonsDone / total) * 100) : 0, hoursStudied: 0 },
+        stats: { ...buildReportProgressStats(subjects), hoursStudied: 0 },
         subjects,
-        weekRange: `أسبوع ${new Date().toLocaleDateString('ar-EG', { month: 'long', day: 'numeric' })}`,
+        weekRange: `حتى ${new Date().toLocaleDateString('ar-EG', { month: 'long', day: 'numeric', year: 'numeric' })}`,
       });
       triggerToast('✅ تم تحميل التقرير');
     } catch (e) {
@@ -112,7 +111,7 @@ export default function ChildInsightsPanel({ child, sameNameCount = 1 }) {
         </div>
       )}
       <AssessmentSection child={child} subjects={Object.values(curriculumData || {}).filter(x => x && Array.isArray(x.lessons) && x.lessons.length && (!x.grade || x.grade === child.grade))} />
-      <button type="button" className="fam-out" onClick={downloadPdf} disabled={pdfBusy}>{pdfBusy ? '⏳ جارٍ الإنشاء…' : '📄 تحميل تقرير PDF'}</button>
+      <button type="button" className="fam-out" onClick={downloadPdf} disabled={pdfBusy}>{pdfBusy ? '⏳ جارٍ الإنشاء…' : '📄 تحميل تقرير التقدم PDF'}</button>
     </div>
   );
 }

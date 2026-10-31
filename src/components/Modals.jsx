@@ -162,9 +162,13 @@ export default function Modals() {
   const handlePickOption = async (opt, i) => {
     if (quizAnswered !== null || quizChecking) return;
     setPickedIdx(i);
-    // أسئلة البنك: التصحيح على الخادم (الإجابة غير مرسلة للمتصفح)
+    // أسئلة البنك: التصحيح وتسجيل المحاولة على الخادم، دون إرسال الإجابة للمتصفح
     if (bankQuestions && currentQ?.id && 'value' in opt) {
-      if (!supabase) { triggerToast('تعذر التحقق من الإجابة الآن'); setPickedIdx(null); return; }
+      if (!supabase || !activeChildCloudId) {
+        triggerToast('سجّل الدخول واختر الطفل للتحقق من الإجابة وحفظ المحاولة');
+        setPickedIdx(null);
+        return;
+      }
       setQuizChecking(true);
       const attempt = {
         requestId: quizAttemptRef.current.requestId + 1,
@@ -173,8 +177,10 @@ export default function Modals() {
       quizAttemptRef.current.requestId = attempt.requestId;
       let result;
       try {
-        result = await supabase.rpc('check_lesson_question_answer', {
-          p_question_id: currentQ.id, p_selected: opt.value,
+        result = await supabase.rpc('submit_lesson_question_answer', {
+          p_question_id: currentQ.id,
+          p_child_id: activeChildCloudId,
+          p_selected: opt.value,
         });
       } catch (error) {
         result = { error };
@@ -182,9 +188,11 @@ export default function Modals() {
       if (!isCurrentQuizAttempt(attempt, quizAttemptRef.current)) return;
       setQuizChecking(false);
       const { data, error } = result || {};
-      // خطأ الشبكة ليس إجابة خاطئة: نطلب المحاولة مجدداً بلا تسجيل
+      // خطأ الشبكة لا يسجل إجابة محلية؛ يمكن إعادة المحاولة بأمان.
       if (error || typeof data !== 'boolean') {
-        triggerToast('تعذر التحقق من الإجابة، حاول مرة أخرى');
+        triggerToast(error?.message?.includes('already_answered')
+          ? 'سبق تسجيل إجابة هذا السؤال لهذا الطفل'
+          : 'تعذر التحقق من الإجابة، حاول مرة أخرى');
         setPickedIdx(null);
         return;
       }
@@ -205,22 +213,6 @@ export default function Modals() {
       soundManager.speak('محاولة جيدة! استمع للشرح وجرب مرة ثانية.');
     }
     recordQuizAttempt(activeLesson.id, isCorrect);
-    // تسجيل محاولة سؤال البنك في القاعدة (لتقرير مهارات ولي الأمر)
-    // يفشل بصمت لغير المسجلين — RLS يرفض والدرس يستمر طبيعياً
-    if (bankQuestions && currentQ?.id && supabase) {
-      supabase.from('lesson_question_attempts').insert({
-        question_id: currentQ.id,
-        lesson_id: String(activeLesson.id),
-        child_id: activeChildCloudId || null,
-        child_key: activeChild?.id != null ? String(activeChild.id) : null,
-        child_name: activeChild?.name || null,
-        is_correct: !!isCorrect,
-        skill: currentQ.skill || null,
-        quiz_type: currentQ.quizType || null,
-      }).then(({ error }) => {
-        if (error) console.warn('lesson question attempt not saved:', error.message);
-      });
-    }
   };
 
   // Syllable Builder Tap/Drag handler

@@ -560,11 +560,9 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
   const load = async () => {
     if (!supabase || !lessonId) { setLoading(false); return; }
     setLoading(true);
-    const { data, error: e } = await supabase
-      .from('lesson_questions')
-      .select('*')
-      .eq('lesson_id', lessonId)
-      .order('sort_order');
+    const { data, error: e } = await supabase.rpc('editor_list_lesson_questions', {
+      p_lesson_id: lessonId,
+    });
     if (e) setError(e.message); else setItems(data || []);
     setLoading(false);
   };
@@ -578,6 +576,7 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
 
   const startEdit = (q) => setDraft({
     id: q.id,
+    sort_order: q.sort_order,
     quiz_type: q.quiz_type,
     question: q.question,
     choices: q.quiz_type === 'truefalse' ? [] : (Array.isArray(q.choices) && q.choices.length ? [...q.choices] : ['', '', '', '']),
@@ -615,15 +614,15 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
       difficulty: draft.difficulty,
       celebration: draft.celebration.trim() || null,
     };
-    let result;
-    if (draft.id) {
-      result = await supabase.from('lesson_questions').update(payload).eq('id', draft.id).select().single();
-    } else {
-      result = await supabase.from('lesson_questions').insert({ ...payload, sort_order: items.length }).select().single();
-    }
+    const { data: questionId, error: saveError } = await supabase.rpc('editor_save_lesson_question', {
+      p_question_id: draft.id || null,
+      p_lesson_id: lessonId,
+      p_payload: payload,
+      p_sort_order: draft.id ? draft.sort_order : items.length,
+    });
     setSaving(false);
-    if (result.error) { setError(result.error.message); return; }
-    logActivity(draft.id ? 'question.update' : 'question.create', 'lesson_question', result.data.id, {
+    if (saveError) { setError(saveError.message); return; }
+    logActivity(draft.id ? 'question.update' : 'question.create', 'lesson_question', questionId, {
       lesson_id: lessonId, question: payload.question.slice(0, 80),
     });
     setDraft(null);
@@ -631,8 +630,10 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
   };
 
   const removeQuestion = async (q) => {
-    if (!window.confirm(`حذف السؤال نهائياً؟\n«${q.question.slice(0, 60)}»`)) return;
-    const { error: e } = await supabase.from('lesson_questions').delete().eq('id', q.id);
+    if (!window.confirm(`إزالة السؤال؟ سيُحذف إذا لم تكن له محاولات سابقة، أو يُخفى إذا كانت له محاولات سابقة حفاظاً على سجل الأطفال.\n«${q.question.slice(0, 60)}»`)) return;
+    const { error: e } = await supabase.rpc('editor_delete_lesson_question', {
+      p_question_id: q.id,
+    });
     if (e) { setError(e.message); return; }
     logActivity('question.delete', 'lesson_question', q.id, { lesson_id: lessonId, question: q.question.slice(0, 80) });
     load();
@@ -649,16 +650,21 @@ function QuestionBankTab({ lessonId, form, updateForm }) {
       setError('حدد إجابة السؤال القديم (صح أم خطأ) قبل نسخه.'); return;
     }
     setSaving(true); setError('');
-    const { data, error: e } = await supabase.from('lesson_questions').insert({
-      lesson_id: lessonId,
-      quiz_type: legacyType,
-      question: form.question.trim(),
-      ...legacy,
-      sort_order: items.length,
-    }).select().single();
+    const { data: questionId, error: e } = await supabase.rpc('editor_save_lesson_question', {
+      p_question_id: null,
+      p_lesson_id: lessonId,
+      p_payload: {
+        lesson_id: lessonId,
+        quiz_type: legacyType,
+        question: form.question.trim(),
+        ...legacy,
+        sort_order: items.length,
+      },
+      p_sort_order: items.length,
+    });
     setSaving(false);
     if (e) { setError(e.message); return; }
-    logActivity('question.create', 'lesson_question', data.id, { lesson_id: lessonId, question: form.question.slice(0, 80), source: 'legacy_copy' });
+    logActivity('question.create', 'lesson_question', questionId, { lesson_id: lessonId, question: form.question.slice(0, 80), source: 'legacy_copy' });
     load();
   };
 

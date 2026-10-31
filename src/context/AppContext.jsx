@@ -194,7 +194,7 @@ export function AppProvider({ children }) {
         if (lessonIds.length) {
           const { data: bankQs, error: bankError } = await supabase
             .from('lesson_questions')
-            // أعمدة آمنة فقط: الإجابة لا تُرسل للمتصفح، والتصحيح عبر check_lesson_question_answer
+            // أعمدة آمنة فقط؛ إجابة أسئلة البنك تُصحح وتُسجل عبر RPC محمي بهوية الطفل
             .select('id, lesson_id, quiz_type, question, choices, skill, difficulty, celebration, sort_order, is_published')
             .in('lesson_id', lessonIds)
             .eq('is_published', true)

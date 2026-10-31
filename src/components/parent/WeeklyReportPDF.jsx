@@ -218,8 +218,8 @@ function WeeklyReportDocument({ child, streak, stats, subjects, weekRange }) {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>📊 التقرير الأسبوعي</Text>
-            <Text style={styles.subtitle}>{weekRange || 'الأسبوع الحالي'}</Text>
+            <Text style={styles.title}>📊 تقرير التقدم</Text>
+            <Text style={styles.subtitle}>{weekRange || `حتى ${today}`}</Text>
           </View>
           <Text style={styles.logo}>فاهم</Text>
         </View>
@@ -261,7 +261,7 @@ function WeeklyReportDocument({ child, streak, stats, subjects, weekRange }) {
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>{stats.progressPercent}%</Text>
-              <Text style={styles.statLabel}>نسبة الإنجاز</Text>
+              <Text style={styles.statLabel}>تقدّم كلي</Text>
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>{stats.hoursStudied || 0}</Text>
