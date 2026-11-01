@@ -15,7 +15,7 @@ begin;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000003', true);
 set local role authenticated;
 select public.record_teacher_live_attendance('race-1', current_date - 2, true, 90);
-select public.record_teacher_live_attendance('race-2', current_date - 3, true, 90);
+select public.record_teacher_live_attendance('race-2', current_date - 2, true, 90);
 commit;
 SQL
 
