@@ -14,6 +14,7 @@ import BookingsPanel from './admin/BookingsPanel';
 import FamiliesPanel from './admin/FamiliesPanel';
 import SiteSettingsPanel from './admin/SiteSettingsPanel';
 import SubscriptionPlansPanel from './admin/SubscriptionPlansPanel';
+import SubscriptionContractsPanel from './admin/SubscriptionContractsPanel';
 import { GradesPanel, SubjectsPanel, LessonsPanel, LessonEditor } from './admin/curriculum';
 import './admin/curriculum/CurriculumAdmin.css';
 import Emoji from '../ui/Emoji';
@@ -300,7 +301,7 @@ export default function AdminDashboard() {
       {activeAdminTab === 'settings' && <SiteSettingsPanel />}
 
       {/* TAB: SUBSCRIPTION CATALOG (internal settings; no sale or entitlement) */}
-      {activeAdminTab === 'subscriptions' && role === 'admin' && <SubscriptionPlansPanel />}
+      {activeAdminTab === 'subscriptions' && role === 'admin' && <><SubscriptionPlansPanel /><SubscriptionContractsPanel /></>}
 
       {/* TAB: CURRICULUM CMS (Supabase) */}
       {activeAdminTab === 'curriculum' && (

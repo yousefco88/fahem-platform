@@ -3,6 +3,7 @@ import LiveJoin from './LiveJoin';
 import { slotsForToday, timeInTz } from '../utils/liveWindow';
 import { useApp } from '../context/AppContext';
 import AiTutorConsentCard from './parent/AiTutorConsentCard';
+import SubscriptionBalanceCard from './parent/SubscriptionBalanceCard';
 import { getChildStats } from '../utils/childProgress';
 import { buildParentReportSubjects } from '../utils/parentReport';
 import { useSiteSettings } from '../context/SiteSettingsContext';
@@ -182,6 +183,7 @@ export default function ParentDashboard() {
           </div>
 
           <AiTutorConsentCard />
+          <SubscriptionBalanceCard />
 
           {/* 🔥 Child Streak Mini Card */}
           {!streak.loading && (
