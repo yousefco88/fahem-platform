@@ -60,6 +60,8 @@ export default function Modals() {
   const [qIndex, setQIndex] = useState(0); // مؤشر السؤال الحالي من بنك الأسئلة
   const [builtSyllables, setBuiltSyllables] = useState([]);
   const [builderCompleted, setBuilderCompleted] = useState(false);
+  const [builderChecking, setBuilderChecking] = useState(false);
+  const [builderSubmitted, setBuilderSubmitted] = useState(false);
   const [playerMode, setPlayerMode] = useState('recorded');
   const currentPlayerMode = hasRecordedLesson && canShowLiveMode
     ? playerMode
@@ -107,6 +109,8 @@ export default function Modals() {
     setQIndex(0);
     setBuiltSyllables([]);
     setBuilderCompleted(false);
+    setBuilderChecking(false);
+    setBuilderSubmitted(false);
     setIframeStart(null);
     setPlayerMode('recorded');
   }, [activeLesson?.id, showStudioModal]);
@@ -115,6 +119,10 @@ export default function Modals() {
     setQuizAnswered(null);
     setQuizChecking(false);
     setPickedIdx(null);
+    setBuiltSyllables([]);
+    setBuilderCompleted(false);
+    setBuilderChecking(false);
+    setBuilderSubmitted(false);
   }, [currentQ?.id, activeChildCloudId, activeChild?.id]);
 
   // إغلاق المشغل: يوقف القراءة الصوتية الجارية دائماً
@@ -163,7 +171,7 @@ export default function Modals() {
     if (quizAnswered !== null || quizChecking) return;
     setPickedIdx(i);
     // أسئلة البنك: التصحيح وتسجيل المحاولة على الخادم، دون إرسال الإجابة للمتصفح
-    if (bankQuestions && currentQ?.id && 'value' in opt) {
+    if ((bankQuestions && currentQ?.id && 'value' in opt) || !bankQuestions) {
       if (!supabase || !activeChildCloudId) {
         triggerToast('سجّل الدخول واختر الطفل للتحقق من الإجابة وحفظ المحاولة');
         setPickedIdx(null);
@@ -177,11 +185,14 @@ export default function Modals() {
       quizAttemptRef.current.requestId = attempt.requestId;
       let result;
       try {
-        result = await supabase.rpc('submit_lesson_question_answer', {
-          p_question_id: currentQ.id,
-          p_child_id: activeChildCloudId,
-          p_selected: opt.value,
-        });
+        result = bankQuestions
+          ? await supabase.rpc('submit_lesson_question_answer', {
+              p_question_id: currentQ.id, p_child_id: activeChildCloudId, p_selected: opt.value,
+            })
+          : await supabase.rpc('submit_legacy_lesson_answer', {
+              p_lesson_id: activeLesson.id, p_child_id: activeChildCloudId,
+              p_kind: 'quiz', p_selected: activeLesson.quizType === 'truefalse' ? i === 0 : i,
+            });
       } catch (error) {
         result = { error };
       }
@@ -199,7 +210,8 @@ export default function Modals() {
       handleEvalQuiz(data);
       return;
     }
-    handleEvalQuiz(!!opt.correct);
+    triggerToast('هذا السؤال غير متاح للتحقق الآن');
+    setPickedIdx(null);
   };
   const handleEvalQuiz = (isCorrect) => {
     if (quizAnswered !== null) return;
@@ -217,23 +229,43 @@ export default function Modals() {
 
   // Syllable Builder Tap/Drag handler
   const handleTapSyllable = (syl) => {
-    if (builtSyllables.includes(syl)) return;
+    if (builtSyllables.includes(syl) || builderChecking || builderSubmitted) return;
     const nextList = [...builtSyllables, syl];
     setBuiltSyllables(nextList);
 
     soundManager.speak(syl);
+  };
 
-    const expected = activeLesson?.interactiveBuilder?.correctOrder || [];
-    if (nextList.length === expected.length) {
-      const isMatch = nextList.every((val, idx) => val === expected[idx]);
-      if (isMatch) {
-        setBuilderCompleted(true);
-        soundManager.playSuccess();
-        soundManager.speak(`ممتاز! ركبت الكلمة بنجاح: ${activeLesson?.interactiveBuilder?.targetWord}`);
-      } else {
-        triggerToast('ترتيب المقاطع يحتاج مراجعة، اضغط مسح وحاول ثانية ↺');
-        soundManager.playRetry();
-      }
+  const handleCheckBuilder = async () => {
+    if (builderChecking || builderSubmitted || !builtSyllables.length) return;
+    if (!supabase || !activeChildCloudId) {
+      triggerToast('سجّل الدخول واختر الطفل للتحقق من الترتيب');
+      return;
+    }
+    setBuilderChecking(true);
+    const scope = quizScope;
+    let result;
+    try {
+      result = await supabase.rpc('submit_legacy_lesson_answer', {
+        p_lesson_id: activeLesson.id, p_child_id: activeChildCloudId,
+        p_kind: 'builder', p_selected: builtSyllables,
+      });
+    } catch (error) { result = { error }; }
+    if (quizAttemptRef.current.scope !== scope) return;
+    setBuilderChecking(false);
+    if (result?.error || typeof result?.data !== 'boolean') {
+      triggerToast(result?.error?.message?.includes('already_answered')
+        ? 'سبق تسجيل محاولة بناء الكلمة لهذا الطفل' : 'تعذر التحقق من الترتيب، حاول لاحقاً');
+      return;
+    }
+    setBuilderSubmitted(true);
+    if (result.data) {
+      setBuilderCompleted(true);
+      soundManager.playSuccess();
+      soundManager.speak(`ممتاز! ركبت المقاطع بنجاح: ${builtSyllables.join('')}`);
+    } else {
+      triggerToast('ترتيب المقاطع يحتاج مراجعة؛ انتهت المحاولة المسجلة لهذا الدرس');
+      soundManager.playRetry();
     }
   };
 
@@ -395,7 +427,7 @@ export default function Modals() {
                   {activeLesson.interactiveBuilder && (
                     <div style={{ background: 'var(--blue-light)', border: '2px solid var(--line)', borderRadius: '20px', padding: '22px', marginBottom: '28px' }}>
                       <h4 style={{ color: 'var(--blue-text)', fontSize: '18px', marginBottom: '6px' }}>
-                        🧩 نشاط تركيبي: اضغط على المقاطع لبناء: «{activeLesson.interactiveBuilder.targetWord}»
+                        🧩 نشاط تركيبي: اضغط على المقاطع لتكوين كلمة أو عبارة
                       </h4>
                       <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '16px' }}>
                         استمع لصوت كل مقطع عند الضغط عليه، ورتبها بالترتيب الصحيح:
@@ -436,7 +468,7 @@ export default function Modals() {
                               borderRadius: '12px', fontSize: '20px', fontWeight: 800,
                               cursor: builtSyllables.includes(syl) ? 'not-allowed' : 'pointer'
                             }}
-                            disabled={builtSyllables.includes(syl)}
+                            disabled={builtSyllables.includes(syl) || builderChecking || builderSubmitted}
                             onClick={() => handleTapSyllable(syl)}
                           >
                             {syl}
@@ -445,14 +477,19 @@ export default function Modals() {
                         <button
                           className="btn-ghost"
                           onClick={handleResetBuilder}
+                          disabled={builderChecking || builderSubmitted}
                         >
                           مسح ↺
                         </button>
                       </div>
+                      <button className="btn-primary" disabled={!builtSyllables.length || builderChecking || builderSubmitted}
+                        onClick={handleCheckBuilder}>
+                        {builderChecking ? 'جارٍ التحقق...' : 'تحقق من الترتيب (محاولة واحدة)'}
+                      </button>
 
                       {builderCompleted && (
                         <div style={{ marginTop: '14px', color: 'var(--green-text)', fontWeight: 800, fontSize: '15px' }}>
-                          ✓ رائع جداً! تم تركيب «{activeLesson.interactiveBuilder.targetWord}» بنجاح!
+                          ✓ رائع جداً! تم تركيب «{builtSyllables.join('')}» بنجاح!
                         </div>
                       )}
                     </div>
@@ -474,7 +511,7 @@ export default function Modals() {
                       }}>
                         {bankQuestions
                           ? `سؤال ${qIndex + 1} من ${bankQuestions.length}`
-                          : 'سؤال الإتقان (إعادة الاختبار متاحة حتى 100%)'}
+                          : 'سؤال الإتقان (محاولة واحدة لكل طفل)'}
                       </div>
                       <button
                         style={{
@@ -537,11 +574,11 @@ export default function Modals() {
                       <div style={{ background: 'var(--orange-light)', border: '2px solid var(--line)', borderRadius: '18px', padding: '20px', marginTop: '20px' }}>
                         <h4 style={{ color: '#9a3412', fontSize: '18px', marginBottom: '6px' }}>محاولة جيدة! قرّبت جداً من الحل الصحيح 💡</h4>
                         <p style={{ color: '#9a3412', fontSize: '13.5px', marginBottom: '14px' }}>
-                          راجع فيديو الحصة المسجلة ثم أعد المحاولة دون أي قلق.
+                          راجع فيديو الحصة المسجلة؛ تم تسجيل هذه المحاولة لهذا الطفل.
                         </p>
-                        <button className="btn-secondary" onClick={() => setQuizAnswered(null)}>
-                          أعد المحاولة الآن ↺
-                        </button>
+                        {!isLastQuestion && <button className="btn-secondary" onClick={() => setQIndex(qIndex + 1)}>
+                          السؤال التالي ←
+                        </button>}
                       </div>
                     )}
                   </div>

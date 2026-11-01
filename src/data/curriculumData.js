@@ -34,15 +34,14 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'أي من الكلمات التالية تبدأ بصوت الألف المكسورة (إِ)؟',
         options: [
-          { text: 'إِبْرَة (إِ)', correct: true, icon: '🪡' },
-          { text: 'أَرْنَب (أَ)', correct: false, icon: '🐇' },
-          { text: 'أُذُن (أُ)', correct: false, icon: '👂' },
-          { text: 'بَاب', correct: false, icon: '🚪' }
+          { text: 'إِبْرَة (إِ)', icon: '🪡' },
+          { text: 'أَرْنَب (أَ)', icon: '🐇' },
+          { text: 'أُذُن (أُ)', icon: '👂' },
+          { text: 'بَاب', icon: '🚪' }
         ],
         interactiveBuilder: {
-          targetWord: 'أَمَلْ',
+
           syllables: ['أَ', 'مَ', 'لْ', 'بـَ', 'تـِ'],
-          correctOrder: ['أَ', 'مَ', 'لْ']
         }
       },
       {
@@ -69,15 +68,14 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'أي من الكلمات التالية تحتوي على مد طويل بصوت (بَا)؟',
         options: [
-          { text: 'بَابْ (بـَـا)', correct: true, icon: '🚪' },
-          { text: 'بَطَّة (بـَ)', correct: false, icon: '🦆' },
-          { text: 'قِطَّة', correct: false, icon: '🐱' },
-          { text: 'قَلَم', correct: false, icon: '✏️' }
+          { text: 'بَابْ (بـَـا)', icon: '🚪' },
+          { text: 'بَطَّة (بـَ)', icon: '🦆' },
+          { text: 'قِطَّة', icon: '🐱' },
+          { text: 'قَلَم', icon: '✏️' }
         ],
         interactiveBuilder: {
-          targetWord: 'بَابْ',
+
           syllables: ['بـَـا', 'بْ', 'تـِ', 'مَ'],
-          correctOrder: ['بـَـا', 'بْ']
         }
       },
       {
@@ -103,15 +101,14 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'ما هي الكلمة التي تبدأ بحرف التاء؟',
         options: [
-          { text: 'تَمْر (تـَ)', correct: true, icon: '🌴' },
-          { text: 'بَيْت', correct: false, icon: '🏠' },
-          { text: 'أَسَد', correct: false, icon: '🦁' },
-          { text: 'قَمَر', correct: false, icon: '🌙' }
+          { text: 'تَمْر (تـَ)', icon: '🌴' },
+          { text: 'بَيْت', icon: '🏠' },
+          { text: 'أَسَد', icon: '🦁' },
+          { text: 'قَمَر', icon: '🌙' }
         ],
         interactiveBuilder: {
-          targetWord: 'تُوتْ',
+
           syllables: ['تُـو', 'تْ', 'بـَ', 'أَ'],
-          correctOrder: ['تُـو', 'تْ']
         }
       }
     ]
@@ -149,15 +146,14 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'كم عدد النجوم الظاهرة في المجموعة: ⭐ ⭐ ⭐ ؟',
         options: [
-          { text: '3 نجوم', correct: true, icon: '⭐' },
-          { text: '2 نجمتان', correct: false, icon: '✨' },
-          { text: '4 نجوم', correct: false, icon: '🌟' },
-          { text: '5 نجوم', correct: false, icon: '☀️' }
+          { text: '3 نجوم', icon: '⭐' },
+          { text: '2 نجمتان', icon: '✨' },
+          { text: '4 نجوم', icon: '🌟' },
+          { text: '5 نجوم', icon: '☀️' }
         ],
         interactiveBuilder: {
-          targetWord: 'العدد 3',
+
           syllables: ['١', '٢', '٣', '٤', '٥'],
-          correctOrder: ['١', '٢', '٣']
         }
       },
       {
@@ -183,14 +179,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'أي علامة صحيحة للمقارنة بين: ( 5 ... 2 )؟',
         options: [
-          { text: '5 > 2 (أكبر من)', correct: true, icon: '🐊' },
-          { text: '5 < 2 (أصغر من)', correct: false, icon: '❌' },
-          { text: '5 = 2 (يساوي)', correct: false, icon: '➖' }
+          { text: '5 > 2 (أكبر من)', icon: '🐊' },
+          { text: '5 < 2 (أصغر من)', icon: '❌' },
+          { text: '5 = 2 (يساوي)', icon: '➖' }
         ],
         interactiveBuilder: {
-          targetWord: '5 > 2',
+
           syllables: ['5', '>', '2', '<', '='],
-          correctOrder: ['5', '>', '2']
         }
       },
       {
@@ -216,14 +211,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'كم حاصل جمع: ( 2 + 1 )؟',
         options: [
-          { text: '3', correct: true, icon: '🍎' },
-          { text: '4', correct: false, icon: '🍊' },
-          { text: '2', correct: false, icon: '🍋' }
+          { text: '3', icon: '🍎' },
+          { text: '4', icon: '🍊' },
+          { text: '2', icon: '🍋' }
         ],
         interactiveBuilder: {
-          targetWord: '2 + 1 = 3',
+
           syllables: ['2', '+', '1', '=', '3'],
-          correctOrder: ['2', '+', '1', '=', '3']
         }
       }
     ]
@@ -261,15 +255,14 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'Which word starts with the /b/ sound like "Busy Bee"?',
         options: [
-          { text: 'Bag (حقيبة)', correct: true, icon: '🎒' },
-          { text: 'Apple (تفاحة)', correct: false, icon: '🍎' },
-          { text: 'Cat (قطة)', correct: false, icon: '🐱' },
-          { text: 'Duck (بطة)', correct: false, icon: '🦆' }
+          { text: 'Bag (حقيبة)', icon: '🎒' },
+          { text: 'Apple (تفاحة)', icon: '🍎' },
+          { text: 'Cat (قطة)', icon: '🐱' },
+          { text: 'Duck (بطة)', icon: '🦆' }
         ],
         interactiveBuilder: {
-          targetWord: 'BOOK',
+
           syllables: ['B', 'OO', 'K', 'A', 'P'],
-          correctOrder: ['B', 'OO', 'K']
         }
       },
       {
@@ -295,14 +288,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'What do we use to draw lines? (ما الذي نستخدمه لتسطير الورقة؟)',
         options: [
-          { text: 'Ruler (مسطرة)', correct: true, icon: '📏' },
-          { text: 'Eraser (ممحاة)', correct: false, icon: '🧼' },
-          { text: 'Pencil (قلم رصاص)', correct: false, icon: '✏️' }
+          { text: 'Ruler (مسطرة)', icon: '📏' },
+          { text: 'Eraser (ممحاة)', icon: '🧼' },
+          { text: 'Pencil (قلم رصاص)', icon: '✏️' }
         ],
         interactiveBuilder: {
-          targetWord: 'PEN',
+
           syllables: ['P', 'E', 'N', 'R', 'U'],
-          correctOrder: ['P', 'E', 'N']
         }
       }
     ]
@@ -340,14 +332,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'بأي حاسة نستطيع سماع صوت الآذان وأصوات الطيور؟',
         options: [
-          { text: 'حاسة السمع (الأذن) 👂', correct: true, icon: '👂' },
-          { text: 'حاسة البصر (العين) 👁️', correct: false, icon: '👁️' },
-          { text: 'حاسة التذوق (اللسان) 👅', correct: false, icon: '👅' }
+          { text: 'حاسة السمع (الأذن) 👂', icon: '👂' },
+          { text: 'حاسة البصر (العين) 👁️', icon: '👁️' },
+          { text: 'حاسة التذوق (اللسان) 👅', icon: '👅' }
         ],
         interactiveBuilder: {
-          targetWord: 'عَيْنْ',
+
           syllables: ['عَـ', 'يْـ', 'نْ', 'سـَ', 'مـَ'],
-          correctOrder: ['عَـ', 'يْـ', 'نْ']
         }
       },
       {
@@ -373,14 +364,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'أي مما يلي يعتبر كائناً حياً يحتاج إلى الغذاء والماء لينمو؟',
         options: [
-          { text: 'الشجرة والنبات 🌳', correct: true, icon: '🌳' },
-          { text: 'السيارة 🚗', correct: false, icon: '🚗' },
-          { text: 'القلم ✏️', correct: false, icon: '✏️' }
+          { text: 'الشجرة والنبات 🌳', icon: '🌳' },
+          { text: 'السيارة 🚗', icon: '🚗' },
+          { text: 'القلم ✏️', icon: '✏️' }
         ],
         interactiveBuilder: {
-          targetWord: 'نَبَاتْ',
+
           syllables: ['نـَ', 'بـَـا', 'تْ', 'مـَ', 'لْ'],
-          correctOrder: ['نـَ', 'بـَـا', 'تْ']
         }
       }
     ]
@@ -418,14 +408,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'عندما يجد أحمد لعبة ليست له في الفصل، ماذا يفعل ليكون أميناً؟',
         options: [
-          { text: 'يعطيها للمعلمة لتبحث عن صاحبها 🤝', correct: true, icon: '⭐' },
-          { text: 'يأخذها إلى المنزل دون إخبار أحد ❌', correct: false, icon: '🚫' },
-          { text: 'يخفيها في حقيبته ❌', correct: false, icon: '🚫' }
+          { text: 'يعطيها للمعلمة لتبحث عن صاحبها 🤝', icon: '⭐' },
+          { text: 'يأخذها إلى المنزل دون إخبار أحد ❌', icon: '🚫' },
+          { text: 'يخفيها في حقيبته ❌', icon: '🚫' }
         ],
         interactiveBuilder: {
-          targetWord: 'صِدْقْ',
+
           syllables: ['صِـ', 'دْ', 'قْ', 'كـَ', 'ذِ'],
-          correctOrder: ['صِـ', 'دْ', 'قْ']
         }
       },
       {
@@ -451,13 +440,12 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'كيف نظهر محبتنا وبرنا بوالدينا كل يوم؟',
         options: [
-          { text: 'بالتحدث معهما بأدب ومساعدتهما في المنزل ❤️', correct: true, icon: '🤲' },
-          { text: 'برفض كلامهما وعدم الاستماع إليهما ❌', correct: false, icon: '🚫' }
+          { text: 'بالتحدث معهما بأدب ومساعدتهما في المنزل ❤️', icon: '🤲' },
+          { text: 'برفض كلامهما وعدم الاستماع إليهما ❌', icon: '🚫' }
         ],
         interactiveBuilder: {
-          targetWord: 'أُمِّي',
+
           syllables: ['أُ', 'مِّـ', 'ي', 'أَ', 'بـِ'],
-          correctOrder: ['أُ', 'مِّـ', 'ي']
         }
       }
     ]
@@ -496,14 +484,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'Complete the sentence: "I can hear birds singing with my _____"',
         options: [
-          { text: 'Ears (أذني) 👂', correct: true, icon: '👂' },
-          { text: 'Eyes (عيني) 👁️', correct: false, icon: '👁️' },
-          { text: 'Nose (أنفي) 👃', correct: false, icon: '👃' }
+          { text: 'Ears (أذني) 👂', icon: '👂' },
+          { text: 'Eyes (عيني) 👁️', icon: '👁️' },
+          { text: 'Nose (أنفي) 👃', icon: '👃' }
         ],
         interactiveBuilder: {
-          targetWord: 'STAR',
+
           syllables: ['S', 'T', 'A', 'R', 'P'],
-          correctOrder: ['S', 'T', 'A', 'R']
         }
       },
       {
@@ -528,14 +515,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'Who helps us learn at school?',
         options: [
-          { text: 'Teacher (المعلمة) 👩‍🏫', correct: true, icon: '👩‍🏫' },
-          { text: 'Chef (الطاهي) 👨‍🍳', correct: false, icon: '👨‍🍳' },
-          { text: 'Pilot (الطيار) 👨‍✈️', correct: false, icon: '👨‍✈️' }
+          { text: 'Teacher (المعلمة) 👩‍🏫', icon: '👩‍🏫' },
+          { text: 'Chef (الطاهي) 👨‍🍳', icon: '👨‍🍳' },
+          { text: 'Pilot (الطيار) 👨‍✈️', icon: '👨‍✈️' }
         ],
         interactiveBuilder: {
-          targetWord: 'FAMILY',
+
           syllables: ['FA', 'MI', 'LY', 'TO', 'GO'],
-          correctOrder: ['FA', 'MI', 'LY']
         }
       }
     ]
@@ -574,14 +560,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'How many apples are there: 🍎 🍎 🍎 🍎 ?',
         options: [
-          { text: '4 (Four)', correct: true, icon: '🍎' },
-          { text: '3 (Three)', correct: false, icon: '🍏' },
-          { text: '5 (Five)', correct: false, icon: '🍐' }
+          { text: '4 (Four)', icon: '🍎' },
+          { text: '3 (Three)', icon: '🍏' },
+          { text: '5 (Five)', icon: '🍐' }
         ],
         interactiveBuilder: {
-          targetWord: 'FOUR',
+
           syllables: ['F', 'OU', 'R', 'T', 'W'],
-          correctOrder: ['F', 'OU', 'R']
         }
       },
       {
@@ -607,14 +592,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'Which statement is correct for: 8 ... 4 ?',
         options: [
-          { text: '8 > 4 (Greater than)', correct: true, icon: '🐊' },
-          { text: '8 < 4 (Less than)', correct: false, icon: '❌' },
-          { text: '8 = 4 (Equal to)', correct: false, icon: '➖' }
+          { text: '8 > 4 (Greater than)', icon: '🐊' },
+          { text: '8 < 4 (Less than)', icon: '❌' },
+          { text: '8 = 4 (Equal to)', icon: '➖' }
         ],
         interactiveBuilder: {
-          targetWord: '8 > 4',
+
           syllables: ['8', '>', '4', '<', '='],
-          correctOrder: ['8', '>', '4']
         }
       }
     ]
@@ -653,14 +637,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'ما هو الجزء الذي نستخدمه لتحريك المؤشر والضغط على الأشياء في الشاشة؟',
         options: [
-          { text: 'الفأرة (الماوس) 🖱️', correct: true, icon: '🖱️' },
-          { text: 'السماعات 🎧', correct: false, icon: '🎧' },
-          { text: 'الطابعة 🖨️', correct: false, icon: '🖨️' }
+          { text: 'الفأرة (الماوس) 🖱️', icon: '🖱️' },
+          { text: 'السماعات 🎧', icon: '🎧' },
+          { text: 'الطابعة 🖨️', icon: '🖨️' }
         ],
         interactiveBuilder: {
-          targetWord: 'حَاسُوبْ',
+
           syllables: ['حـَ', 'ا', 'سُـ', 'و', 'بْ'],
-          correctOrder: ['حـَ', 'ا', 'سُـ', 'و', 'بْ']
         }
       },
       {
@@ -685,13 +668,12 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'إذا أردنا الوصول للكنز، ما هو الترتيب الصحيح؟',
         options: [
-          { text: 'خطوتان للأمام ثم انعطاف لليمين ➡️', correct: true, icon: '🧭' },
-          { text: 'القفز دون تفكير ❌', correct: false, icon: '🚫' }
+          { text: 'خطوتان للأمام ثم انعطاف لليمين ➡️', icon: '🧭' },
+          { text: 'القفز دون تفكير ❌', icon: '🚫' }
         ],
         interactiveBuilder: {
-          targetWord: 'أَمْرْ',
+
           syllables: ['أَ', 'مْ', 'رْ', 'سـَ', 'بـِ'],
-          correctOrder: ['أَ', 'مْ', 'رْ']
         }
       }
     ]
@@ -730,14 +712,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'ما هو النهر العظيم الذي يجري في مصر ويسقي الأراضي والزرع؟',
         options: [
-          { text: 'نهر النيل العظيم 🌊', correct: true, icon: '⛵' },
-          { text: 'نهر الأمازون', correct: false, icon: '🌴' },
-          { text: 'البحر الميت', correct: false, icon: '🌊' }
+          { text: 'نهر النيل العظيم 🌊', icon: '⛵' },
+          { text: 'نهر الأمازون', icon: '🌴' },
+          { text: 'البحر الميت', icon: '🌊' }
         ],
         interactiveBuilder: {
-          targetWord: 'مِصْرْ',
+
           syllables: ['مِـ', 'صْ', 'رْ', 'نـَ', 'يـْ'],
-          correctOrder: ['مِـ', 'صْ', 'رْ']
         }
       },
       {
@@ -763,14 +744,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'أين توجد الأهرامات الثلاثة الشهيرة وتمثال أبو الهول؟',
         options: [
-          { text: 'في الجيزة بمصر 🇪🇬', correct: true, icon: '🏛️' },
-          { text: 'في لندن', correct: false, icon: '🌧️' },
-          { text: 'في باريس', correct: false, icon: '🗼' }
+          { text: 'في الجيزة بمصر 🇪🇬', icon: '🏛️' },
+          { text: 'في لندن', icon: '🌧️' },
+          { text: 'في باريس', icon: '🗼' }
         ],
         interactiveBuilder: {
-          targetWord: 'هَرَمْ',
+
           syllables: ['هـَ', 'رَ', 'مْ', 'قـَ', 'لْ'],
-          correctOrder: ['هـَ', 'رَ', 'مْ']
         }
       }
     ]
@@ -809,14 +789,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'أي من الوجبات التالية يعطي أجسامنا القوة والنشاط للدراسة؟',
         options: [
-          { text: 'التفاح والحليب والبيض 🍎🥛', correct: true, icon: '🍎' },
-          { text: 'رقائق الشيبس والمشروبات الغازية ❌', correct: false, icon: '🚫' },
-          { text: 'الحلوى الكثيرة الملونة ❌', correct: false, icon: '🚫' }
+          { text: 'التفاح والحليب والبيض 🍎🥛', icon: '🍎' },
+          { text: 'رقائق الشيبس والمشروبات الغازية ❌', icon: '🚫' },
+          { text: 'الحلوى الكثيرة الملونة ❌', icon: '🚫' }
         ],
         interactiveBuilder: {
-          targetWord: 'صِحَّة',
+
           syllables: ['صِـ', 'حَّـ', 'ة', 'مـَ', 'رَ'],
-          correctOrder: ['صِـ', 'حَّـ', 'ة']
         }
       }
     ]
@@ -855,14 +834,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'ماذا نقول باللسان قبل أن نبدأ في تناول الطعام؟',
         options: [
-          { text: 'بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ 🤲', correct: true, icon: '✨' },
-          { text: 'الحمد لله ❌', correct: false, icon: '🚫' },
-          { text: 'لا نقول شيئاً ❌', correct: false, icon: '🚫' }
+          { text: 'بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ 🤲', icon: '✨' },
+          { text: 'الحمد لله ❌', icon: '🚫' },
+          { text: 'لا نقول شيئاً ❌', icon: '🚫' }
         ],
         interactiveBuilder: {
-          targetWord: 'نُورْ',
+
           syllables: ['نُـ', 'و', 'رْ', 'ظـِ', 'لْ'],
-          correctOrder: ['نُـ', 'و', 'رْ']
         }
       }
     ]
@@ -901,13 +879,12 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'ماذا فعل السامري الصالح عندما رأى شخصاً محتاجاً للمساعدة؟',
         options: [
-          { text: 'ساعده وعالجه برحمة ومحبة ❤️', correct: true, icon: '🕊️' },
-          { text: 'تركه ومشى بعيداً عنه ❌', correct: false, icon: '🚫' }
+          { text: 'ساعده وعالجه برحمة ومحبة ❤️', icon: '🕊️' },
+          { text: 'تركه ومشى بعيداً عنه ❌', icon: '🚫' }
         ],
         interactiveBuilder: {
-          targetWord: 'مَحَبَّة',
+
           syllables: ['مـَ', 'حـَ', 'بَّـ', 'ة', 'كـُ'],
-          correctOrder: ['مـَ', 'حـَ', 'بَّـ', 'ة']
         }
       }
     ]
@@ -946,14 +923,13 @@ export const CURRICULUM_DATA = {
         quizType: 'choice',
         question: 'عند دمج أصوات: ( قَـ ) + ( رَ ) + ( أَن ) ينتج الفعل:',
         options: [
-          { text: 'قَرَأَ 📖', correct: true, icon: '📖' },
-          { text: 'كَتَبَ ✍️', correct: false, icon: '✍️' },
-          { text: 'رَسَمَ 🎨', correct: false, icon: '🎨' }
+          { text: 'قَرَأَ 📖', icon: '📖' },
+          { text: 'كَتَبَ ✍️', icon: '✍️' },
+          { text: 'رَسَمَ 🎨', icon: '🎨' }
         ],
         interactiveBuilder: {
-          targetWord: 'كَتَبَ',
+
           syllables: ['كَـ', 'تَـ', 'بَ', 'سـَ', 'لَ'],
-          correctOrder: ['كَـ', 'تَـ', 'بَ']
         }
       }
     ]

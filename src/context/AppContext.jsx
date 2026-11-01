@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { soundManager } from '../utils/audio';
 import { launchConfetti } from '../utils/confetti';
 import { CURRICULUM_DATA } from '../data/curriculumData';
+import { sanitizeLegacyLesson, sanitizeCurriculum } from '../lib/legacyLessonPrivacy';
 import { deviceTimezone, isValidTimezone } from '../utils/liveWindow';
 import { normalizeCurriculum } from '../utils/todayPlan';
 import { supabase } from '../lib/supabase';
@@ -126,7 +127,8 @@ export function AppProvider({ children }) {
   const [curriculumData, setCurriculumData] = useState(() => {
     try {
       const saved = localStorage.getItem('fahem_curriculum');
-      const parsed = saved ? JSON.parse(saved) : {};
+      const parsed = sanitizeCurriculum(saved ? JSON.parse(saved) : {});
+      if (saved) localStorage.setItem('fahem_curriculum', JSON.stringify(parsed));
       const merged = parsed && typeof parsed === 'object' && !Array.isArray(parsed)
         ? { ...CURRICULUM_DATA, ...parsed }
         : { ...CURRICULUM_DATA };
@@ -134,7 +136,7 @@ export function AppProvider({ children }) {
       Object.entries(CURRICULUM_DATA).forEach(([k, v]) => {
         if (Array.isArray(v) && !Array.isArray(merged[k])) merged[k] = v;
       });
-      return normalizeCurriculum(merged);
+      return normalizeCurriculum(sanitizeCurriculum(merged));
     } catch {
       return normalizeCurriculum(CURRICULUM_DATA);
     }
@@ -231,13 +233,13 @@ export function AppProvider({ children }) {
                 question: content.question || '',
                 // متسامح مع شكلي التخزين: options ككائنات {text, correct, icon}
                 // (بيانات البذر) أو choices/answer (محرر المنهج)
-                options: Array.isArray(content.options) && content.options.length
+                options: content.quizType === 'truefalse'
+                  ? [{ text: '✓ صح', icon: '' }, { text: '✕ خطأ', icon: '' }]
+                  : Array.isArray(content.options) && content.options.length
                   ? content.options.map(o => (typeof o === 'string'
-                      ? { text: o, correct: false, icon: '' }
-                      : { text: o.text ?? '', correct: !!o.correct, icon: o.icon || '' }))
-                  : (content.choices || []).map((text, i) => ({
-                      text, correct: i === content.answer, icon: ''
-                    })),
+                      ? { text: o, icon: '' }
+                      : { text: o.text ?? '', icon: o.icon || '' }))
+                  : (content.choices || []).map(text => ({ text, icon: '' })),
                 // مراجع الدرس (كتب الوزارة الرسمية) — تظهر في تبويب دليل الأهل
                 references: Array.isArray(content.references) ? content.references : [],
                 // بنك الأسئلة (يتقدم على السؤال القديم المفرد في المشغل عند وجوده)
@@ -260,7 +262,7 @@ export function AppProvider({ children }) {
                   })),
                 parentGuide: content.parentGuide || null,
                 // متسامح مع الاسمين: interactiveBuilder (بيانات البذر) أو wordBuilder (المحرر)
-                interactiveBuilder: content.interactiveBuilder || content.wordBuilder || null,
+                interactiveBuilder: sanitizeLegacyLesson(content.interactiveBuilder || content.wordBuilder || null),
                 celebration: content.celebration || '',
               };
             })
@@ -288,7 +290,7 @@ export function AppProvider({ children }) {
               merged[key] = { ...merged[key], ...value };
             }
           });
-          return normalizeCurriculum(merged);
+          return normalizeCurriculum(sanitizeCurriculum(merged));
         });
         setCurriculumSource('db');
       } catch (err) {
@@ -520,7 +522,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('fahem_curriculum', JSON.stringify(curriculumData));
+      localStorage.setItem('fahem_curriculum', JSON.stringify(sanitizeCurriculum(curriculumData)));
     } catch {
       triggerToast('تعذر حفظ المحتوى محليًا؛ قد تكون مساحة المتصفح ممتلئة.');
     }

@@ -11,6 +11,7 @@ import { useAuth } from '../../../context/AuthContext';
 import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
 import Emoji from '../../../ui/Emoji';
+import { sanitizeLegacyLesson } from '../../../lib/legacyLessonPrivacy';
 
 // يحذف الخيارات الفارغة ويعيد حساب رقم الإجابة الصحيحة ليشير لنفس الخيار بعد الحذف
 function compactChoices(choices, answer) {
@@ -83,6 +84,12 @@ export default function LessonEditor() {
     if (error) {
       setError(error.message);
     } else if (data) {
+      const { data: privateAnswers, error: answerError } = await supabase.rpc('editor_get_legacy_lesson_answers', { p_lesson_id: id });
+      if (answerError) {
+        setError('تعذر تحميل الإجابات الخاصة: ' + answerError.message);
+        setLoading(false);
+        return;
+      }
       setLesson(data);
       // Merge content JSON into form
       const content = data.content || {};
@@ -102,13 +109,15 @@ export default function LessonEditor() {
         // Quiz
         quizType: content.quizType || 'choice',
         question: content.question || '',
-        choices: content.choices || ['', '', '', ''],
-        answer: content.answer ?? 0,
+        choices: content.choices || content.options?.map(o => typeof o === 'string' ? o : o.text) || ['', '', '', ''],
+        answer: privateAnswers?.answer ?? null,
         celebration: content.celebration || '',
         // Arrange items
         arrangeItems: content.arrangeItems || [],
         // Word Builder
-        wordBuilder: content.wordBuilder || null,
+        wordBuilder: (content.wordBuilder || content.interactiveBuilder)
+          ? { ...(content.wordBuilder || content.interactiveBuilder), correctOrder: privateAnswers?.correctOrder || [], targetWord: privateAnswers?.targetWord || '' }
+          : null,
         // Parent Guide
         parentGuide: content.parentGuide || { title: '', sections: [] },
         // المراجع (كتب رسمية/مصادر الدرس)
@@ -137,7 +146,8 @@ export default function LessonEditor() {
     setSaving(true);
     
     // Build content JSON
-    const content = {
+    const content = sanitizeLegacyLesson({
+      ...lesson.content,
       title: form.title,
       objective: form.objective,
       videoChapters: form.videoChapters,
@@ -145,28 +155,33 @@ export default function LessonEditor() {
       quizType: form.quizType,
       question: form.question,
       choices: legacyQ.choices,
-      answer: legacyQ.answer,
+      options: Array.isArray(lesson.content?.options)
+        ? legacyQ.choices.map((text, i) => ({ ...lesson.content.options[i], text }))
+        : undefined,
       arrangeItems: form.arrangeItems,
       celebration: form.celebration,
       wordBuilder: form.wordBuilder,
       parentGuide: form.parentGuide,
       references: form.references,
-    };
+    });
     
-    const { error } = await supabase
-      .from('curriculum_lessons')
-      .update({
+    const { error } = await supabase.rpc('editor_save_legacy_lesson_answers', {
+      p_lesson_id: id,
+      p_content: content,
+      p_answer: legacyQ.answer,
+      p_builder_order: form.wordBuilder?.correctOrder ?? null,
+      p_builder_target_word: form.wordBuilder?.targetWord ?? null,
+      p_metadata: {
         title: form.title,
         subject_key: form.subject_key,
         sort_order: form.sort_order,
-        ...(isTeacher ? {} : { published: form.published }),
+        published: form.published,
         video_url: form.video_url || null,
         video_type: form.video_type,
         pdf_url: form.pdf_url || null,
         pdf_type: form.pdf_type,
-        content,
-      })
-      .eq('id', id);
+      },
+    });
     
     if (error) {
       alert('خطأ في الحفظ: ' + error.message);
