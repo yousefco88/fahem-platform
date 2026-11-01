@@ -13,6 +13,11 @@ test('audit identity sequence is not exposed to authenticated clients', () => {
   assert.doesNotMatch(migration, /grant\s+(?:usage|select|update|all)[^;]*subscription_plan_audit_id_seq/i);
 });
 
+test('archive action uses authorized RPC rather than direct table update', () => {
+  assert.match(panel, /rpc\('archive_subscription_plan'/);
+  assert.doesNotMatch(panel, /from\('subscription_plans'\)\.update\(/);
+});
+
 test('catalog marks unpublished subjects and does not offer them for new selected plans', () => {
   assert.match(panel, /select\('key,title,published'\)/);
   assert.match(panel, /subjects\.filter\(s => s\.published \|\| Object\.hasOwn\(form\.subjects, s\.key\)\)/);

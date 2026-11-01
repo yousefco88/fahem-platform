@@ -86,7 +86,7 @@ export default function FamilyPanel({ parent, kids, setKids, onSignOut, onRename
             <button type="button" className="fam-del" onClick={() => setConfirmId(c.id)}>🗑 حذف</button>
           )}
         </div>
-        {openId === c.id && <ChildInsightsPanel child={c} sameNameCount={kids.filter(k => k.name === c.name).length} />}
+        {openId === c.id && <ChildInsightsPanel child={c} parentId={parent.id} sameNameCount={kids.filter(k => k.name === c.name).length} />}
         </React.Fragment>
       ))}
 

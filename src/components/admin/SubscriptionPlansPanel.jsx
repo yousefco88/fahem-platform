@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 
 const empty = () => ({ id: null, name: '', duration_days: '', included_hours: '', coverage_mode: 'all', price: '', status: 'draft', subjects: {} });
@@ -10,7 +9,6 @@ const button = { ...input, background: 'var(--card-bg)', cursor: 'pointer', font
 const toMinor = value => value === '' ? null : Number.isFinite(Number(value)) && Number(value) >= 0 ? Math.round(Number(value) * 100) : NaN;
 
 export default function SubscriptionPlansPanel() {
-  const { user } = useAuth();
   const { triggerToast } = useApp();
   const [plans, setPlans] = useState([]), [subjects, setSubjects] = useState([]), [form, setForm] = useState(empty);
   const [state, setState] = useState('loading'), [saving, setSaving] = useState(false), [audit, setAudit] = useState(null);
@@ -70,7 +68,7 @@ export default function SubscriptionPlansPanel() {
 
   async function archive(plan) {
     if (!window.confirm(`أرشفة «${plan.name}»؟`)) return;
-    const { error } = await supabase.from('subscription_plans').update({ status: 'archived', updated_by: user?.id || null }).eq('id', plan.id);
+    const { error } = await supabase.rpc('archive_subscription_plan', { p_id: plan.id });
     if (error) triggerToast(`تعذرت الأرشفة: ${error.message}`); else { triggerToast('تمت الأرشفة.'); await load(); }
   }
 
