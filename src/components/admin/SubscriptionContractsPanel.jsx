@@ -172,10 +172,10 @@ export default function SubscriptionContractsPanel() {
 
     {state === 'ready' && <section style={box}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <h3 style={{ margin: 0 }}>الترحيل التلقائي {errorPostings.length ? <span style={{ color: 'var(--red, #c0392b)' }}>· {errorPostings.length} خطأ ينتظر الحل</span> : null}</h3>
+        <h3 style={{ margin: 0 }}>تسوية الحضور المستحق {errorPostings.length ? <span style={{ color: 'var(--red, #c0392b)' }}>· {errorPostings.length} خطأ ينتظر الحل</span> : null}</h3>
         <button style={button} disabled={busy === 'sweep'} onClick={runSweep}>{busy === 'sweep' ? 'جارٍ الترحيل…' : 'ترحيل المستحق الآن'}</button>
       </div>
-      <p style={{ color: 'var(--muted)' }}>يُعاد كل خطأ تلقائياً في كل جولة حتى يُحل (مثلاً بمنح عقد يغطي المادة). آخر 100 محاولة:</p>
+      <p style={{ color: 'var(--muted)' }}>الجدولة الآلية غير مفعّلة حالياً؛ اضغط «ترحيل المستحق الآن» بعد قفل الحضور. تُعاد محاولة الأخطاء في كل جولة حتى تُحل (مثلاً بمنح عقد يغطي المادة). آخر 100 محاولة:</p>
       {!postings.length ? <p>لا محاولات ترحيل بعد.</p> : <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', minWidth: 640, borderCollapse: 'collapse' }}>
         <thead><tr>{['آخر محاولة', 'النتيجة', 'المحاولات', 'معرّف الحضور', 'الرسالة'].map(x => <th key={x} style={th}>{x}</th>)}</tr></thead>
         <tbody>{postings.map(p => <tr key={`${p.attendance_id}:${p.source_version}`}>
