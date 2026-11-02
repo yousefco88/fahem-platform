@@ -7,6 +7,8 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import './CurriculumAdmin.css';
 import Emoji from '../../../ui/Emoji';
+import { useAuth } from '../../../context/AuthContext';
+import { subjectTeacherOptions } from '../../../lib/lessonTeacherAssignment';
 
 export default function LessonsPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,10 +21,20 @@ export default function LessonsPanel() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ id: '', title: '', sort_order: 0 });
   const [saving, setSaving] = useState(false);
+  // إسناد معلم للدرس — للمدير فقط (teacher_subjects مقروءة للمدير وحده بحسب RLS)
+  const { role } = useAuth();
+  const isAdmin = role === 'admin';
+  const [teachers, setTeachers] = useState([]);
+  const [teacherSubjects, setTeacherSubjects] = useState([]);
+  const [assigningId, setAssigningId] = useState('');
 
   useEffect(() => {
     fetchSubjects();
   }, []);
+
+  useEffect(() => {
+    if (isAdmin) fetchTeachers();
+  }, [isAdmin]);
 
   useEffect(() => {
     if (selectedSubject) {
@@ -39,6 +51,31 @@ export default function LessonsPanel() {
       .select('key, title, icon, grade, grade_id, grades(title)')
       .order('sort_order');
     setSubjects(data || []);
+  }
+
+  async function fetchTeachers() {
+    const [t, ts] = await Promise.all([
+      supabase.from('profiles').select('id, full_name').eq('role', 'teacher'),
+      supabase.from('teacher_subjects').select('teacher_id, subject_key'),
+    ]);
+    if (t.error || ts.error) { setError((t.error || ts.error).message); return; }
+    setTeachers(t.data || []);
+    setTeacherSubjects(ts.data || []);
+  }
+
+  async function assignTeacher(lesson, teacherId) {
+    const next = teacherId || null;
+    if (lesson.published && next && !confirm('الدرس منشور: سيظهر للمعلم للعرض فقط، ولن يستطيع تعديله إلا إذا ألغيت نشره. متابعة؟')) return;
+    setAssigningId(lesson.id);
+    const { data, error } = await supabase
+      .from('curriculum_lessons')
+      .update({ assigned_teacher_id: next })
+      .eq('id', lesson.id)
+      .select('id, assigned_teacher_id, review_status, published')
+      .single();
+    setAssigningId('');
+    if (error) { alert('تعذر إسناد المعلم: ' + error.message); return; }
+    setLessons(prev => prev.map(l => (l.id === lesson.id ? { ...l, ...data } : l)));
   }
 
   async function fetchLessons() {
@@ -141,6 +178,7 @@ export default function LessonsPanel() {
   }
 
   const currentSubject = subjects.find(s => s.key === selectedSubject);
+  const teacherOptions = subjectTeacherOptions({ teachers, assignments: teacherSubjects, subjectKey: selectedSubject });
 
   return (
     <div className="curriculum-panel">
@@ -181,6 +219,12 @@ export default function LessonsPanel() {
         </div>
       </div>
 
+      {isAdmin && selectedSubject && teacherOptions.length === 0 && (
+        <p className="empty-state">
+          لا يوجد معلم مسند لهذه المادة بعد. أسند المادة أولاً من الخطوة 2 «مراجعة دروس المعلمين» ← «إسناد المواد للمعلمين»، ثم اختر معلم كل درس من عمود «المعلم».
+        </p>
+      )}
+
       {!selectedSubject ? (
         <p className="empty-state">اختر مادة من القائمة أعلاه لعرض دروسها.</p>
       ) : loading ? (
@@ -199,6 +243,7 @@ export default function LessonsPanel() {
                 <th>PDF</th>
                 <th>السؤال</th>
                 <th>الحالة</th>
+                {isAdmin && <th>المعلم</th>}
                 <th>الإجراءات</th>
               </tr>
             </thead>
@@ -228,6 +273,7 @@ export default function LessonsPanel() {
                   <td>—</td>
                   <td>—</td>
                   <td>—</td>
+                  {isAdmin && <td>—</td>}
                   <td>
                     <button className="btn-success btn-sm" onClick={saveLesson} disabled={saving}>
                       {saving ? '...' : '✓ حفظ'}
@@ -265,6 +311,23 @@ export default function LessonsPanel() {
                         {lesson.published ? '✓ منشور' : '○ مسودة'}
                       </button>
                     </td>
+                    {isAdmin && (
+                      <td>
+                        <select
+                          className="input-sm"
+                          aria-label={`المعلم المسؤول عن ${lesson.title || lesson.id}`}
+                          value={lesson.assigned_teacher_id || ''}
+                          disabled={assigningId === lesson.id}
+                          onChange={e => assignTeacher(lesson, e.target.value)}
+                        >
+                          <option value="">— بدون —</option>
+                          {teacherOptions.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                          {lesson.assigned_teacher_id && !teacherOptions.some(t => t.id === lesson.assigned_teacher_id) && (
+                            <option value={lesson.assigned_teacher_id}>معلم غير مسند للمادة</option>
+                          )}
+                        </select>
+                      </td>
+                    )}
                     <td>
                       <Link to={`/admin/lesson/${lesson.id}`} className="btn-icon" title="تعديل">
                         ✏️

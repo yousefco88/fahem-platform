@@ -12,6 +12,7 @@ import FileUploader from './FileUploader';
 import './CurriculumAdmin.css';
 import Emoji from '../../../ui/Emoji';
 import { sanitizeLegacyLesson } from '../../../lib/legacyLessonPrivacy';
+import { teacherCanEditLesson, teacherOwnsLesson } from '../../../lib/lessonTeacherAssignment';
 
 // يحذف الخيارات الفارغة ويعيد حساب رقم الإجابة الصحيحة ليشير لنفس الخيار بعد الحذف
 function compactChoices(choices, answer) {
@@ -196,8 +197,10 @@ export default function LessonEditor() {
     return true;
   }
 
-  // المعلم يعدّل مسوداته/المرفوضة فقط؛ بعد الإرسال أو الاعتماد يُقفل الدرس
-  const locked = isTeacher && !(lesson?.created_by === user?.id && ['draft', 'rejected'].includes(lesson?.review_status));
+  // المعلم يعدّل مسوداته أو الدروس المسندة له (مسودة/مرفوض) فقط؛ بعد الإرسال أو الاعتماد يُقفل الدرس
+  const locked = isTeacher && !teacherCanEditLesson(lesson, user?.id);
+  // المُسند (غير المنشئ) لا يؤرشف ولا ينقل الدرس لمادة أخرى — يفرضه الحارس في القاعدة أيضاً
+  const ownsLesson = !isTeacher || teacherOwnsLesson(lesson, user?.id);
 
   async function submitForReview() {
     if (!confirm('إرسال الدرس للمراجعة؟ لن تستطيع تعديله حتى تردّ الإدارة.')) return;
@@ -263,7 +266,7 @@ export default function LessonEditor() {
           {isTeacher && !locked && (
             <>
               <button className="btn-success" onClick={submitForReview} disabled={saving}><Emoji>📤</Emoji> إرسال للمراجعة</button>
-              <button className="btn-muted" onClick={archiveLesson} disabled={saving}><Emoji>🗄️</Emoji> أرشفة</button>
+              {ownsLesson && <button className="btn-muted" onClick={archiveLesson} disabled={saving}><Emoji>🗄️</Emoji> أرشفة</button>}
             </>
           )}
         </div>
@@ -293,7 +296,7 @@ export default function LessonEditor() {
       <div className="editor-content">
       <fieldset disabled={locked} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
         {activeTab === 'basic' && (
-          <BasicTab form={form} updateForm={updateForm} subjects={subjects} />
+          <BasicTab form={form} updateForm={updateForm} subjects={subjects} subjectLocked={!ownsLesson} />
         )}
         {activeTab === 'video' && (
           <VideoTab form={form} updateForm={updateForm} lessonId={id} />
@@ -323,7 +326,7 @@ export default function LessonEditor() {
 // TAB COMPONENTS
 // ============================================================================
 
-function BasicTab({ form, updateForm, subjects }) {
+function BasicTab({ form, updateForm, subjects, subjectLocked = false }) {
   return (
     <div className="tab-panel">
       <div className="form-group">
@@ -344,6 +347,8 @@ function BasicTab({ form, updateForm, subjects }) {
             value={form.subject_key}
             onChange={e => updateForm('subject_key', e.target.value)}
             className="input-md"
+            disabled={subjectLocked}
+            title={subjectLocked ? 'درس مُسند لك — نقل المادة للإدارة فقط' : undefined}
           >
             <option value="">اختر مادة...</option>
             {subjects.map(s => (

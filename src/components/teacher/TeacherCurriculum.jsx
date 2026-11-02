@@ -47,8 +47,10 @@ function MyLessons() {
     setLoading(true);
     const [subs, less] = await Promise.all([
       supabase.from('teacher_subjects').select('subject_key, curriculum_subjects(key, title, icon, grade, grade_id, grades(title))').eq('teacher_id', user.id),
-      supabase.from('curriculum_lessons').select('id, title, subject_key, review_status, review_note, updated_at')
-        .eq('created_by', user.id).eq('archived', false).order('updated_at', { ascending: false }),
+      // دروسي = ما أنشأته + ما أسندته الإدارة لي (assigned_teacher_id)
+      supabase.from('curriculum_lessons').select('id, title, subject_key, review_status, review_note, updated_at, created_by, assigned_teacher_id')
+        .or(`created_by.eq.${user.id},assigned_teacher_id.eq.${user.id}`)
+        .eq('archived', false).order('updated_at', { ascending: false }),
     ]);
     const err = subs.error || less.error;
     if (err) setError(err.message);
@@ -167,6 +169,7 @@ function MyLessons() {
                   <div className="tc-lesson-meta">
                     <span>{sub ? `${sub.icon} ${sub.title}` : l.subject_key}</span>
                     <span>· آخر تحديث {dateFmt.format(new Date(l.updated_at))}</span>
+                    {l.created_by !== user.id && l.assigned_teacher_id === user.id && <span>· مُسند لك من الإدارة</span>}
                   </div>
                 </div>
                 <span className={`tc-badge ${st.cls}`}>{st.label}</span>
