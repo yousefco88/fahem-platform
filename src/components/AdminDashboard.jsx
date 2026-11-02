@@ -16,7 +16,6 @@ import SubscriptionPlansPanel from './admin/SubscriptionPlansPanel';
 import SubscriptionContractsPanel from './admin/SubscriptionContractsPanel';
 import ContentHub from './admin/ContentHub';
 import AdminHub from './admin/AdminHub';
-import UsersPanel from './admin/UsersPanel';
 import './admin/curriculum/CurriculumAdmin.css';
 import './admin/AdminSummary.css';
 import Emoji from '../ui/Emoji';
@@ -31,7 +30,7 @@ export default function AdminDashboard() {
   } = useApp();
 
   // القسم النشط مشتق من الـ URL (لا حالة محلية): /admin/* = المناهج داخل مركز المحتوى، وإلا ?tab=
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [searchParams] = useSearchParams();
   const adminLocation = useLocation();
   const adminNavigate = useNavigate();
@@ -114,11 +113,48 @@ export default function AdminDashboard() {
     supabase.from('profiles').select('id, full_name').eq('role', 'teacher')
       .then(({ data }) => setTeachers(data || []));
   }, []);
-  // المستخدمون — يُحمَّلون هنا لعدّاد اللوحة، وتُدار في UsersPanel (الأدوار والإجراءات تفرضها دوال الخادم)
+  // المستخدمون والأدوار — من profiles عبر دوال الخادم (الإدارة فقط؛ تغيير الدور لا يتم من العميل مباشرة)
+  const ROLE_OPTIONS = [
+    { id: 'parent', label: 'ولي أمر', note: 'يرى أبناءه ويحجز ويتابع حصصهم' },
+    { id: 'teacher', label: 'معلم', note: 'يرى طلابه المُسنَدين وحصصه ويرفع تسجيلاتها' },
+    { id: 'content_editor', label: 'محرر محتوى', note: 'يدير المناهج والدروس فقط' },
+    { id: 'admin', label: 'مدير النظام', note: 'كل الأقسام والصلاحيات' }
+  ];
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState('');
+  const [savingUser, setSavingUser] = useState(null);
   const [banned, setBanned] = useState({});
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [teacherEmail, setTeacherEmail] = useState('');
+  const addTeacher = async () => {
+    const email = teacherEmail.trim().toLowerCase();
+    if (!email) return;
+    const u = users.find(x => (x.email || '').toLowerCase() === email);
+    if (!u) {
+      setSavingUser('invite');
+      const { error } = await supabase.rpc('admin_invite_staff', { p_email: email, p_role: 'teacher' });
+      setSavingUser(null);
+      if (error) { triggerToast(`تعذر إنشاء الدعوة: ${error.message}`); return; }
+      triggerToast('تم إنشاء الدعوة ✓ أبلغ المعلم أن يسجّل بهذا البريد وسيصبح معلماً تلقائياً');
+      setTeacherEmail(''); loadInvites(); return;
+    }
+    if (u.role === 'teacher') { triggerToast('هذا الحساب معلم بالفعل'); return; }
+    if (u.id === user?.id) { triggerToast('لا يمكنك تغيير دورك بنفسك'); return; }
+    await changeRole(u, 'teacher');
+    setTeacherEmail('');
+  };
+  const [invites, setInvites] = useState([]);
+  const loadInvites = async () => {
+    if (!supabase) return;
+    const { data } = await supabase.rpc('admin_list_invites');
+    setInvites(data || []);
+  };
+  const cancelInvite = async (inv) => {
+    const { error } = await supabase.rpc('admin_cancel_invite', { p_id: inv.id });
+    if (error) { triggerToast(`تعذر الإلغاء: ${error.message}`); return; }
+    setInvites(l => l.filter(x => x.id !== inv.id));
+  };
   const loadUsers = async () => {
     if (!supabase) { setUsersLoading(false); return; }
     const { data, error } = await supabase.rpc('admin_list_users');
@@ -127,7 +163,46 @@ export default function AdminDashboard() {
     if (!st.error) setBanned(Object.fromEntries((st.data || []).map(r => [r.id, r.banned_until])));
     setUsersLoading(false);
   };
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => { loadUsers(); loadInvites(); }, []);
+  const changeRole = async (u, role) => {
+    if (role === u.role) return;
+    if (!window.confirm(`تغيير دور ${u.full_name || u.email} من «${u.role || 'بدون'}» إلى «${role}»؟`)) { setUsers(list => [...list]); return; }
+    setSavingUser(u.id);
+    const { error } = await supabase.rpc('admin_set_user_role', { p_user: u.id, p_role: role });
+    setSavingUser(null);
+    if (error) { triggerToast(`تعذر تغيير الدور: ${error.message}`); return; }
+    setUsers(list => list.map(x => x.id === u.id ? { ...x, role } : x));
+    triggerToast(`تم تغيير دور ${u.full_name || u.email} ✓`);
+  };
+
+  const manageUser = async (u, action) => {
+    if (!action) return;
+    const who = u.full_name || u.email;
+    const body = { action, userId: u.id };
+    if (action === 'rename') {
+      const n = window.prompt('الاسم الجديد:', u.full_name || '');
+      if (!n || !n.trim()) return; body.fullName = n.trim();
+    } else if (action === 'suspend') {
+      const h = window.prompt(`مدة إيقاف ${who} بالساعات (24 = يوم، 168 = أسبوع):`, '24');
+      if (!h || !(Number(h) > 0)) return; body.hours = Number(h);
+    } else if (action === 'unsuspend') {
+      if (!window.confirm(`إعادة تفعيل ${who}؟`)) return;
+    } else if (action === 'send_reset') {
+      if (!window.confirm(`إرسال رابط إعادة تعيين كلمة المرور إلى ${u.email}؟`)) return;
+    } else if (action === 'set_password') {
+      const pw = window.prompt(`كلمة مرور مؤقتة جديدة لـ ${who} (8 أحرف على الأقل). أبلغه بها بقناة آمنة:`);
+      if (!pw) return; body.password = pw;
+    }
+    setSavingUser(u.id);
+    const { data, error } = await supabase.functions.invoke('admin-manage-user', { body });
+    setSavingUser(null);
+    let msg = data?.message;
+    if (error && !msg && error.context?.json) { try { msg = (await error.context.json())?.message; } catch { /* ignore */ } }
+    if (error || data?.message) { triggerToast(`تعذر التنفيذ: ${msg || error.message}`); return; }
+    triggerToast('تم التنفيذ ✓');
+    if (action === 'rename') setUsers(l => l.map(x => x.id === u.id ? { ...x, full_name: body.fullName } : x));
+    if (action === 'suspend' || action === 'unsuspend') loadUsers();
+  };
 
   const sv = key => summaryStats === null ? '...' : (summaryStats[key] ?? '—');
   const kpiHint = fn => kpiLoading ? 'جارٍ التحميل…' : kpiError ? 'تعذر تحميل البيانات' : fn();
@@ -362,8 +437,124 @@ export default function AdminDashboard() {
 
       {/* TAB 2: المستخدمون والصلاحيات */}
       {activeAdminTab === 'rbac' && (
-        <UsersPanel users={users} setUsers={setUsers} usersLoading={usersLoading} usersError={usersError}
-          banned={banned} loadUsers={loadUsers} />
+        <div className="u-3">
+          <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}>المستخدمون والصلاحيات</h3>
+          <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '18px' }}>
+            كل من سجّل في المنصة يظهر هنا. غيّر دوره ليرى ما يخصه فقط. لا يمكنك تغيير دورك بنفسك، ولا إزالة آخر مدير.
+          </p>
+
+          <div className="u-1" style={{ marginBottom: '18px' }}>
+            <strong style={{ color: 'var(--navy)' }}><Emoji>👩‍🏫</Emoji> إضافة / تفعيل معلم</strong>
+            <p className="u-4">اكتب بريد المعلم: إن كان مسجّلاً يُفعَّل فوراً، وإن لم يكن تُنشأ دعوة تُطبَّق تلقائياً عند تسجيله بنفس البريد.</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+              <input type="email" dir="ltr" aria-label="بريد المعلم" placeholder="teacher@example.com" value={teacherEmail}
+                onChange={e => setTeacherEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTeacher()}
+                list="registered-emails"
+                style={{ flex: '1 1 220px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--line)', background: 'var(--card-bg)', color: 'var(--navy)' }} />
+              <datalist id="registered-emails">
+                {users.filter(x => x.role !== 'teacher').map(x => <option key={x.id} value={x.email} />)}
+              </datalist>
+              <button type="button" className="btn-primary" onClick={addTeacher} disabled={!teacherEmail.trim() || !!savingUser}>تفعيل / دعوة كمعلم</button>
+            </div>
+            {invites.length > 0 && (
+              <div style={{ marginTop: '12px' }}>
+                <div className="u-4">دعوات معلّقة ({invites.length})</div>
+                {invites.map(inv => (
+                  <div key={inv.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderTop: '1px solid var(--line)', fontSize: '13px' }}>
+                    <span dir="ltr">{inv.email}</span>
+                    <span style={{ color: 'var(--muted)' }}>تنتهي {new Date(inv.expires_at).toLocaleDateString('ar-SA')}</span>
+                    <button type="button" onClick={() => cancelInvite(inv)} style={{ color: 'var(--red-text)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700 }}>إلغاء</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
+            {[{ id: 'all', label: 'الكل' }, ...ROLE_OPTIONS].map(r => (
+              <button key={r.id} type="button" onClick={() => setRoleFilter(r.id)} aria-pressed={roleFilter === r.id}
+                style={{ padding: '6px 12px', borderRadius: '20px', fontSize: '12.5px', fontWeight: 700, border: '1px solid var(--line)',
+                  background: roleFilter === r.id ? 'var(--solid)' : 'var(--card-bg)', color: roleFilter === r.id ? '#fff' : 'var(--navy)' }}>
+                {r.label} ({r.id === 'all' ? users.length : users.filter(x => x.role === r.id).length})
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '18px' }}>
+            {ROLE_OPTIONS.map(r => (
+              <span key={r.id} style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '10px', padding: '6px 10px', fontSize: '12px' }}>
+                <strong>{r.label}</strong> — {r.note}
+              </span>
+            ))}
+          </div>
+
+          {usersLoading && <div className="u-6">جارٍ تحميل المستخدمين…</div>}
+          {!usersLoading && usersError && (
+            <div style={{ padding: '16px', background: 'var(--red-light)', color: 'var(--red-text)', borderRadius: '10px', fontSize: '13px' }}>تعذر تحميل المستخدمين: {usersError}</div>
+          )}
+          {!usersLoading && !usersError && users.length === 0 && (
+            <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: '14px', border: '1px dashed var(--line)', fontWeight: 800, color: 'var(--navy)' }}>لا يوجد مستخدمون بعد</div>
+          )}
+          {!usersLoading && users.length > 0 && (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right', fontSize: '13.5px' }}>
+                <thead>
+                  <tr style={{ background: 'var(--bg)', borderBottom: '2px solid var(--line)' }}>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>الاسم والبريد</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>الدور</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>آخر دخول</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 700 }}>إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.filter(u => roleFilter === 'all' || u.role === roleFilter).map(u => (
+                    <tr key={u.id} style={{ borderBottom: '1px solid var(--line)' }}>
+                      <td style={{ padding: '14px 16px' }}>
+                        <strong style={{ display: 'block', color: 'var(--navy)' }}>{u.full_name || '—'}</strong>
+                        {u.teacher_request && u.role !== 'teacher' && (
+                          <span style={{ display: 'block', fontSize: '12px', color: 'var(--muted)', marginTop: 4 }}>
+                            🎓 طلب انضمام كمعلم — {u.teacher_request.subjects || '—'} · {u.teacher_request.stage || '—'}
+                            {u.teacher_request.phone ? ` · ${u.teacher_request.phone}` : ''}
+                          </span>
+                        )}
+                        <span style={{ fontSize: '12px', color: 'var(--muted)', direction: 'ltr', display: 'inline-block' }}>{u.email}</span>
+                      </td>
+                      <td style={{ padding: '14px 16px' }}>
+                        <select
+                          aria-label={`دور ${u.full_name || u.email}`}
+                          value={u.role}
+                          disabled={u.id === user?.id || savingUser === u.id}
+                          title={u.id === user?.id ? 'لا يمكنك تغيير دورك بنفسك' : undefined}
+                          onChange={e => changeRole(u, e.target.value)}
+                          style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-bg)', fontSize: '13px' }}
+                        >
+                          {ROLE_OPTIONS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
+                        </select>
+                      </td>
+                      <td style={{ padding: '14px 16px', color: 'var(--muted)' }}>
+                        {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('ar-EG') : 'لم يدخل بعد'}
+                      </td>
+                      <td style={{ padding: '14px 16px' }}>
+                        {banned[u.id] && <span style={{ display: 'block', color: 'var(--red-text)', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>⏸ موقوف حتى {new Date(banned[u.id]).toLocaleString('ar-EG')}</span>}
+                        {u.role === 'admin' || u.id === user?.id ? <span style={{ color: 'var(--muted)', fontSize: 12 }}>محمي</span> : (
+                          <select aria-label={`إجراء على ${u.full_name || u.email}`} value="" disabled={savingUser === u.id}
+                            onChange={e => manageUser(u, e.target.value)}
+                            style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-bg)', fontSize: '13px' }}>
+                            <option value="">إجراء…</option>
+                            <option value="rename">✏️ تعديل الاسم</option>
+                            <option value="send_reset">📧 إرسال رابط كلمة مرور</option>
+                            <option value="set_password">🔑 تعيين كلمة مرور مؤقتة</option>
+                            {banned[u.id] ? <option value="unsuspend">▶️ إعادة التفعيل</option> : <option value="suspend">⏸ إيقاف مؤقت</option>}
+                          </select>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
