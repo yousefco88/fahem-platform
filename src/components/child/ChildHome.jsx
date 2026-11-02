@@ -7,6 +7,7 @@ import { DAY_NAMES, SLOT_TYPES } from '../../data/scheduleData';
 import { CHILD_CATEGORIES, listChildSubjects, childPaths } from './childSubjects';
 import LiveJoin from '../LiveJoin';
 import StreakBadge from './StreakBadge';
+import ChildHoursBadge from './ChildHoursBadge';
 import useStreak from '../../hooks/useStreak';
 import './ChildHome.css';
 import Emoji from '../../ui/Emoji';
@@ -54,6 +55,8 @@ export default function ChildHome() {
           <div className="ch-mascot-emoji"><Emoji>🦊</Emoji></div>
         </div>
       </section>
+
+      <ChildHoursBadge childId={activeChildCloudId} />
 
       {/* 🔥 Streak & XP Badge */}
       {!streak.loading && (
