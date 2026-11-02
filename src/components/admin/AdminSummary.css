@@ -1,0 +1,29 @@
+/* ملخص أقسام الإدارة — بطاقات أصغر على الجوال (عمودان مضغوطان) */
+@media (max-width: 768px) {
+  .admin-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+  .admin-summary .u-1 {
+    padding: 10px 12px;
+    border-radius: 12px;
+    min-width: 0;
+  }
+  .admin-summary .u-2 {
+    font-size: 11px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .admin-summary h3 {
+    font-size: 19px !important;
+    line-height: 1.2;
+  }
+  .admin-summary small {
+    font-size: 10.5px !important;
+    display: block;
+    line-height: 1.35;
+  }
+}
