@@ -68,3 +68,14 @@ test('delete impact: only profile/assignment rows allow deletion; set-null rows 
   assert.deepEqual(blocked.blockers.map(b => b.label), ['الأبناء', 'سجل حضور الحصص', 'ai_tutor_knowledge']);
   assert.equal(classifyDeleteImpact(null).canDelete, true);
 });
+
+test('delete impact: nested cascade (children of a parent profile) always blocks', () => {
+  const r = classifyDeleteImpact([
+    { table_name: 'parent_profiles', column_name: 'id', on_delete: 'cascade', row_count: 1 },
+    { table_name: 'children', column_name: 'parent_id ← parent_profiles', on_delete: 'cascade_nested', row_count: 4 },
+    { table_name: 'teacher_subjects', column_name: 'teacher_id ← x', on_delete: 'cascade_nested', row_count: 1 },
+  ]);
+  assert.equal(r.canDelete, false);
+  assert.deepEqual(r.blockers.map(b => b.label), ['الأبناء', 'إسناد المواد']);
+  assert.deepEqual(r.removed.map(b => b.table), ['parent_profiles']);
+});

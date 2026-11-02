@@ -83,11 +83,23 @@ const TABLE_LABELS = {
   activity_log: 'سجل النشاط',
   child_subscription_contracts: 'عقود اشتراك',
   subscription_hour_ledger: 'حركات رصيد الساعات',
+  learning_records: 'سجلات تعلّم الأبناء',
+  schedule_slots: 'حصص في الجدول',
+  child_streaks: 'سلاسل إنجاز الأبناء',
+  child_daily_activity: 'نشاط الأبناء اليومي',
+  ai_tutor_messages: 'محادثات المعلم الذكي',
+  ai_tutor_usage: 'استخدام المعلم الذكي',
+  ai_tutor_consent: 'موافقات المعلم الذكي',
+  ai_tutor_corrections: 'تصحيحات المعلم الذكي',
+  legacy_lesson_attempts: 'محاولات دروس قديمة',
+  lesson_recordings: 'تسجيلات حصص',
+  staff_invites: 'دعوات فريق العمل',
+  bookings: 'حجوزات تجريبية',
 };
 export const tableLabel = (t) => TABLE_LABELS[t] || t;
 
 // يصنّف أثر الحذف القادم من admin_user_delete_impact:
-// blockers تمنع الحذف (بيانات تشغيلية تُحذف معه أو قيد restrict)، removed تُحذف معه بأمان، detached يبقى ويُفصل عنه.
+// blockers تمنع الحذف (بيانات تشغيلية تُحذف معه — مباشرة أو عبر سلسلة cascade_nested — أو قيد restrict)، removed تُحذف معه بأمان، detached يبقى ويُفصل عنه.
 export function classifyDeleteImpact(rows) {
   const out = { blockers: [], removed: [], detached: [] };
   for (const r of rows || []) {
