@@ -47,3 +47,7 @@
 - التحقق: `pg_policies` على الإنتاج يُظهر السياسات الثلاث المتوقعة + build + 32/32.
 
 - 2026-11-03: 20261106100000_subscription_safety_hardening — طُبّق عبر db query ثم migration repair --status applied؛ تحقق بعد التطبيق ناجح.
+
+## 20261107100000_schedule_attendance_debit_sweep
+- طُبّق 2026-11-03 عبر `db query --linked --yes -f` ثم `migration repair --status applied` بموافقة يوسف.
+- التحقق: pg_cron 1.6.4 مثبتة، المهمة `post-due-attendance-debits` نشطة `15 * * * *`، تشغيل يدوي بلا أخطاء (0 سجلات).
