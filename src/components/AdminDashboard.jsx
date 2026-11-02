@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { adminSectionsForRole, adminSectionPath, resolveAdminLocation } from '../navigation/navConfig';
 import { useApp } from '../context/AppContext';
 import { loadAdminKpiStats } from '../lib/adminKpiStats';
+import { loadAdminSummaryStats } from '../lib/adminSummaryStats';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
 import BookingsPanel from './admin/BookingsPanel';
 import FamiliesPanel from './admin/FamiliesPanel';
@@ -57,6 +58,13 @@ export default function AdminDashboard() {
     });
     return () => { cancelled = true; };
   }, []);
+
+  const [summaryStats, setSummaryStats] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    loadAdminSummaryStats(supabase).then(r => { if (!cancelled) setSummaryStats(r); });
+    return () => { cancelled = true; };
+  }, [activeAdminTab]);
 
   // عدد المواد الفعلي
   const subjectsCount = Object.keys(curriculumData).filter(k => k !== 'expatExamCalendar').length;
@@ -195,6 +203,26 @@ export default function AdminDashboard() {
     if (action === 'suspend' || action === 'unsuspend') loadUsers();
   };
 
+  const sv = key => summaryStats === null ? '...' : (summaryStats[key] ?? '—');
+  const kpiHint = fn => kpiLoading ? 'جارٍ التحميل…' : kpiError ? 'تعذر تحميل البيانات' : fn();
+  const pendingContent = summaryStats && [summaryStats.pendingLessons, summaryStats.pendingRecordings].every(Number.isInteger)
+    ? summaryStats.pendingLessons + summaryStats.pendingRecordings : null;
+  const summaryCards = [
+    { id: 'families', tab: 'people', to: '/admin?tab=families', icon: '👨‍👩‍👧‍👦', label: 'الأسر المسجلة', color: 'var(--navy)', roles: ['admin'],
+      value: kpiValue('families'), hint: kpiHint(() => `${kpiStats.children} طفل مسجّل`) },
+    { id: 'bookings', tab: 'people', to: '/admin?tab=bookings', icon: '📋', label: 'الحصص التجريبية', color: 'var(--blue-text)', roles: ['admin'],
+      value: kpiValue('bookings'), alert: kpiStats?.newBookings > 0,
+      hint: kpiHint(() => kpiStats.newBookings > 0 ? `🔴 ${kpiStats.newBookings} بانتظار الرد` : 'لا يوجد جديد') },
+    { id: 'content', tab: 'content', to: '/admin', icon: '📚', label: 'مركز المحتوى', color: 'var(--purple-text)',
+      value: `${subjectsCount} مادة`, alert: pendingContent > 0,
+      hint: summaryStats === null ? 'جارٍ التحميل…' : pendingContent === null ? 'تعذر تحميل المراجعات'
+        : pendingContent > 0 ? `🔴 ${summaryStats.pendingLessons} درس و${summaryStats.pendingRecordings} تسجيل للمراجعة` : 'لا مراجعات معلّقة' },
+    { id: 'subscriptions', tab: 'subscriptions', to: '/admin?tab=subscriptions', icon: '📦', label: 'الاشتراكات', color: 'var(--green-text)', roles: ['admin'],
+      value: `${sv('activeContracts')} عقد`, hint: `${sv('activePlans')} خطة منشورة • العقود السارية` },
+    { id: 'rbac', tab: 'rbac', to: '/admin?tab=rbac', icon: '👥', label: 'المستخدمون والصلاحيات', color: 'var(--navy)', roles: ['admin'],
+      value: usersLoading ? '...' : usersError ? '—' : users.length, hint: usersError ? 'متاح للمدير فقط' : 'مستخدم مسجّل' },
+  ];
+
   // Audit Log items
   // لا يوجد نظام تدقيق متصل؛ لا نعرض سجلاً مختلقاً
 
@@ -227,40 +255,21 @@ export default function AdminDashboard() {
 
       </section>
 
-      {/* Admin KPI Ribbon — بيانات حقيقية من Supabase */}
+      {/* ملخص كل أقسام الإدارة — بيانات حقيقية من Supabase، والبطاقة تنقل لقسمها */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px', marginBottom: '26px'
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+        gap: '14px', marginBottom: '26px'
       }}>
-        <div className="u-1">
-          <span className="u-2">الأسر المسجلة</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{kpiValue('families')}</h3>
-          <small style={{ color: 'var(--green-text)', fontWeight: 700, fontSize: '11.5px' }}>
-            {kpiLoading ? 'جارٍ التحميل…' : kpiError ? 'تعذر تحميل البيانات' : `${kpiStats.children} طفل مسجّل`}
-          </small>
-        </div>
-
-        <div className="u-1">
-          <span className="u-2">حجوزات الحصص التجريبية</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--blue-text)' }}>{kpiValue('bookings')}</h3>
-          <small style={{ color: kpiStats?.newBookings > 0 ? 'var(--red-text)' : 'var(--blue-text)', fontWeight: 700, fontSize: '11.5px' }}>
-            {kpiLoading ? 'جارٍ التحميل…' : kpiError ? 'تعذر تحميل البيانات' : kpiStats.newBookings > 0 ? `🔴 ${kpiStats.newBookings} جديد` : 'لا يوجد جديد'}
-          </small>
-        </div>
-
-        <div className="u-1">
-          <span className="u-2">المواد والمسارات النشطة</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--purple-text)' }}>{subjectsCount} مادة</h3>
-          <small style={{ color: 'var(--purple-text)', fontWeight: 700, fontSize: '11.5px' }}>شاملة Connect Plus والماث</small>
-        </div>
-
-        <div className="u-1">
-          <span className="u-2">فريق العمل</span>
-          <h3 style={{ fontSize: '26px', color: 'var(--navy)' }}>{usersLoading ? '...' : usersError ? '—' : users.length}</h3>
-          <small style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>
-            {usersError ? 'متاح للمدير فقط' : 'مستخدم مسجّل'}
-          </small>
-        </div>
+        {summaryCards.filter(c => !c.roles || c.roles.includes(role)).map(c => (
+          <button key={c.id} type="button" className="u-1"
+            onClick={() => adminNavigate(c.to)}
+            aria-current={c.tab === activeAdminTab ? 'page' : undefined}
+            style={{ textAlign: 'right', cursor: 'pointer', font: 'inherit', outline: c.tab === activeAdminTab ? '2px solid var(--blue-text)' : 'none' }}>
+            <span className="u-2"><Emoji>{c.icon}</Emoji> {c.label}</span>
+            <h3 style={{ fontSize: '26px', color: c.color }}>{c.value}</h3>
+            <small style={{ color: c.alert ? 'var(--red-text)' : 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>{c.hint}</small>
+          </button>
+        ))}
       </div>
 
       <section style={{ background: 'var(--blue-light)', border: '1px solid var(--line)', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
