@@ -103,3 +103,10 @@
   line-height: 22px;
   text-align: center;
 }
+
+/* قسما المناهج: الشجرة / المعلمون والمواد */
+.content-hub-sections { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.content-hub-section { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border, #e5e7eb); color: inherit; text-decoration: none; font-weight: 700; font-size: 13.5px; }
+.content-hub-section .fe { width: 18px; height: 18px; }
+.content-hub-section.active { background: var(--blue-light, #e0f2fe); color: var(--blue-text, #075985); border-color: transparent; }
+.content-hub-section:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

@@ -9,6 +9,7 @@ import './CurriculumAdmin.css';
 import Emoji from '../../../ui/Emoji';
 import { useAuth } from '../../../context/AuthContext';
 import { subjectTeacherOptions } from '../../../lib/lessonTeacherAssignment';
+import { lessonStatusTags, pendingRecordingLessonIds } from '../../../lib/curriculumStatusTags';
 
 export default function LessonsPanel() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,6 +28,8 @@ export default function LessonsPanel() {
   const [teachers, setTeachers] = useState([]);
   const [teacherSubjects, setTeacherSubjects] = useState([]);
   const [assigningId, setAssigningId] = useState('');
+  // دروس لها تسجيل بانتظار المراجعة — مقروءة للمدير فقط (RLS)
+  const [pendingRecordings, setPendingRecordings] = useState(new Set());
 
   useEffect(() => {
     fetchSubjects();
@@ -92,6 +95,13 @@ export default function LessonsPanel() {
       setLessons(data || []);
     }
     setLoading(false);
+    if (isAdmin && data?.length) {
+      const rec = await supabase.from('lesson_recordings').select('lesson_id')
+        .eq('status', 'review').in('lesson_id', data.map(l => l.id));
+      setPendingRecordings(rec.error ? new Set() : pendingRecordingLessonIds(rec.data));
+    } else {
+      setPendingRecordings(new Set());
+    }
   }
 
   function startNew() {
@@ -221,7 +231,7 @@ export default function LessonsPanel() {
 
       {isAdmin && selectedSubject && teacherOptions.length === 0 && (
         <p className="empty-state">
-          لا يوجد معلم مسند لهذه المادة بعد. أسند المادة أولاً من الخطوة 2 «مراجعة دروس المعلمين» ← «إسناد المواد للمعلمين»، ثم اختر معلم كل درس من عمود «المعلم».
+          لا يوجد معلم مسند لهذه المادة بعد. أسند المادة أولاً من <Link to="/admin/teachers">«المعلمون والمواد»</Link>، ثم اختر معلم كل درس من عمود «المعلم».
         </p>
       )}
 
@@ -299,6 +309,7 @@ export default function LessonsPanel() {
                       <Link to={`/admin/lesson/${lesson.id}`} className="lesson-title-link">
                         {lesson.title || content.title || 'بدون عنوان'}
                       </Link>
+                      <LessonTags tags={lessonStatusTags(lesson, { hasPendingRecording: pendingRecordings.has(lesson.id) })} />
                     </td>
                     <td>{hasVideo ? '✅' : '❌'}</td>
                     <td>{hasPdf ? '✅' : '❌'}</td>
@@ -352,5 +363,19 @@ export default function LessonsPanel() {
         </div>
       )}
     </div>
+  );
+}
+
+// وسوم حالة الدرس؛ الوسم المرتبط بخطوة لاحقة رابطٌ إليها مباشرة.
+export function LessonTags({ tags }) {
+  if (!tags.length) return null;
+  return (
+    <span className="lesson-tags">
+      {tags.map(t => (t.to ? (
+        <Link key={t.key} to={t.to} className={`lesson-tag lesson-tag-${t.tone}`}><Emoji>{t.icon}</Emoji> {t.label}</Link>
+      ) : (
+        <span key={t.key} className={`lesson-tag lesson-tag-${t.tone}`}><Emoji>{t.icon}</Emoji> {t.label}</span>
+      )))}
+    </span>
   );
 }

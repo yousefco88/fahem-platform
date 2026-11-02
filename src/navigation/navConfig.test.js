@@ -65,3 +65,9 @@ test('content editor never reaches students & families', () => {
     assert.deepEqual(resolveAdminLocation('content_editor', '/admin', tab), { section: 'content', view: 'curriculum' }, tab);
   }
 });
+
+test('teachers & subjects page lives inside the curriculum step', () => {
+  assert.deepEqual(resolveAdminLocation('admin', '/admin/teachers', null), { section: 'content', view: 'curriculum' });
+  assert.deepEqual(resolveAdminLocation('admin', '/admin/teachers/', 'families'), { section: 'content', view: 'curriculum' });
+  assert.deepEqual(resolveAdminLocation('content_editor', '/admin/teachers', null), { section: 'content', view: 'curriculum' });
+});
