@@ -45,3 +45,12 @@ export const todayIsoDate = (now = new Date()) => {
   const z = n => String(n).padStart(2, '0');
   return `${now.getFullYear()}-${z(now.getMonth() + 1)}-${z(now.getDate())}`;
 };
+
+// Parent-facing label for a ledger row (grant / debit / reversal).
+export const describeLedgerEntry = entry => {
+  if (!entry) return '';
+  if (entry.entry_type === 'grant') return 'تفعيل الاشتراك';
+  if (entry.entry_type === 'debit') return entry.subject_key ? `حضور حصة مباشرة · ${entry.subject_key}` : 'حضور حصة مباشرة';
+  if (entry.entry_type === 'reversal') return entry.reason ? `تصحيح: ${entry.reason}` : 'تصحيح من الإدارة';
+  return entry.entry_type || '';
+};

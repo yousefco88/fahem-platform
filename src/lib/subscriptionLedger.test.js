@@ -44,3 +44,12 @@ test('UI only calls RPCs and tables defined by the ledger migrations', () => {
   // No direct writes from the client to ledger/contract tables.
   assert.doesNotMatch(ui, /from\('(subscription_hour_ledger|attendance_ledger_postings|child_subscription_contracts)'\)[\s\S]{0,80}\.(insert|update|delete|upsert)\(/);
 });
+
+test('describeLedgerEntry labels grant, debit, reversal', async () => {
+  const { describeLedgerEntry } = await import('./subscriptionLedger.js');
+  assert.equal(describeLedgerEntry({ entry_type: 'grant' }), 'تفعيل الاشتراك');
+  assert.equal(describeLedgerEntry({ entry_type: 'debit', subject_key: 'math' }), 'حضور حصة مباشرة · math');
+  assert.equal(describeLedgerEntry({ entry_type: 'debit' }), 'حضور حصة مباشرة');
+  assert.equal(describeLedgerEntry({ entry_type: 'reversal', reason: 'غياب' }), 'تصحيح: غياب');
+  assert.equal(describeLedgerEntry(null), '');
+});
