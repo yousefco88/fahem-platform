@@ -65,11 +65,6 @@ function SiteSettingsEditor() {
   const set = (section, field, value) =>
     setDraft(d => ({ ...d, [section]: { ...d[section], [field]: value } }));
 
-  const setPlan = (idx, field, value) =>
-    setDraft(d => {
-      const plans = d.pricing.plans.map((p, i) => (i === idx ? { ...p, [field]: value } : p));
-      return { ...d, pricing: { ...d.pricing, plans } };
-    });
 
   // تعديل عنصر داخل قائمة (أسئلة شائعة / صفوف مقارنة / مواد)
   const setListItem = (section, listKey, idx, field, value) =>
@@ -454,74 +449,11 @@ function SiteSettingsEditor() {
         {err('faq')}
       </div>
 
-      {/* الباقات والأسعار */}
+      {/* الخطط التشغيلية في كتالوج الاشتراكات فقط */}
       <div style={card}>
-        <h3 style={sectionTitle}><Emoji>💳</Emoji> الباقات والأسعار</h3>
-        <p style={hint}>ترويسة صفحة الأسعار والباقات الثلاث بكامل محتواها. الميزات: سطر لكل ميزة.</p>
-        <div style={{ display: 'grid', gap: '14px', marginBottom: '20px' }}>
-          <div>
-            <label style={label}>شارة الصفحة</label>
-            <input style={input} value={draft.pricing.badge} onChange={e => set('pricing', 'badge', e.target.value)} />
-          </div>
-          <div>
-            <label style={label}>عنوان الصفحة</label>
-            <input style={input} value={draft.pricing.title} onChange={e => set('pricing', 'title', e.target.value)} />
-          </div>
-          <div>
-            <label style={label}>تنويه الشفافية (يُترك فارغاً لإخفائه)</label>
-            <textarea style={textarea} value={draft.pricing.disclaimer} onChange={e => set('pricing', 'disclaimer', e.target.value)} />
-          </div>
-        </div>
-
-        {(draft.pricing.plans || []).map((plan, idx) => (
-          <div key={plan.id} style={{ border: '1px dashed var(--line)', borderRadius: '14px', padding: '16px', marginBottom: '14px', background: plan.featured ? 'var(--blue-light)' : 'var(--bg)' }}>
-            <div style={{ fontWeight: 900, fontSize: '13.5px', color: 'var(--navy)', marginBottom: '12px' }}>
-              {plan.featured ? '⭐' : '▫️'} باقة #{idx + 1} — {plan.name}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '12px' }}>
-              <div>
-                <label style={label}>الاسم</label>
-                <input style={input} value={plan.name} onChange={e => setPlan(idx, 'name', e.target.value)} />
-              </div>
-              <div>
-                <label style={label}>السعر</label>
-                <input style={input} value={plan.price} onChange={e => setPlan(idx, 'price', e.target.value)} />
-              </div>
-              <div>
-                <label style={label}>ملاحظة السعر</label>
-                <input style={input} value={plan.priceNote || ''} onChange={e => setPlan(idx, 'priceNote', e.target.value)} />
-              </div>
-              <div>
-                <label style={label}>شريط مميز (ribbon)</label>
-                <input style={input} value={plan.ribbon || ''} onChange={e => setPlan(idx, 'ribbon', e.target.value)} />
-              </div>
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <label style={label}>الوصف</label>
-              <textarea style={{ ...textarea, minHeight: '50px' }} value={plan.description} onChange={e => setPlan(idx, 'description', e.target.value)} />
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <label style={label}>الميزات (سطر لكل ميزة)</label>
-              <textarea
-                style={{ ...textarea, minHeight: '100px' }}
-                value={(plan.features || []).join('\n')}
-                onChange={e => setPlan(idx, 'features', e.target.value.split('\n').filter(l => l.trim()))}
-              />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              <div>
-                <label style={label}>نص زر الباقة</label>
-                <input style={input} value={plan.ctaLabel} onChange={e => setPlan(idx, 'ctaLabel', e.target.value)} />
-              </div>
-              <label style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', fontSize: '13px', fontWeight: 700, color: 'var(--navy)', paddingBottom: '10px' }}>
-                <input type="checkbox" checked={!!plan.featured} onChange={e => setPlan(idx, 'featured', e.target.checked)} />
-                باقة مميزة (تصميم بارز)
-              </label>
-            </div>
-          </div>
-        ))}
-        <SaveButton {...saveState.pricing} onClick={() => save('pricing', draft.pricing)} />
-        {err('pricing')}
+        <h3 style={sectionTitle}><Emoji>💳</Emoji> الاشتراكات</h3>
+        <p style={hint}>تُحرَّر الخطط وأسعارها ومدتها وساعاتها من الإدارة ← كتالوج الاشتراكات. لا تُستخدم الباقات القديمة في إعدادات الموقع.</p>
+        <a href="/admin?tab=subscriptions">فتح كتالوج الاشتراكات</a>
       </div>
 
       {/* م4: ترتيب أقسام الرئيسية + ويدجات مخصصة */}

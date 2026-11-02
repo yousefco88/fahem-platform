@@ -116,6 +116,7 @@ function MainAppContent() {
             {/* التسجيل الحقيقي موحّد في /account (حساب Supabase) — المعالج المحلي القديم أُلغي */}
             <Route path="/onboarding" element={<Navigate to="/account" replace />} />
             <Route path="/pricing" element={<PricingPlans />} />
+            <Route path="/subscriptions" element={<PricingPlans />} />
             <Route path="/account" element={<MySpace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

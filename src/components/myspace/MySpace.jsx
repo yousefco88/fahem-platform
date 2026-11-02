@@ -10,6 +10,7 @@ import LiveJoin from '../LiveJoin';
 import { ROLE_LABELS, resolveNavRole } from '../../navigation/navConfig';
 import { getMySpaceQueryState } from '../../lib/mySpaceQueryState';
 import ParentAccount from '../ParentAccount';
+import SubscriptionBalanceCard from '../parent/SubscriptionBalanceCard';
 import SkillsReport from './SkillsReport';
 import WeeklySummaryCard from './WeeklySummaryCard';
 import AssignStudents from './AssignStudents';
@@ -87,6 +88,7 @@ function ParentSpace({ go }) {
     <>
       <TodaySchedule slots={scheduleData} curriculumData={curriculumData} loading={!slotsLoaded} error={slotsError} />
       <TimezoneCard />
+      <SubscriptionBalanceCard />
       <section style={card}>
         <h2 style={h2}>👧 أبنائي ({childrenList.length})</h2>
         {childrenList.length === 0 && <p style={muted}>لم تُضف ملفات أبناء بعد — أضفهم من قسم «إدارة ملفات الأبناء» أدناه.</p>}
@@ -245,7 +247,7 @@ function PersonalSettings() {
 function QuickLinks({ navRole, go }) {
   const { lang, setLang, languages } = useLanguage();
   const links = [
-    ['pricing', '💳 اشتراكي', ['parent', 'admin']],
+    ['pricing', '💳 خطط الاشتراكات', ['parent', 'admin']],
     ['teacher', '👩‍🏫 مساحة المعلم', ['admin']],
     ['parent', '👨‍👩‍👦 ولي الأمر', ['admin']],
   ].filter(([, , roles]) => roles.includes(navRole));

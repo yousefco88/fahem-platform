@@ -4,7 +4,7 @@
 
 const ITEM = {
   landing: { id: 'landing', icon: '🏠', label: 'الرئيسية' },
-  pricing: { id: 'pricing', icon: '💳', label: 'اشتراكي' },
+  pricing: { id: 'pricing', icon: '💳', label: 'خطط الاشتراكات' },
   parent: { id: 'parent', icon: '👨‍👩‍👦', label: 'ولي الأمر' },
   child: { id: 'child', icon: '🎓', label: 'التعلّم', variant: 'child' },
   aiTutor: { id: 'ai-tutor', icon: '🤖', label: 'مساعد التدريب', short: 'المساعد' },

@@ -9,26 +9,32 @@ import Emoji from '../../ui/Emoji';
 export default function SubscriptionBalanceCard() {
   const { activeChildCloudId } = useApp();
   const [rows, setRows] = useState(null);
+  const [status, setStatus] = useState('loading');
 
   useEffect(() => {
     let cancelled = false;
-    if (!supabase || !activeChildCloudId) { setRows(null); return undefined; }
+    if (!supabase || !activeChildCloudId) { setRows(null); setStatus('no-child'); return undefined; }
+    setRows(null); setStatus('loading');
     (async () => {
       const { data, error } = await supabase.from('child_subscription_contracts')
         .select('id, plan_snapshot, included_hours_snapshot, coverage_mode_snapshot, starts_at, ends_at, status')
         .eq('child_id', activeChildCloudId).in('status', ['active', 'cancel_scheduled', 'frozen']).order('ends_at', { ascending: false });
-      if (cancelled || error || !data?.length) { if (!cancelled && (!error || isMissingSchemaError(error))) setRows(null); return; }
+      if (cancelled) return;
+      if (error) { setStatus(isMissingSchemaError(error) ? 'unavailable' : 'error'); return; }
+      if (!data?.length) { setRows([]); setStatus('ready'); return; }
       const balances = await Promise.all(data.map(k => supabase.rpc('contract_balance_minutes', { p_contract_id: k.id }).then(r => (r.error ? null : r.data))));
-      if (!cancelled) setRows(data.map((k, i) => ({ ...k, balance: balances[i] })));
+      if (!cancelled) { setRows(data.map((k, i) => ({ ...k, balance: balances[i] }))); setStatus('ready'); }
     })();
     return () => { cancelled = true; };
   }, [activeChildCloudId]);
 
-  if (!rows) return null;
+  if (status === 'no-child') return null;
+  if (status !== 'ready') return <div className="card u-3" role="status" style={{ padding: 16 }}>{status === 'loading' ? 'جارٍ تحميل الاشتراك…' : status === 'unavailable' ? 'رصيد الاشتراكات غير مفعّل في هذه البيئة.' : 'تعذر تحميل رصيد الاشتراك. حاول تحديث الصفحة.'}</div>;
   return (
     <div className="card u-3" style={{ padding: 16 }}>
       <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}><Emoji>⏳</Emoji> رصيد ساعات الاشتراك</h3>
-      {rows.map(k => (
+      {!rows?.length && <p>لا يوجد اشتراك نشط لهذا الطفل. تصفح <a href="/subscriptions">خطط الاشتراكات</a>؛ يُفعّل الاشتراك من الإدارة بعد تأكيد الدفع خارج المنصة.</p>}
+      {(rows || []).map(k => (
         <div key={k.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', padding: '8px 0', borderTop: '1px solid var(--line)' }}>
           <div>
             <strong>{k.plan_snapshot?.name || 'اشتراك'}</strong> · {k.coverage_mode_snapshot === 'all' ? 'كل المواد' : 'مواد محددة'}
