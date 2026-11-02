@@ -87,6 +87,20 @@ export function staffErrorMessage(error) {
   return key ? STAFF_ERROR_MESSAGES[key] : (msg || 'حدث خطأ غير متوقع.');
 }
 
+// هل تحديث قاعدة البيانات للأدوار الجديدة مطبّق؟ (غياب الدالة = غير مطبّق). عند أي خطأ آخر نفترض الجاهزية ونترك الخادم يقرر.
+export async function staffRolesReady(client) {
+  if (!client) return false;
+  const { error } = await client.rpc('my_capabilities');
+  return error?.code !== 'PGRST202';
+}
+
+export function roleChangeErrorMessage(error, role) {
+  const msg = String(error?.message || error || '');
+  if (msg.includes('invalid role') && SCOPED_ROLES.includes(role)) return 'هذا الدور بانتظار تفعيل تحديث قاعدة البيانات.';
+  return msg;
+}
+const SCOPED_ROLES = ['platform_manager', 'supervisor'];
+
 // --- RPC wrappers (supabase client injected for testability) ---
 export async function loadMyCapabilities(client) {
   if (!client) return [];

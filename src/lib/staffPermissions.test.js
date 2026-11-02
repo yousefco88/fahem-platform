@@ -68,3 +68,12 @@ test('missing RPC (before migration) shows a pending message', async () => {
   assert.equal(r.status, 'error');
   assert.match(r.message, /بانتظار تفعيل/);
 });
+
+test('staff roles readiness and invalid-role message', async () => {
+  const { staffRolesReady, roleChangeErrorMessage } = await import('./staffPermissions.js');
+  assert.equal(await staffRolesReady({ rpc: async () => ({ error: { code: 'PGRST202' } }) }), false);
+  assert.equal(await staffRolesReady({ rpc: async () => ({ data: [], error: null }) }), true);
+  assert.equal(await staffRolesReady(null), false);
+  assert.match(roleChangeErrorMessage({ message: 'invalid role' }, 'platform_manager'), /بانتظار تفعيل/);
+  assert.equal(roleChangeErrorMessage({ message: 'invalid role' }, 'teacher'), 'invalid role');
+});

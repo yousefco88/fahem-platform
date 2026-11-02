@@ -11,6 +11,8 @@ import { useApp } from '../../context/AppContext';
 import {
   ROLE_OPTIONS, STATUS_FILTERS, roleLabel, userBadges, filterUsers, userActions, classifyDeleteImpact,
 } from '../../lib/adminUsers';
+import { staffRolesReady, roleChangeErrorMessage } from '../../lib/staffPermissions';
+import { SCOPED_STAFF_ROLES } from '../../navigation/navConfig';
 import Emoji from '../../ui/Emoji';
 import './UsersPanel.css';
 
@@ -146,6 +148,10 @@ export default function UsersPanel({ users, setUsers, usersLoading, usersError, 
     setInvites(data || []);
   };
   useEffect(() => { loadInvites(); }, []);
+  // الأدوار الجديدة تُعرض معطّلة حتى يُطبَّق تحديث قاعدة البيانات في الإنتاج.
+  const [scopedReady, setScopedReady] = useState(false);
+  useEffect(() => { staffRolesReady(supabase).then(setScopedReady); }, []);
+  const roleDisabled = (id) => SCOPED_STAFF_ROLES.includes(id) && !scopedReady;
 
   const visible = useMemo(
     () => filterUsers(users, { query, role: roleFilter, status: statusFilter, banned }),
@@ -166,7 +172,7 @@ export default function UsersPanel({ users, setUsers, usersLoading, usersError, 
     setSavingUser(u.id);
     const { error } = await supabase.rpc('admin_set_user_role', { p_user: u.id, p_role: role });
     setSavingUser(null);
-    if (error) { triggerToast(`تعذر تغيير الدور: ${error.message}`); return; }
+    if (error) { triggerToast(`تعذر تغيير الدور: ${roleChangeErrorMessage(error, role)}`); setUsers(list => [...list]); return; }
     setUsers(list => list.map(x => x.id === u.id ? { ...x, role } : x));
     triggerToast(`تم تغيير دور ${u.full_name || u.email} ✓`);
   };
@@ -337,7 +343,11 @@ export default function UsersPanel({ users, setUsers, usersLoading, usersError, 
                   <select className="up-input up-select" aria-label={`دور ${u.full_name || u.email}`} value={u.role}
                     disabled={u.id === selfId || busy} title={u.id === selfId ? 'لا يمكنك تغيير دورك بنفسك' : undefined}
                     onChange={e => changeRole(u, e.target.value)}>
-                    {ROLE_OPTIONS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
+                    {ROLE_OPTIONS.map(r => (
+                      <option key={r.id} value={r.id} disabled={roleDisabled(r.id)}>
+                        {r.label}{roleDisabled(r.id) ? ' (بانتظار التفعيل)' : ''}
+                      </option>
+                    ))}
                   </select>
                 </label>
 
