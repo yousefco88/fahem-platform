@@ -1,5 +1,5 @@
 // Edge Function: admin-manage-user — إدارة حساب مستخدم من لوحة الإدارة (مدير فقط).
-// الإجراءات: rename | suspend | unsuspend | send_reset | set_password.
+// الإجراءات: rename | suspend | unsuspend | send_reset | set_password | delete (محمي بفحص الأثر).
 // حسابات المدراء محمية: لا إيقاف ولا كلمة مرور، ولا إجراء على النفس. لا تُسجَّل كلمات المرور.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -7,6 +7,8 @@ const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+// جداول تُحذف مع الحساب دون فقد بيانات تشغيلية — مطابقة لـ DELETABLE_WITH_ACCOUNT في src/lib/adminUsers.js.
+const DELETABLE_WITH_ACCOUNT = new Set(['profiles', 'parent_profiles', 'teacher_subjects']);
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
@@ -56,6 +58,24 @@ Deno.serve(async (req) => {
     if (pw.length < 8) return json({ message: 'كلمة المرور 8 أحرف على الأقل' }, 400);
     const { error } = await admin.auth.admin.updateUserById(userId, { password: pw });
     return error ? json({ message: error.message }, 400) : json({ ok: true });
+  }
+  if (action === 'delete') {
+    // حذف نهائي: يشترط كتابة البريد للتأكيد، ويُرفض إن كان الحساب مرتبطاً ببيانات تشغيلية (أبناء، حضور، اختبارات…).
+    const { data: au } = await admin.auth.admin.getUserById(userId);
+    const email = (au?.user?.email ?? '').toLowerCase();
+    if (!email || String(body.confirmEmail ?? '').trim().toLowerCase() !== email) {
+      return json({ message: 'اكتب بريد المستخدم كما هو لتأكيد الحذف' }, 400);
+    }
+    const { data: impact, error: iErr } = await caller.rpc('admin_user_delete_impact', { p_user: userId });
+    if (iErr) return json({ message: iErr.message }, 400);
+    const blockers = (impact ?? []).filter((r: any) =>
+      Number(r.row_count) > 0 && r.on_delete !== 'set_null' &&
+      !(r.on_delete === 'cascade' && DELETABLE_WITH_ACCOUNT.has(r.table_name)));
+    if (blockers.length) {
+      return json({ message: 'الحساب مرتبط ببيانات لا يجوز حذفها معه؛ استخدم الإيقاف بدلاً من الحذف', blockers }, 409);
+    }
+    const { error } = await admin.auth.admin.deleteUser(userId);
+    return error ? json({ message: error.message }, 400) : json({ ok: true, deleted: userId });
   }
   return json({ message: 'إجراء غير معروف' }, 400);
 });
