@@ -71,3 +71,26 @@ test('teachers & subjects page lives inside the curriculum step', () => {
   assert.deepEqual(resolveAdminLocation('admin', '/admin/teachers/', 'families'), { section: 'content', view: 'curriculum' });
   assert.deepEqual(resolveAdminLocation('content_editor', '/admin/teachers', null), { section: 'content', view: 'curriculum' });
 });
+
+test('scoped staff roles see only sections backed by capabilities', () => {
+  assert.deepEqual(adminSectionsForRole('supervisor').map(s => s.id), []);
+  const sup = new Set(['content.edit', 'children.view']);
+  assert.deepEqual(adminSectionsForRole('supervisor', sup).map(s => s.id), ['content', 'people']);
+  assert.deepEqual(hubViewsForRole('content', 'supervisor', sup).map(v => v.id), ['curriculum']);
+  assert.deepEqual(hubViewsForRole('people', 'supervisor', sup).map(v => v.id), ['families']);
+  assert.deepEqual(resolveAdminLocation('supervisor', '/admin', 'recordings', sup), { section: 'content', view: 'curriculum' });
+  assert.deepEqual(resolveAdminLocation('supervisor', '/admin', 'rbac', sup), { section: 'content', view: 'curriculum' });
+  // capabilities never widen non-scoped roles
+  assert.deepEqual(adminSectionsForRole('teacher', sup).map(s => s.id), []);
+  assert.deepEqual(contentHubViewsForRole('content_editor', new Set(['recordings.review'])).map(v => v.id), ['curriculum', 'lessonReview']);
+});
+
+test('platform manager gets the permissions editor but never users/aiTutor', () => {
+  const pm = new Set(['subscriptions.view', 'bookings.manage', 'lessons.review']);
+  const ids = adminSectionsForRole('platform_manager', pm).map(s => s.id);
+  assert.deepEqual(ids, ['content', 'people', 'subscriptions', 'staffPerms']);
+  assert.ok(!ids.includes('rbac') && !ids.includes('aiTutor'));
+  assert.deepEqual(resolveAdminLocation('platform_manager', '/admin', 'staffPerms', pm), { section: 'staffPerms', view: null });
+  assert.ok(adminSectionsForRole('admin').some(s => s.id === 'staffPerms'));
+  assert.ok(!adminSectionsForRole('content_editor').some(s => s.id === 'staffPerms'));
+});

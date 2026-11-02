@@ -4,7 +4,7 @@ import Field from './account/Field';
 import { arabicAuthError } from './account/authErrors';
 import './account/account.css';
 
-const ROLE_LABELS = { parent: 'ولي أمر', teacher: 'معلم', admin: 'إدارة', content_editor: 'محرر محتوى' };
+const ROLE_LABELS = { parent: 'ولي أمر', teacher: 'معلم', admin: 'إدارة', content_editor: 'محرر محتوى', platform_manager: 'مدير منصة', supervisor: 'مشرف تعليمي' };
 
 function GateShell({ icon, title, children }) {
   return (

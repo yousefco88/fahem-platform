@@ -5,6 +5,7 @@
  */
 import { Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import AdminHub from './AdminHub';
+import { useAuth } from '../../context/AuthContext';
 import { GradesPanel, SubjectsPanel, LessonsPanel, LessonEditor, TeacherSubjectsPanel } from './curriculum';
 import Emoji from '../../ui/Emoji';
 import LessonReview from './LessonReview';
@@ -14,7 +15,8 @@ import './curriculum/CurriculumAdmin.css';
 // قسما المناهج: شجرة المحتوى (صف ← مادة ← درس) ثم من يدرّس كل مادة — الثاني للمدير فقط.
 function CurriculumSections({ role }) {
   const { pathname } = useLocation();
-  if (role !== 'admin') return null;
+  const { caps } = useAuth();
+  if (role !== 'admin' && !caps?.has('teachers.assign')) return null;
   const onTeachers = pathname.replace(/\/+$/, '') === '/admin/teachers';
   return (
     <nav className="content-hub-sections" aria-label="أقسام المناهج">
@@ -50,7 +52,7 @@ export default function ContentHub({ role, view }) {
             </div>
           )}
           {active === 'lessonReview' && <LessonReview />}
-          {active === 'recordings' && role === 'admin' && <RecordingsReview />}
+          {active === 'recordings' && <RecordingsReview />}
         </>
       )}
     />

@@ -5,6 +5,8 @@ export const ROLE_OPTIONS = [
   { id: 'parent', label: 'ولي أمر', icon: '👨‍👩‍👧', note: 'يرى أبناءه ويحجز ويتابع حصصهم' },
   { id: 'teacher', label: 'معلم', icon: '👩‍🏫', note: 'يرى طلابه المُسنَدين وحصصه ويرفع تسجيلاتها' },
   { id: 'content_editor', label: 'محرر محتوى', icon: '✍️', note: 'يدير المناهج والدروس فقط' },
+  { id: 'supervisor', label: 'مشرف تعليمي', icon: '🧭', note: 'صلاحيات محددة داخل مرحلة أو صف أو مادة' },
+  { id: 'platform_manager', label: 'مدير منصة', icon: '🏢', note: 'التشغيل اليومي ومنح الطاقم صلاحيات أقل منه' },
   { id: 'admin', label: 'مدير النظام', icon: '🛡️', note: 'كل الأقسام والصلاحيات' },
 ];
 

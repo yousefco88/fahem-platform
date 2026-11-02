@@ -17,6 +17,7 @@ import SubscriptionContractsPanel from './admin/SubscriptionContractsPanel';
 import ContentHub from './admin/ContentHub';
 import AdminHub from './admin/AdminHub';
 import UsersPanel from './admin/UsersPanel';
+import StaffPermissionsPanel from './admin/StaffPermissionsPanel';
 import './admin/curriculum/CurriculumAdmin.css';
 import './admin/AdminSummary.css';
 import Emoji from '../ui/Emoji';
@@ -31,12 +32,13 @@ export default function AdminDashboard() {
   } = useApp();
 
   // القسم النشط مشتق من الـ URL (لا حالة محلية): /admin/* = المناهج داخل مركز المحتوى، وإلا ?tab=
-  const { role } = useAuth();
+  const { role, caps } = useAuth();
   const [searchParams] = useSearchParams();
   const adminLocation = useLocation();
   const adminNavigate = useNavigate();
-  const sections = adminSectionsForRole(role).filter(x => !x.path);
-  const { section: activeAdminTab, view: hubView } = resolveAdminLocation(role, adminLocation.pathname, searchParams.get('tab'));
+  const sections = adminSectionsForRole(role, caps).filter(x => !x.path);
+  const canOpen = (id) => sections.some(x => x.id === id);
+  const { section: activeAdminTab, view: hubView } = resolveAdminLocation(role, adminLocation.pathname, searchParams.get('tab'), caps);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [syncingSchedule, setSyncingSchedule] = useState(false);
 
@@ -186,7 +188,7 @@ export default function AdminDashboard() {
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
         gap: '14px', marginBottom: '26px'
       }}>
-        {summaryCards.filter(c => !c.roles || c.roles.includes(role)).map(c => (
+        {summaryCards.filter(c => canOpen(c.tab)).map(c => (
           <button key={c.id} type="button" className="u-1"
             onClick={() => adminNavigate(c.to)}
             aria-current={c.tab === activeAdminTab ? 'page' : undefined}
@@ -215,7 +217,7 @@ export default function AdminDashboard() {
         </button>
         {mobileMenuOpen && (
           <div style={{ position: 'absolute', insetInline: 0, top: '100%', marginTop: '6px', background: 'var(--card-bg)', border: '1px solid var(--line)', borderRadius: '12px', boxShadow: 'var(--shadow-sm)', zIndex: 20, overflow: 'hidden' }}>
-            {adminSectionsForRole(role).map(x => (
+            {adminSectionsForRole(role, caps).map(x => (
               <button key={x.id}
                 onClick={() => { setMobileMenuOpen(false); adminNavigate(adminSectionPath(x)); }}
                 style={{ display: 'block', width: '100%', padding: '12px 16px', border: 'none', borderBottom: '1px solid var(--line)', background: x.id === activeAdminTab ? 'var(--blue-light)' : 'transparent', textAlign: 'right', cursor: 'pointer', fontSize: '14px', fontWeight: 700, color: 'var(--navy)' }}>
@@ -233,10 +235,15 @@ export default function AdminDashboard() {
       {activeAdminTab === 'settings' && <SiteSettingsPanel />}
 
       {/* TAB: SUBSCRIPTION CATALOG (internal settings; no sale or entitlement) */}
-      {activeAdminTab === 'subscriptions' && role === 'admin' && <><SubscriptionPlansPanel /><SubscriptionContractsPanel /></>}
+      {activeAdminTab === 'subscriptions' && canOpen('subscriptions') && (
+        <>
+          {role !== 'admin' && <div className="acct-alert" role="note">عرض فقط — تعديل الاشتراكات والأسعار لمدير النظام.</div>}
+          <SubscriptionPlansPanel /><SubscriptionContractsPanel />
+        </>
+      )}
 
       {/* مركز الطلاب والأسر: الحجوزات ← حسابات الأسر ← الجدول الأسبوعي */}
-      {activeAdminTab === 'people' && role === 'admin' && (
+      {activeAdminTab === 'people' && canOpen('people') && (
         <AdminHub hubId="people" role={role} view={hubView} renderView={peopleView => (
           <>
           {peopleView === 'bookings' && (
@@ -359,6 +366,8 @@ export default function AdminDashboard() {
           </>
         )} />
       )}
+
+      {activeAdminTab === 'staffPerms' && canOpen('staffPerms') && <StaffPermissionsPanel />}
 
       {/* TAB 2: المستخدمون والصلاحيات */}
       {activeAdminTab === 'rbac' && (

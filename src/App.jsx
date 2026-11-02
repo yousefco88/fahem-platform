@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { UIProvider, useUIState } from './context/UIContext';
 import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
 import AuthGate from './components/AuthGate';
+import { ADMIN_ROLES } from './navigation/navConfig';
 import SideNav from './components/SideNav';
 import BottomNav from './components/BottomNav';
 import { ThemeToggle } from './context/ThemeContext';
@@ -108,7 +109,7 @@ function MainAppContent() {
             <Route
               path="/admin/*"
               element={
-                <AuthGate roles={['admin', 'content_editor']}>
+                <AuthGate roles={ADMIN_ROLES}>
                   <AdminDashboard />
                 </AuthGate>
               }

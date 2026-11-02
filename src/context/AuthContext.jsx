@@ -1,5 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
+import { loadMyCapabilities } from '../lib/staffPermissions';
+
+// أدوار تُحمَّل لها الصلاحيات التفصيلية (my_capabilities). الخادم هو المرجع.
+const CAPABILITY_ROLES = ['admin', 'platform_manager', 'supervisor'];
 
 const AuthContext = createContext(null);
 
@@ -9,6 +13,7 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null); // { id, role, full_name }
   const [loading, setLoading] = useState(configured);
   const [authError, setAuthError] = useState('');
+  const [capabilities, setCapabilities] = useState([]); // [{ capability, scope_kind, scope_value }]
 
   const loadProfile = useCallback(async (userId) => {
     if (!supabase || !userId) {
@@ -26,6 +31,7 @@ export function AuthProvider({ children }) {
       return;
     }
     setProfile(data || null);
+    setCapabilities(CAPABILITY_ROLES.includes(data?.role) ? await loadMyCapabilities(supabase) : []);
   }, []);
 
   useEffect(() => {
@@ -43,7 +49,7 @@ export function AuthProvider({ children }) {
       if (!active) return;
       setSession(newSession || null);
       if (newSession?.user) loadProfile(newSession.user.id);
-      else setProfile(null);
+      else { setProfile(null); setCapabilities([]); }
     });
 
     return () => {
@@ -86,7 +92,10 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setSession(null);
     setProfile(null);
+    setCapabilities([]);
   }, []);
+
+  const caps = useMemo(() => new Set(capabilities.map(c => c.capability)), [capabilities]);
 
   const value = {
     configured,
@@ -95,6 +104,8 @@ export function AuthProvider({ children }) {
     user: session?.user || null,
     profile,
     role: profile?.role || null,
+    capabilities,
+    caps,
     authError,
     signIn,
     signUp,

@@ -8,22 +8,24 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { fetchHubPendingCounts } from '../../lib/hubPendingCounts';
 import { ADMIN_HUBS, hubViewsForRole, hubViewPath } from '../../navigation/navConfig';
+import { useAuth } from '../../context/AuthContext';
 import Emoji from '../../ui/Emoji';
 import './ContentHub.css';
 
 export default function AdminHub({ hubId, role, view, renderView }) {
   const navigate = useNavigate();
   const hub = ADMIN_HUBS[hubId];
-  const views = hubViewsForRole(hubId, role);
+  const { caps } = useAuth();
+  const views = hubViewsForRole(hubId, role, caps);
   const active = views.some(v => v.id === view) ? view : views[0]?.id;
   const [pending, setPending] = useState({});
 
   // يُعاد الحساب عند تبديل الخطوة، فتتحدّث الأرقام بعد الاعتماد/القبول.
   useEffect(() => {
     let alive = true;
-    fetchHubPendingCounts(supabase, hubViewsForRole(hubId, role)).then(c => { if (alive) setPending(c); });
+    fetchHubPendingCounts(supabase, hubViewsForRole(hubId, role, caps)).then(c => { if (alive) setPending(c); });
     return () => { alive = false; };
-  }, [hubId, role, active]);
+  }, [hubId, role, caps, active]);
   if (!hub || !active) return null;
 
   return (

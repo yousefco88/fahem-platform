@@ -15,16 +15,16 @@ import Emoji from '../ui/Emoji';
 
 export default function SideNav() {
   const { currentScreen, setCurrentScreen } = useApp();
-  const { user, role } = useAuth();
+  const { user, role, caps } = useAuth();
   const navRole = resolveNavRole(user, role);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const adminSections = adminSectionsForRole(navRole);
+  const adminSections = adminSectionsForRole(navRole, caps);
   const [adminOpen, setAdminOpen] = useState(false);
   const onAdmin = currentScreen === 'admin';
   const activeSectionId = onAdmin
-    ? resolveAdminLocation(navRole, location.pathname, searchParams.get('tab')).section
+    ? resolveAdminLocation(navRole, location.pathname, searchParams.get('tab'), caps).section
     : null;
   // مجموع ما بانتظار الإجراء لكل مركز؛ يُجلب فقط والقائمة مفتوحة، ويتحدّث مع كل تنقّل داخل الإدارة.
   const [hubTotals, setHubTotals] = useState({});
@@ -33,14 +33,14 @@ export default function SideNav() {
     if (!showSub) return undefined;
     let alive = true;
     const hubs = adminSections.filter(sec => ADMIN_HUBS[sec.id]).map(sec => sec.id);
-    Promise.all(hubs.map(h => fetchHubPendingCounts(supabase, hubViewsForRole(h, navRole))))
+    Promise.all(hubs.map(h => fetchHubPendingCounts(supabase, hubViewsForRole(h, navRole, caps))))
       .then(all => {
         if (!alive) return;
         setHubTotals(Object.fromEntries(hubs.map((h, i) => [h, Object.values(all[i]).reduce((a, b) => a + b, 0)])));
       });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showSub, navRole, location.search]);
+  }, [showSub, navRole, caps, location.search]);
   // «الإدارة»: من خارجها تفتح اللوحة والقائمة، وداخلها كل ضغطة تُظهر القائمة أو تخفيها
   const clickAdmin = () => {
     if (!onAdmin) { navigate('/admin'); setAdminOpen(true); return; }
