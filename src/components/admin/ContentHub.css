@@ -1,0 +1,105 @@
+/* مركز المحتوى — تبويبات مراحل مرتّبة (RTL) */
+.content-hub-head h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  color: var(--navy);
+}
+
+.content-hub-head p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.content-hub-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.content-hub-step-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 220px;
+}
+
+.content-hub-arrow {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.content-hub-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-bg);
+  color: var(--navy);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+
+.content-hub-step:hover { border-color: var(--blue-text); }
+
+.content-hub-step:focus-visible {
+  outline: 2px solid var(--blue-text);
+  outline-offset: 2px;
+}
+
+.content-hub-step.active {
+  background: var(--blue-light);
+  border-color: var(--blue-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.content-hub-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--line);
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.content-hub-step.active .content-hub-num {
+  background: var(--blue-text);
+  color: white;
+}
+
+.content-hub-icon { font-size: 22px; flex: none; }
+
+.content-hub-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.content-hub-text strong { font-size: 14.5px; font-weight: 800; }
+.content-hub-text small { color: var(--muted); font-size: 12px; }
+
+@media (max-width: 640px) {
+  .content-hub-arrow { display: none; }
+  .content-hub-step-wrap { flex-basis: 100%; }
+}
+
+/* عدّاد بانتظار الإجراء على الخطوة */
+.content-hub-text strong { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.content-hub-badge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--red, #dc2626);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 22px;
+  text-align: center;
+}

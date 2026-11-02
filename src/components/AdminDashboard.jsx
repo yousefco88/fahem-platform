@@ -1,12 +1,10 @@
-import RecordingsReview from './admin/RecordingsReview';
 import { gradeLabel } from '../utils/gradeLabel';
-import LessonReview from './admin/LessonReview';
 import AiTutorSettings from './admin/AiTutorSettings';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { adminSectionsForRole, adminSectionPath } from '../navigation/navConfig';
+import { adminSectionsForRole, adminSectionPath, resolveAdminLocation } from '../navigation/navConfig';
 import { useApp } from '../context/AppContext';
 import { loadAdminKpiStats } from '../lib/adminKpiStats';
 import { DAY_NAMES, SLOT_TYPES } from '../data/scheduleData';
@@ -15,7 +13,8 @@ import FamiliesPanel from './admin/FamiliesPanel';
 import SiteSettingsPanel from './admin/SiteSettingsPanel';
 import SubscriptionPlansPanel from './admin/SubscriptionPlansPanel';
 import SubscriptionContractsPanel from './admin/SubscriptionContractsPanel';
-import { GradesPanel, SubjectsPanel, LessonsPanel, LessonEditor } from './admin/curriculum';
+import ContentHub from './admin/ContentHub';
+import AdminHub from './admin/AdminHub';
 import './admin/curriculum/CurriculumAdmin.css';
 import Emoji from '../ui/Emoji';
 
@@ -28,15 +27,13 @@ export default function AdminDashboard() {
     saveScheduleToCloud
   } = useApp();
 
-  // القسم النشط مشتق من الـ URL (لا حالة محلية): /admin/* = المناهج، وإلا ?tab=
+  // القسم النشط مشتق من الـ URL (لا حالة محلية): /admin/* = المناهج داخل مركز المحتوى، وإلا ?tab=
   const { role, user } = useAuth();
   const [searchParams] = useSearchParams();
   const adminLocation = useLocation();
   const adminNavigate = useNavigate();
   const sections = adminSectionsForRole(role).filter(x => !x.path);
-  const subPath = adminLocation.pathname.replace(/^\/admin\/?/, '');
-  const wanted = subPath ? 'curriculum' : (searchParams.get('tab') || 'curriculum');
-  const activeAdminTab = sections.some(x => x.id === wanted) ? wanted : (sections[0]?.id || 'curriculum');
+  const { section: activeAdminTab, view: hubView } = resolveAdminLocation(role, adminLocation.pathname, searchParams.get('tab'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [syncingSchedule, setSyncingSchedule] = useState(false);
 
@@ -294,7 +291,7 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {activeAdminTab === 'lessonReview' && <LessonReview />}
+      {activeAdminTab === 'content' && <ContentHub role={role} view={hubView} />}
       {activeAdminTab === 'aiTutor' && role === 'admin' && <AiTutorSettings />}
 
       {/* TAB: SITE SETTINGS */}
@@ -303,138 +300,129 @@ export default function AdminDashboard() {
       {/* TAB: SUBSCRIPTION CATALOG (internal settings; no sale or entitlement) */}
       {activeAdminTab === 'subscriptions' && role === 'admin' && <><SubscriptionPlansPanel /><SubscriptionContractsPanel /></>}
 
-      {/* TAB: CURRICULUM CMS (Supabase) */}
-      {activeAdminTab === 'curriculum' && (
-        <div className="u-3">
-          <Routes>
-            <Route index element={<GradesPanel />} />
-            <Route path="grades" element={<GradesPanel />} />
-            <Route path="subjects" element={<SubjectsPanel />} />
-            <Route path="lessons" element={<LessonsPanel />} />
-            <Route path="lesson/:id" element={<LessonEditor />} />
-          </Routes>
-        </div>
-      )}
-
-      {/* TAB 1: CURRICULUM CMS (محلي — قديم) */}
-      {activeAdminTab === 'recordings' && <RecordingsReview />}
-
-      {activeAdminTab === 'bookings' && (
-        <div className="u-3">
-          <BookingsPanel />
-        </div>
-      )}
-
-      {/* TAB: FAMILIES (real data) */}
-      {activeAdminTab === 'families' && (
-        <div className="u-3">
-          <FamiliesPanel onManageSchedule={child => {
-            setScheduleChildId(child.id);
-            adminNavigate('/admin?tab=schedule');
-          }} />
-        </div>
-      )}
-
-      {/* TAB: WEEKLY SCHEDULE */}
-      {activeAdminTab === 'schedule' && (
-        <div className="u-3">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><Emoji>🗓️</Emoji> الجدول الأسبوعي لمساحة الطفل</h3>
-              <p className="u-4">
-                كل طفل له جدوله الخاص. اختر الطفل ثم عدّل خاناته واحفظ. خيار «تلقائي» يعرض أول درس غير مُتقن. الحصة المباشرة: يضع المعلم المُسنَد رابط الاجتماع من «مساحتي ← حصصي».
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                style={{ background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: '1px solid #c7d2fe', cursor: 'pointer' }}
-                disabled={!scheduleChildId}
-                onClick={addSlot}
-              >+ إضافة خانة</button>
-              <button
-                style={{ background: 'var(--blue)', color: 'white', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: syncingSchedule ? 'wait' : 'pointer', opacity: syncingSchedule ? 0.6 : 1 }}
-                disabled={syncingSchedule || !scheduleChildId}
-                onClick={syncSchedule}
-              >{syncingSchedule ? '... جارٍ الحفظ' : '☁️ حفظ على Supabase'}</button>
-            </div>
-          </div>
-
-          <select
-            value={scheduleChildId} onChange={e => setScheduleChildId(e.target.value)} aria-label="اختر الطفل"
-            style={{ marginTop: '12px', padding: '9px 12px', borderRadius: '10px', border: '1px solid var(--line)', minWidth: '240px', font: 'inherit' }}
-          >
-            <option value="">— اختر الطفل —</option>
-            {allKids.map(k => <option key={k.id} value={k.id}>{k.name}{k.grade ? ` (${gradeLabel(k.grade)})` : ''}</option>)}
-          </select>
-          {!scheduleChildId ? (
-            <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
-              اختر طفلاً لعرض جدوله وتعديله.
-            </div>
-          ) : scheduleData.length === 0 ? (
-            <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
-              لا توجد خانات بعد — أضف أول خانة لبناء الجدول.
-            </div>
-          ) : (
-            <div style={{ overflowX: 'auto', marginTop: '14px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                <thead>
-                  <tr style={{ background: 'var(--bg)', color: 'var(--muted)' }}>
-                    {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', 'المدة', 'المعلم', ''].map(h => (
-                      <th key={h} style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid var(--line)' }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...scheduleData].sort((a, b) => a.day - b.day || String(a.time).localeCompare(String(b.time))).map(slot => {
-                    const subjLessons = curriculumData[slot.subjectId]?.lessons || [];
-                    return (
-                      <tr key={slot.id} style={{ borderBottom: '1px solid var(--line)' }}>
-                        <td style={{ padding: '8px' }}>
-                          <select value={slot.day} onChange={e => updateSlot(slot.id, 'day', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
-                            {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <input type="time" value={slot.time} onChange={e => updateSlot(slot.id, 'time', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }} />
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <select value={slot.subjectId} onChange={e => { updateSlot(slot.id, 'subjectId', e.target.value); updateSlot(slot.id, 'lessonRef', 'next'); }} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '170px' }}>
-                            {Object.entries(curriculumData).map(([id, s]) => <option key={id} value={id}>{s.icon} {s.title}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <select value={slot.lessonRef || 'next'} onChange={e => updateSlot(slot.id, 'lessonRef', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '200px' }}>
-                            <option value="next">تلقائي (أول درس غير مُتقن)</option>
-                            {subjLessons.map(l => <option key={l.id} value={l.id}>{l.order}. {l.title}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <select value={slot.type || 'lesson'} onChange={e => updateSlot(slot.id, 'type', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
-                            {Object.entries(SLOT_TYPES).map(([id, t]) => <option key={id} value={id}>{t.icon} {t.label}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <select aria-label="مدة الحصة" value={slot.durationMin || 60} onChange={e => updateSlot(slot.id, 'durationMin', Number(e.target.value))} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
-                            {[30, 45, 60, 90, 120].map(m => <option key={m} value={m}>{m} د</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <select aria-label="المعلم" value={slot.teacherId || ''} onChange={e => updateSlot(slot.id, 'teacherId', e.target.value || null)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '150px' }}>
-                            <option value="">— بدون —</option>
-                            {teachers.map(t => <option key={t.id} value={t.id}>{t.full_name || t.id.slice(0, 8)}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '8px' }}>
-                          <button onClick={() => removeSlot(slot.id)} title="حذف الخانة" style={{ background: 'var(--red-light)', color: 'var(--red-text)', border: '1px solid var(--line)', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', fontWeight: 800 }}>🗑</button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+      {/* مركز الطلاب والأسر: الحجوزات ← حسابات الأسر ← الجدول الأسبوعي */}
+      {activeAdminTab === 'people' && role === 'admin' && (
+        <AdminHub hubId="people" role={role} view={hubView} renderView={peopleView => (
+          <>
+          {peopleView === 'bookings' && (
+            <div className="u-3">
+              <BookingsPanel />
             </div>
           )}
-        </div>
+
+          {/* TAB: FAMILIES (real data) */}
+          {peopleView === 'families' && (
+            <div className="u-3">
+              <FamiliesPanel onManageSchedule={child => {
+                setScheduleChildId(child.id);
+                adminNavigate('/admin?tab=schedule');
+              }} />
+            </div>
+          )}
+
+          {/* TAB: WEEKLY SCHEDULE */}
+          {peopleView === 'schedule' && (
+            <div className="u-3">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', color: 'var(--navy)' }}><Emoji>🗓️</Emoji> الجدول الأسبوعي لمساحة الطفل</h3>
+                  <p className="u-4">
+                    كل طفل له جدوله الخاص. اختر الطفل ثم عدّل خاناته واحفظ. خيار «تلقائي» يعرض أول درس غير مُتقن. الحصة المباشرة: يضع المعلم المُسنَد رابط الاجتماع من «مساحتي ← حصصي».
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    style={{ background: 'var(--blue-light)', color: 'var(--blue-text)', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: '1px solid #c7d2fe', cursor: 'pointer' }}
+                    disabled={!scheduleChildId}
+                    onClick={addSlot}
+                  >+ إضافة خانة</button>
+                  <button
+                    style={{ background: 'var(--blue)', color: 'white', padding: '10px 18px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '13px', border: 'none', cursor: syncingSchedule ? 'wait' : 'pointer', opacity: syncingSchedule ? 0.6 : 1 }}
+                    disabled={syncingSchedule || !scheduleChildId}
+                    onClick={syncSchedule}
+                  >{syncingSchedule ? '... جارٍ الحفظ' : '☁️ حفظ على Supabase'}</button>
+                </div>
+              </div>
+
+              <select
+                value={scheduleChildId} onChange={e => setScheduleChildId(e.target.value)} aria-label="اختر الطفل"
+                style={{ marginTop: '12px', padding: '9px 12px', borderRadius: '10px', border: '1px solid var(--line)', minWidth: '240px', font: 'inherit' }}
+              >
+                <option value="">— اختر الطفل —</option>
+                {allKids.map(k => <option key={k.id} value={k.id}>{k.name}{k.grade ? ` (${gradeLabel(k.grade)})` : ''}</option>)}
+              </select>
+              {!scheduleChildId ? (
+                <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
+                  اختر طفلاً لعرض جدوله وتعديله.
+                </div>
+              ) : scheduleData.length === 0 ? (
+                <div style={{ padding: '30px', textAlign: 'center', color: 'var(--muted)', border: '2px dashed var(--line)', borderRadius: '14px', marginTop: '14px' }}>
+                  لا توجد خانات بعد — أضف أول خانة لبناء الجدول.
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto', marginTop: '14px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                    <thead>
+                      <tr style={{ background: 'var(--bg)', color: 'var(--muted)' }}>
+                        {['اليوم', 'الوقت', 'المادة', 'الدرس', 'النوع', 'المدة', 'المعلم', ''].map(h => (
+                          <th key={h} style={{ padding: '10px', textAlign: 'right', borderBottom: '1px solid var(--line)' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...scheduleData].sort((a, b) => a.day - b.day || String(a.time).localeCompare(String(b.time))).map(slot => {
+                        const subjLessons = curriculumData[slot.subjectId]?.lessons || [];
+                        return (
+                          <tr key={slot.id} style={{ borderBottom: '1px solid var(--line)' }}>
+                            <td style={{ padding: '8px' }}>
+                              <select value={slot.day} onChange={e => updateSlot(slot.id, 'day', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                                {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
+                              </select>
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <input type="time" value={slot.time} onChange={e => updateSlot(slot.id, 'time', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }} />
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <select value={slot.subjectId} onChange={e => { updateSlot(slot.id, 'subjectId', e.target.value); updateSlot(slot.id, 'lessonRef', 'next'); }} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '170px' }}>
+                                {Object.entries(curriculumData).map(([id, s]) => <option key={id} value={id}>{s.icon} {s.title}</option>)}
+                              </select>
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <select value={slot.lessonRef || 'next'} onChange={e => updateSlot(slot.id, 'lessonRef', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '200px' }}>
+                                <option value="next">تلقائي (أول درس غير مُتقن)</option>
+                                {subjLessons.map(l => <option key={l.id} value={l.id}>{l.order}. {l.title}</option>)}
+                              </select>
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <select value={slot.type || 'lesson'} onChange={e => updateSlot(slot.id, 'type', e.target.value)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                                {Object.entries(SLOT_TYPES).map(([id, t]) => <option key={id} value={id}>{t.icon} {t.label}</option>)}
+                              </select>
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <select aria-label="مدة الحصة" value={slot.durationMin || 60} onChange={e => updateSlot(slot.id, 'durationMin', Number(e.target.value))} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                                {[30, 45, 60, 90, 120].map(m => <option key={m} value={m}>{m} د</option>)}
+                              </select>
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <select aria-label="المعلم" value={slot.teacherId || ''} onChange={e => updateSlot(slot.id, 'teacherId', e.target.value || null)} style={{ padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--line)', maxWidth: '150px' }}>
+                                <option value="">— بدون —</option>
+                                {teachers.map(t => <option key={t.id} value={t.id}>{t.full_name || t.id.slice(0, 8)}</option>)}
+                              </select>
+                            </td>
+                            <td style={{ padding: '8px' }}>
+                              <button onClick={() => removeSlot(slot.id)} title="حذف الخانة" style={{ background: 'var(--red-light)', color: 'var(--red-text)', border: '1px solid var(--line)', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', fontWeight: 800 }}>🗑</button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+          </>
+        )} />
       )}
 
       {/* TAB 2: المستخدمون والصلاحيات */}

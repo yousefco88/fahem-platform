@@ -8,7 +8,9 @@ import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { getNavForRole, resolveNavRole, ROLE_LABELS, adminSectionsForRole, adminSectionPath } from '../navigation/navConfig';
+import { getNavForRole, resolveNavRole, ROLE_LABELS, adminSectionsForRole, adminSectionPath, resolveAdminLocation, ADMIN_HUBS, hubViewsForRole } from '../navigation/navConfig';
+import { supabase } from '../lib/supabase';
+import { fetchHubPendingCounts } from '../lib/hubPendingCounts';
 import Emoji from '../ui/Emoji';
 
 export default function SideNav() {
@@ -21,10 +23,24 @@ export default function SideNav() {
   const adminSections = adminSectionsForRole(navRole);
   const [adminOpen, setAdminOpen] = useState(false);
   const onAdmin = currentScreen === 'admin';
-  const wantedSection = location.pathname.replace(/\/+$/, '') !== '/admin' ? 'curriculum' : (searchParams.get('tab') || 'curriculum');
   const activeSectionId = onAdmin
-    ? (adminSections.some(x => x.id === wantedSection) ? wantedSection : adminSections[0]?.id)
+    ? resolveAdminLocation(navRole, location.pathname, searchParams.get('tab')).section
     : null;
+  // مجموع ما بانتظار الإجراء لكل مركز؛ يُجلب فقط والقائمة مفتوحة، ويتحدّث مع كل تنقّل داخل الإدارة.
+  const [hubTotals, setHubTotals] = useState({});
+  const showSub = onAdmin && adminOpen;
+  useEffect(() => {
+    if (!showSub) return undefined;
+    let alive = true;
+    const hubs = adminSections.filter(sec => ADMIN_HUBS[sec.id]).map(sec => sec.id);
+    Promise.all(hubs.map(h => fetchHubPendingCounts(supabase, hubViewsForRole(h, navRole))))
+      .then(all => {
+        if (!alive) return;
+        setHubTotals(Object.fromEntries(hubs.map((h, i) => [h, Object.values(all[i]).reduce((a, b) => a + b, 0)])));
+      });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showSub, navRole, location.search]);
   // «الإدارة»: من خارجها تفتح اللوحة والقائمة، وداخلها كل ضغطة تُظهر القائمة أو تخفيها
   const clickAdmin = () => {
     if (!onAdmin) { navigate('/admin'); setAdminOpen(true); return; }
@@ -91,6 +107,9 @@ export default function SideNav() {
                         className={`side-nav-sub-item ${activeSectionId === sec.id ? 'active' : ''}`}
                         onClick={() => navigate(adminSectionPath(sec))}>
                         <span aria-hidden="true"><Emoji>{sec.icon}</Emoji></span><span>{sec.label}</span>
+                        {hubTotals[sec.id] > 0 && (
+                          <span className="side-nav-badge" aria-label={`${hubTotals[sec.id]} بانتظار الإجراء`}>{hubTotals[sec.id]}</span>
+                        )}
                       </button>
                     ))}
                   </div>

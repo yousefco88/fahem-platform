@@ -163,7 +163,7 @@ export default function LessonReview() {
             <div className="lsa-empty">
               <span aria-hidden="true"><Emoji>📚</Emoji></span>
               <strong>لا توجد مواد متاحة للإسناد</strong>
-              <p>أضف المواد من إدارة المناهج أولاً.</p>
+              <p>أضف المواد من تبويب «المناهج» في مركز المحتوى أولاً.</p>
             </div>
           ) : (
             <>

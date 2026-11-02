@@ -316,7 +316,7 @@ function SiteSettingsEditor() {
       {/* المواد والمسارات */}
       <div style={card}>
         <h3 style={sectionTitle}><Emoji>📚</Emoji> قسم المواد والمسارات (الرئيسية)</h3>
-        <p style={hint}>العداد في العنوان يُحسب تلقائياً من عدد البطاقات. هذا عرض تسويقي — المناهج الفعلية تُدار من تبويب إدارة المناهج.</p>
+        <p style={hint}>العداد في العنوان يُحسب تلقائياً من عدد البطاقات. هذا عرض تسويقي — المناهج الفعلية تُدار من مركز المحتوى ← المناهج.</p>
         <div style={{ display: 'grid', gap: '14px', marginBottom: '18px' }}>
           <div className="u-19">
             <div>
